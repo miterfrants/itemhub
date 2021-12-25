@@ -26,6 +26,7 @@
         "eslint-plugin-promise": "^5.1.0",
         "eslint-plugin-standard": "^5.0.0",
         "html-element": "^2.3.1",
+        "html-inline-css-webpack-plugin": "^1.11.1",
         "jstoxmlparser": "^1.0.2",
         "moment": "^2.29.1",
         "purgecss-webpack-plugin": "^4.1.3",

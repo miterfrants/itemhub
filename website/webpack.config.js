@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const HTMLInlineCSSWebpackPlugin = require('html-inline-css-webpack-plugin').default;
 const PurgecssPlugin = require('purgecss-webpack-plugin');
 const glob = require('glob');
 const webpack = require('webpack');
@@ -168,6 +169,7 @@ module.exports = {
             template: './src/build/index.html',
             filename: 'index.html'
         }),
+        new HTMLInlineCSSWebpackPlugin(),
         new CopyPlugin({
             patterns: [{
                 from: './ssl',
