@@ -140,15 +140,15 @@ h4,
         color: $blue;
     }
 }
-
+/* purgecss start ignore */
 /* Toaster */
 .toaster {
     position: fixed;
     top: 20px;
     right: 100px;
-    z-index: 10006;
+    z-index: 10000;
     padding-bottom: 20px;
-    @include media-breakpoint-up(lg) {
+    @media only screen and (max-width: 992) {
         top: auto;
         bottom: 20px;
     }
@@ -219,3 +219,4 @@ a.toaster-item::after {
     text-align: center;
     line-height: 40px;
 }
+/* purgecss end ignore */
