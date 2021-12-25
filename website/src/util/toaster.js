@@ -22,13 +22,13 @@ export const Toaster = {
             document.body.appendChild(elToaster);
         }
 
-        let toasterItem = new ToasterMessage(elToaster, className, message, duration || 5000, link);
+        const toasterItem = new ToasterMessage(elToaster, className, message, duration || 5000, link);
         toasterItem.show();
     }
 };
 
 class ToasterMessage {
-    constructor(container, className, message, duration, link) {
+    constructor (container, className, message, duration, link) {
         this.timer;
         this.el = link ? Toaster.TEMPLATE_LINK_ITEM.replace(/{link}/gi, link).toDom() : Toaster.TEMPLATE_ITEM.toDom();
         this.el.innerHTML = message;
@@ -43,11 +43,13 @@ class ToasterMessage {
             this.countdown();
         });
     }
-    show() {
+
+    show () {
         this.el.addClass('show');
         this.countdown();
     }
-    countdown() {
+
+    countdown () {
         this.timer = setTimeout(() => {
             this.el.removeClass('show');
             setTimeout(() => {

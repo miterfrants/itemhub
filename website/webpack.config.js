@@ -193,7 +193,8 @@ module.exports = {
             }]
         }),
         new PurgecssPlugin({
-            paths: glob.sync('./**/*.html', { nodir: true })
+            paths: glob.sync('./**/*.html', { nodir: true }),
+            whitelist: ['common.css']
         })
     ]
 };
