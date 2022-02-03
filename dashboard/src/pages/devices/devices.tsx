@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { DeviceDataservice } from '../../dataservices/device.dataservice';
@@ -9,14 +9,11 @@ import {
 import { CookieHelper } from '../../helpers/cookie.helper';
 import styles from './devices.module.scss';
 import { useQuery } from '../../hooks/query.hook';
-import { LogContext } from '../../contexts/logs.context';
 
 const Devices = () => {
     const query = useQuery();
     const dispatch = useDispatch();
     const devices = useSelector(selectDevices);
-
-    const { logs, addLog } = useContext(LogContext);
 
     useEffect(() => {
         const page = Number(query.get('page') || 1);
@@ -41,17 +38,9 @@ const Devices = () => {
                 <div key={item.id}>
                     <Link to={`/dashboard/devices/${item.id}`}>
                         {item.name}
-                    </Link>{' '}
+                    </Link>
                     <br />
                 </div>
-            ))}
-            <br />
-            <hr />
-            <br />
-            <button onClick={() => addLog('aaaa')}>test add log</button>
-            <h1>Logs</h1>
-            {logs.map((log, index) => (
-                <div key={`log-${index}`}>aaa{log}aaa</div>
             ))}
         </div>
     );

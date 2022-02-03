@@ -12,7 +12,6 @@ import Trigger from './pages/trigger/trigger';
 import OauthClients from './pages/oauth-clients/oauth-clients';
 import { Provider } from 'react-redux';
 import store from './redux/store';
-import LogProvider from './contexts/logs.context';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -20,11 +19,9 @@ ReactDOM.render(
             <Route
                 path=""
                 element={
-                    <LogProvider>
-                        <Provider store={store}>
-                            <App />
-                        </Provider>
-                    </LogProvider>
+                    <Provider store={store}>
+                        <App />
+                    </Provider>
                 }
             >
                 <Route path="dashboard" element={<Dashboard />}>
