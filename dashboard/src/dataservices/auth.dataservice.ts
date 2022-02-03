@@ -12,7 +12,8 @@ export const AuthDataservice = {
         const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
             END_POINT.SIGN_WITH_EMAIL
         }`;
-        return ApiHelper.SendRequest({
+
+        const response: any = await ApiHelper.SendRequest({
             apiPath,
             method: 'POST',
             payload: {
@@ -20,6 +21,8 @@ export const AuthDataservice = {
                 password,
             },
         });
+
+        return response.data as { token: string };
     },
     IsSigned: async (token: string) => {
         const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${

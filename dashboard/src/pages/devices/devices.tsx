@@ -23,7 +23,7 @@ const Devices = () => {
 
         if (devices === null && token) {
             (async () => {
-                const data: any = await DevicesDataservice.GetList(
+                const data = await DevicesDataservice.GetList(
                     token,
                     page,
                     limit
