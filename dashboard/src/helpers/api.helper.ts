@@ -46,13 +46,13 @@ export const ApiHelper = {
         };
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
-            let result;
             const newOption = {
                 ...fetchOption,
             };
             delete newOption.headers;
 
-            let response: any;
+            let result: any;
+            let response: Response;
             try {
                 response = await ApiHelper.Fetch(apiPath, fetchOption);
             } catch (error) {
@@ -65,11 +65,15 @@ export const ApiHelper = {
                 resolve(result);
                 return;
             }
-            const isDownloadFile = [
-                'text/csv',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            ].includes(response.headers.get('content-type'));
+
+            const contentType = response.headers.get('content-type');
+            const isDownloadFile = contentType
+                ? [
+                      'text/csv',
+                      'application/vnd.ms-excel',
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  ].includes(contentType)
+                : false;
 
             if (response.status === 200 && !isDownloadFile) {
                 const jsonData = await response.json();
