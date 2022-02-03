@@ -1,7 +1,7 @@
 import { END_POINT } from '../constants';
 import { ApiHelper } from '../helpers/api.helper';
 
-export const DeviceDataservice = {
+export const DevicesDataservice = {
     GetList: async (token: string, page: number, limit: number) => {
         const api = `${import.meta.env.VITE_API_ENDPOINT}${
             END_POINT.DEVICES

@@ -2,7 +2,7 @@ import './devices.module.scss';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DeviceDataservice } from '../../dataservices/device.dataservice';
+import { DevicesDataservice } from '../../dataservices/devices.dataservice';
 import {
     selectDevices,
     devicesActions,
@@ -23,7 +23,7 @@ const Devices = () => {
 
         if (devices === null && token) {
             (async () => {
-                const data: any = await DeviceDataservice.GetList(
+                const data: any = await DevicesDataservice.GetList(
                     token,
                     page,
                     limit
