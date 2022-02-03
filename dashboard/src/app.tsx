@@ -5,10 +5,11 @@ import { AuthDataservice } from './dataservices/auth.dataservice';
 import { CookieHelper } from './helpers/cookie.helper';
 
 function App() {
-    // 暫時直接打測試帳號的 API 取得 token，之後可再拔掉
+    // dev 環境暫時直接打測試帳號的 API 取得 token，便於開發，之後可拔掉
     useEffect(() => {
         const token = CookieHelper.GetCookie('token') || null;
-        if (token === null) {
+
+        if (token === null && import.meta.env.VITE_ENV === 'dev') {
             (async () => {
                 AuthDataservice.SignWithEmail({
                     email: 'miterfrants@gmail.com',
