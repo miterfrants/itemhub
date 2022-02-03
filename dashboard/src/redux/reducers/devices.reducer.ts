@@ -1,19 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-
-interface Device {
-    id: number;
-    name: string;
-    ownerId: number;
-    deviceId: string;
-    createdAt: string;
-    editedAt: null | string;
-    deletedAt: null | string;
-    info: null | string;
-    online: boolean;
-    zone: null | string;
-    zoneId: null | string;
-}
+import { Device } from '../../types/devices.type';
 
 export const devicesSlice = createSlice({
     name: 'devices',
