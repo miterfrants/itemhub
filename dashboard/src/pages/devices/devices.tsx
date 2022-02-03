@@ -1,3 +1,4 @@
+import './devices.module.scss';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -34,12 +35,25 @@ const Devices = () => {
 
     return (
         <div className={styles.Devices} data-testid="Devices">
-            {devices?.map((item) => (
-                <div key={item.id}>
-                    <Link to={`/dashboard/devices/${item.id}`}>
-                        {item.name}
-                    </Link>
-                    <br />
+            {devices?.map(({ id, name, createdAt }) => (
+                <div key={id}>
+                    <table>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>CreateTime</th>
+                        </tr>
+                        <tr>
+                            <td>{id}</td>
+                            <td>{name}</td>
+                            <td>{createdAt}</td>
+                        </tr>
+                        <tr>
+                            <Link to={`/dashboard/devices/${id}`}>
+                                Go to {name} detail page
+                            </Link>
+                        </tr>
+                    </table>
                 </div>
             ))}
         </div>
