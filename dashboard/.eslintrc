@@ -38,7 +38,7 @@
         "__dirname": "readonly"
     },
     "rules": {
-        "indent": ["error", 4],
+        "indent": ["off"], // When using prettier, you'd better disable eslint's indent rule. They will conflict sometimes.
         "semi": ["error", "always"],
         "no-var": "error",
         "prefer-const": "error",
