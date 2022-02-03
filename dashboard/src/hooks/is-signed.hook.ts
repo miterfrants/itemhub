@@ -13,11 +13,11 @@ export function useIsSigned() {
             setLoading(true);
             const token = CookieHelper.GetCookie('token');
             if (token) {
-                const resp: any = await AuthDataservice.IsSigned(token);
-                if (resp.status === 'OK') {
-                    setData(resp);
+                const response: any = await AuthDataservice.IsSigned(token);
+                if (response.status === 'OK') {
+                    setData(response);
                 } else {
-                    setError(resp);
+                    setError(response);
                 }
             } else {
                 setError(ApiHelper.LocalError('empty token'));
