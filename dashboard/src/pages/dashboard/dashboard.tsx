@@ -18,16 +18,14 @@ const Dashboard = () => {
                 <div>{JSON.stringify(error)}</div>
             ) : (
                 <div>
-                    <Header></Header>
-                    <h1>Itemhub Test Auto Deploy</h1>
-                    <hr />
+                    <Header />
                     <nav>
                         <Link to="/dashboard/devices">Devices</Link> |{' '}
                         <Link to="/dashboard/triggers">Triggers</Link> |{' '}
                         <Link to="/dashboard/oauth-clients">oAuth Clients</Link>
                     </nav>
-                    <Outlet></Outlet>
-                    <Footer></Footer>
+                    <Outlet />
+                    <Footer />
                 </div>
             )}
         </div>
