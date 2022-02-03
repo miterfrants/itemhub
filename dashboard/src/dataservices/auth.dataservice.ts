@@ -9,24 +9,26 @@ export const AuthDataservice = {
         email: string;
         password: string;
     }) => {
-        return ApiHelper.SendRequest(
-            `${import.meta.env.VITE_API_ENDPOINT}${END_POINT.SIGN_WITH_EMAIL}`,
-            {
-                method: 'POST',
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            }
-        );
+        const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
+            END_POINT.SIGN_WITH_EMAIL
+        }`;
+        return ApiHelper.SendRequest({
+            apiPath,
+            method: 'POST',
+            payload: {
+                email,
+                password,
+            },
+        });
     },
     IsSigned: async (token: string) => {
-        return ApiHelper.SendRequestWithToken(
-            `${import.meta.env.VITE_API_ENDPOINT}${END_POINT.IS_SIGNED}`,
-            {
-                token,
-            },
-            'POST'
-        );
+        const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
+            END_POINT.IS_SIGNED
+        }`;
+        return ApiHelper.SendRequestWithToken({
+            apiPath,
+            token,
+            method: 'POST',
+        });
     },
 };

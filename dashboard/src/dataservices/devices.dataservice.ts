@@ -3,31 +3,29 @@ import { ApiHelper } from '../helpers/api.helper';
 
 export const DevicesDataservice = {
     GetList: async (token: string, page: number, limit: number) => {
-        const api = `${import.meta.env.VITE_API_ENDPOINT}${
+        const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
             END_POINT.DEVICES
         }?page=${page}&limit=${limit}`;
-        const resp: any = await ApiHelper.SendRequestWithToken(
-            api,
-            {
-                token,
+        const resp: any = await ApiHelper.SendRequestWithToken({
+            apiPath,
+            token,
+            method: 'GET',
+            payload: {
                 page,
                 limit,
             },
-            'GET'
-        );
+        });
         return resp.data;
     },
     GetOne: async (token: string, id: number) => {
-        let api = `${import.meta.env.VITE_API_ENDPOINT}${END_POINT.DEVICE}`;
+        let apiPath = `${import.meta.env.VITE_API_ENDPOINT}${END_POINT.DEVICE}`;
+        apiPath = apiPath.replace(':id', id.toString());
 
-        api = api.replace(':id', id.toString());
-        const resp: any = await ApiHelper.SendRequestWithToken(
-            api,
-            {
-                token,
-            },
-            'GET'
-        );
+        const resp: any = await ApiHelper.SendRequestWithToken({
+            apiPath,
+            token,
+            method: 'GET',
+        });
         return resp.data;
     },
 };

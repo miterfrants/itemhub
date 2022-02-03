@@ -1,38 +1,49 @@
-export const ApiHelper = {
-    SendRequestWithToken: (
-        api: string,
-        data: any,
-        method: string,
-        callbackFunc?: () => null
-    ) => {
-        const token = data.token;
-        delete data.token;
+interface SendRequestWithTokenParams {
+    apiPath: string;
+    token: string;
+    method: string;
+    payload?: any;
+    callbackFunc?: () => null;
+}
 
-        return ApiHelper.SendRequest(
-            api,
-            {
-                method: method,
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                },
-                body: JSON.stringify(data),
+interface SendRequestParams {
+    apiPath: string;
+    method: string;
+    payload: any;
+    headers?: object;
+    callbackFunc?: (result: any) => null;
+}
+
+export const ApiHelper = {
+    SendRequestWithToken: ({
+        apiPath,
+        token,
+        method,
+        payload,
+        callbackFunc,
+    }: SendRequestWithTokenParams) => {
+        return ApiHelper.SendRequest({
+            apiPath,
+            method,
+            payload,
+            headers: {
+                Authorization: `Bearer ${token}`,
             },
-            callbackFunc
-        );
+            callbackFunc,
+        });
     },
-    LocalError: (reason: string): any => {
-        return {
-            status: 'FAILED',
-            data: {
-                message: reason,
-            },
+    SendRequest: ({
+        apiPath,
+        method,
+        payload,
+        headers,
+        callbackFunc,
+    }: SendRequestParams) => {
+        const fetchOption = {
+            method: method,
+            headers,
+            body: JSON.stringify(payload),
         };
-    },
-    SendRequest: (
-        api: string,
-        fetchOption: any,
-        callbackFunc?: (result: any) => null
-    ) => {
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
             let result;
@@ -41,9 +52,9 @@ export const ApiHelper = {
             };
             delete newOption.headers;
 
-            let resp: any;
+            let response: any;
             try {
-                resp = await ApiHelper.fetch(api, fetchOption);
+                response = await ApiHelper.Fetch(apiPath, fetchOption);
             } catch (error) {
                 result = {
                     status: 'FAILED',
@@ -58,13 +69,13 @@ export const ApiHelper = {
                 'text/csv',
                 'application/vnd.ms-excel',
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            ].includes(resp.headers.get('content-type'));
+            ].includes(response.headers.get('content-type'));
 
-            if (resp.status === 200 && !isDownloadFile) {
-                const jsonData = await resp.json();
+            if (response.status === 200 && !isDownloadFile) {
+                const jsonData = await response.json();
                 result = {
                     status: 'OK',
-                    httpStatus: resp.status,
+                    httpStatus: response.status,
                     data: jsonData,
                 };
                 if (fetchOption.method === 'GET') {
@@ -73,12 +84,12 @@ export const ApiHelper = {
                     };
                     delete newOption.headers;
                 }
-            } else if (resp.status === 200 && isDownloadFile) {
-                const blob = await resp.blob();
+            } else if (response.status === 200 && isDownloadFile) {
+                const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 let filename = null;
-                const disposition = resp.headers.get('content-disposition');
+                const disposition = response.headers.get('content-disposition');
                 if (disposition && disposition.indexOf('attachment') !== -1) {
                     const filenameRegex =
                         /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -102,19 +113,19 @@ export const ApiHelper = {
                     status: 'OK',
                     httpStatus: 200,
                 };
-            } else if (resp.status === 204) {
+            } else if (response.status === 204) {
                 result = {
                     status: 'FAILED',
-                    httpStatus: resp.status,
+                    httpStatus: response.status,
                     data: {
                         message: '沒有資料',
                     },
                 };
             } else {
-                const jsonData = await resp.json();
+                const jsonData = await response.json();
                 result = {
                     status: 'FAILED',
-                    httpStatus: resp.status,
+                    httpStatus: response.status,
                     data: {
                         message: jsonData.message,
                         invalidatedPayload: jsonData.invalidatedPayload,
@@ -127,7 +138,7 @@ export const ApiHelper = {
             resolve(result);
         });
     },
-    fetch: (url: string, option: any) => {
+    Fetch: (url: string, option: any) => {
         if (option.cache) {
             console.warn('Cound not declate cache in option params');
         }
@@ -164,5 +175,13 @@ export const ApiHelper = {
             headers,
         };
         return fetch(url, newOption);
+    },
+    LocalError: (reason: string): any => {
+        return {
+            status: 'FAILED',
+            data: {
+                message: reason,
+            },
+        };
     },
 };
