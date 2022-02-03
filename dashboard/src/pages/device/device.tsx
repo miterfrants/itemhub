@@ -12,7 +12,10 @@ const Device = () => {
     useEffect(() => {
         (async () => {
             const token = CookieHelper.GetCookie('token') || '';
-            const data: any = await DevicesDataservice.GetOne(token, Number(id));
+            const data: any = await DevicesDataservice.GetOne(
+                token,
+                Number(id)
+            );
             setDevice(data);
         })();
 
