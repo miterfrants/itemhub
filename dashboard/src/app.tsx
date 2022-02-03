@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { AuthDataservice } from './dataservices/auth.dataservice';
 import { CookieHelper } from './helpers/cookie.helper';
 
-function App() {
+const App = () => {
     // dev 環境暫時直接打測試帳號的 API 取得 token，便於開發，之後可拔掉
     useEffect(() => {
         const token = CookieHelper.GetCookie('token') || null;
@@ -22,6 +22,6 @@ function App() {
         }
     }, []);
     return <Outlet />;
-}
+};
 
 export default App;
