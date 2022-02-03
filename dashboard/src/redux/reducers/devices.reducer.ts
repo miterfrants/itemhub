@@ -29,6 +29,6 @@ export const devicesSlice = createSlice({
 
 export const devicesActions = devicesSlice.actions;
 
-export const selectDevices = (state: RootState) => state.device;
+export const selectDevices = (state: RootState) => state.devices;
 
 export default devicesSlice.reducer;
