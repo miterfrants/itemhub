@@ -17,6 +17,7 @@ const App = () => {
                 }).then((data) => {
                     const tokenValue = data.token;
                     CookieHelper.SetCookie('token', tokenValue, 14);
+                    window.location.reload();
                 });
             })();
         }
