@@ -10,6 +10,11 @@ interface SendRequestWithTokenParams extends SendRequestParams {
     token: string;
 }
 
+interface FetchParams {
+    apiPath: string;
+    fetchOption: any;
+}
+
 export const ApiHelper = {
     SendRequestWithToken: ({
         apiPath,
@@ -50,7 +55,7 @@ export const ApiHelper = {
             let result: any;
             let response: Response;
             try {
-                response = await ApiHelper.Fetch(apiPath, fetchOption);
+                response = await ApiHelper.Fetch({ apiPath, fetchOption });
             } catch (error) {
                 result = {
                     status: 'FAILED',
@@ -132,29 +137,29 @@ export const ApiHelper = {
             resolve(result);
         });
     },
-    Fetch: (url: string, option: any) => {
-        if (option.cache) {
+    Fetch: ({ apiPath, fetchOption }: FetchParams) => {
+        if (fetchOption.cache) {
             console.warn('Cound not declate cache in option params');
         }
 
-        if (option.method === 'GET') {
-            delete option.body;
+        if (fetchOption.method === 'GET') {
+            delete fetchOption.body;
         }
 
         const headers = {
             'Content-Type': 'application/json',
-            ...option.headers,
+            ...fetchOption.headers,
         };
 
         if (
-            option &&
-            option.headers &&
-            option.headers['Content-Type'] === null
+            fetchOption &&
+            fetchOption.headers &&
+            fetchOption.headers['Content-Type'] === null
         ) {
             delete headers['Content-Type'];
         }
-        if (option.body && !(option.body instanceof FormData)) {
-            const newBody = JSON.parse(option.body);
+        if (fetchOption.body && !(fetchOption.body instanceof FormData)) {
+            const newBody = JSON.parse(fetchOption.body);
             for (const key in newBody) {
                 if (newBody[key] === true) {
                     newBody[key] = 1;
@@ -162,13 +167,14 @@ export const ApiHelper = {
                     newBody[key] = 0;
                 }
             }
-            option.body = JSON.stringify(newBody);
+            fetchOption.body = JSON.stringify(newBody);
         }
         const newOption = {
-            ...option,
+            ...fetchOption,
             headers,
         };
-        return fetch(url, newOption);
+        console.log({ apiPath, newOption });
+        return fetch(apiPath, newOption);
     },
     LocalError: (reason: string): any => {
         return {
