@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
-// https://vitejs.dev/config/
+// reference: https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
-    base: '/dashboard',
+    base: '/dashboard/',
+    resolve: {
+        alias: { '@': path.resolve(__dirname, 'src/') },
+    },
 });

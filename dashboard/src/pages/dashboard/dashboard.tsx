@@ -1,8 +1,8 @@
 import { Link, Outlet } from 'react-router-dom';
 import styles from './dashboard.module.scss';
-import Header from '../../components/header/header';
-import Footer from '../../components/footer/footer';
-import { useIsSigned } from '../../hooks/is-signed.hook';
+import Header from '@/components/header/header';
+import Footer from '@/components/footer/footer';
+import { useIsSigned } from '@/hooks/is-signed.hook';
 
 const Dashboard = () => {
     const { loading } = useIsSigned();

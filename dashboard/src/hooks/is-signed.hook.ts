@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AuthDataservice } from '../dataservices/auth.dataservice';
-import { CookieHelper } from '../helpers/cookie.helper';
+import { AuthDataservice } from '@/dataservices/auth.dataservice';
+import { CookieHelper } from '@/helpers/cookie.helper';
 
 export function useIsSigned() {
     const [data, setData] = useState(null);

@@ -1,15 +1,15 @@
 import './devices.module.scss';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../hooks/redux.hook';
-import { DevicesDataservice } from '../../dataservices/devices.dataservice';
+import { useAppSelector, useAppDispatch } from '@/hooks/redux.hook';
+import { DevicesDataservice } from '@/dataservices/devices.dataservice';
 import {
     selectDevices,
     devicesActions,
-} from '../../redux/reducers/devices.reducer';
-import { CookieHelper } from '../../helpers/cookie.helper';
+} from '@/redux/reducers/devices.reducer';
+import { CookieHelper } from '@/helpers/cookie.helper';
 import styles from './devices.module.scss';
-import { useQuery } from '../../hooks/query.hook';
+import { useQuery } from '@/hooks/query.hook';
 
 const Devices = () => {
     const query = useQuery();

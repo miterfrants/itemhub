@@ -1,5 +1,5 @@
-import { END_POINT } from '../constants';
-import { ApiHelper } from '../helpers/api.helper';
+import { END_POINT } from '@/constants';
+import { ApiHelper } from '@/helpers/api.helper';
 
 export const AuthDataservice = {
     SignWithEmail: async ({

@@ -1,6 +1,6 @@
-import { END_POINT } from '../constants';
-import { ApiHelper } from '../helpers/api.helper';
-import { Device } from '../types/devices.type';
+import { END_POINT } from '@/constants';
+import { ApiHelper } from '@/helpers/api.helper';
+import { Device } from '@/types/devices.type';
 
 export const DevicesDataservice = {
     GetList: async (token: string, page: number, limit: number) => {

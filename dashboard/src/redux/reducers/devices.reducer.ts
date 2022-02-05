@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../store';
-import { Device } from '../../types/devices.type';
+import { RootState } from '@/redux/store';
+import { Device } from '@/types/devices.type';
 
 export const devicesSlice = createSlice({
     name: 'devices',

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styles from './device.module.scss';
-import { CookieHelper } from '../../helpers/cookie.helper';
-import { DevicesDataservice } from '../../dataservices/devices.dataservice';
+import { CookieHelper } from '@/helpers/cookie.helper';
+import { DevicesDataservice } from '@/dataservices/devices.dataservice';
 
 const Device = () => {
     const { id } = useParams();
