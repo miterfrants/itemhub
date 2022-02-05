@@ -11,13 +11,12 @@ const App = () => {
 
         if (token === null && import.meta.env.VITE_ENV === 'dev') {
             (async () => {
-                AuthDataservice.SignWithEmail({
+                const data = await AuthDataservice.SignWithEmail({
                     email: 'miterfrants@gmail.com',
                     password: '@Testing123123',
-                }).then((data) => {
-                    const tokenValue = data.token;
-                    CookieHelper.SetCookie('token', tokenValue, 14);
                 });
+                const tokenValue = data.token;
+                CookieHelper.SetCookie('token', tokenValue, 7);
             })();
         }
     }, []);
