@@ -7,7 +7,6 @@ import {
     selectDevices,
     devicesActions,
 } from '@/redux/reducers/devices.reducer';
-import { CookieHelper } from '@/helpers/cookie.helper';
 import styles from './devices.module.scss';
 import { useQuery } from '@/hooks/query.hook';
 
