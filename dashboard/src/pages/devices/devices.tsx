@@ -19,9 +19,8 @@ const Devices = () => {
     useEffect(() => {
         const page = Number(query.get('page') || 1);
         const limit = Number(query.get('limit') || 20);
-        const token = CookieHelper.GetCookie('token') || null;
 
-        if (devices === null && token) {
+        if (devices === null) {
             (async () => {
                 const data = await DevicesDataservice.GetList({ page, limit });
                 dispatch(devicesActions.addDevices(data.devices));
