@@ -1,7 +1,7 @@
 interface SendRequestParams {
     apiPath: string;
     method: string;
-    headers?: object;
+    headers?: { [key: string]: any };
     payload?: any;
     callbackFunc?: (result: any) => null;
 }
@@ -12,7 +12,11 @@ interface SendRequestWithTokenParams extends SendRequestParams {
 
 interface FetchParams {
     apiPath: string;
-    fetchOption: any;
+    fetchOption: {
+        method: string;
+        headers: { [key: string]: any };
+        body?: string;
+    };
 }
 
 export const ApiHelper = {
@@ -51,20 +55,22 @@ export const ApiHelper = {
               };
 
         // eslint-disable-next-line no-async-promise-executor
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             let result: any;
             let response: Response;
+
             try {
                 response = await ApiHelper.Fetch({ apiPath, fetchOption });
             } catch (error) {
+                alert('目前發生問題，請稍後再試');
+
                 result = {
                     status: 'FAILED',
                     data: {
                         message: error,
                     },
                 };
-                resolve(result);
-                return;
+                return reject(result);
             }
 
             const contentType = response.headers.get('content-type');
@@ -138,12 +144,11 @@ export const ApiHelper = {
         });
     },
     Fetch: ({ apiPath, fetchOption }: FetchParams) => {
-        if (fetchOption.cache) {
-            console.warn('Cound not declate cache in option params');
-        }
-
-        if (fetchOption.method === 'GET') {
-            delete fetchOption.body;
+        if (
+            fetchOption.method === 'GET' &&
+            typeof fetchOption.body !== 'undefined'
+        ) {
+            throw new Error("Don't set body payload when fetch method is GET.");
         }
 
         const headers = {
@@ -152,13 +157,9 @@ export const ApiHelper = {
         };
 
         if (
-            fetchOption &&
-            fetchOption.headers &&
-            fetchOption.headers['Content-Type'] === null
+            fetchOption.body &&
+            !(JSON.parse(fetchOption.body) instanceof FormData)
         ) {
-            delete headers['Content-Type'];
-        }
-        if (fetchOption.body && !(fetchOption.body instanceof FormData)) {
             const newBody = JSON.parse(fetchOption.body);
             for (const key in newBody) {
                 if (newBody[key] === true) {
@@ -169,12 +170,13 @@ export const ApiHelper = {
             }
             fetchOption.body = JSON.stringify(newBody);
         }
-        const newOption = {
+
+        const finalOption = {
             ...fetchOption,
             headers,
         };
-        console.log({ apiPath, newOption });
-        return fetch(apiPath, newOption);
+
+        return fetch(apiPath, finalOption);
     },
     LocalError: (reason: string): any => {
         return {

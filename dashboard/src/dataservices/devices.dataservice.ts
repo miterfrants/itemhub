@@ -12,10 +12,6 @@ export const DevicesDataservice = {
             apiPath,
             token,
             method: 'GET',
-            payload: {
-                page,
-                limit,
-            },
         });
 
         return response.data as {
