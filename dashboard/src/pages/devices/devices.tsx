@@ -1,7 +1,7 @@
 import './devices.module.scss';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useAppSelector, useAppDispatch } from '../../hooks/redux.hook';
 import { DevicesDataservice } from '../../dataservices/devices.dataservice';
 import {
     selectDevices,
@@ -13,8 +13,8 @@ import { useQuery } from '../../hooks/query.hook';
 
 const Devices = () => {
     const query = useQuery();
-    const dispatch = useDispatch();
-    const devices = useSelector(selectDevices);
+    const dispatch = useAppDispatch();
+    const devices = useAppSelector(selectDevices);
 
     useEffect(() => {
         const page = Number(query.get('page') || 1);
