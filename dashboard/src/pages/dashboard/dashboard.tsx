@@ -5,17 +5,12 @@ import Footer from '../../components/footer/footer';
 import { useIsSigned } from '../../hooks/is-signed.hook';
 
 const Dashboard = () => {
-    const { loading, error } = useIsSigned();
+    const { loading } = useIsSigned();
 
-    if (error && import.meta.env.VITE_ENV === 'prod') {
-        location.href = '/';
-    }
     return (
         <div className={styles.dashboard} data-testid="Dashboard">
             {loading ? (
                 <div>Loading</div>
-            ) : error ? (
-                <div>{JSON.stringify(error)}</div>
             ) : (
                 <div>
                     <Header />

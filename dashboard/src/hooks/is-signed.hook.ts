@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { AuthDataservice } from '../dataservices/auth.dataservice';
 import { CookieHelper } from '../helpers/cookie.helper';
-import { ApiHelper } from '../helpers/api.helper';
 
 export function useIsSigned() {
     const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    if (error && import.meta.env.VITE_ENV === 'prod') {
+        window.location.href = '/';
+    }
 
     useEffect(() => {
         (async function () {
@@ -20,7 +23,7 @@ export function useIsSigned() {
                     setError(response);
                 }
             } else {
-                setError(ApiHelper.LocalError('empty token'));
+                setError('empty token');
             }
             setLoading(false);
         })();

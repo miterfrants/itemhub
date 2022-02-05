@@ -178,12 +178,4 @@ export const ApiHelper = {
 
         return fetch(apiPath, finalOption);
     },
-    LocalError: (reason: string): any => {
-        return {
-            status: 'FAILED',
-            data: {
-                message: reason,
-            },
-        };
-    },
 };
