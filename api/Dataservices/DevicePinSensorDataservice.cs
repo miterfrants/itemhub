@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
-    public class DevicePinDataDataservice
+    public class DevicePinSensorDataservice
     {
-        public static List<DevicePinData> GetList(IotDbContext dbContext, long? ownerId, List<long> deviceIds, byte? mode, string pin, int page = 1, int limit = 50)
+        public static List<DevicePinSensor> GetList(IotDbContext dbContext, long? ownerId, List<long> deviceIds, byte? mode, string pin, int page = 1, int limit = 50)
         {
-            return dbContext.DevicePinData
+            return dbContext.DevicePinSensor
                 .Where(x =>
                     x.DeletedAt == null &&
                     (ownerId == null || x.OwnerId == ownerId) &&
@@ -20,12 +20,12 @@ namespace Homo.IotApi
                 .OrderByDescending(x => x.Id)
                 .Skip((page - 1) * limit)
                 .Take(limit)
-                .ToList<DevicePinData>();
+                .ToList<DevicePinSensor>();
         }
 
-        public static DevicePinData Create(IotDbContext dbContext, long ownerId, long deviceId, string pin, DTOs.DevicePinData dto)
+        public static DevicePinSensor Create(IotDbContext dbContext, long ownerId, long deviceId, string pin, DTOs.DevicePinSensor dto)
         {
-            DevicePinData record = new DevicePinData();
+            DevicePinSensor record = new DevicePinSensor();
             foreach (var propOfDTO in dto.GetType().GetProperties())
             {
                 var value = propOfDTO.GetValue(dto);
@@ -36,7 +36,7 @@ namespace Homo.IotApi
             record.OwnerId = ownerId;
             record.DeviceId = deviceId;
             record.Pin = pin;
-            dbContext.DevicePinData.Add(record);
+            dbContext.DevicePinSensor.Add(record);
             dbContext.SaveChanges();
             return record;
         }
@@ -45,8 +45,8 @@ namespace Homo.IotApi
         {
             foreach (long id in ids)
             {
-                DevicePinData record = new DevicePinData { Id = id, OwnerId = ownerId };
-                dbContext.Attach<DevicePinData>(record);
+                DevicePinSensor record = new DevicePinSensor { Id = id, OwnerId = ownerId };
+                dbContext.Attach<DevicePinSensor>(record);
                 record.DeletedAt = DateTime.Now;
             }
             dbContext.SaveChanges();

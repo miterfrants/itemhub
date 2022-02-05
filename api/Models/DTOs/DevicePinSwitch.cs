@@ -5,7 +5,7 @@ namespace Homo.IotApi
 {
     public abstract partial class DTOs
     {
-        public partial class DevicePinState : DTOs
+        public partial class DevicePinSwitch : DTOs
         {
             [Required]
             [MaxLength(3)]
@@ -15,7 +15,7 @@ namespace Homo.IotApi
             public decimal? Value { get; set; }
         }
 
-        public partial class DevicePinStateValue : DTOs
+        public partial class DevicePinSwitchValue : DTOs
         {
             public decimal Value { get; set; }
         }

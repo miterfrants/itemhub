@@ -6,7 +6,7 @@ namespace Homo.IotApi
     public abstract partial class DTOs
     {
 
-        public partial class DevicePinData : DTOs
+        public partial class DevicePinSensor : DTOs
         {
             public decimal Value { get; set; }
         }

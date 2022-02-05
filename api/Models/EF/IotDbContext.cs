@@ -24,8 +24,8 @@ namespace Homo.IotApi
 
         public virtual DbSet<OauthClientRedirectUri> OauthClientRedirectUri { get; set; }
 
-        public virtual DbSet<DevicePinState> DevicePinState { get; set; }
-        public virtual DbSet<DevicePinData> DevicePinData { get; set; }
+        public virtual DbSet<DevicePinSwitch> DevicePinSwitch { get; set; }
+        public virtual DbSet<DevicePinSensor> DevicePinSensor { get; set; }
         public virtual DbSet<Trigger> Trigger { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
@@ -52,7 +52,7 @@ namespace Homo.IotApi
                 entity.HasOne(p => p.Zone).WithMany().HasForeignKey(p => p.ZoneId);
             });
 
-            modelBuilder.Entity<DevicePinState>(entity =>
+            modelBuilder.Entity<DevicePinSwitch>(entity =>
             {
                 entity.HasIndex(p => new { p.Pin });
                 entity.HasIndex(p => new { p.Mode });
@@ -61,7 +61,7 @@ namespace Homo.IotApi
                 entity.HasOne(p => p.Device).WithMany().HasForeignKey(p => p.DeviceId);
             });
 
-            modelBuilder.Entity<DevicePinData>(entity =>
+            modelBuilder.Entity<DevicePinSensor>(entity =>
             {
                 entity.HasIndex(p => new { p.Pin });
                 entity.HasIndex(p => new { p.Mode });

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
-    public class DevicePinStateDataservice
+    public class DevicePinSwitchDataservice
     {
-        public static DevicePinState GetOne(IotDbContext dbContext, long? deviceId, byte? mode, string pin)
+        public static DevicePinSwitch GetOne(IotDbContext dbContext, long? deviceId, byte? mode, string pin)
         {
-            return dbContext.DevicePinState
+            return dbContext.DevicePinSwitch
                 .Where(x =>
                     x.DeletedAt == null &&
                     (deviceId == null || x.DeviceId == deviceId) &&
@@ -18,9 +18,9 @@ namespace Homo.IotApi
                 )
                 .FirstOrDefault();
         }
-        public static List<DevicePinState> GetAll(IotDbContext dbContext, long? ownerId, List<long> deviceIds, byte? mode, string pin)
+        public static List<DevicePinSwitch> GetAll(IotDbContext dbContext, long? ownerId, List<long> deviceIds, byte? mode, string pin)
         {
-            return dbContext.DevicePinState
+            return dbContext.DevicePinSwitch
                 .Where(x =>
                     x.DeletedAt == null &&
                     (ownerId == null || x.OwnerId == ownerId) &&
@@ -28,12 +28,12 @@ namespace Homo.IotApi
                     (mode == null || x.Mode == (byte)mode) &&
                     (pin == null || x.Pin == pin)
                 )
-                .ToList<DevicePinState>();
+                .ToList<DevicePinSwitch>();
         }
 
-        public static DevicePinState Create(IotDbContext dbContext, long ownerId, long deviceId, DTOs.DevicePinState dto)
+        public static DevicePinSwitch Create(IotDbContext dbContext, long ownerId, long deviceId, DTOs.DevicePinSwitch dto)
         {
-            DevicePinState record = new DevicePinState();
+            DevicePinSwitch record = new DevicePinSwitch();
             foreach (var propOfDTO in dto.GetType().GetProperties())
             {
                 var value = propOfDTO.GetValue(dto);
@@ -43,7 +43,7 @@ namespace Homo.IotApi
             record.CreatedAt = DateTime.Now;
             record.OwnerId = ownerId;
             record.DeviceId = deviceId;
-            dbContext.DevicePinState.Add(record);
+            dbContext.DevicePinSwitch.Add(record);
             dbContext.SaveChanges();
             return record;
         }
@@ -52,16 +52,16 @@ namespace Homo.IotApi
         {
             foreach (long id in ids)
             {
-                DevicePinState record = new DevicePinState { Id = id, OwnerId = ownerId };
-                dbContext.Attach<DevicePinState>(record);
+                DevicePinSwitch record = new DevicePinSwitch { Id = id, OwnerId = ownerId };
+                dbContext.Attach<DevicePinSwitch>(record);
                 record.DeletedAt = DateTime.Now;
             }
             dbContext.SaveChanges();
         }
 
-        public static void Update(IotDbContext dbContext, long ownerId, long id, DTOs.DevicePinState dto)
+        public static void Update(IotDbContext dbContext, long ownerId, long id, DTOs.DevicePinSwitch dto)
         {
-            DevicePinState record = dbContext.DevicePinState.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
+            DevicePinSwitch record = dbContext.DevicePinSwitch.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             foreach (var propOfDTO in dto.GetType().GetProperties())
             {
                 var value = propOfDTO.GetValue(dto);
@@ -73,7 +73,7 @@ namespace Homo.IotApi
         }
         public static void UpdateValueByDeviceId(IotDbContext dbContext, long ownerId, long deviceId, string pin, decimal value)
         {
-            DevicePinState record = dbContext.DevicePinState.Where(x =>
+            DevicePinSwitch record = dbContext.DevicePinSwitch.Where(x =>
                 x.DeviceId == deviceId
                 && x.OwnerId == ownerId
                 && x.Pin == pin
@@ -86,7 +86,7 @@ namespace Homo.IotApi
 
         public static void Delete(IotDbContext dbContext, long ownerId, long id)
         {
-            DevicePinState record = dbContext.DevicePinState.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
+            DevicePinSwitch record = dbContext.DevicePinSwitch.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             record.DeletedAt = DateTime.Now;
             dbContext.SaveChanges();
         }

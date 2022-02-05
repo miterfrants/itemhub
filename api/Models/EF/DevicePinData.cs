@@ -3,7 +3,7 @@ using Homo.Api;
 
 namespace Homo.IotApi
 {
-    public partial class DevicePinData
+    public partial class DevicePinSensor
     {
         public long Id { get; set; }
         public DateTime CreatedAt { get; set; }
