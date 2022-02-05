@@ -1,17 +1,13 @@
-interface SendRequestWithTokenParams {
-    apiPath: string;
-    token: string;
-    method: string;
-    payload?: any;
-    callbackFunc?: () => null;
-}
-
 interface SendRequestParams {
     apiPath: string;
     method: string;
-    payload: any;
     headers?: object;
+    payload?: any;
     callbackFunc?: (result: any) => null;
+}
+
+interface SendRequestWithTokenParams extends SendRequestParams {
+    token: string;
 }
 
 export const ApiHelper = {
@@ -19,38 +15,38 @@ export const ApiHelper = {
         apiPath,
         token,
         method,
-        payload,
+        headers = {},
+        payload = null,
         callbackFunc,
     }: SendRequestWithTokenParams) => {
         return ApiHelper.SendRequest({
             apiPath,
             method,
+            headers: { Authorization: `Bearer ${token}`, ...headers },
             payload,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
             callbackFunc,
         });
     },
     SendRequest: ({
         apiPath,
         method,
-        payload,
-        headers,
+        headers = {},
+        payload = null,
         callbackFunc,
     }: SendRequestParams) => {
-        const fetchOption = {
-            method: method,
-            headers,
-            body: JSON.stringify(payload),
-        };
+        const fetchOption = payload
+            ? {
+                  method: method,
+                  headers,
+                  body: JSON.stringify(payload),
+              }
+            : {
+                  method: method,
+                  headers,
+              };
+
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve) => {
-            const newOption = {
-                ...fetchOption,
-            };
-            delete newOption.headers;
-
             let result: any;
             let response: Response;
             try {
@@ -82,12 +78,6 @@ export const ApiHelper = {
                     httpStatus: response.status,
                     data: jsonData,
                 };
-                if (fetchOption.method === 'GET') {
-                    const newOption = {
-                        ...fetchOption,
-                    };
-                    delete newOption.headers;
-                }
             } else if (response.status === 200 && isDownloadFile) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
