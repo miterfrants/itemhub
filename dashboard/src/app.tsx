@@ -1,4 +1,5 @@
-import './app.css';
+import 'bootstrap/scss/bootstrap.scss';
+import './app.scss';
 import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthDataservice } from './dataservices/auth.dataservice';
