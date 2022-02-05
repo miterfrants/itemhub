@@ -4,6 +4,7 @@
     "scripts": {
         "format": "prettier --write .",
         "lint": "eslint . --ext ts --ext tsx",
+        "type-check": "tsc -w",
         "dev": "vite --mode dev",
         "build": "tsc && vite build --mode prod",
         "preview": "vite preview"
