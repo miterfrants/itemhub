@@ -24,13 +24,12 @@ export const AuthDataservice = {
 
         return response.data as { token: string };
     },
-    IsSigned: async (token: string) => {
+    IsSigned: async () => {
         const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
             END_POINT.IS_SIGNED
         }`;
         return ApiHelper.SendRequestWithToken({
             apiPath,
-            token,
             method: 'POST',
         });
     },

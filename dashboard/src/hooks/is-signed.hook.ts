@@ -7,8 +7,10 @@ export function useIsSigned() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    if (error && import.meta.env.VITE_ENV === 'prod') {
-        window.location.href = '/';
+    if (error) {
+        import.meta.env.VITE_ENV === 'prod'
+            ? (window.location.href = '/')
+            : alert(error);
     }
 
     useEffect(() => {
@@ -16,7 +18,7 @@ export function useIsSigned() {
             setLoading(true);
             const token = CookieHelper.GetCookie('token');
             if (token) {
-                const response: any = await AuthDataservice.IsSigned(token);
+                const response: any = await AuthDataservice.IsSigned();
                 if (response.status === 'OK') {
                     setData(response);
                 } else {

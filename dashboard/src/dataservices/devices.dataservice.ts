@@ -3,14 +3,13 @@ import { ApiHelper } from '@/helpers/api.helper';
 import { Device } from '@/types/devices.type';
 
 export const DevicesDataservice = {
-    GetList: async (token: string, page: number, limit: number) => {
+    GetList: async ({ page, limit }: { page: number; limit: number }) => {
         const apiPath = `${import.meta.env.VITE_API_ENDPOINT}${
             END_POINT.DEVICES
         }?page=${page}&limit=${limit}`;
 
         const response: any = await ApiHelper.SendRequestWithToken({
             apiPath,
-            token,
             method: 'GET',
         });
 
@@ -19,13 +18,12 @@ export const DevicesDataservice = {
             rowNums: number;
         };
     },
-    GetOne: async (token: string, id: number) => {
+    GetOne: async ({ id }: { id: number }) => {
         let apiPath = `${import.meta.env.VITE_API_ENDPOINT}${END_POINT.DEVICE}`;
         apiPath = apiPath.replace(':id', id.toString());
 
         const response: any = await ApiHelper.SendRequestWithToken({
             apiPath,
-            token,
             method: 'GET',
         });
         return response.data;

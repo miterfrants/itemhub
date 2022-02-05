@@ -1,13 +1,10 @@
+import { CookieHelper } from '@/helpers/cookie.helper';
 interface SendRequestParams {
     apiPath: string;
     method: string;
     headers?: { [key: string]: any };
     payload?: any;
     callbackFunc?: (result: any) => null;
-}
-
-interface SendRequestWithTokenParams extends SendRequestParams {
-    token: string;
 }
 
 interface FetchParams {
@@ -22,19 +19,26 @@ interface FetchParams {
 export const ApiHelper = {
     SendRequestWithToken: ({
         apiPath,
-        token,
         method,
         headers = {},
         payload = null,
         callbackFunc,
-    }: SendRequestWithTokenParams) => {
-        return ApiHelper.SendRequest({
-            apiPath,
-            method,
-            headers: { Authorization: `Bearer ${token}`, ...headers },
-            payload,
-            callbackFunc,
-        });
+    }: SendRequestParams) => {
+        const token = CookieHelper.GetCookie('token');
+
+        if (token) {
+            return ApiHelper.SendRequest({
+                apiPath,
+                method,
+                headers: { Authorization: `Bearer ${token}`, ...headers },
+                payload,
+                callbackFunc,
+            });
+        } else {
+            import.meta.env.VITE_ENV === 'prod'
+                ? (window.location.href = '/')
+                : alert('empty token');
+        }
     },
     SendRequest: ({
         apiPath,

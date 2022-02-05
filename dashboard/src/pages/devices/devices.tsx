@@ -23,11 +23,7 @@ const Devices = () => {
 
         if (devices === null && token) {
             (async () => {
-                const data = await DevicesDataservice.GetList(
-                    token,
-                    page,
-                    limit
-                );
+                const data = await DevicesDataservice.GetList({ page, limit });
                 dispatch(devicesActions.addDevices(data.devices));
             })();
         }
