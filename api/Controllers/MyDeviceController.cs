@@ -112,7 +112,6 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             DeviceDataservice.Switch(_dbContext, ownerId, id, true);
-            TimeoutOfflineDeviceService.StartAsync(ownerId, id, _dbConnectionString);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
