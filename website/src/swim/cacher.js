@@ -70,10 +70,15 @@ import signUpFinishHTML from '../template/sign-up-finish.html';
 
 import signUpHTML from '../template/sign-up.html';
 
+import transactionHTML from '../template/transaction.html';
+
+import twoFactorAuthHTML from '../template/two-factor-auth.html';
+
 import verifyEmailHTML from '../template/verify-email.html';
 
 import '../css/main.css';
 import '../css/auth.css';
+import '../css/checkout.css';
 import '../css/common.css';
 import '../css/cooperation.css';
 import '../css/master.css';
@@ -82,6 +87,7 @@ import '../css/pricing.css';
 import '../css/sign-in.css';
 import '../css/zindex.css';
 import '../css/auth.scss';
+import '../css/checkout.scss';
 import '../css/common.scss';
 import '../css/cooperation.scss';
 import '../css/main.scss';
@@ -131,8 +137,11 @@ export const Cacher = {
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-in.html`] = signInHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-up-finish.html`] = signUpFinishHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-up.html`] = signUpHTML;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/transaction.html`] = transactionHTML;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/two-factor-auth.html`] = twoFactorAuthHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/verify-email.html`] = verifyEmailHTML;
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/auth.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/checkout.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/common.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/cooperation.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/main.css`);
@@ -142,6 +151,7 @@ export const Cacher = {
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/sign-in.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/zindex.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/auth.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/checkout.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/common.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/cooperation.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/main.css`);
