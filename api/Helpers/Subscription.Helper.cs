@@ -92,7 +92,7 @@ namespace Homo.IotApi
             return "";
         }
 
-        public static int GetStorageSavingSeconds(PRICING_PLAN pricingPlan)
+        public static int GetStorageSavingSeconds(PRICING_PLAN? pricingPlan)
         {
             if (pricingPlan == PRICING_PLAN.BASIC)
             {

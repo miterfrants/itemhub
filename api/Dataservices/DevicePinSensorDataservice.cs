@@ -13,7 +13,7 @@ namespace Homo.IotApi
             List<DevicePinSensor> data = dbContext.DevicePinSensor
                 .Where(x =>
                     x.DeletedAt == null
-                    && (latestItemId == null || x.Id <= latestItemId)
+                    && (latestItemId == null || x.Id < latestItemId)
                 )
                 .OrderByDescending(x => x.Id)
                 .Skip((page - 1) * limit)
@@ -21,6 +21,11 @@ namespace Homo.IotApi
                 .ToList();
 
             long? latestId = data.LastOrDefault()?.Id;
+
+            if (data == null)
+            {
+                return null;
+            }
 
             List<long> shouldBeDeletedIds = data.GroupJoin(dbContext.Subscription, x => x.OwnerId, y => y.OwnerId, (x, y) => new
             {
@@ -32,7 +37,7 @@ namespace Homo.IotApi
             {
                 x.Id,
                 x.CreatedAt,
-                SavingSeconds = SubscriptionHelper.GetStorageSavingSeconds((PRICING_PLAN)x.PricingPlan)
+                SavingSeconds = SubscriptionHelper.GetStorageSavingSeconds(x == null ? null : (PRICING_PLAN)x.PricingPlan)
             })
             .Where(x => x.CreatedAt.AddSeconds(x.SavingSeconds) < DateTime.Now)
             .Select(x => x.Id)
