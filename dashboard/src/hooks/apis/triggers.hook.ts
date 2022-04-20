@@ -219,3 +219,31 @@ export const useDeleteTriggersApi = (ids: number[]) => {
         deleteTriggersApi: fetchApi,
     };
 };
+
+export const useDeleteTriggerApi = (id: number) => {
+    const dispatch = useAppDispatch();
+    const dispatchDeleteTrigger = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(triggersActions.deleteTrigger(id));
+            }
+        },
+        [id, dispatch]
+    );
+
+    let apiPath = `${API_URL}${END_POINT.TRIGGER}`;
+    apiPath = apiPath.replace(':id', id.toString());
+
+    const { isLoading, error, fetchApi } = useFetchApi<ResponseOK>({
+        apiPath,
+        method: HTTP_METHOD.DELETE,
+        initialData: null,
+        callbackFunc: dispatchDeleteTrigger,
+    });
+
+    return {
+        isDeletingTriggers: isLoading,
+        deleteTriggersError: error,
+        deleteTriggersApi: fetchApi,
+    };
+};
