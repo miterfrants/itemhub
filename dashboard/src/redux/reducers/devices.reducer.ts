@@ -5,11 +5,13 @@ import { DeviceItem } from '@/types/devices.type';
 type DeviceState = {
     devices: DeviceItem[] | null;
     rowNum: number;
+    countOfAllDevices: number;
 };
 
 const initialState: DeviceState = {
     devices: null,
     rowNum: 0,
+    countOfAllDevices: 0,
 };
 
 export const devicesSlice = createSlice({
@@ -19,6 +21,10 @@ export const devicesSlice = createSlice({
         refresh: (state, action: PayloadAction<DeviceState>) => {
             return {
                 ...action.payload,
+                countOfAllDevices:
+                    state.countOfAllDevices === 0
+                        ? action.payload.rowNum
+                        : state.countOfAllDevices,
             };
         },
         append: (state, action: PayloadAction<DeviceItem>) => {
@@ -61,6 +67,8 @@ export const devicesSlice = createSlice({
             if (devices === null) {
                 throw new Error('Can not updateDevice when devices is null.');
             }
+
+            // todo: reduce countOfAllDevices in this sitituation
 
             return {
                 ...state,

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import useClickOutsideElement from '@/hooks/clickOutsideElement.hook';
+import debounce from 'lodash.debounce';
 
 const AutocompletedSearch = ({
     currentValue,
@@ -16,22 +17,30 @@ const AutocompletedSearch = ({
     );
     const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
-    const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const currentValue = e.target.value;
+    const inputRef = useRef<HTMLInputElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    const handleChangeValue = (currentValue: string) => {
         const newFilteredOptions = allSuggestions.filter(
             (suggestion) =>
-                suggestion.toLowerCase().indexOf(currentValue.toLowerCase()) >
-                -1
+                suggestion
+                    .toLowerCase()
+                    .indexOf(currentValue.toString().toLowerCase()) > -1
         );
         setActiveSuggestionIndex(0);
         setFilteredSuggestions(newFilteredOptions);
         setIsShowSuggestions(true);
         updateCurrentValue(currentValue);
     };
+    const handleChangeValueWithDebounce = debounce(handleChangeValue, 300);
 
     const handleClickSuggestion = (e: React.MouseEvent<HTMLElement>) => {
         const target = e.target as HTMLElement;
-        updateCurrentValue(target.innerText);
+        const currentValue = target.innerText;
+        if (inputRef.current) {
+            inputRef.current.value = currentValue;
+        }
+        updateCurrentValue(currentValue);
         setActiveSuggestionIndex(0);
         setFilteredSuggestions([]);
         setIsShowSuggestions(false);
@@ -39,7 +48,11 @@ const AutocompletedSearch = ({
 
     const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            updateCurrentValue(filteredSuggestions[activeSuggestionIndex]);
+            const currentValue = filteredSuggestions[activeSuggestionIndex];
+            if (inputRef.current) {
+                inputRef.current.value = currentValue;
+            }
+            updateCurrentValue(currentValue);
             setActiveSuggestionIndex(0);
             setIsShowSuggestions(false);
         } else if (e.key === 'ArrowUp') {
@@ -53,22 +66,26 @@ const AutocompletedSearch = ({
         }
     };
 
-    const autocompletedSearchRef = useRef<HTMLDivElement>(null);
     const handleClickOuside = () => {
         setIsShowSuggestions(false);
     };
     useClickOutsideElement({
-        elementRef: autocompletedSearchRef,
+        elementRef: wrapperRef,
         handleClick: handleClickOuside,
     });
 
     return (
-        <div ref={autocompletedSearchRef}>
+        <div ref={wrapperRef}>
             <input
                 className="form-control"
-                value={currentValue}
-                onFocus={handleChangeValue}
-                onChange={handleChangeValue}
+                ref={inputRef}
+                defaultValue={currentValue}
+                onFocus={() =>
+                    handleChangeValueWithDebounce(inputRef.current?.value || '')
+                }
+                onChange={() =>
+                    handleChangeValueWithDebounce(inputRef.current?.value || '')
+                }
                 onKeyUp={handleKeyUp}
             />
             {isShowSuggestions ? (
