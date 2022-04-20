@@ -58,11 +58,19 @@ namespace Homo.IotApi
         }
 
         [HttpDelete]
+        [Route("{id}")]
+        public ActionResult<dynamic> delete([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            TriggerDataservice.Delete(_dbContext, ownerId, id);
+            return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [HttpDelete]
         public ActionResult<dynamic> batchDelete([FromBody] List<long> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             TriggerDataservice.BatchDelete(_dbContext, extraPayload.Id, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
-
     }
 }
