@@ -45,5 +45,10 @@
         "sass": "^1.45.0",
         "typescript": "^4.5.5",
         "vite": "git+ssh://git@github.com/miterfrants/npm-vite.git"
+    },
+    "resolutions": {
+        "//": "Ref: https://stackoverflow.com/questions/71791347/npm-package-cannot-be-used-as-a-jsx-component-type-errors/71828113#71828113",
+        "@types/react": "17.0.39",
+        "@types/react-dom": "17.0.10"
     }
 }
