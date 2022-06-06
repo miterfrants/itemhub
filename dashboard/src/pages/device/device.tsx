@@ -194,14 +194,6 @@ const Device = () => {
                             </div>
                         </div>
                         <div className="col-12 col-lg-6 d-flex p-0 item">
-                            <div className="d-flex fs-5 text-black text-opacity-45 bg-black bg-opacity-5 item-title py-2 px-25">
-                                Device Id
-                            </div>
-                            <div className="text-break text-black text-opacity-65 py-2 px-25">
-                                {device.deviceId}
-                            </div>
-                        </div>
-                        <div className="col-12 col-lg-6 d-flex p-0 item">
                             <div className="d-flex fs-5 bg-black bg-opacity-5 text-black text-opacity-45 item-title py-2 px-25">
                                 狀態
                             </div>
