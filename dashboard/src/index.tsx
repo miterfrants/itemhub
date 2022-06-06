@@ -25,6 +25,7 @@ ReactDOM.render(
                     </Provider>
                 }
             >
+                <Route path="/" element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="dashboard/devices" element={<Devices />} />
                 <Route path="dashboard/devices/:id" element={<Device />} />
