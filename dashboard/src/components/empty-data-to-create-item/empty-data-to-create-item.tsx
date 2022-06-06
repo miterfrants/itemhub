@@ -7,6 +7,7 @@ const EmptyDataToCreateItem = ({ itemName }: { itemName: string }) => {
     const jumpToCreatePage = () => {
         navigate('create');
     };
+    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
 
     return (
         <div className="d-block p-6 text-center">
@@ -19,6 +20,16 @@ const EmptyDataToCreateItem = ({ itemName }: { itemName: string }) => {
                 <img className="icon pe-2" src={plusIcon} />
                 <div>{`新增${itemName}`}</div>
             </button>
+            <div className="text-center">
+                <a
+                    className="fs-5"
+                    target="_blank"
+                    href={howToUseLink}
+                    rel="noreferrer"
+                >
+                    如何使用?
+                </a>
+            </div>
         </div>
     );
 };
