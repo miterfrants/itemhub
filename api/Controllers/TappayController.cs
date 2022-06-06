@@ -40,7 +40,6 @@ namespace Homo.IotApi
         [HttpPost]
         public ActionResult<dynamic> updateTransactionByTappay([FromBody] DTOs.TapPayNotify originalDto)
         {
-            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(originalDto, Newtonsoft.Json.Formatting.Indented)}");
             DTOs.TapPayNotify dto = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.TapPayNotify>(Newtonsoft.Json.JsonConvert.SerializeObject(originalDto));
             ThirdPartyPaymentFlowDataservice.Create(_dbContext, new DTOs.ThirdPartyPaymentFlow()
             {
@@ -60,7 +59,7 @@ namespace Homo.IotApi
                     adminEmail = _adminEmail,
                     hello = _commonLocalizer.Get("hello"),
                     amount = dto.amount,
-                    mailContentGetNewPremiumUser = _commonLocalizer.Get("mailContentGetNewPremiumUser"),
+                    mailContentGetNewPremiumUserDescription = _commonLocalizer.Get("mailContentGetNewPremiumUserDescription"),
                     mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
                 });
 
@@ -78,6 +77,11 @@ namespace Homo.IotApi
             }
 
             TransactionDataservice.UpdateStatus(_dbContext, transaction, newTransactionStatus);
+            Subscription curentSubscription = SubscriptionDataservice.GetCurrnetOne(_dbContext, subscription.OwnerId);
+            if (curentSubscription != null)  // 刪除當期的的訂閱資料, 避免之後自動訂閱的時候重覆訂閱
+            {
+                SubscriptionDataservice.DeleteSubscription(_dbContext, subscription.OwnerId, curentSubscription.Id);
+            }
             SubscriptionDataservice.UpdateStatus(_dbContext, subscription, newTransactionStatus == TRANSACTION_STATUS.PAID ? SUBSCRIPTION_STATUS.PAID : SUBSCRIPTION_STATUS.PENDING);
             return new { status = CUSTOM_RESPONSE.OK };
         }
