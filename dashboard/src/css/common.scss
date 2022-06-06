@@ -66,3 +66,7 @@ a.btn {
 .list:hover {
     background: rgba($primary, 0.04);
 }
+
+.form-data {
+    max-width: $form-data-max-width;
+}

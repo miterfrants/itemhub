@@ -49,7 +49,7 @@ const PageTitle = ({
 }) => {
     return (
         <div className="page-title" data-testid="page-title">
-            <div className="w-100 px-45 pt-45 mb-45">
+            <div className="w-100 px-5 pt-45 mb-45">
                 <div className="flex-fill">
                     {breadcrumbs && <Breadcrumbs breadcrumbs={breadcrumbs} />}
                     <div className="d-flex align-items-start justify-content-between flex-wrap">
