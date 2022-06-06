@@ -458,11 +458,7 @@ const Trigger = () => {
                     <button
                         type="button"
                         className="btn btn-secondary mt-3 me-3"
-                        onClick={() => {
-                            isCreateMode || isReadMode
-                                ? navigate(`/dashboard/triggers`)
-                                : navigate(`/dashboard/triggers/${idFromUrl}`);
-                        }}
+                        onClick={back}
                         disabled={isCreatingTrigger}
                     >
                         返回

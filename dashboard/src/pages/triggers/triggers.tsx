@@ -435,7 +435,7 @@ const Triggers = () => {
                                                     className="col-8 col-lg-2 py-3 py-lg-0 d-flex justify-content-start flex-wrap"
                                                     onClick={(e) => {
                                                         navigate(
-                                                            `/dashboard/triggers/${id}`
+                                                            `/dashboard/triggers/edit/${id}`
                                                         );
                                                     }}
                                                     data-tip="編輯"
