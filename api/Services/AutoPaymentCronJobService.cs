@@ -85,7 +85,7 @@ namespace Homo.IotApi
                 DTOs.TapPayResponse response = null;
                 long transactionId = 0;
 
-                if (!subscriber.IsEarlyBird)
+                if (!subscriber.IsEarlyBird || (subscriber.IsEarlyBird && (PRICING_PLAN)subscription.PricingPlan != PRICING_PLAN.ADVANCE))
                 {
                     var postBody = new
                     {
@@ -129,7 +129,7 @@ namespace Homo.IotApi
                 DateTime endOfMonth = startOfMonth.AddDays(daysInMonth - 1).AddHours(23).AddMinutes(59).AddSeconds(59);
 
                 if (
-                    subscriber.IsEarlyBird ||
+                    subscriber.IsEarlyBird && (PRICING_PLAN)subscription.PricingPlan == PRICING_PLAN.ADVANCE ||
                     (response != null && response.status == DTOs.TAP_PAY_TRANSACTION_STATUS.OK)
                 )
                 {

@@ -53,7 +53,7 @@ namespace Homo.IotApi
                     !x.StopNextSubscribed &&
                     x.EndAt > filterStartAt // 當前時間減一個月確定前一期是否有資料
                     &&
-                    !dbContext.Subscription.Any(y => nextStartAt >= y.StartAt && nextStartAt <= y.EndAt) // 同時沒有當期的資料
+                    !dbContext.Subscription.Any(y => nextStartAt >= y.StartAt && nextStartAt <= y.EndAt && y.Status == SUBSCRIPTION_STATUS.PAID && y.DeletedAt == null && x.OwnerId == y.OwnerId) // 同時沒有當期的資料
                 )
                 .ToList();
         }
@@ -79,6 +79,11 @@ namespace Homo.IotApi
         {
             subscription.Status = status;
             dbContext.SaveChanges();
+        }
+
+        public static void DeleteSubscription(IotDbContext dbContext, long ownerId, long subscriptionId)
+        {
+            dbContext.Subscription.Where(x => x.Id == subscriptionId && x.DeletedAt == null && x.OwnerId == ownerId && x.Status == SUBSCRIPTION_STATUS.PAID).UpdateFromQuery(x => new Subscription() { DeletedAt = DateTime.Now });
         }
     }
 }
