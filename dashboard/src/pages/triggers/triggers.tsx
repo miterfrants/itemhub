@@ -426,21 +426,24 @@ const Triggers = () => {
                                                 <div className="d-block d-lg-none col-4 py-3 bg-black bg-opacity-5 text-black text-opacity-45">
                                                     操作
                                                 </div>
-                                                <div
-                                                    className="col-8 col-lg-2 py-3 py-lg-0 d-flex justify-content-start flex-wrap"
-                                                    onClick={(e) => {
-                                                        navigate(
-                                                            `/dashboard/triggers/edit/${id}`
-                                                        );
-                                                    }}
-                                                    data-tip="編輯"
-                                                >
-                                                    <span
-                                                        className="me-3 mb-3 align-items-start d-flex"
+                                                <div className="col-8 col-lg-2 py-3 py-lg-0 d-flex justify-content-start flex-wrap">
+                                                    <div
+                                                        onClick={(e) => {
+                                                            navigate(
+                                                                `/dashboard/triggers/edit/${id}`
+                                                            );
+                                                        }}
                                                         data-tip="編輯"
                                                     >
-                                                        <img src={pencilIcon} />
-                                                    </span>
+                                                        <span
+                                                            className="me-3 mb-3 align-items-start d-flex"
+                                                            data-tip="編輯"
+                                                        >
+                                                            <img
+                                                                src={pencilIcon}
+                                                            />
+                                                        </span>
+                                                    </div>
                                                     <button
                                                         className="btn mb-3 align-items-start d-flex p-0 bg-transparent shadow-none"
                                                         onClick={(e) => {
