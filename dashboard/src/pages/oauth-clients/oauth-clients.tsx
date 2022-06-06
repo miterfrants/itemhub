@@ -272,10 +272,6 @@ const OauthClients = () => {
                                     <div className="col-8 d-flex align-items-center text-wrap text-break">
                                         <input
                                             type="checkbox"
-                                            onChange={(e) => {
-                                                e.stopPropagation();
-                                                check(id);
-                                            }}
                                             value={id}
                                             className="me-3"
                                             checked={selectedIds.includes(id)}

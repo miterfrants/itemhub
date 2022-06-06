@@ -353,11 +353,6 @@ const Triggers = () => {
                                                     <input
                                                         className="me-3 mt-2"
                                                         type="checkbox"
-                                                        onChange={(e) => {
-                                                            updateSelectedIds(
-                                                                id
-                                                            );
-                                                        }}
                                                         value={id}
                                                         checked={selectedIds.includes(
                                                             id
