@@ -417,7 +417,10 @@ const DevicePinData = () => {
     ];
 
     return (
-        <div className="device-pin-data" data-testid="device-pin-data">
+        <div
+            className="form-data device-pin-data mx-auto"
+            data-testid="device-pin-data"
+        >
             <PageTitle
                 breadcrumbs={breadcrumbs}
                 titleClickCallback={back}

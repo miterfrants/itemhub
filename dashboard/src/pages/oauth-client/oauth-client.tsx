@@ -135,7 +135,10 @@ const OauthClient = () => {
     ];
 
     return (
-        <div className="oauth-client" data-testid="oauth-client">
+        <div
+            className="form-data oauth-client mx-auto"
+            data-testid="oauth-client"
+        >
             <PageTitle
                 title="oAuthClient 詳細內容"
                 breadcrumbs={breadcrumbs}
