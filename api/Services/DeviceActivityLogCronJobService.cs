@@ -51,7 +51,7 @@ namespace Homo.IotApi
             SystemConfig locker = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.CLEAR_DEVICE_ACTIVITY_LOG_LOCKER);
             if (locker.Value != lockerKey)
             {
-                return Task.CompletedTask;
+                return Task.FromResult<dynamic>(true);
             }
 
 
