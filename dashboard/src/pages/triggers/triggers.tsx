@@ -447,6 +447,8 @@ const Triggers = () => {
                                                     <button
                                                         className="btn mb-3 align-items-start d-flex p-0 bg-transparent shadow-none"
                                                         onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            e.preventDefault();
                                                             confirmToDeleteOneTrigger(
                                                                 { id, name }
                                                             );
