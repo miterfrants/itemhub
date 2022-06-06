@@ -21,7 +21,8 @@ sudo docker run -d \
    -v /var/project/itemhub/api/secrets.json:/app/secrets.json \
    -v /var/project/itemhub/api/secrets:/app/secrets \
    -v /var/project/itemhub/api/Localization:/app/Localization \
-   -v /var/project/itemhub/api/static:/app/static \
+   -v /var/project/itemhub/static:/app/static \
+   -v /var/project/itemhub/firmware:/app/firmware \
    itemhub-api
 
 cd ../website

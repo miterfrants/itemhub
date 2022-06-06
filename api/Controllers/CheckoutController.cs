@@ -111,7 +111,6 @@ namespace Homo.IotApi
             };
 
             StringContent stringContent = new StringContent(JsonConvert.SerializeObject(postBody), System.Text.Encoding.UTF8, "application/json");
-            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(postBody,Newtonsoft.Json.Formatting.Indented));
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.Add("x-api-key", _tapPayPartnerKey);
             HttpResponseMessage responseStream = await http.PostAsync(_tapPayEndpoint, stringContent);
@@ -121,7 +120,6 @@ namespace Homo.IotApi
                 result = sr.ReadToEnd();
             }
             DTOs.TapPayResponse response = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.TapPayResponse>(result);
-            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(response,Newtonsoft.Json.Formatting.Indented));
             // create transaction log and remove senstive information 
             var withoutSenstiveInfoResponse = JsonConvert.DeserializeObject<IDictionary<string, dynamic>>(JsonConvert.SerializeObject(response));
             withoutSenstiveInfoResponse.Remove("card_secret");

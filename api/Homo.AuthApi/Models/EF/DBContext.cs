@@ -22,7 +22,7 @@ namespace Homo.AuthApi
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(p => new { p.Email }).IsUnique();
+                entity.HasIndex(p => new { p.Email, p.DeletedAt }).IsUnique();
                 entity.HasIndex(p => new { p.HashPhone });
                 entity.Property(b => b.IsOverSubscriptionPlan)
                     .HasDefaultValueSql("0");

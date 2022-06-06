@@ -59,14 +59,11 @@ export class CheckoutController extends RoutingController {
         const firstName = payload.extra.FirstName;
         const lastName = payload.extra.LastName;
         let name = '';
+        if (lastName !== null && lastName !== undefined) {
+            name = lastName;
+        }
         if (firstName !== null && firstName !== undefined) {
-            name = firstName;
-        }
-        if (lastName !== null && lastName !== undefined) {
-            name += lastName;
-        }
-        if (lastName !== null && lastName !== undefined) {
-            name += lastName;
+            name += firstName;
         }
 
         this.elHTML.querySelector('[data-field=email').value = payload.extra.Email;

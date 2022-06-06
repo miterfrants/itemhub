@@ -57,7 +57,7 @@ const TagsInput = ({
     };
 
     return (
-        <div className="tags-input d-flex flex-wrap my-n2">
+        <div className="tags-input d-flex flex-wrap my-n2 w-100">
             {tags.map((tag) => (
                 <div
                     key={tag.id}
@@ -79,7 +79,7 @@ const TagsInput = ({
             <input
                 ref={inputRef}
                 type="text"
-                className="border-0 outline"
+                className="border-0 outline w-100"
                 onKeyUp={handleKeyboardEvent}
                 onKeyDown={handleKeyboardEvent}
                 placeholder={placeholder}

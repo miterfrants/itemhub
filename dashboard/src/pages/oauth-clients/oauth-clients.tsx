@@ -36,6 +36,8 @@ const OauthClients = () => {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isSelectAll, setIsSelectAll] = useState(false);
     const hasOauthClientsRef = useRef(false);
+    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
+
     const [
         pageTitleSecondaryButtonClassName,
         setPageTitlePrimaryButtonClassName,
@@ -215,6 +217,14 @@ const OauthClients = () => {
                                 <img className="icon pe-2" src={plusIcon} />
                                 <div className="">新增 oAuthClient</div>
                             </button>
+                            <a
+                                href={howToUseLink}
+                                target="_blank"
+                                className="text-end fs-5"
+                                rel="noreferrer"
+                            >
+                                如何使用?
+                            </a>
                         </div>
                         <div
                             className={`${
@@ -223,6 +233,16 @@ const OauthClients = () => {
                                     : 'd-none'
                             }`}
                         >
+                            <div className="text-end">
+                                <a
+                                    href={howToUseLink}
+                                    target="_blank"
+                                    className="fs-5"
+                                    rel="noreferrer"
+                                >
+                                    如何使用?
+                                </a>
+                            </div>
                             <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 mb-0 d-none d-lg-flex">
                                 <label role="button" className="col-8">
                                     <div className="d-flex align-items-center">
@@ -252,10 +272,6 @@ const OauthClients = () => {
                                     <div className="col-8 d-flex align-items-center text-wrap text-break">
                                         <input
                                             type="checkbox"
-                                            onChange={(e) => {
-                                                e.stopPropagation();
-                                                check(id);
-                                            }}
                                             value={id}
                                             className="me-3"
                                             checked={selectedIds.includes(id)}

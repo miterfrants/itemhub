@@ -41,6 +41,7 @@ const Devices = () => {
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
+    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
 
     const navigate = useNavigate();
 
@@ -163,6 +164,16 @@ const Devices = () => {
                             </div>
                         ) : (
                             <div className="mt-3 mt-lg-45">
+                                <div className="text-end">
+                                    <a
+                                        className="fs-5"
+                                        target="_blank"
+                                        href={howToUseLink}
+                                        rel="noreferrer"
+                                    >
+                                        如何使用?
+                                    </a>
+                                </div>
                                 <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
                                     <div className="col-3">裝置名稱 / ID</div>
                                     <div className="col-2">狀態</div>

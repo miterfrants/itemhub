@@ -16,10 +16,9 @@ import {
     useUpdateTriggerApi,
 } from '@/hooks/apis/triggers.hook';
 import DeviceAndPinInputs from '@/components/inputs/device-and-pin-input/device-and-pin-input';
-import Breadcrumbs from '@/components/breadcrumbs/breadcrumbs';
-import leftArrowIcon from '@/assets/images/left-arrow.svg';
 import { useDispatch } from 'react-redux';
 import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
+import PageTitle from '@/components/page-title/page-title';
 
 const Trigger = () => {
     const navigate = useNavigate();
@@ -173,6 +172,10 @@ const Trigger = () => {
             },
         });
 
+    const back = () => {
+        navigate(`/dashboard/triggers`);
+    };
+
     useEffect(() => {
         getAllDevicesApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -234,17 +237,15 @@ const Trigger = () => {
     }, [updateTriggerResponse]);
 
     return (
-        <div className="trigger px-3 px-lg-0 mx-auto mt-4 mt-lg-4">
-            <Breadcrumbs breadcrumbs={breadcrumbs} />
-            <h3
-                className="title d-flex align-item-center mb-3 mb-lg-4"
-                onClick={() => navigate('/dashboard/triggers')}
-            >
-                <img className="me-2 me-lg-3" src={leftArrowIcon} alt="Back" />
-                {isCreateMode ? '新增觸發' : '編輯觸發'}
-            </h3>
-            <form className="card m-0">
-                <div className="mb-3">
+        <div className="form-data trigger mx-auto">
+            <PageTitle
+                breadcrumbs={breadcrumbs}
+                titleClickCallback={back}
+                titleBackIconVisible
+                title={isCreateMode ? '新增觸發' : '編輯觸發'}
+            />
+            <div className="card">
+                <div className="mb-4">
                     <label className="form-label" htmlFor="trigger-name">
                         觸發名稱
                     </label>
@@ -457,11 +458,7 @@ const Trigger = () => {
                     <button
                         type="button"
                         className="btn btn-secondary mt-3 me-3"
-                        onClick={() => {
-                            isCreateMode || isReadMode
-                                ? navigate(`/dashboard/triggers`)
-                                : navigate(`/dashboard/triggers/${idFromUrl}`);
-                        }}
+                        onClick={back}
                         disabled={isCreatingTrigger}
                     >
                         返回
@@ -498,7 +495,7 @@ const Trigger = () => {
                         </button>
                     )}
                 </div>
-            </form>
+            </div>
         </div>
     );
 };
