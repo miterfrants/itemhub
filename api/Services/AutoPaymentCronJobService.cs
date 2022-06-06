@@ -129,7 +129,7 @@ namespace Homo.IotApi
                 DateTime endOfMonth = startOfMonth.AddDays(daysInMonth - 1).AddHours(23).AddMinutes(59).AddSeconds(59);
 
                 if (
-                    subscriber.IsEarlyBird && (PRICING_PLAN)subscription.PricingPlan == PRICING_PLAN.ADVANCE ||
+                    (subscriber.IsEarlyBird && (PRICING_PLAN)subscription.PricingPlan == PRICING_PLAN.ADVANCE) ||
                     (response != null && response.status == DTOs.TAP_PAY_TRANSACTION_STATUS.OK)
                 )
                 {
