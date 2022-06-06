@@ -478,69 +478,104 @@ const DevicePinData = () => {
                             </select>
                         </div>
                         {!isCreateMode && (
-                            <>
-                                <div className="mb-4">
-                                    <label>選擇 Pin</label>
-                                    {!isValidData.selectedPins && (
-                                        <div className="text-danger fs-5">
-                                            請點選並設定至少一個 Pin
-                                        </div>
-                                    )}
+                            <div className="mb-4">
+                                <label>選擇 Pin</label>
+                                {!isValidData.selectedPins && (
+                                    <div className="text-danger fs-5">
+                                        請點選並設定至少一個 Pin
+                                    </div>
+                                )}
 
-                                    <div className="d-flex flex-wrap mt-2">
-                                        {microcontrollerItem[0]?.pins.map(
-                                            (pin, index) => {
-                                                return (
-                                                    <div
-                                                        className={`${
-                                                            selectedPins
-                                                                ?.map(
-                                                                    (pins) => {
-                                                                        return pins.pin;
-                                                                    }
-                                                                )
-                                                                .includes(
+                                <div className="d-flex flex-wrap mt-2">
+                                    {microcontrollerItem[0]?.pins.map(
+                                        (pin, index) => {
+                                            return (
+                                                <div
+                                                    className={`${
+                                                        selectedPins
+                                                            ?.map((pins) => {
+                                                                return pins.pin;
+                                                            })
+                                                            .includes(pin.name)
+                                                            ? 'selected'
+                                                            : ''
+                                                    } position-relative pin p-2 m-1 mb-4`}
+                                                    role="button"
+                                                    key={index}
+                                                >
+                                                    <div className="text-center pin-selector">
+                                                        {selectedPins?.filter(
+                                                            (pins) => {
+                                                                return (
+                                                                    pins.pin ===
                                                                     pin.name
-                                                                )
-                                                                ? 'selected'
-                                                                : ''
-                                                        } position-relative pin p-2 m-1 mb-4`}
-                                                        role="button"
-                                                        key={index}
+                                                                );
+                                                            }
+                                                        )[0]?.mode ===
+                                                        isSwitch ? (
+                                                            <div>開關</div>
+                                                        ) : (
+                                                            <div>感應器</div>
+                                                        )}
+                                                    </div>
+                                                    <div
+                                                        className="text-center rounded-circle bg-black bg-opacity-5 border-black border-opacity-10 pin-text"
+                                                        data-tip={getFullPinName(
+                                                            pin.name
+                                                        )}
                                                     >
-                                                        <div className="text-center pin-selector">
-                                                            {selectedPins?.filter(
+                                                        {getShortPinName(
+                                                            pin.name
+                                                        )}
+                                                    </div>
+                                                    <ReactTooltip
+                                                        effect="solid"
+                                                        place="bottom"
+                                                    />
+                                                    <div
+                                                        className={`rounded-2 shadow-lg overflow-hidden bg-white pin-option ${
+                                                            selectedPins?.find(
                                                                 (pins) => {
                                                                     return (
                                                                         pins.pin ===
                                                                         pin.name
                                                                     );
                                                                 }
-                                                            )[0]?.mode ===
-                                                            isSwitch ? (
-                                                                <div>開關</div>
-                                                            ) : (
-                                                                <div>
-                                                                    感應器
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                            )
+                                                                ? 'pin-option-4'
+                                                                : 'pin-option-2'
+                                                        }`}
+                                                    >
                                                         <div
-                                                            className="text-center rounded-circle bg-black bg-opacity-5 border-black border-opacity-10 pin-text"
-                                                            data-tip={getFullPinName(
-                                                                pin.name
-                                                            )}
+                                                            className={`lh-1 p-25`}
+                                                            role="button"
+                                                            onClick={() => {
+                                                                selectPins(
+                                                                    pin.name,
+                                                                    isSwitch,
+                                                                    pin.name,
+                                                                    0
+                                                                );
+                                                            }}
                                                         >
-                                                            {getShortPinName(
-                                                                pin.name
-                                                            )}
+                                                            設為開關
                                                         </div>
-                                                        <ReactTooltip
-                                                            effect="solid"
-                                                            place="bottom"
-                                                        />
                                                         <div
-                                                            className={`rounded-2 shadow-lg overflow-hidden bg-white pin-option ${
+                                                            className="lh-1 p-25"
+                                                            role="button"
+                                                            onClick={() => {
+                                                                selectPins(
+                                                                    pin.name,
+                                                                    isSensor,
+                                                                    pin.name,
+                                                                    null
+                                                                );
+                                                            }}
+                                                        >
+                                                            設為感應器
+                                                        </div>
+                                                        <div
+                                                            className={`lh-1 p-25 ${
                                                                 selectedPins?.find(
                                                                     (pins) => {
                                                                         return (
@@ -549,108 +584,61 @@ const DevicePinData = () => {
                                                                         );
                                                                     }
                                                                 )
-                                                                    ? 'pin-option-4'
-                                                                    : 'pin-option-2'
+                                                                    ? ''
+                                                                    : 'd-none'
                                                             }`}
+                                                            onClick={() => {
+                                                                editPinName(
+                                                                    pin.name
+                                                                );
+                                                            }}
                                                         >
-                                                            <div
-                                                                className={`lh-1 p-25`}
-                                                                role="button"
-                                                                onClick={() => {
-                                                                    selectPins(
-                                                                        pin.name,
-                                                                        isSwitch,
-                                                                        pin.name,
-                                                                        0
-                                                                    );
-                                                                }}
-                                                            >
-                                                                設為開關
-                                                            </div>
-                                                            <div
-                                                                className="lh-1 p-25"
-                                                                role="button"
-                                                                onClick={() => {
-                                                                    selectPins(
-                                                                        pin.name,
-                                                                        isSensor,
-                                                                        pin.name,
-                                                                        null
-                                                                    );
-                                                                }}
-                                                            >
-                                                                設為感應器
-                                                            </div>
-                                                            <div
-                                                                className={`lh-1 p-25 ${
-                                                                    selectedPins?.find(
-                                                                        (
-                                                                            pins
-                                                                        ) => {
-                                                                            return (
-                                                                                pins.pin ===
-                                                                                pin.name
-                                                                            );
-                                                                        }
-                                                                    )
-                                                                        ? ''
-                                                                        : 'd-none'
-                                                                }`}
-                                                                onClick={() => {
-                                                                    editPinName(
-                                                                        pin.name
-                                                                    );
-                                                                }}
-                                                            >
-                                                                重新命名
-                                                            </div>
-                                                            <div
-                                                                className={`lh-1 p-25 ${
-                                                                    selectedPins?.find(
-                                                                        (
-                                                                            pins
-                                                                        ) => {
-                                                                            return (
-                                                                                pins.pin ===
-                                                                                pin.name
-                                                                            );
-                                                                        }
-                                                                    )
-                                                                        ? ''
-                                                                        : 'd-none'
-                                                                }`}
-                                                                onClick={() => {
-                                                                    setSelectedPins(
-                                                                        selectedPins
-                                                                            ? selectedPins.filter(
-                                                                                  (
-                                                                                      item
-                                                                                  ) =>
-                                                                                      item.pin !==
-                                                                                      pin.name
-                                                                              )
-                                                                            : []
-                                                                    );
-                                                                }}
-                                                            >
-                                                                取消設定
-                                                            </div>
+                                                            重新命名
+                                                        </div>
+                                                        <div
+                                                            className={`lh-1 p-25 ${
+                                                                selectedPins?.find(
+                                                                    (pins) => {
+                                                                        return (
+                                                                            pins.pin ===
+                                                                            pin.name
+                                                                        );
+                                                                    }
+                                                                )
+                                                                    ? ''
+                                                                    : 'd-none'
+                                                            }`}
+                                                            onClick={() => {
+                                                                setSelectedPins(
+                                                                    selectedPins
+                                                                        ? selectedPins.filter(
+                                                                              (
+                                                                                  item
+                                                                              ) =>
+                                                                                  item.pin !==
+                                                                                  pin.name
+                                                                          )
+                                                                        : []
+                                                                );
+                                                            }}
+                                                        >
+                                                            取消設定
                                                         </div>
                                                     </div>
-                                                );
-                                            }
-                                        )}
-                                    </div>
+                                                </div>
+                                            );
+                                        }
+                                    )}
                                 </div>
-                                <div className="mb-4 text-center">
-                                    <img
-                                        className="w-100 microcontroller-img"
-                                        src={microcontrollerImg}
-                                        alt=""
-                                    />
-                                </div>
-                            </>
+                            </div>
                         )}
+                        <div className="mb-4 text-center">
+                            <img
+                                className="w-100 microcontroller-img"
+                                src={microcontrollerImg}
+                                alt=""
+                            />
+                        </div>
                         <div className="d-flex justify-content-end mt-5">
                             <button
                                 className="btn btn-secondary me-3"
