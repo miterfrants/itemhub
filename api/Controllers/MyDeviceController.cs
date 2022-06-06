@@ -132,7 +132,7 @@ namespace Homo.IotApi
         )]
         [HttpGet]
         [Route("by-device-id/{deviceId}")]
-        public ActionResult<dynamic> getOneByDeviceId([FromRoute] string deviceId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> getOneByDeviceId([FromRoute] int deviceId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
             Device record = DeviceDataservice.GetOneByDeviceId(_dbContext, ownerId, deviceId);

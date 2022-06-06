@@ -30,7 +30,6 @@ namespace Homo.AuthApi
                     .HasDefaultValueSql("0");
                 entity.Property(b => b.IsEarlyBird)
                     .HasDefaultValueSql("0");
-
             });
 
             modelBuilder.Entity<VerifyCode>(entity =>

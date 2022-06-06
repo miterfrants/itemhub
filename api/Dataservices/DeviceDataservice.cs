@@ -68,11 +68,11 @@ namespace Homo.IotApi
             );
         }
 
-        public static Device GetOneByDeviceId(IotDbContext dbContext, long ownerId, string deviceId)
+        public static Device GetOneByDeviceId(IotDbContext dbContext, long ownerId, long deviceId)
         {
             return dbContext.Device.FirstOrDefault(x =>
                 x.DeletedAt == null
-                && x.DeviceId == deviceId
+                && x.Id == deviceId
                 && x.OwnerId == ownerId
             );
         }
