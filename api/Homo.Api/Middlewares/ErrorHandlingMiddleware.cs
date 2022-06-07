@@ -122,10 +122,14 @@ namespace Homo.Api
 
 
                 string body = "";
-                using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
+                if (reqBody != null)
                 {
-                    body = await reader.ReadToEndAsync();
-                    scope.SetExtra("request-body", body);
+                    using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
+                    {
+                        body = await reader.ReadToEndAsync();
+                        scope.SetExtra("request-body", body);
+                    }
+
                 }
 
                 if (queryString != null)
@@ -133,10 +137,7 @@ namespace Homo.Api
                     scope.SetExtra("query-string", queryString.ToString());
                 }
 
-                if (reqBody != null)
-                {
-                    scope.SetExtra("userId", userId);
-                }
+                scope.SetExtra("userId", userId);
 
             });
 
