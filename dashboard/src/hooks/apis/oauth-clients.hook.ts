@@ -73,35 +73,6 @@ export const useGetOauthClient = (id: number) => {
     });
 };
 
-export const useGetOauthClientByDeviceId = (deviceId: number) => {
-    const dispatch = useAppDispatch();
-    const dispatchRefresh = useCallback(
-        (data: OauthClient) => {
-            if (data) {
-                dispatch(oauthClientsActions.refreshOne(data));
-            }
-        },
-        [dispatch]
-    );
-
-    let apiPath = `${API_URL}${END_POINT.OAUTH_CLIENT_BY_DEVICE_ID}`;
-    apiPath = apiPath.replace(':deviceId', deviceId.toString());
-
-    const { isLoading, error, fetchApi, data } = useFetchApi<OauthClient>({
-        apiPath,
-        method: HTTP_METHOD.GET,
-        initialData: null,
-        callbackFunc: dispatchRefresh,
-    });
-
-    return {
-        isLoading,
-        error,
-        fetchApi,
-        data,
-    };
-};
-
 export const useUpdateOauthClient = ({
     id,
     clientId,

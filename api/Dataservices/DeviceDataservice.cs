@@ -68,15 +68,6 @@ namespace Homo.IotApi
             );
         }
 
-        public static Device GetOneByDeviceId(IotDbContext dbContext, long ownerId, string deviceId)
-        {
-            return dbContext.Device.FirstOrDefault(x =>
-                x.DeletedAt == null
-                && x.DeviceId == deviceId
-                && x.OwnerId == ownerId
-            );
-        }
-
         public static Device Create(IotDbContext dbContext, long ownerId, DTOs.DevicePayload dto)
         {
             Device record = new Device();
