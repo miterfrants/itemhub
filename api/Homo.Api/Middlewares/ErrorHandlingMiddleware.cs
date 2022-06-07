@@ -119,14 +119,26 @@ namespace Homo.Api
 
             await SentrySdk.ConfigureScopeAsync(async scope =>
             {
+
+
                 string body = "";
-                using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
+                if (reqBody != null)
                 {
-                    body = await reader.ReadToEndAsync();
-                    scope.SetExtra("request-body", body);
+                    using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
+                    {
+                        body = await reader.ReadToEndAsync();
+                        scope.SetExtra("request-body", body);
+                    }
+
                 }
+
+                if (queryString != null)
+                {
+                    scope.SetExtra("query-string", queryString.ToString());
+                }
+
                 scope.SetExtra("userId", userId);
-                scope.SetExtra("query-string", queryString.ToString());
+
             });
 
             if (ex.GetType() == typeof(CustomException))
