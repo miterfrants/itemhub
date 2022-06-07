@@ -119,6 +119,11 @@ namespace Homo.Api
 
             await SentrySdk.ConfigureScopeAsync(async scope =>
             {
+                if (reqBody == null || queryString == null)
+                {
+                    return;
+                }
+
                 string body = "";
                 using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
                 {
