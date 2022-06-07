@@ -119,10 +119,7 @@ namespace Homo.Api
 
             await SentrySdk.ConfigureScopeAsync(async scope =>
             {
-                if (reqBody == null || queryString == null)
-                {
-                    return;
-                }
+
 
                 string body = "";
                 using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
@@ -130,8 +127,17 @@ namespace Homo.Api
                     body = await reader.ReadToEndAsync();
                     scope.SetExtra("request-body", body);
                 }
-                scope.SetExtra("userId", userId);
-                scope.SetExtra("query-string", queryString.ToString());
+
+                if (queryString != null)
+                {
+                    scope.SetExtra("query-string", queryString.ToString());
+                }
+
+                if (reqBody != null)
+                {
+                    scope.SetExtra("userId", userId);
+                }
+
             });
 
             if (ex.GetType() == typeof(CustomException))
