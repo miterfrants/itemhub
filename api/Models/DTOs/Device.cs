@@ -12,7 +12,6 @@ namespace Homo.IotApi
             public string Name { get; set; }
             public long? ZoneId { get; set; }
             public string Info { get; set; }
-            [MaxLength(128)]
             public long? Microcontroller { get; set; }
         }
     }
