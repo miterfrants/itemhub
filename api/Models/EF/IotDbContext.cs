@@ -57,7 +57,6 @@ namespace Homo.IotApi
             modelBuilder.Entity<Device>(entity =>
             {
                 entity.HasIndex(p => new { p.Name });
-                entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.OwnerId });
                 entity.HasIndex(p => new { p.Online });
                 entity.HasIndex(p => new { p.Microcontroller });

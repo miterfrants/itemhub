@@ -175,7 +175,7 @@ const Devices = () => {
                                     </a>
                                 </div>
                                 <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
-                                    <div className="col-3">裝置名稱 / ID</div>
+                                    <div className="col-3">裝置名稱</div>
                                     <div className="col-2">狀態</div>
                                     <div className="col-2">建立時間</div>
                                     <div className="col-3">Pins Data</div>
@@ -183,27 +183,18 @@ const Devices = () => {
                                 </div>
                                 <div className="devices-list">
                                     {devices.map(
-                                        ({
-                                            id,
-                                            deviceId,
-                                            name,
-                                            createdAt,
-                                            online,
-                                        }) => (
+                                        ({ id, name, createdAt, online }) => (
                                             <div
                                                 className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
                                                 key={id}
                                                 title={`建立時間: ${createdAt}`}
                                             >
                                                 <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    裝置名稱 / ID
+                                                    裝置名稱
                                                 </div>
                                                 <div className="col-8 col-lg-3 p-3 p-lg-0">
                                                     <div className="fw-bold lh-base mb-2 mb-lg-0">
                                                         {name}
-                                                    </div>
-                                                    <div className="fs-5 lh-base mb-0 text-black text-opacity-45">
-                                                        {deviceId}
                                                     </div>
                                                 </div>
                                                 <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">

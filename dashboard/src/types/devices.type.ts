@@ -2,7 +2,6 @@ export interface DeviceItem {
     id: number;
     name: string;
     ownerId: number;
-    deviceId: string;
     createdAt: string;
     editedAt: null | string;
     deletedAt: null | string;

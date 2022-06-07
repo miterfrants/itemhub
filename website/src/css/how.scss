@@ -1,0 +1,9 @@
+.how {
+    .arrow {
+        transition: transform 0.3s;
+    }
+    .up-arrow {
+        transform: rotate(-180deg);
+        transition: transform 0.3s;
+    }
+}
