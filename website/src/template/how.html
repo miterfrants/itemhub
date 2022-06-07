@@ -1,4 +1,5 @@
 <div class="how">
+    <link href="/css/how.css" rel="stylesheet">
     <div class="container mt-5 mt-lg-6 px-3">
         <div class="row">
             <div class="col-12 col-lg-4 mb-5">
@@ -8,7 +9,12 @@
             </div>
             <div class="col-12 col-lg-8">
                 <div class="">
-                    <div onclick="controller.toggleHowToStart" class="title h3 mb-2" role="button">如何開始使用 Itemhub
+                    <div onclick="controller.toggleHowToStart" class="d-flex justify-content-between mb-2"
+                        role="button">
+                        <div class="title h3 ">
+                            如何開始使用 Itemhub
+                        </div>
+                        <img class="arrow {expandedHowToStartArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
                     </div>
                     <hr class="border-white opacity-100" />
                     <div class="content {expandedHowToStartVisible}">
@@ -19,22 +25,22 @@
                                 <div>
                                     進入裝置列表頁，點選新增裝置。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-1.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">1-2 新增裝置</div>
                                 <div>
                                     輸入裝置名稱並選擇裝置類型。
                                 </div>
-                                <div class="">PS:目前僅提供3種類型裝置，後續會再新增其他裝置類型。</div>
-                                <img src="#" />
+                                <div class="">PS:目前僅提供 3 種類型裝置，後續會再新增其他裝置類型。</div>
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-2.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">1-2 選擇要使用的 PIN</div>
                                 <div>
                                     新增裝置後，選擇要使用的 PIN 及 PIN 對應的功能，如: D3 為開關 D7 為感應器。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-3.jpeg" />
                             </div>
                         </div>
                         <div>
@@ -44,7 +50,7 @@
                                 <div>
                                     至裝置列表頁或明細頁可下載程式碼，系統會自動產生裝置對應的程式碼。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-1.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-2 將程式碼燒錄至裝置</div>
@@ -52,14 +58,14 @@
                                     完成下載程式碼後，開啟 ino 檔案，其中 {SSID} 請改成你所使用的 wifi 帳號， {WIFI_PASSWORD} 請改成 wifi
                                     密碼，完成後存檔並將所有檔案燒錄至裝置內。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-2.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-3 確認裝置的連線狀態</div>
                                 <div>
                                     完成程式碼的燒錄後，在裝置列表/明細頁即可看到裝置的狀態會切換成上線，即代表成功連線。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-3.jpeg" />
                             </div>
                         </div>
                         <div>
@@ -69,45 +75,52 @@
                                 <div>
                                     裝置成功連線後，可於裝置列表頁或明細頁切換裝置開關或查看感應器回傳的資料，即時的操控裝置與查看裝置資料。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-3-1.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">3-2 - 設定自動化觸發條件</div>
                                 <div>
                                     於觸發頁填入觸發的名稱、觸發的事件條件與操作目標設定<br />
                                     範例為：<br />
-                                    1. 濕度大於等於 65 執行開啟除濕機<br />
-                                    2. 濕度小於 65 執行關閉除濕機
+                                    1. 濕度大於等於 65 執行開啟抽風扇<br />
+                                    2. 濕度小於 65 執行關閉抽風扇
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/howtouse-3-2.jpeg" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="">
-                    <div onclick="controller.toggleHowToBindSmartHome" class="title h3 mb-2 mt-5">如何用 Itemhub 串接 Google
-                        Smart Home</div>
+                    <div onclick="controller.toggleHowToBindSmartHome" class="d-flex justify-content-between mb-2 mt-5"
+                        role="button">
+                        <div class="title h3 ">
+                            如何用 Itemhub 串接 Google
+                            Smart Home
+                        </div>
+                        <img class="arrow {expandedHowToBindGoogleSmartHomeArrowVisible}"
+                            src="/assets/images/icon-down-arrow.svg" />
+                    </div>
                     <hr class="border-white opacity-100 bg-opacity-0" />
                     <div class="content  {expandedHowToBindGoogleSmartHomeVisible}">
                         <div>
                             <div class="text-green h4 mb-3">Step 1 - 建立 oAuthClient</div>
                             <div class="mb-45">
                                 <div class="fw-bold">1-1 進入 oAuthClient 列表</div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-1-1.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">1-2 建立 oAuthClient</div>
                                 <div>
                                     建立新的 oAuthClient，留在這個畫面, 後面步驟需要畫面中的 Client Id 和 Client Secret
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-1-2.jpeg" />
                             </div>
                         </div>
                         <div>
                             <div class="text-green h4 mb-3">Step 2 - Google Actions Console</div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-1 進入 Google Actions Console</div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-1.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-2 點擊 New project 建立新的專案</div>
@@ -117,7 +130,7 @@
                                         <li>選擇語言和地區</li>
                                     </ul>
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-2.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-3 建立 Smart Home Project</div>
@@ -127,18 +140,18 @@
                                         <li>點擊 Start Build</li>
                                     </ul>
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-3.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-4 選擇 Name your Smart Home action 開始設定</div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-4.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-5 Invocation</div>
                                 <div>
                                     選擇語言和 Google Smart Home 的顯示名稱，輸入完直接儲存。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-5.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-6 Actions</div>
@@ -146,7 +159,7 @@
                                     Fulfillment URL 填入 https://itemhub.io/api/v1/google-smart-home 讓 Google
                                     Nest 知道要把相對應的要求丟到 Itemhub 哪一個網址。
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-6.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-7 Account Linking: 輸入 Itemhub 產生的 oAuthClient 資料</div>
@@ -158,11 +171,11 @@
                                         <li>Token URL 填入 https://itemhub.io/api/v1/oauth/token</li>
                                     </ul>
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-7.jpeg" />
                             </div>
                             <div class="mb-45">
                                 <div class="fw-bold">2-8 找到 Project Id</div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-8.jpeg" />
                             </div>
                         </div>
                         <div>
@@ -170,7 +183,7 @@
                             <div class="mb-45">
                                 <div class="fw-bold">輸入 https://oauth-redirect.googleusercontent.com/r/{projectId} 儲存
                                 </div>
-                                <img src="#" />
+                                <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-3-1.jpeg" />
                             </div>
                         </div>
                     </div>

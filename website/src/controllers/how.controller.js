@@ -18,23 +18,29 @@ export class HowController extends RoutingController {
         };
         await super.render({
             expandedHowToBindGoogleSmartHomeVisible: 'd-none',
-            expandedHowToStartVisible: 'd-none'
+            expandedHowToStartVisible: 'd-none',
+            expandedHowToBindGoogleSmartHomeArrowVisible: '',
+            expandedHowToStartArrowVisible: ''
         });
     }
 
     toggleHowToBindSmartHome () {
         if (this.pageVariable.expandedHowToBindGoogleSmartHomeVisible === '') {
             this.pageVariable.expandedHowToBindGoogleSmartHomeVisible = 'd-none';
+            this.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = '';
         } else {
             this.pageVariable.expandedHowToBindGoogleSmartHomeVisible = '';
+            this.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = 'up-arrow';
         }
     }
 
     toggleHowToStart () {
         if (this.pageVariable.expandedHowToStartVisible === '') {
             this.pageVariable.expandedHowToStartVisible = 'd-none';
+            this.pageVariable.expandedHowToStartArrowVisible = '';
         } else {
             this.pageVariable.expandedHowToStartVisible = '';
+            this.pageVariable.expandedHowToStartArrowVisible = 'up-arrow';
         }
     }
 }
