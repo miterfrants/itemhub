@@ -127,24 +127,6 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 經由裝置號碼取得單一裝置",
-            Description = ""
-        )]
-        [HttpGet]
-        [Route("by-device-id/{deviceId}")]
-        public ActionResult<dynamic> getOneByDeviceId([FromRoute] int deviceId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
-        {
-            long ownerId = extraPayload.Id;
-            Device record = DeviceDataservice.GetOneByDeviceId(_dbContext, ownerId, deviceId);
-            if (record == null)
-            {
-                throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
-            }
-            return record;
-        }
-
-        [SwaggerOperation(
-            Tags = new[] { "裝置相關" },
             Summary = "裝置 - 更新單一裝置基本資料",
             Description = ""
         )]

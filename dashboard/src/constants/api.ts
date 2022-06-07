@@ -16,7 +16,6 @@ export const END_POINT = {
     OAUTH_CLIENTS: 'my/oauth-clients',
     OAUTH_CLIENT: 'my/oauth-clients/:id',
     OAUTH_CLIENT_REDIRECT_URIS: 'my/oauth-clients/:id/redirect-uris',
-    OAUTH_CLIENT_BY_DEVICE_ID: 'my/oauth-clients/by-device-id/:deviceId',
     OAUTH_CLIENT_REVOKE_SECRET: 'my/oauth-clients/:id/revoke-secret',
     TRIGGERS: 'my/triggers',
     TRIGGER: 'my/triggers/:id',
