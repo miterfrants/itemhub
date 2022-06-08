@@ -116,41 +116,26 @@ namespace Homo.Api
 
         private async Task SendErrorToSentry(Exception ex, System.IO.Stream reqBody = null, QueryString queryString = default(QueryString), long? userId = null)
         {
-
-            await SentrySdk.ConfigureScopeAsync(async scope =>
-            {
-
-
-                string body = "";
-                if (reqBody != null)
-                {
-                    using (var reader = new System.IO.StreamReader(reqBody, System.Text.Encoding.UTF8))
-                    {
-                        body = await reader.ReadToEndAsync();
-                        scope.SetExtra("request-body", body);
-                    }
-
-                }
-
-                if (queryString != null)
-                {
-                    scope.SetExtra("query-string", queryString.ToString());
-                }
-
-                scope.SetExtra("userId", userId);
-
-            });
-
             if (ex.GetType() == typeof(CustomException))
             {
                 var customEx = (CustomException)ex;
+                if (customEx.errorCode == Homo.IotApi.ERROR_CODE.OVER_PRICING_PLAN)
+                {
+                    return;
+                }
                 string internalErrorMessage = customEx.errorCode;
                 Exception newEx = new Exception(internalErrorMessage, customEx);
                 SentrySdk.CaptureException(newEx);
             }
             else
             {
+                bool excludeError = ex.Message.Contains("Token does not have a kid.");
+                if (excludeError)
+                {
+                    return;
+                }
                 SentrySdk.CaptureException(ex);
+
             }
         }
     }
