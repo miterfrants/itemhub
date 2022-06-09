@@ -39,7 +39,7 @@ namespace Homo.IotApi
 
         public override async Task<dynamic> DoWork(CancellationToken cancellationToken)
         {
-            if (DateTime.Now.Day != 1)
+            if (DateTime.Now.Day != 10)
             {
                 return Task.CompletedTask;
             }
