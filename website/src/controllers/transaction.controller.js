@@ -63,8 +63,11 @@ export class TransactionController extends RoutingController {
             } else if (pendingStatus.value === resp.data.status && this.currentRetryCount > this.retryLimit) {
                 this.pageVariable.transactionMessage = '刷卡服務供應商沒有回應, 請等待 10 秒後重新整理頁面, 如果重新整理頁面後還是沒有回應, 請與我們聯絡 itemhub.tw@gmail.com';
                 return;
-            } else if (errorStatus.value === resp.data.status) {
+            } else if (errorStatus.value === resp.data.status && resp.data.message) {
                 this.pageVariable.transactionMessage = `發生錯誤: ${resp.data.message}`;
+                return;
+            } else if (errorStatus.value === resp.data.status) {
+                this.pageVariable.transactionMessage = '發生錯誤: 未完成交易';
                 return;
             }
             const respOfSubscription = await SubscriptionDataService.GetOneByTransactionId({
