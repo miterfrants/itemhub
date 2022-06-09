@@ -16,7 +16,7 @@ namespace Homo.IotApi
     {
         private readonly string _envName;
         private readonly string _tapPayPartnerKey;
-        private readonly string _tapPayMerchantId;
+        private readonly string _tapPayMerchantIdNot3D;
         private readonly string _tapPayEndpointByToken;
         private readonly string _dbc;
 
@@ -25,7 +25,7 @@ namespace Homo.IotApi
         {
             _envName = env.EnvironmentName;
             _dbc = appSettings.Value.Secrets.DBConnectionString;
-            _tapPayMerchantId = appSettings.Value.Secrets.TapPayMerchantId;
+            _tapPayMerchantIdNot3D = appSettings.Value.Secrets.TapPayMerchantIdNot3D;
             _tapPayPartnerKey = appSettings.Value.Secrets.TapPayPartnerKey;
             _tapPayEndpointByToken = appSettings.Value.Common.TapPayEndpointByToken;
 
@@ -93,7 +93,7 @@ namespace Homo.IotApi
                         card_token = subscription.CardToken,
                         partner_key = _tapPayPartnerKey,
                         currency = "TWD",
-                        merchant_id = _tapPayMerchantId,
+                        merchant_id = _tapPayMerchantIdNot3D,
                         details = planName,
                         amount = amount
                     };
