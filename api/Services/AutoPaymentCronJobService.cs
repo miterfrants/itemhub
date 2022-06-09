@@ -39,7 +39,7 @@ namespace Homo.IotApi
 
         public override async Task<dynamic> DoWork(CancellationToken cancellationToken)
         {
-            if (DateTime.Now.Day == 1)
+            if (DateTime.Now.Day != 1)
             {
                 return Task.CompletedTask;
             }
@@ -141,6 +141,7 @@ namespace Homo.IotApi
                         PricingPlan = (PRICING_PLAN)subscription.PricingPlan,
                         TransactionId = transactionId,
                         CardKey = subscription.CardKey,
+                        Status = SUBSCRIPTION_STATUS.PAID,
                         CardToken = subscription.CardToken,
                     });
                 }
