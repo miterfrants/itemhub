@@ -22,6 +22,7 @@ namespace Homo.IotApi
         public string SmsPassword { get; set; }
         public string TapPayPartnerKey { get; set; }
         public string TapPayMerchantId { get; set; }
+        public string TapPayMerchantIdNot3D { get; set; }
 
         public string DashboardJwtKey { get; set; }
 
