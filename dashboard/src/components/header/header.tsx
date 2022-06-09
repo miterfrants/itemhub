@@ -7,6 +7,7 @@ import deviceIcon from '@/assets/images/device.svg';
 import logoIcon from '@/assets/images/logo.svg';
 import logoWordingIcon from '@/assets/images/logo-wording.svg';
 import shieldIcon from '@/assets/images/shield.svg';
+import docIcon from '@/assets/images/doc.svg';
 import { useState, useEffect } from 'react';
 
 const Header = () => {
@@ -108,6 +109,15 @@ const Header = () => {
                             <div className="mx-3">oAuthClient</div>
                         </span>
                     </Link>
+                    <a
+                        href={`${import.meta.env.VITE_WEBSITE_URL}/swagger`}
+                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                    >
+                        <img src={docIcon} />
+                        <span className="text-block text-nowrap overflow-hidden">
+                            <div className="mx-3">API 文件</div>
+                        </span>
+                    </a>
                 </div>
                 <div
                     className={`space position-absolute bg-black bg-opacity-65 ${
