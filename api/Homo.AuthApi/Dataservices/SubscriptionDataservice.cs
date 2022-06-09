@@ -34,11 +34,12 @@ namespace Homo.IotApi
 
         public static Subscription GetCurrnetOne(IotDbContext dbContext, long? ownerId)
         {
+            DateTime now = DateTime.Now;
             return dbContext.Subscription.Where(x =>
                 (ownerId == null || x.OwnerId == ownerId) &&
                 x.DeletedAt == null &&
-                x.StartAt <= DateTime.Now &&
-                x.EndAt >= DateTime.Now &&
+                x.StartAt <= now &&
+                x.EndAt >= now &&
                 x.Status == SUBSCRIPTION_STATUS.PAID
             ).OrderByDescending(x => x.Id).FirstOrDefault();
         }
