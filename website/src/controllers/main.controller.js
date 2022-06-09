@@ -17,7 +17,7 @@ export class MainController extends RoutingController {
             ...this.args.me,
             numOfRegisteredUser: this.args.numOfRegisteredUser,
             user: this.args.me,
-            isSignInInvisible: this.args.me?.id ? 'd-none' : ''
+            isSignInInvisible: this.args.me && this.args.me.id ? 'd-none' : ''
         });
     }
 
