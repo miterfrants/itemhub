@@ -24,6 +24,5 @@
     "VERIFY_PHONE_TOKEN_EXPIRED": "Verify phone token expired, back to previous step",
     "VERIFY_RESET_PASSWORD_TOKEN_EXPIRED": "Verify reset password token expired, back to previous step",
     "DUPLICATED_PHONE": "This phone be registerd by other one",
-    "WITHOUT_PERMISSION_TO_GET_EMAIL": "We could not access your email, maybe you dont allow us platform to get email permission",
-    "ALREADY_SIGN_UP_BY_THIS_EMAIL": "This email be registered"
+    "WITHOUT_PERMISSION_TO_GET_EMAIL": "We could not access your email, maybe you dont allow us platform to get email permission"
 }

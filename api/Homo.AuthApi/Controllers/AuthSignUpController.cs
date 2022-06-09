@@ -97,7 +97,7 @@ namespace Homo.AuthApi
 
             if (user != null)
             {
-                throw new CustomException(ERROR_CODE.ALREADY_SIGN_UP_BY_THIS_EMAIL, HttpStatusCode.BadRequest, null, new Dictionary<string, dynamic>(){
+                throw new CustomException(ERROR_CODE.EMAIL_ALREADY_REGISTERED, HttpStatusCode.BadRequest, null, new Dictionary<string, dynamic>(){
                             {"duplicatedUserProvider", AuthHelper.GetDuplicatedUserType(user)}
                         });
             }
