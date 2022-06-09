@@ -110,7 +110,7 @@ const Header = () => {
                         </span>
                     </Link>
                     <a
-                        href={`${import.meta.env.VITE_WEBSITE_URL}/swagger`}
+                        href={`${import.meta.env.VITE_WEBSITE_URL}/swagger/`}
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                     >
                         <img src={docIcon} />
