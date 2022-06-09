@@ -91,7 +91,7 @@ namespace Homo.IotApi
                 services.AddCronJob<AutoPaymentCronJob>(c =>
                 {
                     c.TimeZoneInfo = TimeZoneInfo.Local;
-                    c.CronExpression = @"30 1 * * *";
+                    c.CronExpression = @"50 1 * * *";
                 });
             }
 
