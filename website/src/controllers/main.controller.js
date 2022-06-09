@@ -16,7 +16,8 @@ export class MainController extends RoutingController {
         await super.render({
             ...this.args.me,
             numOfRegisteredUser: this.args.numOfRegisteredUser,
-            user: this.args.me
+            user: this.args.me,
+            isSignInInvisible: this.args.me?.id ? 'd-none' : ''
         });
     }
 
