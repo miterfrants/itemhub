@@ -26,7 +26,6 @@
     "VERIFY_RESET_PASSWORD_TOKEN_EXPIRED": "重設密碼憑證過期, 請回上一步",
     "DUPLICATED_PHONE": "已經有人用這個手機註冊",
     "WITHOUT_PERMISSION_TO_GET_EMAIL": "無法取得 Email, 可能是你不允許我們透過社群平台讀取你的 Email",
-    "ALREADY_SIGN_UP_BY_THIS_EMAIL": "這個 Email 已經被其他使用者註冊過了, 請試著登入或是更換 Email",
     "DUPLICATE_OAUTH_CLIENT_ID": "這個 oAuth Client Id 已經有人使用過了, 請重新輸入",
     "NO_SUBSCRIPTION": "目前沒有訂閱紀錄",
     "DUPLICATE_EMAIL": "重複的 Email",

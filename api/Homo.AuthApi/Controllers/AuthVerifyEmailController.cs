@@ -80,16 +80,9 @@ namespace Homo.AuthApi
             User user = UserDataservice.GetOneByEmail(_dbContext, dto.Email);
             List<string> duplicatedUserProvider = new List<string>();
 
-            if (user != null && !user.IsEarlyBird)
+            if ((user != null && !user.IsEarlyBird) || (user != null && user.IsEarlyBird && user.HashPhone != null))
             {
                 throw new CustomException(ERROR_CODE.EMAIL_ALREADY_REGISTERED, HttpStatusCode.BadRequest, null, new Dictionary<string, dynamic>(){
-                            {"duplicatedUserProvider", AuthHelper.GetDuplicatedUserType(user)}
-                        });
-            }
-
-            if (user != null && user.IsEarlyBird && user.HashPhone != null)
-            {
-                throw new CustomException(ERROR_CODE.ALREADY_SIGN_UP_BY_THIS_EMAIL, HttpStatusCode.BadRequest, null, new Dictionary<string, dynamic>(){
                             {"duplicatedUserProvider", AuthHelper.GetDuplicatedUserType(user)}
                         });
             }
