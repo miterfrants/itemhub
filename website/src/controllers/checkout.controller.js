@@ -104,6 +104,7 @@ export class CheckoutController extends RoutingController {
     async checkout (event) {
         const elButton = event.currentTarget;
         elButton.setAttribute('disabled', 'disabled');
+        elButton.innerHTML = '資料送出中...';
 
         // validation
         const form = this.elHTML.querySelector('.checkout-form').collectFormData();
@@ -142,6 +143,7 @@ export class CheckoutController extends RoutingController {
             }
             this.elHTML.querySelector(`[data-field="${validationMessage[0].key}"]`).focus();
             elButton.removeAttribute('disabled');
+            elButton.innerHTML = '訂閱';
             return;
         }
 
@@ -149,6 +151,7 @@ export class CheckoutController extends RoutingController {
         if (!selectedPricingPlan) {
             Toaster.popup(Toaster.TYPE.ERROR, '訂閱失敗: 無方案資料');
             elButton.removeAttribute('disabled');
+            elButton.innerHTML = '訂閱';
             return;
         }
 
@@ -173,6 +176,7 @@ export class CheckoutController extends RoutingController {
                 elValidation.innerHTML = '後三碼有誤，請再確認';
             }
             elButton.removeAttribute('disabled');
+            elButton.innerHTML = '訂閱';
             return;
         }
 
@@ -186,6 +190,8 @@ export class CheckoutController extends RoutingController {
         });
         if (resp.status !== RESPONSE_STATUS.OK) {
             Toaster.popup(Toaster.TYPE.ERROR, `訂閱失敗: ${resp.data.message}`);
+            elButton.innerHTML = '訂閱';
+            elButton.removeAttribute('disabled');
             return;
         }
 
