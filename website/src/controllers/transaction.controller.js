@@ -13,6 +13,7 @@ export class TransactionController extends RoutingController {
         this.retryLimit = 15;
         this.currentRetryCount = 0;
         this.redirectCountdownPeriod = 30;
+        this.timer = null;
     }
 
     static get id () {
@@ -43,6 +44,11 @@ export class TransactionController extends RoutingController {
 
     async postRender () {
         await super.postRender();
+    }
+
+    async exit (args) {
+        clearTimeout(this.timer);
+        return super.exit(args);
     }
 
     startToGetTransactionStatus () {
@@ -94,7 +100,7 @@ export class TransactionController extends RoutingController {
     }
 
     startTimerToReddirectToDashboard () {
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             this.pageVariable.redirectCountdownPeriod -= 1;
             if (this.pageVariable.redirectCountdownPeriod === 0) {
                 location.href = `${APP_CONFIG.DASHBOARD_URL}`;
