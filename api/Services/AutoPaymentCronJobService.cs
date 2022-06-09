@@ -39,7 +39,7 @@ namespace Homo.IotApi
 
         public override async Task<dynamic> DoWork(CancellationToken cancellationToken)
         {
-            if (DateTime.Now.Day != 10)
+            if (DateTime.Now.Day != 1)
             {
                 return Task.CompletedTask;
             }
@@ -87,7 +87,6 @@ namespace Homo.IotApi
 
                 if (!subscriber.IsEarlyBird || (subscriber.IsEarlyBird && (PRICING_PLAN)subscription.PricingPlan != PRICING_PLAN.ADVANCE))
                 {
-                    System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(subscription.CardKey, Newtonsoft.Json.Formatting.Indented));
                     var postBody = new
                     {
                         card_key = subscription.CardKey,
