@@ -36,7 +36,9 @@ const OauthClients = () => {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isSelectAll, setIsSelectAll] = useState(false);
     const hasOauthClientsRef = useRef(false);
-    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
+    const howToUseLink = `${
+        import.meta.env.VITE_WEBSITE_URL
+    }/how/?expandedGoogleSmartHome=true`;
 
     const [
         pageTitleSecondaryButtonClassName,

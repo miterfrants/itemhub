@@ -41,7 +41,9 @@ const Devices = () => {
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
-    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
+    const howToUseLink = `${
+        import.meta.env.VITE_WEBSITE_URL
+    }/how/?expandedStartUp=true`;
 
     const navigate = useNavigate();
 
