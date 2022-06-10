@@ -7,7 +7,10 @@ const EmptyDataToCreateItem = ({ itemName }: { itemName: string }) => {
     const jumpToCreatePage = () => {
         navigate('create');
     };
-    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/`;
+
+    const howToUseLink = `${
+        import.meta.env.VITE_WEBSITE_URL
+    }/how/?expandedStartUp=true`;
 
     return (
         <div className="d-block p-6 text-center">
