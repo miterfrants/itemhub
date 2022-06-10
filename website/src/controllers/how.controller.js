@@ -17,30 +17,38 @@ export class HowController extends RoutingController {
             keywords: 'ItemHub,item-hub,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
         };
         await super.render({
-            expandedHowToBindGoogleSmartHomeVisible: 'd-none',
-            expandedHowToStartVisible: 'd-none',
-            expandedHowToBindGoogleSmartHomeArrowVisible: '',
-            expandedHowToStartArrowVisible: ''
+            expandedHowToBindGoogleSmartHomeVisible: this.args.expandedGoogleSmartHome === 'true' ? '' : 'd-none',
+            expandedHowToStartVisible: this.args.expandedStartUp === 'true' ? '' : 'd-none',
+            expandedHowToBindGoogleSmartHomeArrowVisible: this.args.expandedGoogleSmartHome === 'true' ? 'up-arrow' : '',
+            expandedHowToStartArrowVisible: this.args.expandedStartUp === 'true' ? 'up-arrow' : ''
         });
     }
 
     toggleHowToBindSmartHome () {
+        let arrayOfQuery = location.search.substring(1).split('&');
+        arrayOfQuery = arrayOfQuery.filter(item => item !== 'expandedGoogleSmartHome=true' && item !== '');
         if (this.pageVariable.expandedHowToBindGoogleSmartHomeVisible === '') {
             this.pageVariable.expandedHowToBindGoogleSmartHomeVisible = 'd-none';
             this.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = '';
         } else {
             this.pageVariable.expandedHowToBindGoogleSmartHomeVisible = '';
             this.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = 'up-arrow';
+            arrayOfQuery.push('expandedGoogleSmartHome=true');
         }
+        history.pushState({}, '', `/how/?${arrayOfQuery.join('&')}`);
     }
 
     toggleHowToStart () {
+        let arrayOfQuery = location.search.substring(1).split('&');
+        arrayOfQuery = arrayOfQuery.filter(item => item !== 'expandedStartUp=true' && item !== '');
         if (this.pageVariable.expandedHowToStartVisible === '') {
             this.pageVariable.expandedHowToStartVisible = 'd-none';
             this.pageVariable.expandedHowToStartArrowVisible = '';
         } else {
             this.pageVariable.expandedHowToStartVisible = '';
             this.pageVariable.expandedHowToStartArrowVisible = 'up-arrow';
+            arrayOfQuery.push('expandedStartUp=true');
         }
+        history.pushState({}, '', `/how/?${arrayOfQuery.join('&')}`);
     }
 }
