@@ -51,7 +51,6 @@ namespace Homo.IotApi
         {
             // avoid duplciate subscribe
             var subscriptionsInDb = SubscriptionDataservice.GetAll(_dbContext, extraPayload.Id, dto.pricingPlan, DateTime.Now);
-            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(subscriptionsInDb, Newtonsoft.Json.Formatting.Indented));
             List<ConvertHelper.EnumList> plans = ConvertHelper.EnumToList(typeof(PRICING_PLAN));
             if (subscriptionsInDb.Count > 0)
             {
