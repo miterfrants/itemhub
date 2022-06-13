@@ -5,8 +5,8 @@
             <label class="row d-flex align-items-center">
                 <div class="col-12 mb-2">Email 驗證</div>
                 <div class="col-12 col-xs-7 col-sm-7 col-md-12 col-xl-7">
-                    <input data-field="email" onkeyup="controller.validateEmail" class="form-control" type="text"
-                        placeholder="請輸入信箱註冊" />
+                    <input data-field="email" onkeyup="controller.validateEmail" onchange="controller.validateEmail"
+                        class="form-control" type="text" placeholder="請輸入信箱註冊" />
                 </div>
                 <div
                     class="col-7 col-xs-5 col-sm-5 col-md-7 col-xl-5 align-items-cetner d-flex mt-3 mt-sm-0 mt-md-3 mt-lg-3 mt-xl-0">
@@ -20,8 +20,8 @@
             <label class="row mt-4">
                 <div class="col-12 mb-2">驗證碼</div>
                 <div class="col-12">
-                    <input onkeyup="controller.validateCode" data-field="code" class="form-control" type="text"
-                        placeholder="請輸入驗證碼" disabled />
+                    <input onkeyup="controller.validateCode" onchange="controller.validateCode" data-field="code"
+                        class="form-control" type="text" placeholder="請輸入驗證碼" disabled />
                 </div>
                 <div class="col-12 invalid-message mt-2 text-danger">{codeInvalidMessage}</div>
             </label>
