@@ -15,8 +15,8 @@
             <label class="row mt-4 d-flex align-items-center">
                 <div class="col-12 mb-2">手機驗證</div>
                 <div class="col-12 col-xs-7 col-sm-7 col-md-12 col-xl-7">
-                    <input onkeyup="controller.validatePhone" data-field="phone" class="form-control" type="text"
-                        placeholder="請輸入手機號碼" />
+                    <input onkeyup="controller.validatePhone" onchange="controller.validatePhone" data-field="phone"
+                        class="form-control" type="text" placeholder="請輸入手機號碼" />
                 </div>
                 <div
                     class="col-7 col-xs-5 col-sm-5 col-md-7 col-xl-5 align-items-cetner d-flex mt-3 mt-sm-0 mt-md-3 mt-lg-3 mt-xl-0">
@@ -31,7 +31,8 @@
                 <div class="col-12 mb-2">驗證碼</div>
                 <div class="col-12">
                     <input allow-empty data-field="code" onkeyup="controller.validateCodeAndGetValidatedPhoneToken"
-                        class="form-control" type="text" placeholder="請輸入驗證碼" disabled />
+                        onchange="controller.validateCodeAndGetValidatedPhoneToken" class="form-control" type="text"
+                        placeholder="請輸入驗證碼" disabled />
                 </div>
                 <div class="col-12 invalid-message text-danger">{codeInvalidMessage}</div>
             </label>
@@ -39,8 +40,9 @@
             <label class="row mt-4">
                 <div class="col-12 mb-2">密碼</div>
                 <div class="col-12">
-                    <input data-field="password" onkeyup="controller.validatePassword" class="form-control"
-                        type="password" placeholder="請輸入 12 碼以上的英數" disabled />
+                    <input data-field="password" onkeyup="controller.validatePassword"
+                        onchange="controller.validatePassword" class="form-control" type="password"
+                        placeholder="請輸入 12 碼以上的英數" disabled />
                 </div>
                 <div class="col-12 invalid-message text-danger">{passwordInvalidMessage}</div>
             </label>

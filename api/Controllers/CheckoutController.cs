@@ -51,6 +51,7 @@ namespace Homo.IotApi
         {
             // avoid duplciate subscribe
             var subscriptionsInDb = SubscriptionDataservice.GetAll(_dbContext, extraPayload.Id, dto.pricingPlan, DateTime.Now);
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(subscriptionsInDb, Newtonsoft.Json.Formatting.Indented));
             List<ConvertHelper.EnumList> plans = ConvertHelper.EnumToList(typeof(PRICING_PLAN));
             if (subscriptionsInDb.Count > 0)
             {
@@ -159,6 +160,7 @@ namespace Homo.IotApi
             Homo.AuthApi.DTOs.UpdateName name = new Homo.AuthApi.DTOs.UpdateName();
             name.FirstName = dto.name.Substring(1, dto.name.Length - 1);
             name.LastName = dto.name.Substring(0, 1);
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(name, Newtonsoft.Json.Formatting.Indented));
             UserDataservice.UpdateName(_authDbContext, extraPayload.Id, name, extraPayload.Id);
 
             return new { Status = CUSTOM_RESPONSE.OK, paymentUrl = response.payment_url };
