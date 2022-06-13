@@ -4,8 +4,9 @@
         <div class="form">
             <label class="d-block mb-4">
                 <div class="mb-2">信箱</div>
-                <input onkeyup="controller.handleInputTypeEnter" class="form-control" data-field="email" type="text"
-                    value="" placeholder="請輸入信箱" tabindex="1"></input>
+                <input onkeyup="controller.handleInputTypeEnter" onchange="controller.handleInputTypeEnter"
+                    class="form-control" data-field="email" type="text" value="" placeholder="請輸入信箱"
+                    tabindex="1"></input>
                 <div class="validation text-danger mt-2">
 
                 </div>
@@ -16,8 +17,9 @@
                     <div>密碼</div>
                     <a href="/auth/forget-password/" tabindex="7">忘記密碼</a>
                 </div>
-                <input onkeyup="controller.handleInputTypeEnter" class="form-control" tabindex="2" data-field="password"
-                    type="password" value="" placeholder="請輸入密碼"></input>
+                <input onkeyup="controller.handleInputTypeEnter" onchange="controller.handleInputTypeEnter"
+                    class="form-control" tabindex="2" data-field="password" type="password" value=""
+                    placeholder="請輸入密碼"></input>
                 <div class="validation text-danger mt-2">
 
                 </div>
