@@ -291,6 +291,9 @@ const DevicePinData = () => {
     };
 
     useEffect(() => {
+        if (isCreateMode) {
+            return;
+        }
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
