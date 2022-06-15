@@ -17,18 +17,17 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
         value: valueFromPorps,
         name: nameFromProps,
     } = pinItem;
-    const [value, setValue] = useState(valueFromPorps);
-    const [name, setName] = useState(nameFromProps);
+    const [value, setValue] = useState(0);
+    const [name, setName] = useState('');
     const [isInitialized, setIsInitialized] = useState(false);
     const isNameChangedRef = useRef(false);
     const isSwitch = mode === 1;
 
-    const { isLoading: isChanging, updateDeviceSwitchPinApi } =
-        useUpdateDeviceSwitchPinApi({
-            deviceId,
-            pin,
-            value: value || 0,
-        });
+    const { updateDeviceSwitchPinApi } = useUpdateDeviceSwitchPinApi({
+        deviceId,
+        pin,
+        value: value || 0,
+    });
 
     const { updateDevicePinNameApi, isLoading: isNameUpdating } =
         useUpdateDevicePinNameApi({
@@ -56,11 +55,20 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
             return;
         }
         updateDeviceSwitchPinApi();
+        // eslint-disable-next-line
     }, [value, isSwitch]);
 
     useEffect(() => {
         setIsInitialized(true);
     }, []);
+
+    useEffect(() => {
+        setName(nameFromProps || '');
+    }, [nameFromProps]);
+
+    useEffect(() => {
+        setValue(valueFromPorps || 0);
+    }, [valueFromPorps]);
 
     return (
         <div

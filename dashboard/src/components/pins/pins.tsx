@@ -1,16 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGetDevicePinsApi } from '@/hooks/apis/device.pin.hook';
 import Pin from '@/components/pin/pin';
+import { useAppSelector } from '@/hooks/redux.hook';
+import { selectDevicePins } from '@/redux/reducers/pins.reducer';
+import { PinItem } from '@/types/devices.type';
 
 const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
     const { deviceId, isEditMode } = props;
-    const { isLoading, devicePins, getDevicePinsApi } = useGetDevicePinsApi({
+    const { isLoading, getDevicePinsApi } = useGetDevicePinsApi({
         id: Number(deviceId),
     });
 
+    const devicePinsFromStore = useAppSelector(selectDevicePins);
+
+    const [devicePins, setDevicePins] = useState<PinItem[] | null>(null);
+
     useEffect(() => {
+        const devicePins =
+            devicePinsFromStore?.filter(
+                (item: PinItem) => item.deviceId === Number(deviceId)
+            ) || [];
+        setDevicePins(devicePins || null);
+        if (devicePins && devicePins.length > 0) {
+            return;
+        }
         getDevicePinsApi();
-    }, []);
+        // eslint-disable-next-line
+    }, [devicePinsFromStore]);
 
     return (
         // UI 結構等設計稿後再重構調整
