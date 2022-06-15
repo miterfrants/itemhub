@@ -104,6 +104,10 @@ export class SignUpController extends RoutingController {
             return;
         }
 
+        if (elCodeInput.hasAttribute('disabled')) {
+            return;
+        }
+
         elCodeInput.setAttribute('disabled', 'disabled');
         const resp = await AuthDataService.VerifyPhone({
             ...data,
@@ -230,7 +234,6 @@ export class SignUpController extends RoutingController {
             elSendVerifyMailButton.innerHTML = '發送驗證碼至手機';
             elSendVerifyMailButton.removeAttribute('disabled');
             this.elHTML.querySelector('[data-field="password"]').setAttribute('disabled', 'disabled');
-            this.elHTML.querySelector('.btn-sign-up').setAttribute('disabled', 'disabled');
             this.elHTML.querySelector('[data-field="phone"]').removeAttribute('disabled', 'disabled');
             this.resendTimer = null;
             this.resendTime = 0;
