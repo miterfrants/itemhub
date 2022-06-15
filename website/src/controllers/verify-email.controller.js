@@ -34,7 +34,7 @@ export class VerifyEmailController extends RoutingController {
 
     validateEmail (event) {
         const elBtnSendVerifyEmail = this.elHTML.querySelector('.btn-send-verify-email');
-        if (event.keyCode === 13) {
+        if (event.type === 'keyup' && event.keyCode === 13) {
             elBtnSendVerifyEmail.click();
             return;
         }
@@ -88,7 +88,7 @@ export class VerifyEmailController extends RoutingController {
     }
 
     validateCode (event) {
-        if (event.keyCode === 13) {
+        if (event.type === 'keyup' && event.keyCode === 13) {
             this.elHTML.querySelector('.btn-next').click();
             return;
         }

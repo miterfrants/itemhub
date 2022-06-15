@@ -23,7 +23,7 @@ export class ForgetPasswordController extends RoutingController {
     }
 
     handleInputTypeEnter (event) {
-        if (event.keyCode === 13) {
+        if (event.type === 'keyup' && event.keyCode === 13) {
             this.elHTML.querySelector('.btn-send').click();
         }
     }

@@ -69,7 +69,7 @@ export class SignUpController extends RoutingController {
 
     validatePhone (event) {
         const elSendSmsButton = this.elHTML.querySelector('.btn-send-sms');
-        if (event.keyCode === 13) {
+        if (event.type === 'keyup' && event.keyCode === 13) {
             elSendSmsButton.click();
             return;
         }
@@ -93,10 +93,10 @@ export class SignUpController extends RoutingController {
         const data = elForm.collectFormData();
         const elSendSmsButton = this.elHTML.querySelector('.btn-send-sms');
 
-        if (event.keyCode < 96 && event.keyCode > 105) {
+        if (event.type === 'keyup' && event.keyCode < 96 && event.keyCode > 105) {
             return;
         }
-        if (event.keyCode < 48 && event.keyCode > 57) {
+        if (event.type === 'keyup' && event.keyCode < 48 && event.keyCode > 57) {
             return;
         }
 
@@ -129,7 +129,7 @@ export class SignUpController extends RoutingController {
     }
 
     validatePassword (event) {
-        if (event.keyCode === 13) {
+        if (event.type === 'keyup' && event.keyCode === 13) {
             this.elHTML.querySelector('.btn-finish').click();
             return;
         }
