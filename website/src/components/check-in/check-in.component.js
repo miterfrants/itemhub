@@ -28,7 +28,7 @@ export class CheckInComponent extends BaseComponent {
     }
 
     checkInByKeyUp (event) {
-        if (event.type === 'keyup' && event.keyCode === 13) {
+        if (event.keyCode === 13) {
             this.elHTML.querySelector('button').click();
         }
     }
