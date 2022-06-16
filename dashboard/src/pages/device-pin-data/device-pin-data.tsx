@@ -267,11 +267,10 @@ const DevicePinData = () => {
             if (targetIndex !== -1) {
                 newSelected?.splice(Number(targetIndex), 1);
             }
-
             const pushData: PinItem = {
                 id: devicePinsRef.current.filter(
                     (item) => item.pin === pin && item.deviceId === Number(id)
-                )[0].id,
+                )[0]?.id,
                 deviceId: Number(id),
                 pin,
                 mode,

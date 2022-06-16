@@ -45,8 +45,9 @@ namespace Homo.IotApi
             return record;
         }
 
-        public static void BatchedCreate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> listOfDto)
+        public static List<DevicePin> BatchedCreate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> listOfDto)
         {
+            List<DevicePin> result = new List<DevicePin>();
             listOfDto.ForEach(dto =>
             {
                 DevicePin record = new DevicePin();
@@ -60,8 +61,10 @@ namespace Homo.IotApi
                 record.OwnerId = ownerId;
                 record.DeviceId = deviceId;
                 dbContext.DevicePin.Add(record);
+                result.Add(record);
             });
             dbContext.SaveChanges();
+            return result;
         }
 
         public static void BatchedUpdate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> dto)
