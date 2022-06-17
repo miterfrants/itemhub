@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useDebounce } from '@/hooks/debounce.hook';
 import { PinItem } from '@/types/devices.type';
 import moment from 'moment';
+import Toggle from '../toggle/toggle';
 
 const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const { isEditMode, pinItem } = props;
@@ -103,16 +104,8 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
             </div>
 
             {isSwitch ? (
-                <div className="state d-flex align-items-center ms-2">
-                    <div
-                        className={`${
-                            value === 1
-                                ? 'bg-green active'
-                                : 'bg-black bg-opacity-25'
-                        } d-flex align-items-center toggle-button d-flex rounded-pill mb-2`}
-                    >
-                        <div className="button-head bg-white rounded-circle" />
-                    </div>
+                <div className="ms-2 mb-2">
+                    <Toggle value={value} />
                 </div>
             ) : (
                 <>

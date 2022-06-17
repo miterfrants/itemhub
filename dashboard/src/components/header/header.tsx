@@ -72,7 +72,7 @@ const Header = () => {
                     </div>
                 </div>
                 <div className={`${menuBlockClassName} menu-block py-2`}>
-                    {/* <Link
+                    <Link
                         to="/dashboard/"
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                     >
@@ -80,7 +80,7 @@ const Header = () => {
                         <span className="text-block text-nowrap overflow-hidden">
                             <div className="mx-3">監控中心</div>
                         </span>
-                    </Link> */}
+                    </Link>
                     <Link
                         to="/dashboard/devices"
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"

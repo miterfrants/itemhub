@@ -1,21 +1,2 @@
 .pin {
-    $button-size: 15px;
-    .toggle-button {
-        width: $button-size * 2;
-        height: $button-size;
-        box-shadow: 0 0 0 2px rgba($black, 0.25);
-
-        .button-head {
-            transition: transform 0.2s ease-in-out;
-            width: $button-size;
-            height: $button-size;
-        }
-
-        &.active {
-            box-shadow: 0 0 0 2px $green;
-            .button-head {
-                transform: translateX(calc(50% + (#{$button-size} / 2)));
-            }
-        }
-    }
 }
