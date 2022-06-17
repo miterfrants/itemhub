@@ -18,6 +18,12 @@
             padding-top: 100%;
         }
 
+        &.one-third {
+            &::after {
+                padding-top: calc(100% / 3);
+            }
+        }
+
         &.half {
             &::after {
                 padding-top: 50%;

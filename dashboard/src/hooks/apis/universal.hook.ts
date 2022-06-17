@@ -7,6 +7,7 @@ import {
     DeviceMode,
     TriggerOerator,
     Microcontroller,
+    DashboardMonitorMode,
 } from '@/types/universal.type';
 
 export const useGetTriggerOperatorsApi = () => {
@@ -86,5 +87,32 @@ export const useGetDeviceModesApi = () => {
         isLoading,
         error,
         getDeviceModesApi: fetchApi,
+    };
+};
+
+export const useGetDashboardMonitorModesApi = () => {
+    const dispatch = useAppDispatch();
+    const dispatchSetDashboardMonitorModes = useCallback(
+        (data: DashboardMonitorMode[]) => {
+            if (data) {
+                dispatch(universalActions.setDashboardMonitorModes(data));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.DASHBOARD_MONITOR_MODE}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<DeviceMode[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchSetDashboardMonitorModes,
+    });
+
+    return {
+        isLoading,
+        error,
+        getDashboardMonitorModesApi: fetchApi,
     };
 };

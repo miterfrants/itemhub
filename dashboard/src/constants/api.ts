@@ -4,6 +4,7 @@ export const END_POINT = {
     TRIGGER_OPERATORS: 'universal/trigger-operators',
     MICROCONTROLLER: 'universal/microcontroller',
     DEVICE_MODE: 'universal/device-mode',
+    DASHBOARD_MONITOR_MODE: 'universal/dashboard-monitor-mode',
     SIGN_WITH_EMAIL: 'auth/sign-in-with-email',
     IS_SIGNED: 'auth/is-sign-in',
     All_DEVICES: 'my/devices/all',

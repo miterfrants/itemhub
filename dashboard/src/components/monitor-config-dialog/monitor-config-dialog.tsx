@@ -10,16 +10,22 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { MONITOR_MODE } from '@/constants/monitor-mode';
+import { useGetDashboardMonitorModesApi } from '@/hooks/apis/universal.hook';
+import {
+    toasterActions,
+    ToasterTypeEnum,
+} from '@/redux/reducers/toaster.reducer';
 
 const MonitorConfigDialog = () => {
     const dialog = useAppSelector(selectMonitorConfigDialog);
     const devicePinsPool: PinItem[] | null = useAppSelector(selectDevicePins);
-    const { deviceModes } = useAppSelector(selectUniversal);
-
+    const { deviceModes, dashboardMonitorModes } =
+        useAppSelector(selectUniversal);
     const { isOpen, deviceId } = dialog;
 
     const dispatch = useDispatch();
-
+    const defaultSwitchModeValue = 2;
     const promptInputRef = useRef<HTMLInputElement>(null);
     type layoutType = { id: number; selected: boolean };
     const initialLayouts: layoutType[] = [];
@@ -28,20 +34,37 @@ const MonitorConfigDialog = () => {
     const [pin, setPin] = useState<string | null>(null);
     const [dashboardMonitorMode, setDashboardMonitorMode] = useState<
         number | null
-    >(null);
+    >(defaultSwitchModeValue);
     const [devicePins, setDevicePins] = useState<PinItem[]>([]);
     const [sensorValue, setSensorValue] = useState<number | null>(null);
     const [row, setRow] = useState<number>(1);
     const [column, setColumn] = useState<number>(1);
+    const [lineChartModeValue, setLineChartModeValue] = useState<
+        number | undefined
+    >(undefined);
+    const [currentValueModeValue, setCurrentValueModeValue] = useState<
+        number | undefined
+    >(undefined);
+    const [switchModeValue, setSwitchModeValue] = useState<number>(
+        defaultSwitchModeValue
+    );
+    const [isValidedForm, setIsValidedForm] = useState<boolean>(false);
 
-    const { fetchApi: createDashboardMonitorApi } =
-        useCreateDashboardMonitorApi({
-            deviceId: deviceId || 0,
-            pin: pin || '',
-            mode: dashboardMonitorMode || 0,
-            row,
-            column,
-        });
+    const {
+        fetchApi: createDashboardMonitorApi,
+        data: responseOfCreateDashboardMonitor,
+    } = useCreateDashboardMonitorApi({
+        deviceId: deviceId || 0,
+        pin: pin || '',
+        mode:
+            dashboardMonitorMode === null
+                ? switchModeValue
+                : dashboardMonitorMode,
+        row,
+        column,
+    });
+
+    const { getDashboardMonitorModesApi } = useGetDashboardMonitorModesApi();
 
     useEffect(() => {
         setLayouts([
@@ -53,6 +76,29 @@ const MonitorConfigDialog = () => {
             { id: 5, selected: false },
         ]);
     }, []);
+
+    useEffect(() => {
+        if (dashboardMonitorModes && dashboardMonitorModes.length > 0) {
+            setCurrentValueModeValue(
+                dashboardMonitorModes.find(
+                    (item) => item.key === MONITOR_MODE.CURRENT_VALUE
+                )?.value
+            );
+            setLineChartModeValue(
+                dashboardMonitorModes.find(
+                    (item) => item.key === MONITOR_MODE.LINE_CHART
+                )?.value
+            );
+            setSwitchModeValue(
+                dashboardMonitorModes.find(
+                    (item) => item.key === MONITOR_MODE.SWITCH
+                )?.value || 2
+            );
+            return;
+        }
+        getDashboardMonitorModesApi();
+        // eslint-disable-next-line
+    }, [dashboardMonitorModes]);
 
     useEffect(() => {
         if (!devicePins || !deviceModes) {
@@ -83,6 +129,23 @@ const MonitorConfigDialog = () => {
         setDashboardMonitorMode(null);
     }, [isOpen]);
 
+    useEffect(() => {
+        if (responseOfCreateDashboardMonitor) {
+            close();
+            dispatch(
+                toasterActions.pushOne({
+                    message: '成功新增監控看板',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
+        }
+    }, [responseOfCreateDashboardMonitor]);
+
+    useEffect(() => {
+        valid();
+    }, [layouts, pinMode, dashboardMonitorMode]);
+
     const close = () => {
         if (promptInputRef.current) {
             promptInputRef.current.value = '';
@@ -92,15 +155,15 @@ const MonitorConfigDialog = () => {
 
     const selectLayoutSize = (id: number) => {
         const columnNum = 3;
-        const targetColumn = id % columnNum;
+        const targetColumn = (id % columnNum) + 1;
         const targetRow = Math.floor(id / columnNum) + 1;
         setRow(targetRow);
-        setColumn(targetColumn + 1);
+        setColumn(targetColumn);
         const newLayout = [...layouts];
         newLayout.forEach((item: any) => {
             item.selected = false;
             if (
-                item.id % columnNum <= targetColumn &&
+                (item.id % columnNum) + 1 <= targetColumn &&
                 Math.floor(item.id / columnNum) + 1 <= targetRow
             ) {
                 item.selected = true;
@@ -121,13 +184,30 @@ const MonitorConfigDialog = () => {
     };
 
     const selectMonitorMode = (event: ChangeEvent<HTMLSelectElement>) => {
-        setDashboardMonitorMode(
-            event.target.value ? Number(event.target.value) : null
-        );
+        const value = Number(event.target.value);
+        setDashboardMonitorMode(isNaN(value) ? null : value);
     };
 
     const submit = () => {
         createDashboardMonitorApi();
+    };
+
+    const valid = () => {
+        const sensorModeValue = deviceModes.find(
+            (item) => item.key === DEVICE_MODE.SENSOR
+        )?.value;
+
+        if (pin === null) {
+            setIsValidedForm(false);
+            return;
+        }
+
+        if (pinMode === sensorModeValue && dashboardMonitorMode === null) {
+            setIsValidedForm(false);
+            return;
+        }
+
+        setIsValidedForm(true);
     };
 
     return (
@@ -137,6 +217,9 @@ const MonitorConfigDialog = () => {
             }`}
         >
             <div className="text-black bg-white card">
+                <h3 className="mb-0">新增監控版面</h3>
+                <hr />
+                <h4 className="mt-3">版面大小</h4>
                 <div className="row">
                     {layouts.map((element: any) => (
                         <div
@@ -150,8 +233,7 @@ const MonitorConfigDialog = () => {
                         />
                     ))}
                 </div>
-
-                <div className="row mt-4">
+                <div className="row mt-3">
                     <div className="col-12 px-0">
                         <select
                             className="form-control"
@@ -159,7 +241,7 @@ const MonitorConfigDialog = () => {
                                 selectPin(e);
                             }}
                         >
-                            <option />
+                            <option>請選擇 PIN</option>
                             {devicePins.map(({ id, pin, name }) => (
                                 <option key={id} value={pin}>
                                     {name || pin}{' '}
@@ -180,16 +262,23 @@ const MonitorConfigDialog = () => {
                                 selectMonitorMode(e);
                             }}
                         >
-                            <option selected={dashboardMonitorMode === null} />
+                            <option selected={dashboardMonitorMode === null}>
+                                請選擇監控類型
+                            </option>
                             <option
-                                selected={dashboardMonitorMode === 0}
-                                value="0"
+                                selected={
+                                    dashboardMonitorMode ===
+                                    currentValueModeValue
+                                }
+                                value={currentValueModeValue}
                             >
                                 當前數值
                             </option>
                             <option
-                                selected={dashboardMonitorMode === 1}
-                                value="1"
+                                selected={
+                                    dashboardMonitorMode === lineChartModeValue
+                                }
+                                value={lineChartModeValue}
                             >
                                 折線圖
                             </option>
@@ -197,12 +286,13 @@ const MonitorConfigDialog = () => {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-12 px-0">
+                    <div className="col-12 px-0 d-flex justify-content-center">
                         <button
                             className="btn btn-lg rounded-pill mt-3 py-3 border-1 border-grey-300 mx-0"
                             onClick={() => {
                                 submit();
                             }}
+                            disabled={!isValidedForm}
                         >
                             新增
                         </button>
@@ -213,7 +303,7 @@ const MonitorConfigDialog = () => {
                     onClick={() => {
                         close();
                     }}
-                    className="position-absolute top-0 btn-close"
+                    className="position-absolute top-0 btn-close end-0 me-3 mt-2"
                     role="button"
                 />
             </div>

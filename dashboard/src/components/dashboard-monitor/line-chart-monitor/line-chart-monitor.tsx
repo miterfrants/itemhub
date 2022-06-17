@@ -2,13 +2,29 @@ import Spinner from '@/components/spinner/spinner';
 
 import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
+import debounce from 'lodash.debounce';
 import { useEffect, useRef, useState } from 'react';
-import { AreaChart, AreaSeries } from 'reaviz';
+import {
+    Area,
+    AreaChart,
+    AreaSeries,
+    Gradient,
+    GradientStop,
+    Line,
+} from 'reaviz';
+import { SetCookieParams } from '@/types/helpers.type';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
+    const resizeHandler = useRef(
+        debounce(() => {
+            setChartWidth(elementContainerRef.current?.offsetWidth || 0);
+            setChartHeight(elementContainerRef.current?.offsetHeight || 0);
+        }, 800)
+    );
+
     const {
         data: responseOfSensorLogs,
         fetchApi: getSensorLogs,
@@ -24,16 +40,20 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const [chartWidth, setChartWidth] = useState(0);
     const [chartHeight, setChartHeight] = useState(0);
 
-    const { data: responseDevicePin, fetchApi: getDevicePin } =
-        useGetDevicePinApi({ id: deviceId, pin: pin });
+    const { fetchApi: getDevicePin } = useGetDevicePinApi({
+        id: deviceId,
+        pin: pin,
+    });
 
     useEffect(() => {
         getSensorLogs();
         getDevicePin();
         setChartWidth(elementContainerRef.current?.offsetWidth || 0);
         setChartHeight(elementContainerRef.current?.offsetHeight || 0);
-        window.addEventListener('resize', resizeHandler);
-        return () => window.removeEventListener('reisze', resizeHandler);
+        const resizeHanlder = resizeHandler.current;
+        window.addEventListener('resize', resizeHanlder);
+        return () => window.removeEventListener('resize', resizeHanlder);
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
@@ -50,11 +70,6 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         );
     }, [responseOfSensorLogs]);
 
-    const resizeHandler = () => {
-        setChartWidth(elementContainerRef.current?.offsetWidth || 0);
-        setChartHeight(elementContainerRef.current?.offsetHeight || 0);
-    };
-
     return (
         <div
             ref={elementContainerRef}
@@ -65,14 +80,57 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                     <Spinner />
                 </div>
             ) : (
-                <div>
-                    <AreaChart
-                        width={chartWidth}
-                        height={chartHeight}
-                        margins={[50, 50]}
-                        data={lineChartData}
-                        series={<AreaSeries colorScheme={'#4ac5ff'} />}
-                    />
+                <div className="d-flex align-items-center h-100 justify-content-center">
+                    {lineChartData.length <= 0 ? (
+                        <h1 className="mb-0">目前沒有資料</h1>
+                    ) : (
+                        <div
+                            className={lineChartData.length > 0 ? '' : 'd-none'}
+                        >
+                            <AreaChart
+                                width={chartWidth}
+                                height={chartHeight}
+                                margins={[50, 50]}
+                                data={lineChartData}
+                                series={
+                                    <AreaSeries
+                                        area={
+                                            <Area
+                                                gradient={
+                                                    <Gradient
+                                                        color="red"
+                                                        stops={[
+                                                            <GradientStop
+                                                                key="index"
+                                                                offset={0.1}
+                                                                color="#4ac5ff"
+                                                                stopOpacity={
+                                                                    0.2
+                                                                }
+                                                            />,
+                                                            <GradientStop
+                                                                key="index"
+                                                                offset={1}
+                                                                color="#4ac5ff"
+                                                                stopOpacity={1}
+                                                            />,
+                                                        ]}
+                                                    />
+                                                }
+                                            />
+                                        }
+                                        line={
+                                            <Line
+                                                strokeWidth={2}
+                                                color={'#ff0000'}
+                                            />
+                                        }
+                                        colorScheme={'#4ac5ff'}
+                                    />
+                                }
+                            />
+                        </div>
+                    )}
                 </div>
             )}
         </div>
