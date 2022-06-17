@@ -13,15 +13,21 @@ import {
     Line,
 } from 'reaviz';
 import { SetCookieParams } from '@/types/helpers.type';
+import { PinItem } from '@/types/devices.type';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
+    const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const resizeHandler = useRef(
         debounce(() => {
             setChartWidth(elementContainerRef.current?.offsetWidth || 0);
-            setChartHeight(elementContainerRef.current?.offsetHeight || 0);
+            setChartHeight(
+                elementContainerRef.current?.offsetHeight
+                    ? elementContainerRef.current?.offsetHeight - 80
+                    : 0
+            );
         }, 800)
     );
 
@@ -40,16 +46,21 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const [chartWidth, setChartWidth] = useState(0);
     const [chartHeight, setChartHeight] = useState(0);
 
-    const { fetchApi: getDevicePin } = useGetDevicePinApi({
-        id: deviceId,
-        pin: pin,
-    });
+    const { fetchApi: getDevicePin, data: responseOfGetDevicePin } =
+        useGetDevicePinApi({
+            id: deviceId,
+            pin: pin,
+        });
 
     useEffect(() => {
         getSensorLogs();
         getDevicePin();
         setChartWidth(elementContainerRef.current?.offsetWidth || 0);
-        setChartHeight(elementContainerRef.current?.offsetHeight || 0);
+        setChartHeight(
+            elementContainerRef.current?.offsetHeight
+                ? elementContainerRef.current?.offsetHeight - 80
+                : 0
+        );
         const resizeHanlder = resizeHandler.current;
         window.addEventListener('resize', resizeHanlder);
         return () => window.removeEventListener('resize', resizeHanlder);
@@ -70,6 +81,13 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         );
     }, [responseOfSensorLogs]);
 
+    useEffect(() => {
+        if (!responseOfGetDevicePin) {
+            return;
+        }
+        setDevicePin(responseOfGetDevicePin as PinItem);
+    }, [responseOfGetDevicePin]);
+
     return (
         <div
             ref={elementContainerRef}
@@ -85,50 +103,59 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                         <h1 className="mb-0">目前沒有資料</h1>
                     ) : (
                         <div
-                            className={lineChartData.length > 0 ? '' : 'd-none'}
+                            className={`${
+                                lineChartData.length > 0 ? '' : 'd-none'
+                            }`}
                         >
-                            <AreaChart
-                                width={chartWidth}
-                                height={chartHeight}
-                                margins={[50, 50]}
-                                data={lineChartData}
-                                series={
-                                    <AreaSeries
-                                        area={
-                                            <Area
-                                                gradient={
-                                                    <Gradient
-                                                        color="red"
-                                                        stops={[
-                                                            <GradientStop
-                                                                key="index"
-                                                                offset={0.1}
-                                                                color="#4ac5ff"
-                                                                stopOpacity={
-                                                                    0.2
-                                                                }
-                                                            />,
-                                                            <GradientStop
-                                                                key="index"
-                                                                offset={1}
-                                                                color="#4ac5ff"
-                                                                stopOpacity={1}
-                                                            />,
-                                                        ]}
-                                                    />
-                                                }
-                                            />
-                                        }
-                                        line={
-                                            <Line
-                                                strokeWidth={2}
-                                                color={'#ff0000'}
-                                            />
-                                        }
-                                        colorScheme={'#4ac5ff'}
-                                    />
-                                }
-                            />
+                            <h3 className="ms-4 mb-0 w-100 text-center">
+                                {devicePin?.device?.name} - {devicePin?.name}
+                            </h3>
+                            <div>
+                                <AreaChart
+                                    width={chartWidth}
+                                    height={chartHeight}
+                                    margins={[50, 50, 0, 50]}
+                                    data={lineChartData}
+                                    series={
+                                        <AreaSeries
+                                            area={
+                                                <Area
+                                                    gradient={
+                                                        <Gradient
+                                                            color="red"
+                                                            stops={[
+                                                                <GradientStop
+                                                                    key="index"
+                                                                    offset={0.1}
+                                                                    color="#4ac5ff"
+                                                                    stopOpacity={
+                                                                        0.2
+                                                                    }
+                                                                />,
+                                                                <GradientStop
+                                                                    key="index"
+                                                                    offset={1}
+                                                                    color="#4ac5ff"
+                                                                    stopOpacity={
+                                                                        1
+                                                                    }
+                                                                />,
+                                                            ]}
+                                                        />
+                                                    }
+                                                />
+                                            }
+                                            line={
+                                                <Line
+                                                    strokeWidth={2}
+                                                    color={'#ff0000'}
+                                                />
+                                            }
+                                            colorScheme={'#4ac5ff'}
+                                        />
+                                    }
+                                />
+                            </div>
                         </div>
                     )}
                 </div>
