@@ -35,27 +35,27 @@ namespace Homo.IotApi
                 if (trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold)
                 {
                     beTriggeredList.Add(trigger);
-                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId, trigger.DestinationPin, trigger.DestinationDeviceTargetState);
+                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState);
                 }
                 else if (trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold)
                 {
                     beTriggeredList.Add(trigger);
-                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId, trigger.DestinationPin, trigger.DestinationDeviceTargetState);
+                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState);
                 }
                 else if (trigger.Operator == TRIGGER_OPERATOR.L && dto.Value < trigger.SourceThreshold)
                 {
                     beTriggeredList.Add(trigger);
-                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId, trigger.DestinationPin, trigger.DestinationDeviceTargetState);
+                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState);
                 }
                 else if (trigger.Operator == TRIGGER_OPERATOR.LE && dto.Value <= trigger.SourceThreshold)
                 {
                     beTriggeredList.Add(trigger);
-                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId, trigger.DestinationPin, trigger.DestinationDeviceTargetState);
+                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState);
                 }
                 else if (trigger.Operator == TRIGGER_OPERATOR.E && dto.Value == trigger.SourceThreshold)
                 {
                     beTriggeredList.Add(trigger);
-                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId, trigger.DestinationPin, trigger.DestinationDeviceTargetState);
+                    DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState);
                 }
             });
 
