@@ -601,7 +601,6 @@ namespace IotApi.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("DestinationDeviceTargetState")
-                        .IsRequired()
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("DestinationPin")
