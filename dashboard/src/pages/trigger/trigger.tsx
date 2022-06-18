@@ -464,7 +464,6 @@ const Trigger = () => {
                             pinOptions={destinationDeviecePinsOptions}
                             isDisabled={isReadMode}
                             updatePin={(newPin) => {
-                                console.log('newPin', newPin);
                                 setEditedTriggerData((prev) => {
                                     return {
                                         ...prev,
