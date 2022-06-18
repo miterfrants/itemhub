@@ -17,5 +17,9 @@ namespace Homo.IotApi
         public static string DEVICE_NOT_FOUND = "DEVICE_NOT_FOUND";
         public static string DEIVCE_WITHOUT_MCU = "DEIVCE_WITHOUT_MCU";
         public static string OVER_PRICING_PLAN = "OVER_PRICING_PLAN";
+        public static string TRIGGER_DEST_DEVICE_ID_REQUIRED = "TRIGGER_DEST_DEVICE_ID_REQUIRED";
+        public static string TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED = "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED";
+        public static string TRIGGER_DEST_PIN_REQUIRED = "TRIGGER_DEST_PIN_REQUIRED";
+        public static string TRIGGER_EMAIL_REQUIRED = "TRIGGER_EMAIL_REQUIRED";
     }
 }

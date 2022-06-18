@@ -133,7 +133,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getTriggerType()
         {
             // 目前只有實作 device current value 和 notification 
-            return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.DEVICE_CURRENT_VALUE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
+            return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.CHANGE_DEVICE_STATE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
         }
     }
 }
