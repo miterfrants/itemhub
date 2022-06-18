@@ -77,6 +77,7 @@ namespace Homo.IotApi
                 entity.HasOne(p => p.DestinationDevice).WithMany().HasForeignKey(p => p.DestinationDeviceId);
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.Type });
             });
 
             modelBuilder.Entity<TriggerLog>(entity =>

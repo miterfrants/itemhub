@@ -122,5 +122,18 @@ namespace Homo.IotApi
         {
             return ConvertHelper.EnumToList(typeof(DEVICE_MODE));
         }
+
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "觸發類型",
+            Description = ""
+        )]
+        [Route("device-mode")]
+        [HttpGet]
+        public ActionResult<dynamic> getTriggerType()
+        {
+            return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE));
+        }
     }
 }

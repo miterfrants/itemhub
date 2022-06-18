@@ -20,7 +20,7 @@ namespace Homo.IotApi
             public decimal DestinationDeviceTargetState { get; set; }
             public TRIGGER_OPERATOR Operator { get; set; }
             public string Name { get; set; }
-
+            public TRIGGER_TYPE Type { get; set; }
         }
     }
 }
