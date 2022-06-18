@@ -78,6 +78,8 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.Type });
+                entity.HasIndex(p => new { p.Email });
+                entity.HasIndex(p => new { p.Phone });
             });
 
             modelBuilder.Entity<TriggerLog>(entity =>

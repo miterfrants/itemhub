@@ -34,6 +34,8 @@ namespace Homo.IotApi
         public string Name { get; set; }
         [Required]
         public TRIGGER_TYPE Type { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
 
     }
 }
