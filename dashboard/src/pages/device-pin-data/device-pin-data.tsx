@@ -53,8 +53,8 @@ const DevicePinData = () => {
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
-    const [switchMode, setSwitchMode] = useState(-1);
-    const [sensorMode, setSensorMode] = useState(-1);
+    const [switchMode, setSwitchMode] = useState(1);
+    const [sensorMode, setSensorMode] = useState(0);
 
     const microcontrollerItem = (microcontrollers || []).filter((item) => {
         return item.id === microcontrollerId;
@@ -297,7 +297,7 @@ const DevicePinData = () => {
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
             ) || ([] as PinItem[]);
-        if (devicePins.length === 0) {
+        if (devicePinsFromStore === null) {
             getDevicePinsApi();
             return;
         }
@@ -326,7 +326,7 @@ const DevicePinData = () => {
             return item.key === DEVICE_MODE.SWITCH;
         })[0]?.value;
 
-        if (switchMode) {
+        if (switchMode !== undefined) {
             setSwitchMode(switchMode);
         }
 
@@ -334,7 +334,7 @@ const DevicePinData = () => {
             return item.key === DEVICE_MODE.SENSOR;
         })[0]?.value;
 
-        if (sensorMode) {
+        if (sensorMode !== undefined) {
             setSensorMode(sensorMode);
         }
     }, [deviceModes]);

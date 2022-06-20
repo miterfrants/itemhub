@@ -26,8 +26,8 @@ export const pinsSlice = createSlice({
             // filter exists pins
             const newPinsExcludedExists = pins.filter((item) => {
                 return !updatedOldPins
-                    .map((oldPin) => oldPin.pin)
-                    .includes(item.pin);
+                    .map((oldPin) => oldPin.id)
+                    .includes(item.id);
             });
 
             return [...updatedOldPins, ...newPinsExcludedExists];
