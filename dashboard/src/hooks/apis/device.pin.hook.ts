@@ -144,7 +144,7 @@ export const useCreatePinsApi = (id: number, pins: PinItem[]) => {
     const dispatchAppendPins = useCallback(
         (data: PinItem[]) => {
             if (data.length > 0) {
-                dispatch(pinsActions.updatePins(pins));
+                dispatch(pinsActions.updatePins(data));
             }
         },
         [dispatch, pins]
