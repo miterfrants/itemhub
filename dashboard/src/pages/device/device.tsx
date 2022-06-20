@@ -22,6 +22,7 @@ import {
 import trashIcon from '@/assets/images/trash.svg';
 import cloudIcon from '@/assets/images/cloud.svg';
 import compassIcon from '@/assets/images/compass.svg';
+import { DeviceItem } from '@/types/devices.type';
 
 const Device = () => {
     const { id: idFromUrl } = useParams();
@@ -31,11 +32,9 @@ const Device = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const device =
-        (devices || []).filter((device) => device.id === Number(id))[0] || null;
 
-    const [deviceName, setDeviceName] = useState<string>('');
     const [microcontrollerName, setMicrocontrollerName] = useState<string>('');
+    const [device, setDevice] = useState<DeviceItem | null>(null);
 
     const { isLoading: isGetting, fetchApi: getDeviceApi } = useGetDeviceApi(
         Number(id)
@@ -68,31 +67,33 @@ const Device = () => {
     const {
         fetchApi: bundleFirmwareApi,
         error: errorOfBundle,
-        httpStatus: bundleFirmwareHttpStatus,
         data: responseOfBundle,
     } = useBundleFirmwareApi({ id: shouldBeBundledId });
 
     useEffect(() => {
+        const device =
+            (devices || []).filter(
+                (device: DeviceItem) => device.id === Number(id)
+            )[0] || null;
+        setDevice(device);
         if (device === null) {
             getDeviceApi();
         }
-    }, []);
-
-    useEffect(() => {
-        setDeviceName(device ? device.name : '');
-    }, [device]);
+        // eslint-disable-next-line
+    }, [devices]);
 
     useEffect(() => {
         if (deleteDeviceResponse?.status === RESPONSE_STATUS.OK) {
             dispatch(
                 toasterActions.pushOne({
-                    message: `已經成功刪除 ${deviceName} `,
+                    message: `已經成功刪除 ${device?.name} `,
                     duration: 5,
                     type: ToasterTypeEnum.INFO,
                 })
             );
             navigate('/dashboard/devices', { replace: true });
         }
+        // eslint-disable-next-line
     }, [deleteDeviceResponse]);
 
     useEffect(() => {
@@ -100,11 +101,12 @@ const Device = () => {
             setIsFirmwarePrepare(true);
             bundleFirmwareApi();
         }
+        // eslint-disable-next-line
     }, [shouldBeBundledId]);
 
     useEffect(() => {
         if (microcontrollers && device) {
-            microcontrollers.filter((item) => {
+            microcontrollers.filter((item: any) => {
                 if (item.id === device.microcontroller) {
                     setMicrocontrollerName(
                         item.key.replaceAll('_', ' ').toLowerCase()
@@ -121,7 +123,7 @@ const Device = () => {
     const deleteDevice = () => {
         dispatch(
             dialogActions.open({
-                message: `刪除後將無法復原, 請輸入 DELETE 完成刪除 ${deviceName} `,
+                message: `刪除後將無法復原, 請輸入 DELETE 完成刪除 ${device?.name} `,
                 title: '確認刪除裝置 ?',
                 type: DialogTypeEnum.PROMPT,
                 checkedMessage: 'DELETE',
