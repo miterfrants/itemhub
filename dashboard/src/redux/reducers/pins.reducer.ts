@@ -24,9 +24,11 @@ export const pinsSlice = createSlice({
             });
 
             // filter exists pins
-            const newPinsExcludedExists = pins.filter(
-                (item) => !oldPins.map((oldPin) => oldPin.id).includes(item.id)
-            );
+            const newPinsExcludedExists = pins.filter((item) => {
+                return !updatedOldPins
+                    .map((oldPin) => oldPin.pin)
+                    .includes(item.pin);
+            });
 
             return [...updatedOldPins, ...newPinsExcludedExists];
         },
