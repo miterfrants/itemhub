@@ -3,14 +3,16 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220618143202_TriggerChangeDestinationDeviceTargetNullableForNotification")]
+    partial class TriggerChangeDestinationDeviceTargetNullableForNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -601,6 +603,7 @@ namespace IotApi.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal?>("DestinationDeviceTargetState")
+                        .IsRequired()
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("DestinationPin")

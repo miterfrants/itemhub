@@ -3,14 +3,16 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220618081022_AddTriggerType")]
+    partial class AddTriggerType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,21 +599,22 @@ namespace IotApi.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long?>("DestinationDeviceId")
+                    b.Property<long>("DestinationDeviceId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("DestinationDeviceTargetState")
+                    b.Property<decimal>("DestinationDeviceSourceState")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("DestinationDeviceTargetState")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("DestinationPin")
+                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("varchar(3)");
 
                     b.Property<DateTime?>("EditedAt")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(255)");
@@ -621,9 +624,6 @@ namespace IotApi.Migrations
 
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("varchar(255)");
 
                     b.Property<long>("SourceDeviceId")
                         .HasColumnType("bigint");
@@ -649,13 +649,9 @@ namespace IotApi.Migrations
 
                     b.HasIndex("DestinationPin");
 
-                    b.HasIndex("Email");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("Phone");
 
                     b.HasIndex("SourceDeviceId");
 
@@ -758,7 +754,9 @@ namespace IotApi.Migrations
                 {
                     b.HasOne("Homo.IotApi.Device", "DestinationDevice")
                         .WithMany()
-                        .HasForeignKey("DestinationDeviceId");
+                        .HasForeignKey("DestinationDeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Homo.IotApi.Device", "SourceDevice")
                         .WithMany()

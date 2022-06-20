@@ -16,4 +16,16 @@ namespace Homo.IotApi
         [Description("等於")]
         E
     }
+
+    public enum TRIGGER_TYPE
+    {
+        [Description("裝置")]
+        DEVICE_CURRENT_VALUE,
+        [Description("通知")]
+        NOTIFICATION,
+        [Description("裝置抽樣資料")]
+        DEVICE_SAMPLING_VALUE,
+        [Description("排程")]
+        SCHEDULED,
+    }
 }

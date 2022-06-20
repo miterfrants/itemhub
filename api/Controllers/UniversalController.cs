@@ -72,13 +72,12 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getTriggerOperators()
         {
             List<ConvertHelper.EnumList> triggerOperators = ConvertHelper.EnumToList(typeof(TRIGGER_OPERATOR));
-            Dictionary<string, string> symbolMapping = new Dictionary<string, string>() { { "B", ">" }, { "BE", ">=" }, { "E", "=" }, { "LE", "<=" }, { "L", "<" } };
             return triggerOperators.Select(x => new
             {
                 x.Key,
                 x.Label,
                 x.Value,
-                Symbol = symbolMapping.GetValueOrDefault(x.Key)
+                Symbol = TriggerOperatorHelper.GetSymbol(x.Key)
             }).ToList<dynamic>();
         }
 
@@ -121,6 +120,20 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getDeviceMode()
         {
             return ConvertHelper.EnumToList(typeof(DEVICE_MODE));
+        }
+
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "觸發類型",
+            Description = ""
+        )]
+        [Route("trigger-types")]
+        [HttpGet]
+        public ActionResult<dynamic> getTriggerType()
+        {
+            // 目前只有實作 device current value 和 notification 
+            return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.DEVICE_CURRENT_VALUE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
         }
     }
 }
