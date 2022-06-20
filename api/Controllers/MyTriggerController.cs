@@ -23,6 +23,7 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpPost]
+        [TriggerValidate()]
         public ActionResult<dynamic> create([FromBody] DTOs.Trigger dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             Trigger rewRecord = TriggerDataservice.Create(_dbContext, extraPayload.Id, dto);
@@ -59,6 +60,7 @@ namespace Homo.IotApi
         )]
         [HttpPatch]
         [Route("{id}")]
+        [TriggerValidate()]
         public ActionResult<dynamic> update([FromRoute] long id,
             [FromBody] DTOs.Trigger dto,
             Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)

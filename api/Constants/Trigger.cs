@@ -20,7 +20,7 @@ namespace Homo.IotApi
     public enum TRIGGER_TYPE
     {
         [Description("裝置")]
-        DEVICE_CURRENT_VALUE,
+        CHANGE_DEVICE_STATE,
         [Description("通知")]
         NOTIFICATION,
         [Description("裝置抽樣資料")]

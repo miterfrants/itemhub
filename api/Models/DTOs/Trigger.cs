@@ -20,6 +20,7 @@ namespace Homo.IotApi
             public TRIGGER_OPERATOR Operator { get; set; }
             public string Name { get; set; }
             public TRIGGER_TYPE Type { get; set; }
+            public string Email { get; set; }
         }
     }
 }

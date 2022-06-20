@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+
+        .itemhub-container {
+            padding: 45px 40px 60px;
+            width: 100%;
+            max-width: 600px;
+            min-height: 400px;
+            margin: 10px auto;
+            font-family: 'Noto Sans TC', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .itemhub-bg {
+            background: #151b5e;
+        }
+
+        .itemhub-highlight-container {
+            padding: 24px;
+            margin: 32px 0;
+            background: #E5F2F6;
+        }
+
+        .itemhub-major-container {
+            background: #fff;
+            padding: 32px 24px;
+        }
+
+        .itemhub-logo {
+            text-align: center;
+            padding-bottom: 30px;
+        }
+
+        .itemhub-logo a,
+        .itemhub-logo a:hover,
+        .itemhub-logo a:active,
+        .itemhub-logo a:visited {
+            text-decoration: none;
+        }
+
+        .itemhub-logo img {
+            height: 30px;
+        }
+
+        .logo-contaner {
+            display: flex;
+            justify-content: center;
+        }
+
+        .itemhub-default-text-style {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: rgba(0, 0, 0, 0.65);
+        }
+
+        .link-btn,
+        .link-btn:active,
+        .link-btn:visited,
+        .link-btn:hover {
+            display: inline-block;
+            width: 200px;
+            margin: 10px 0;
+            padding: 12px 0;
+            text-decoration: none;
+            text-align: center;
+            background: #4AC5FF;
+            color: #fff !important;
+        }
+
+        .itemhub-note-text {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .itemhub-note-text a {
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .verify-code {
+            padding-top: 8px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .text-cener {
+            text-align: center;
+        }
+
+        .logo-wording {
+            margin-left: 15px;
+        }
+
+        .text-danger {
+            color: #ff4747;
+        }
+    </style>
+</head>
+
+<body class="itemhub-bg">
+    <div class="itemhub-container">
+        <div class="itemhub-logo">
+            <a href="{{websiteUrl}}" target="_blank" class="logo-contaner">
+                <img src="{{websiteUrl}}/assets/images/logo.png" alt="logo">
+                <img src="{{websiteUrl}}/assets/images/logo-wording.png" alt="logo-wording" class="logo-wording">
+            </a>
+        </div>
+        <div class="itemhub-major-container itemhub-default-text-style">
+            <div>
+                {{hello}}
+            </div>
+            <div class="itemhub-highlight-container text-cener">
+                <div class="itemhub-note-text">
+                    <p>{{notificationContent}}</p>
+                    <h1>{{deviceName}} - {{pinName}}</h1>
+                    <h1 class="text-danger">{{labelOfOperator}} {{thresholdValue}}</h1>
+                    <h3>{{eventTime}}</h3>
+                </div>
+                <a href="{{link}}" class="link-btn">{{callToActionButton}}</a>
+            </div>
+            <div class="itemhub-note-text">
+                {{mailContentSystemAutoSendEmail}}
+                <br>
+                {{adminEmail}}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
 
@@ -89,6 +90,20 @@ namespace Homo.IotApi
                 .Where(x =>
                     x.DeletedAt == null
                     && x.Id == id
+                    && x.DeviceId == deviceId
+                    && x.OwnerId == ownerId // 前三項東西都要傳避免有人忘了做檢查
+                    && (mode == null || x.Mode == mode)
+                    && (pin == null || x.Pin == pin)
+                ).FirstOrDefault();
+        }
+
+        // temp 
+        public static DevicePin GetOneByDeviceIdAndPin(IotDbContext dbContext, long ownerId, long deviceId, DEVICE_MODE? mode, string pin)
+        {
+            return dbContext.DevicePin
+                .Include(x => x.Device)
+                .Where(x =>
+                    x.DeletedAt == null
                     && x.DeviceId == deviceId
                     && x.OwnerId == ownerId // 前三項東西都要傳避免有人忘了做檢查
                     && (mode == null || x.Mode == mode)
