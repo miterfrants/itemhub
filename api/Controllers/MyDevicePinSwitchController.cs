@@ -18,33 +18,6 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "Deprecated" },
-            Summary = "裝置 PIN 開關 - 取得裝置開關 (可使用 GET /v1/my/devices/{id}/pins 再行過濾 mode = 0)",
-            Description = ""
-        )]
-        [HttpGet]
-        public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
-        {
-            return DevicePinDataservice.GetAll(_dbContext, extraPayload.Id, new List<long>() { id }, DEVICE_MODE.SWITCH, null);
-        }
-
-        [SwaggerOperation(
-            Tags = new[] { "Deprecated" },
-            Summary = "裝置 PIN 開關 - 新增開關 (可使用 POST /v1/my/devices/{id}/pins)",
-            Description = ""
-        )]
-        [HttpPost]
-        public ActionResult<dynamic> create([FromRoute] long id, [FromBody] DTOs.DevicePin dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
-        {
-            DevicePin pin = DevicePinDataservice.GetOne(_dbContext, id, extraPayload.Id, dto.DeviceId, dto.Mode, dto.Pin);
-            if (pin != null)
-            {
-                throw new CustomException(IotApi.ERROR_CODE.DEVICE_STATE_EXISTS, System.Net.HttpStatusCode.BadRequest);
-            }
-            return DevicePinDataservice.Create(_dbContext, extraPayload.Id, id, dto);
-        }
-
-        [SwaggerOperation(
             Tags = new[] { "裝置相關" },
             Summary = "裝置 PIN 開關 - 切換開關",
             Description = ""
