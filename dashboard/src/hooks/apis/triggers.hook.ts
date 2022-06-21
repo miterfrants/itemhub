@@ -17,6 +17,19 @@ interface GetTriggersResponse {
     rowNum: number;
 }
 
+export interface EditedTrigger {
+    name: string;
+    sourceDeviceId: number;
+    sourcePin: string;
+    sourceThreshold: number;
+    destinationDeviceId: number | null;
+    destinationPin: string | null;
+    destinationDeviceTargetState: number | null;
+    operator: number;
+    type: number;
+    email: string | null;
+}
+
 export const useGetTriggersApi = ({
     page,
     limit,
@@ -102,16 +115,9 @@ export const useCreateTriggerApi = ({
     destinationDeviceTargetState,
     operator,
     name,
-}: {
-    sourceDeviceId: number;
-    sourcePin: string;
-    sourceThreshold: number;
-    destinationDeviceId: number;
-    destinationPin: string;
-    destinationDeviceTargetState: number;
-    operator: number;
-    name: string;
-}) => {
+    type,
+    email,
+}: EditedTrigger) => {
     const dispatch = useAppDispatch();
     const dispatchAddTrigger = useCallback(
         (data: TriggerItem) => {
@@ -135,6 +141,8 @@ export const useCreateTriggerApi = ({
             destinationPin,
             destinationDeviceTargetState,
             operator,
+            type,
+            email,
         },
         initialData: null,
         callbackFunc: dispatchAddTrigger,
@@ -153,15 +161,7 @@ export const useUpdateTriggerApi = ({
     updatedData,
 }: {
     trigerId: number;
-    updatedData: {
-        sourceDeviceId: number;
-        sourcePin: string;
-        sourceThreshold: number;
-        destinationDeviceId: number;
-        destinationPin: string;
-        destinationDeviceTargetState: number;
-        operator: number;
-    };
+    updatedData: EditedTrigger;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchUpdateTrigger = useCallback(

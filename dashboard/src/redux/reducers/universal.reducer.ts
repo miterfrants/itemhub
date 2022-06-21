@@ -4,18 +4,21 @@ import {
     Microcontroller,
     DeviceMode,
     TriggerOerator,
+    TriggerType,
 } from '@/types/universal.type';
 
 interface UniversalState {
     triggerOperators: TriggerOerator[];
     microcontrollers: Microcontroller[];
     deviceModes: DeviceMode[];
+    triggerTypes: TriggerType[];
 }
 
 const initialState: UniversalState = {
     triggerOperators: [],
     microcontrollers: [],
     deviceModes: [],
+    triggerTypes: [],
 };
 
 export const universalSlice = createSlice({
@@ -47,6 +50,13 @@ export const universalSlice = createSlice({
             return {
                 ...state,
                 deviceModes: newDeviceModes,
+            };
+        },
+        setTriggerTypes: (state, action: PayloadAction<TriggerType[]>) => {
+            const newTriggerTypes = action.payload;
+            return {
+                ...state,
+                triggerTypes: newTriggerTypes,
             };
         },
     },

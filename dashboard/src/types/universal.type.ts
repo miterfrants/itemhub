@@ -20,3 +20,9 @@ export interface DeviceMode {
     value: number;
     label: string;
 }
+
+export interface TriggerType {
+    key: string;
+    value: number;
+    label: string;
+}

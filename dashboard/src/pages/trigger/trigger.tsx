@@ -19,6 +19,8 @@ import DeviceAndPinInputs from '@/components/inputs/device-and-pin-input/device-
 import { useDispatch } from 'react-redux';
 import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
 import PageTitle from '@/components/page-title/page-title';
+import { TRIGGER_TYPE } from '@/constants/trigger-type';
+import { TriggerType } from '@/types/universal.type';
 
 const Trigger = () => {
     const navigate = useNavigate();
@@ -28,10 +30,18 @@ const Trigger = () => {
     const { id: idFromUrl } = useParams();
     const triggerId = idFromUrl ? parseInt(idFromUrl) : null;
 
-    const { triggerOperators } = useAppSelector(selectUniversal);
+    const { triggerOperators, triggerTypes } = useAppSelector(selectUniversal);
     const { triggers } = useAppSelector(selectTriggers);
+
     const trigger =
         triggers?.filter((trigger) => trigger.id === triggerId)[0] || null;
+    const changeDeviceStateTriggerType = triggerTypes.find(
+        (item) => item.key === TRIGGER_TYPE.CHANGE_DEVICE_STATE
+    )?.value;
+
+    const notificationTriggerType = triggerTypes.find(
+        (item) => item.key === TRIGGER_TYPE.NOTIFICATION
+    )?.value;
 
     const isCreateMode = !idFromUrl;
     const isEditMode = location.pathname.includes('edit') && triggerId !== null;
@@ -53,11 +63,13 @@ const Trigger = () => {
         sourceDeviceId: trigger?.sourceDeviceId || 0,
         sourcePin: trigger?.sourcePin || '',
         sourceThreshold: trigger?.sourceThreshold || 0,
-        destinationDeviceId: trigger?.destinationDeviceId || 0,
-        destinationPin: trigger?.destinationPin || '',
+        destinationDeviceId: trigger?.destinationDeviceId || null,
+        destinationPin: trigger?.destinationPin || null,
         destinationDeviceTargetState:
-            trigger?.destinationDeviceTargetState || 0,
+            trigger?.destinationDeviceTargetState || null,
         operator: trigger?.operator || 0,
+        type: trigger?.type || 0,
+        email: trigger?.email || null,
     });
 
     const [isValidEditedTrigger, setIsValidEditedTrigger] = useState({
@@ -67,6 +79,7 @@ const Trigger = () => {
         sourceThreshold: true,
         destinationDeviceId: true,
         destinationPin: true,
+        email: true,
     });
 
     const validateEditedTrigger = (fetchApi: () => Promise<void>) => {
@@ -107,7 +120,10 @@ const Trigger = () => {
             });
             isValidateSuccess = false;
         }
-        if (!editedTriggerData.destinationDeviceId) {
+        if (
+            !editedTriggerData.destinationDeviceId &&
+            editedTriggerData.type === changeDeviceStateTriggerType
+        ) {
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
@@ -116,11 +132,27 @@ const Trigger = () => {
             });
             isValidateSuccess = false;
         }
-        if (!editedTriggerData.destinationPin) {
+        if (
+            !editedTriggerData.destinationPin &&
+            editedTriggerData.type === changeDeviceStateTriggerType
+        ) {
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
                     destinationPin: false,
+                };
+            });
+            isValidateSuccess = false;
+        }
+
+        if (
+            !editedTriggerData.email &&
+            editedTriggerData.type === notificationTriggerType
+        ) {
+            setIsValidEditedTrigger((prev) => {
+                return {
+                    ...prev,
+                    email: false,
                 };
             });
             isValidateSuccess = false;
@@ -141,7 +173,7 @@ const Trigger = () => {
         devicePins: destinationDeviecePins,
         getDevicePinsApi: getDestinationDevicePinsApi,
     } = useGetDevicePinsApi({
-        id: editedTriggerData.destinationDeviceId,
+        id: editedTriggerData.destinationDeviceId || 0,
     });
 
     const { isCreatingTrigger, createTriggerResponse, createTriggerApi } =
@@ -200,8 +232,10 @@ const Trigger = () => {
             destinationDeviceId: trigger?.destinationDeviceId || 0,
             destinationPin: trigger?.destinationPin || '',
             destinationDeviceTargetState:
-                trigger?.destinationDeviceTargetState || 0,
+                trigger?.destinationDeviceTargetState || 1,
             operator: trigger?.operator || 0,
+            type: trigger?.type || 0,
+            email: trigger?.email || '',
         });
     }, [trigger]);
 
@@ -280,7 +314,7 @@ const Trigger = () => {
                         </div>
                     )}
                 </div>
-                <div className="d-flex mt-2 mb-3 fs-5">
+                <div className="d-flex mt-5 mb-3 fs-5">
                     事件條件 <hr className="bg-gray flex-grow-1 ms-3" />
                 </div>
                 <DeviceAndPinInputs
@@ -385,75 +419,136 @@ const Trigger = () => {
                         )}
                     </div>
                 </div>
-                <div className="d-flex mt-2 mb-3 fs-5">
+                <div className="d-flex mt-5 mb-3 fs-5">
                     目標設定 <hr className="bg-gray flex-grow-1 ms-3" />
                 </div>
-                <DeviceAndPinInputs
-                    allDevices={allDevices}
-                    isDeviceNameError={
-                        !isValidEditedTrigger.destinationDeviceId
-                    }
-                    initialDeviceName={trigger?.destinationDevice?.name}
-                    deviceNameLabel="目標裝置"
-                    isPinError={!isValidEditedTrigger.destinationPin}
-                    pinLabel="目標裝置 Pin"
-                    pinValue={editedTriggerData.destinationPin}
-                    pinOptions={destinationDeviecePinsOptions}
-                    isDisabled={isReadMode}
-                    updatePin={(newPin) => {
-                        setEditedTriggerData((prev) => {
-                            return {
-                                ...prev,
-                                destinationPin: newPin,
-                            };
-                        });
-                        setIsValidEditedTrigger((prev) => {
-                            return {
-                                ...prev,
-                                destinationPin: newPin ? true : false,
-                            };
+                <select
+                    className="form-select"
+                    onChange={(e) => {
+                        const triggerType = Number(e.target.value);
+                        setEditedTriggerData({
+                            ...editedTriggerData,
+                            destinationDeviceId: null,
+                            destinationPin: null,
+                            destinationDeviceTargetState:
+                                triggerType === notificationTriggerType
+                                    ? null
+                                    : 1,
+                            type: triggerType,
+                            email:
+                                triggerType === changeDeviceStateTriggerType
+                                    ? null
+                                    : '',
                         });
                     }}
-                    updateDeviceId={(newDeviceId) => {
-                        setEditedTriggerData((prev) => {
-                            return {
-                                ...prev,
-                                destinationDeviceId: newDeviceId,
-                            };
-                        });
-                        setIsValidEditedTrigger((prev) => {
-                            return {
-                                ...prev,
-                                destinationDeviceId: newDeviceId ? true : false,
-                            };
-                        });
-                    }}
-                />
-                <div className="row">
-                    <label className="col-6">
-                        <div className="mb-1">目標狀態</div>
-                        <select
-                            className="form-select"
-                            disabled={isReadMode}
-                            value={
-                                editedTriggerData.destinationDeviceTargetState
+                    value={editedTriggerData.type}
+                >
+                    {triggerTypes.map((type: TriggerType) => (
+                        <option key={type.key} value={type.value}>
+                            {type.label}
+                        </option>
+                    ))}
+                </select>
+                {editedTriggerData.type === changeDeviceStateTriggerType ? (
+                    <div className="mt-3">
+                        <DeviceAndPinInputs
+                            allDevices={allDevices}
+                            isDeviceNameError={
+                                !isValidEditedTrigger.destinationDeviceId
                             }
-                            onChange={(e) => {
+                            initialDeviceName={trigger?.destinationDevice?.name}
+                            deviceNameLabel="目標裝置"
+                            isPinError={!isValidEditedTrigger.destinationPin}
+                            pinLabel="目標裝置 Pin"
+                            pinValue={editedTriggerData.destinationPin || ''}
+                            pinOptions={destinationDeviecePinsOptions}
+                            isDisabled={isReadMode}
+                            updatePin={(newPin) => {
                                 setEditedTriggerData((prev) => {
                                     return {
                                         ...prev,
-                                        destinationDeviceTargetState: parseInt(
-                                            e.target.value
-                                        ),
+                                        destinationPin: newPin,
+                                    };
+                                });
+                                setIsValidEditedTrigger((prev) => {
+                                    return {
+                                        ...prev,
+                                        destinationPin: newPin ? true : false,
                                     };
                                 });
                             }}
-                        >
-                            <option value="1">開</option>
-                            <option value="0">關</option>
-                        </select>
-                    </label>
-                </div>
+                            updateDeviceId={(newDeviceId) => {
+                                setEditedTriggerData((prev) => {
+                                    return {
+                                        ...prev,
+                                        destinationDeviceId: newDeviceId,
+                                    };
+                                });
+                                setIsValidEditedTrigger((prev) => {
+                                    return {
+                                        ...prev,
+                                        destinationDeviceId: newDeviceId
+                                            ? true
+                                            : false,
+                                    };
+                                });
+                            }}
+                        />
+                        <div className="row">
+                            <label className="col-6">
+                                <div className="mb-1">目標狀態</div>
+                                <select
+                                    className="form-select"
+                                    disabled={isReadMode}
+                                    value={
+                                        editedTriggerData.destinationDeviceTargetState ||
+                                        0
+                                    }
+                                    onChange={(e) => {
+                                        setEditedTriggerData((prev) => {
+                                            return {
+                                                ...prev,
+                                                destinationDeviceTargetState:
+                                                    parseInt(e.target.value),
+                                            };
+                                        });
+                                    }}
+                                >
+                                    <option value="1">開</option>
+                                    <option value="0">關</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="mt-3">
+                        <div className="row">
+                            <label className="col-12">
+                                <div className="mb-1">Email</div>
+                                <input
+                                    type="email"
+                                    className="form-control"
+                                    value={editedTriggerData.email || ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setEditedTriggerData((prev) => {
+                                            return {
+                                                ...prev,
+                                                email: value,
+                                            };
+                                        });
+                                    }}
+                                />
+                                {!isValidEditedTrigger.email && (
+                                    <div className="text-danger mt-1 fs-5">
+                                        請輸入 Email
+                                    </div>
+                                )}
+                            </label>
+                        </div>
+                    </div>
+                )}
+
                 <div className="d-flex justify-content-end">
                     <button
                         type="button"

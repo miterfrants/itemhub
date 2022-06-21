@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
+    useGetTriggerTypesApi,
     useGetTriggerOperatorsApi,
     useGetMicrocontrollersApi,
     useGetDeviceModesApi,
@@ -40,18 +41,15 @@ const App = () => {
     }
 
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
+    const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
+    const { getDeviceModesApi } = useGetDeviceModesApi();
+    const { fetchApi: getTriggerTypes } = useGetTriggerTypesApi();
+
     useEffect(() => {
         getTriggerOperatorsApi();
-    }, []);
-
-    const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
-    useEffect(() => {
         getMicrocontrollersApi();
-    }, []);
-
-    const { getDeviceModesApi } = useGetDeviceModesApi();
-    useEffect(() => {
         getDeviceModesApi();
+        getTriggerTypes();
     }, []);
 
     return token ? (

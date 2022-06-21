@@ -2,6 +2,7 @@ export const API_URL = import.meta.env.VITE_API_URL;
 
 export const END_POINT = {
     TRIGGER_OPERATORS: 'universal/trigger-operators',
+    TRIGGER_TYPES: 'universal/trigger-types',
     MICROCONTROLLER: 'universal/microcontroller',
     DEVICE_MODE: 'universal/device-mode',
     SIGN_WITH_EMAIL: 'auth/sign-in-with-email',
