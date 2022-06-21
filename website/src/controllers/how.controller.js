@@ -1,4 +1,5 @@
 import { APP_CONFIG } from '../config.js';
+import { EVENTS } from '../constants.js';
 import {
     RoutingController
 } from '../swim/routing-controller.js';
@@ -29,6 +30,7 @@ export class HowController extends RoutingController {
             history.pushState({}, '', '/how/');
             return;
         }
+        this.args.gtag('event', EVENTS.HOW_TO_USE_GOOGLE_HOME);
         history.pushState({}, '', '/how/integrate-google-smart-home/');
     }
 
@@ -37,6 +39,17 @@ export class HowController extends RoutingController {
             history.pushState({}, '', '/how/');
             return;
         }
+        this.args.gtag('event', EVENTS.HOW_TO_USE_BASIC);
         history.pushState({}, '', '/how/start/');
+    }
+
+    sendGoogleHomeGaEvent () {
+        console.log('home');
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_GOOGLE_HOME);
+    }
+
+    sendBasicGaEvent () {
+        console.log('basic');
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_BASIC);
     }
 }

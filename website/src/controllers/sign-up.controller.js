@@ -1,4 +1,4 @@
-import { RESPONSE_STATUS } from '../constants.js';
+import { EVENTS, RESPONSE_STATUS } from '../constants.js';
 import { AuthDataService } from '../dataservices/auth.dataservice.js';
 import {
     RoutingController
@@ -181,6 +181,7 @@ export class SignUpController extends RoutingController {
 
         const dashboardPayload = window.jwt_decode(resp.data.dashboardToken);
         CookieUtil.setCookie('dashboardToken', resp.data.dashboardToken, null, dashboardPayload.exp);
+        this.args.gtag('event', EVENTS.SIGN_UP);
         history.pushState({}, '', '/auth/finish/');
     }
 
@@ -201,6 +202,7 @@ export class SignUpController extends RoutingController {
         }
         CookieUtil.setCookie('token', resp.data.token);
         CookieUtil.setCookie('dashboardToken', resp.data.dashboardToken);
+        this.args.gtag('event', EVENTS.SIGN_UP);
         history.pushState({}, '', '/auth/finish/');
     }
 
