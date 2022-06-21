@@ -26,3 +26,9 @@ export interface TriggerType {
     value: number;
     label: string;
 }
+
+export interface TriggerNotificationPeriod {
+    key: string;
+    value: number;
+    label: string;
+}

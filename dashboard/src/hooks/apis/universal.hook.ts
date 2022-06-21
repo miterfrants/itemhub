@@ -62,6 +62,32 @@ export const useGetTriggerTypesApi = () => {
     };
 };
 
+export const useGetTriggerNotificationPeriodApi = () => {
+    const dispatch = useAppDispatch();
+    const dispatchSetTriggerNotificationPeriod = useCallback(
+        (data: TriggerType[]) => {
+            if (data) {
+                dispatch(universalActions.setTriggerNotificationPeriod(data));
+            }
+        },
+        [dispatch]
+    );
+    const apiPath = `${API_URL}${END_POINT.TRIGGER_NOTIFICATION_PERIODS}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<TriggerType[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchSetTriggerNotificationPeriod,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+    };
+};
+
 export const useGetMicrocontrollersApi = () => {
     const dispatch = useAppDispatch();
     const dispatchSetMicrocontrollers = useCallback(

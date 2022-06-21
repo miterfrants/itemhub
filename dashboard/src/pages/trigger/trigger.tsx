@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
 import PageTitle from '@/components/page-title/page-title';
 import { TRIGGER_TYPE } from '@/constants/trigger-type';
-import { TriggerType } from '@/types/universal.type';
+import { TriggerNotificationPeriod, TriggerType } from '@/types/universal.type';
 
 const Trigger = () => {
     const navigate = useNavigate();
@@ -30,7 +30,8 @@ const Trigger = () => {
     const { id: idFromUrl } = useParams();
     const triggerId = idFromUrl ? parseInt(idFromUrl) : null;
 
-    const { triggerOperators, triggerTypes } = useAppSelector(selectUniversal);
+    const { triggerOperators, triggerTypes, triggerNotificationPeriod } =
+        useAppSelector(selectUniversal);
     const { triggers } = useAppSelector(selectTriggers);
 
     const trigger =
@@ -70,6 +71,7 @@ const Trigger = () => {
         operator: trigger?.operator || 0,
         type: trigger?.type || 0,
         email: trigger?.email || null,
+        notificationPeriod: trigger?.notificationPeriod || null,
     });
 
     const [isValidEditedTrigger, setIsValidEditedTrigger] = useState({
@@ -229,13 +231,13 @@ const Trigger = () => {
             sourceDeviceId: trigger?.sourceDeviceId || 0,
             sourcePin: trigger?.sourcePin || '',
             sourceThreshold: trigger?.sourceThreshold || 0,
-            destinationDeviceId: trigger?.destinationDeviceId || 0,
-            destinationPin: trigger?.destinationPin || '',
-            destinationDeviceTargetState:
-                trigger?.destinationDeviceTargetState || 1,
+            destinationDeviceId: trigger?.destinationDeviceId,
+            destinationPin: trigger?.destinationPin,
+            destinationDeviceTargetState: trigger?.destinationDeviceTargetState,
             operator: trigger?.operator || 0,
             type: trigger?.type || 0,
             email: trigger?.email || '',
+            notificationPeriod: trigger?.notificationPeriod,
         });
     }, [trigger]);
 
@@ -544,6 +546,38 @@ const Trigger = () => {
                                         請輸入 Email
                                     </div>
                                 )}
+                            </label>
+                        </div>
+                        <div className="row mt-3">
+                            <label className="col-12">
+                                <div className="mb-1">發送週期</div>
+                                <select
+                                    className="form-select"
+                                    onChange={(e) => {
+                                        const period = Number(e.target.value);
+                                        setEditedTriggerData({
+                                            ...editedTriggerData,
+                                            notificationPeriod: period,
+                                        });
+                                    }}
+                                    value={
+                                        editedTriggerData.notificationPeriod ===
+                                        null
+                                            ? ''
+                                            : editedTriggerData.notificationPeriod.toString()
+                                    }
+                                >
+                                    {triggerNotificationPeriod.map(
+                                        (period: TriggerNotificationPeriod) => (
+                                            <option
+                                                key={period.key}
+                                                value={period.value}
+                                            >
+                                                {period.label}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
                             </label>
                         </div>
                     </div>
