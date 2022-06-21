@@ -119,13 +119,13 @@ namespace Homo.IotApi
                         callToActionButton = _commonLocalizer.Get("checkout"),
                         mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
                     });
-                    // MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
-                    // {
-                    //     Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string>{{
-                    //         "deviceName", deviceName
-                    //      }}),
-                    //     Content = template.Content
-                    // }, _systemEmail, trigger.Email, _sendGridApiKey);
+                    MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                    {
+                        Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string>{{
+                            "deviceName", deviceName
+                         }}),
+                        Content = template.Content
+                    }, _systemEmail, trigger.Email, _sendGridApiKey);
                 }
             });
 
