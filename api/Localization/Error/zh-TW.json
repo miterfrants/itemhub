@@ -37,5 +37,6 @@
     "TRIGGER_DEST_DEVICE_ID_REQUIRED": "觸發 - 目標裝置 ID 為必填欄位",
     "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED": "觸發 - 目標狀態為必填欄位",
     "TRIGGER_DEST_PIN_REQUIRED": "觸發 - 目標 PIN 為必填欄位",
-    "TRIGGER_EMAIL_REQUIRED": "觸發 - Email 為必填欄位"
+    "TRIGGER_EMAIL_REQUIRED": "觸發 - Email 為必填欄位",
+    "TRIGGER_NOTIFICATION_OVER_USING": "觸發通知超過訂閱方案的使用量"
 }

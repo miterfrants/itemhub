@@ -28,5 +28,6 @@
     "TRIGGER_DEST_DEVICE_ID_REQUIRED": "Trigger dest device id required",
     "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED": "Trigger dest device target state required",
     "TRIGGER_DEST_PIN_REQUIRED": "Trigger dest pin required",
-    "TRIGGER_EMAIL_REQUIRED": "Trigger email required"
+    "TRIGGER_EMAIL_REQUIRED": "Trigger email required",
+    "TRIGGER_NOTIFICATION_OVER_USING": "over-using trigger notification"
 }

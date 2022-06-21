@@ -298,5 +298,10 @@ namespace Homo.AuthApi
             return dbContext.User.Where(x => x.DeletedAt == null && x.IsOverSubscriptionPlan == true).ToList();
         }
 
+
+        public static void SetIsOverSubscriptionPlan(DBContext dbContext, long id)
+        {
+            dbContext.User.Where(x => x.DeletedAt == null && x.Id == id).UpdateFromQuery(x => new User() { IsOverSubscriptionPlan = true });
+        }
     }
 }

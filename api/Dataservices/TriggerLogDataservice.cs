@@ -25,15 +25,29 @@ namespace Homo.IotApi
                 TriggerLog record = new TriggerLog();
                 record.CreatedAt = DateTime.Now;
                 record.TriggerId = item.Id;
+                record.Type = item.Type;
+                record.OwnerId = item.OwnerId;
                 record.Raw = Newtonsoft.Json.JsonConvert.SerializeObject(item);
                 dbContext.TriggerLog.Add(record);
             });
             dbContext.SaveChanges();
         }
 
-        public static void Delete(IotDbContext dbContext, DateTime endAt)
+        public static int GetCountOfNotificationInPeriod(IotDbContext dbContext, DateTime startAt, DateTime endAt, long ownerId, TRIGGER_TYPE? triggerType)
         {
-            dbContext.TriggerLog.Where(x => x.CreatedAt <= endAt).DeleteFromQuery();
+            return dbContext.TriggerLog.Where(x =>
+                x.CreatedAt >= startAt
+                && x.CreatedAt <= endAt
+                && x.OwnerId == ownerId
+                && (triggerType == null || x.Type == triggerType.GetValueOrDefault()
+            )).Count();
+        }
+
+        public static void Delete(IotDbContext dbContext, DateTime endAt, TRIGGER_TYPE? triggerType)
+        {
+            dbContext.TriggerLog.Where(x => x.CreatedAt <= endAt && (
+                triggerType == null || x.Type == triggerType.GetValueOrDefault()
+            )).DeleteFromQuery();
         }
 
     }
