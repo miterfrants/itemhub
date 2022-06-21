@@ -1,4 +1,5 @@
 import { APP_CONFIG } from '../config.js';
+import { EVENTS } from '../constants.js';
 import {
     RoutingController
 } from '../swim/routing-controller.js';
@@ -33,6 +34,7 @@ export class HowController extends RoutingController {
         } else {
             this.pageVariable.expandedHowToBindGoogleSmartHomeVisible = '';
             this.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = 'up-arrow';
+            this.args.gtag('event', EVENTS.HOW_TO_USE_GOOGLE_HOME);
             arrayOfQuery.push('expandedGoogleSmartHome=true');
         }
         history.pushState({}, '', `/how/?${arrayOfQuery.join('&')}`);
@@ -47,6 +49,7 @@ export class HowController extends RoutingController {
         } else {
             this.pageVariable.expandedHowToStartVisible = '';
             this.pageVariable.expandedHowToStartArrowVisible = 'up-arrow';
+            this.args.gtag('event', EVENTS.HOW_TO_USE_BASIC);
             arrayOfQuery.push('expandedStartUp=true');
         }
         history.pushState({}, '', `/how/?${arrayOfQuery.join('&')}`);

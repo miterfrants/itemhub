@@ -56,7 +56,9 @@ export const THIRD_PARTY_KEY = {
 export const EVENTS = {
     SIGN_UP: 'SIGN_UP',
     SIGN_OUT: 'SIGN_OUT',
-    SIGN_IN: 'SIGN_IN'
+    SIGN_IN: 'SIGN_IN',
+    HOW_TO_USE_BASIC: 'HOW_TO_USE_BASIC',
+    HOW_TO_USE_GOOGLE_HOME: 'HOW_TO_USE_GOOGLE_HOME'
 };
 
 export const TRANSACTION_STATUS = {
