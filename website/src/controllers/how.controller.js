@@ -54,4 +54,14 @@ export class HowController extends RoutingController {
         }
         history.pushState({}, '', `/how/?${arrayOfQuery.join('&')}`);
     }
+
+    sendGoogleHomeGaEvent () {
+        console.log('home');
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_GOOGLE_HOME);
+    }
+
+    sendBasicGaEvent () {
+        console.log('basic');
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_BASIC);
+    }
 }
