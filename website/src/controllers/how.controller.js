@@ -20,7 +20,7 @@ export class HowController extends RoutingController {
             expandedHowToBindGoogleSmartHomeVisible: 'd-none',
             expandedHowToStartVisible: 'd-none',
             expandedHowToBindGoogleSmartHomeArrowVisible: '',
-            expandedHowToStartArrowVisible: 'up-arrow'
+            expandedHowToStartArrowVisible: ''
         });
     }
 
