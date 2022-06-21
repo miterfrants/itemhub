@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Mvc;
-using Homo.Api;
-using Homo.Core.Constants;
-using Homo.AuthApi;
-using api.Helpers;
 using api.Constants;
+using api.Helpers;
+using Homo.Api;
+using Homo.AuthApi;
+using Homo.Core.Constants;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Homo.IotApi
@@ -48,6 +48,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> create([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.CreateSensorLog dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             DevicePin devicePin = DevicePinDataservice.GetOneByDeviceIdAndPin(_iotDbContext, extraPayload.Id, id, null, pin);
+
             if (devicePin == null)
             {
                 throw new CustomException(ERROR_CODE.DEVICE_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
@@ -56,18 +57,19 @@ namespace Homo.IotApi
             SensorLogDataservice.Create(_iotDbContext, extraPayload.Id, id, pin, dto);
             List<Trigger> triggers = TriggerDataservice.GetAll(_iotDbContext, extraPayload.Id, id, pin);
             List<Trigger> beTriggeredList = new List<Trigger>();
-            triggers.ForEach(trigger =>
+            for (int i = 0; i < triggers.Count(); i++)
             {
+                Trigger trigger = triggers[i];
                 // todo: refactor the section by factory pattern
                 // trigger by device current value
                 if (
-                    trigger.Type == TRIGGER_TYPE.CHANGE_DEVICE_STATE
-                    && (
-                        trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.L && dto.Value < trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.LE && dto.Value <= trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.E && dto.Value == trigger.SourceThreshold
+                    trigger.Type == TRIGGER_TYPE.CHANGE_DEVICE_STATE &&
+                    (
+                        trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.L && dto.Value < trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.LE && dto.Value <= trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.E && dto.Value == trigger.SourceThreshold
                     )
                 )
                 {
@@ -75,14 +77,14 @@ namespace Homo.IotApi
                     DevicePinDataservice.UpdateValueByDeviceId(_iotDbContext, extraPayload.Id, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, trigger.DestinationDeviceTargetState.GetValueOrDefault());
                 }
                 else if (
-                    trigger.Type == TRIGGER_TYPE.NOTIFICATION
-                    && trigger.Email != null
-                    && (
-                        trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.L && dto.Value < trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.LE && dto.Value <= trigger.SourceThreshold
-                        || trigger.Operator == TRIGGER_OPERATOR.E && dto.Value == trigger.SourceThreshold
+                    trigger.Type == TRIGGER_TYPE.NOTIFICATION &&
+                    trigger.Email != null &&
+                    (
+                        trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.L && dto.Value < trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.LE && dto.Value <= trigger.SourceThreshold ||
+                        trigger.Operator == TRIGGER_OPERATOR.E && dto.Value == trigger.SourceThreshold
                     )
                 )
                 {
@@ -100,9 +102,16 @@ namespace Homo.IotApi
                         throw new CustomException(ERROR_CODE.TRIGGER_NOTIFICATION_OVER_USING, System.Net.HttpStatusCode.Forbidden);
                     }
 
+                    // check last notification
+                    TriggerLog lastTriggerLog = TriggerLogDataservice.GetLastOne(_iotDbContext, trigger.Id, extraPayload.Id, TRIGGER_TYPE.NOTIFICATION);
+                    var diff = DateTime.Now - lastTriggerLog.CreatedAt;
+                    if (diff.TotalMinutes < TriggerNotificationPeriodHelper.GetMinutes(trigger.NotificationPeriod))
+                    {
+                        continue;
+                    }
                     beTriggeredList.Add(trigger);
                     MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TRIGGER_NOTIFICATION, _staticPath);
-                    var devicePin = DevicePinDataservice.GetOneByDeviceIdAndPin(_iotDbContext, extraPayload.Id, trigger.SourceDeviceId, null, trigger.SourcePin);
+
                     var deviceName = (devicePin.Device == null ? "" : devicePin.Device.Name);
                     template = MailTemplateHelper.ReplaceVariable(template, new
                     {
@@ -119,15 +128,19 @@ namespace Homo.IotApi
                         callToActionButton = _commonLocalizer.Get("checkout"),
                         mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
                     });
+
                     MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
                     {
-                        Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string>{{
-                            "deviceName", deviceName
-                         }}),
+                        Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string> {
+                                {
+                                    "deviceName",
+                                    deviceName
+                                }
+                            }),
                         Content = template.Content
                     }, _systemEmail, trigger.Email, _sendGridApiKey);
                 }
-            });
+            }
 
             TriggerLogDataservice.BatchedCreate(_iotDbContext, beTriggeredList);
             return new
@@ -135,7 +148,6 @@ namespace Homo.IotApi
                 status = CUSTOM_RESPONSE.OK
             };
         }
-
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },

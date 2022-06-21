@@ -36,11 +36,19 @@ namespace Homo.IotApi
         public static int GetCountOfNotificationInPeriod(IotDbContext dbContext, DateTime startAt, DateTime endAt, long ownerId, TRIGGER_TYPE? triggerType)
         {
             return dbContext.TriggerLog.Where(x =>
-                x.CreatedAt >= startAt
-                && x.CreatedAt <= endAt
-                && x.OwnerId == ownerId
-                && (triggerType == null || x.Type == triggerType.GetValueOrDefault()
-            )).Count();
+                x.CreatedAt >= startAt &&
+                x.CreatedAt <= endAt &&
+                x.OwnerId == ownerId &&
+                (triggerType == null || x.Type == triggerType.GetValueOrDefault())).Count();
+        }
+
+        public static TriggerLog GetLastOne(IotDbContext dbContext, long triggerId, long ownerId, TRIGGER_TYPE triggerType)
+        {
+            return dbContext.TriggerLog.Where(x =>
+                x.OwnerId == ownerId &&
+                x.Type == triggerType &&
+                x.TriggerId == triggerId
+            ).OrderByDescending(x => x.Id).Take(1).FirstOrDefault();
         }
 
         public static void Delete(IotDbContext dbContext, DateTime endAt, TRIGGER_TYPE? triggerType)

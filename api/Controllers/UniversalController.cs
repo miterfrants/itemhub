@@ -81,6 +81,19 @@ namespace Homo.IotApi
             }).ToList<dynamic>();
         }
 
+        [Route("trigger-notification-periods")]
+        [HttpGet]
+        public ActionResult<dynamic> getTriggerNotificationPeriods()
+        {
+            List<ConvertHelper.EnumList> triggerNotificationPeriods = ConvertHelper.EnumToList(typeof(TRIGGER_NOTIFICATION_PERIOD));
+            return triggerNotificationPeriods.Select(x => new
+            {
+                x.Key,
+                x.Label,
+                x.Value,
+            }).ToList<dynamic>();
+        }
+
         [SwaggerOperation(
             Tags = new[] { "常數" },
             Summary = "交易狀態",
