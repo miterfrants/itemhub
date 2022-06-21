@@ -20,11 +20,13 @@ import { useDeleteDevicesApi } from '@/hooks/apis/devices.hook';
 import { RESPONSE_STATUS } from '@/constants/api';
 import compassIcon from '@/assets/images/compass.svg';
 import stopIcon from '@/assets/images/stop.svg';
+import displayIcon from '@/assets/images/display.svg';
 import { useDispatch } from 'react-redux';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
 import ReactTooltip from 'react-tooltip';
 import OnlineStatusTag from '@/components/online-status-tag/online-status-tag';
 import Spinner from '@/components/spinner/spinner';
+import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 
 const Devices = () => {
     const query = useQuery();
@@ -135,6 +137,15 @@ const Devices = () => {
                 callback: () => {
                     setShouldBeBundledId(id);
                 },
+            })
+        );
+    };
+
+    const popupMonitorConfig = (id: number) => {
+        dispatch(
+            monitorConfigDialogActions.open({
+                callback: () => {},
+                deviceId: id,
             })
         );
     };
@@ -295,6 +306,22 @@ const Devices = () => {
                                                         <img
                                                             className="icon"
                                                             src={trashIcon}
+                                                        />
+                                                    </div>
+
+                                                    <div
+                                                        className="me-4 mb-3"
+                                                        role="button"
+                                                        onClick={() => {
+                                                            popupMonitorConfig(
+                                                                id
+                                                            );
+                                                        }}
+                                                        data-tip="加到監控中心"
+                                                    >
+                                                        <img
+                                                            className="icon"
+                                                            src={displayIcon}
                                                         />
                                                     </div>
                                                     <ReactTooltip effect="solid" />

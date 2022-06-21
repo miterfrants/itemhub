@@ -34,6 +34,19 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
+            Summary = "裝置 PIN - 取得裝置單一腳位",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{pin}")]
+        public ActionResult<dynamic> getOne([FromRoute] long id, [FromRoute] string pin, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            return DevicePinDataservice.GetOne(_dbContext, ownerId, id, null, pin);
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
             Summary = "裝置 PIN - 批次新增腳位",
             Description = ""
         )]

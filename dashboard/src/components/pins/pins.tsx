@@ -7,11 +7,16 @@ import { PinItem } from '@/types/devices.type';
 
 const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
     const { deviceId, isEditMode } = props;
-    const { isLoading, getDevicePinsApi } = useGetDevicePinsApi({
+    const {
+        isLoading,
+        getDevicePinsApi,
+        devicePins: responseOfGetPins,
+    } = useGetDevicePinsApi({
         id: Number(deviceId),
     });
 
     const devicePinsFromStore = useAppSelector(selectDevicePins);
+    const [isPinsGetted, setIsPinsGetted] = useState<boolean>(false);
 
     const [devicePins, setDevicePins] = useState<PinItem[] | null>(null);
 
@@ -27,6 +32,10 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
         getDevicePinsApi();
         // eslint-disable-next-line
     }, [devicePinsFromStore]);
+
+    useEffect(() => {
+        setIsPinsGetted(true);
+    }, [responseOfGetPins]);
 
     return (
         // UI 結構等設計稿後再重構調整

@@ -38,6 +38,39 @@ export const useGetDevicePinsApi = ({ id }: { id: number }) => {
     };
 };
 
+export const useGetDevicePinApi = ({
+    id,
+    pin,
+}: {
+    id: number;
+    pin: string;
+}) => {
+    const dispatch = useAppDispatch();
+    const dispatchAppendPins = useCallback(
+        (data: PinItem) => {
+            dispatch(pinsActions.updatePins([data]));
+        },
+        // eslint-disable-next-line
+        [id, dispatch]
+    );
+    let apiPath = `${API_URL}${END_POINT.DEVICE_PIN}`;
+    apiPath = apiPath.replace(':id', id.toString()).replace(':pin', pin);
+
+    const { isLoading, error, data, fetchApi } = useFetchApi<PinItem>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchAppendPins,
+    });
+
+    return {
+        isLoading,
+        error,
+        data,
+        fetchApi,
+    };
+};
+
 export const useUpdateDevicePinNameApi = ({
     deviceId,
     pin,
