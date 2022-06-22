@@ -19,7 +19,7 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
-            Summary = "取得所有開關 PIN",
+            Summary = "裝置 PIN 開關 - 取得所有開關 PIN",
             Description = ""
         )]
         [HttpGet]
