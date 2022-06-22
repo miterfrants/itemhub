@@ -38,7 +38,7 @@ const OauthClients = () => {
     const hasOauthClientsRef = useRef(false);
     const howToUseLink = `${
         import.meta.env.VITE_WEBSITE_URL
-    }/how/?expandedGoogleSmartHome=true`;
+    }/how/integrate-google-smart-home/`;
 
     const [
         pageTitleSecondaryButtonClassName,

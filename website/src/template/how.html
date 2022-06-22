@@ -12,7 +12,7 @@
                     <div onclick="controller.toggleHowToStart" class="d-flex justify-content-between mb-2"
                         role="button">
                         <div class="title h3 ">
-                            如何開始使用 Itemhub
+                            如何開始使用 ItemHub
                         </div>
                         <img class="arrow {expandedHowToStartArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
                     </div>
@@ -88,20 +88,24 @@
                                 <img class="w-100 mt-4" src="/assets/images/how/howtouse-3-2.jpeg" />
                             </div>
                         </div>
+                        <div class="mb-4">
+                            <a onclick="controller.sendBasicGaEvent" href="/auth/verify-email/"
+                                class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link">立即註冊使用</a>
+                        </div>
                     </div>
                 </div>
                 <div class="">
                     <div onclick="controller.toggleHowToBindSmartHome" class="d-flex justify-content-between mb-2 mt-5"
                         role="button">
                         <div class="title h3 ">
-                            如何用 Itemhub 串接 Google
-                            Smart Home
+                            如何用 ItemHub 串接 Google
+                            Nest
                         </div>
                         <img class="arrow {expandedHowToBindGoogleSmartHomeArrowVisible}"
                             src="/assets/images/icon-down-arrow.svg" />
                     </div>
                     <hr class="border-white opacity-100 bg-opacity-0" />
-                    <div class="content  {expandedHowToBindGoogleSmartHomeVisible}">
+                    <div class="content {expandedHowToBindGoogleSmartHomeVisible}">
                         <div>
                             <div class="text-green h4 mb-3">Step 1 - 建立 oAuthClient</div>
                             <div class="mb-45">
@@ -158,16 +162,16 @@
                                 <div class="fw-bold">2-6 Actions</div>
                                 <div>
                                     Fulfillment URL 填入 https://itemhub.io/api/v1/google-smart-home，讓 Google
-                                    Nest 把對應的資料傳至 Itemhub。
+                                    Nest 把對應的資料傳至 ItemHub
                                 </div>
                                 <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-2-6.jpeg" />
                             </div>
                             <div class="mb-45">
-                                <div class="fw-bold">2-7 Account Linking: 輸入 Itemhub 產生的 oAuthClient 資料</div>
+                                <div class="fw-bold">2-7 Account Linking: 輸入 ItemHub 產生的 oAuthClient 資料</div>
                                 <div>
                                     <ul>
-                                        <li>Client ID 填入於 Itemhub oAuthClient 上產生的 Client ID</li>
-                                        <li>Client Secret 填入於 Itemhub oAuthClient 上產生的 Client Secret</li>
+                                        <li>Client ID 填入於 ItemHub oAuthClient 上產生的 Client ID</li>
+                                        <li>Client Secret 填入於 ItemHub oAuthClient 上產生的 Client Secret</li>
                                         <li>Authorization URL 填入 https://itemhub.io/api/v1/oauth</li>
                                         <li>Token URL 填入 https://itemhub.io/api/v1/oauth/token</li>
                                     </ul>
@@ -180,7 +184,7 @@
                             </div>
                         </div>
                         <div>
-                            <div class="text-green h4 mb-3">Step 3 - Itemhub 填入 oAuth Redirect URL</div>
+                            <div class="text-green h4 mb-3">Step 3 - ItemHub 填入 oAuth Redirect URL</div>
                             <div class="mb-45">
                                 <div class="fw-bold">3-1 更新 oAuthClient 的 Redirect Uris</div>
                                 <div>
@@ -193,8 +197,14 @@
                                 <img class="w-100 mt-4" src="/assets/images/how/oAuthClient-3-1.jpeg" />
                             </div>
                         </div>
+                        <div class="mb-4">
+                            <a href="/auth/verify-email/"
+                                class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                                onclick="controller.sendGoogleHomeGaEvent">立即註冊使用</a>
+                        </div>
                     </div>
                 </div>
+                <div class="child-router"></div>
             </div>
         </div>
     </div>

@@ -6,28 +6,31 @@ export const pinsSlice = createSlice({
     name: 'pins',
     initialState: null as PinItem[] | null,
     reducers: {
-        refreshPins: (state, action: PayloadAction<PinItem[]>) => {
+        updatePins: (state, action: PayloadAction<PinItem[]>) => {
             const pins = action.payload;
-            return pins;
-        },
-        refreshPin: (state, action: PayloadAction<PinItem>) => {
-            const pins = state;
-            const newPin = action.payload;
+            const oldPins: PinItem[] = (state ? [...state] : []) as PinItem[];
 
-            if (pins === null) {
-                return [newPin];
-            }
+            // update exists pins
+            const updatedOldPins = oldPins.map((oldPin: PinItem) => {
+                const existsInPayload = pins.find(
+                    (pin) => pin.id === oldPin.id && oldPin.id && pin.id
+                );
 
-            const newPins = [...pins];
+                if (existsInPayload) {
+                    return { ...oldPin, ...existsInPayload };
+                } else {
+                    return oldPin;
+                }
+            });
 
-            const targetIndex = newPins.findIndex(
-                (pin) =>
-                    pin.deviceId === newPin.deviceId && pin.pin === newPin.pin
-            );
-            newPins[targetIndex] = {
-                ...newPin,
-            };
-            return newPins;
+            // filter exists pins
+            const newPinsExcludedExists = pins.filter((item) => {
+                return !updatedOldPins
+                    .map((oldPin) => oldPin.id)
+                    .includes(item.id);
+            });
+
+            return [...updatedOldPins, ...newPinsExcludedExists];
         },
         updatePin: (state, action: PayloadAction<Partial<PinItem>>) => {
             const pins = state;

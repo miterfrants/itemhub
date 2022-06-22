@@ -41,8 +41,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> batchedCreate([FromRoute] long id, [FromBody] List<DTOs.DevicePinsData> dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DevicePinDataservice.BatchedCreate(_dbContext, id, ownerId, dto);
-            return new { status = CUSTOM_RESPONSE.OK };
+            return DevicePinDataservice.BatchedCreate(_dbContext, id, ownerId, dto);
         }
 
         [SwaggerOperation(

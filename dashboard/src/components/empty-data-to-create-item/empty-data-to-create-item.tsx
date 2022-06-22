@@ -8,9 +8,7 @@ const EmptyDataToCreateItem = ({ itemName }: { itemName: string }) => {
         navigate('create');
     };
 
-    const howToUseLink = `${
-        import.meta.env.VITE_WEBSITE_URL
-    }/how/?expandedStartUp=true`;
+    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
 
     return (
         <div className="d-block p-6 text-center">
