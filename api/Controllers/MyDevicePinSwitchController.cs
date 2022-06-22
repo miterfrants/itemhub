@@ -17,6 +17,11 @@ namespace Homo.IotApi
             _dbContext = dbContext;
         }
 
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "取得所有開關 PIN",
+            Description = ""
+        )]
         [HttpGet]
         public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
