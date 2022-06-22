@@ -33,7 +33,7 @@ namespace Homo.IotApi
 
             Device device = DeviceDataservice.GetOne(dbContext, ownerId, deviceId);
             List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(dbContext, ownerId, new List<long> { deviceId }, null, null);
-
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(devicePins, Newtonsoft.Json.Formatting.Indented)}");
             if (device.Microcontroller == null)
             {
                 // no microcontroller
@@ -56,7 +56,9 @@ namespace Homo.IotApi
             string pinTemplate = "pins.push_back(ItemhubPin({PIN_NUMBER}, \"{PIN_STRING}\", {PIN_MODE}))";
             List<string> pins = new List<string>();
             var targetMcu = dbContext.Microcontroller.Where(x => x.Id == device.Microcontroller).FirstOrDefault();
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(targetMcu, Newtonsoft.Json.Formatting.Indented)}");
             var McuPins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTOs.McuPin>>(targetMcu.Pins);
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(McuPins, Newtonsoft.Json.Formatting.Indented)}");
             devicePins.ForEach(item =>
             {
                 string pinString = item.Pin;
@@ -71,9 +73,11 @@ namespace Homo.IotApi
             inoTemplate = inoTemplate.Replace("{PINS}", String.Join(";", pins));
 
             System.IO.File.WriteAllText(inoPath, inoTemplate);
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(inoPath, Newtonsoft.Json.Formatting.Indented)}");
             System.IO.File.Delete(sourceInoPath);
 
             // zip
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("zip 1", Newtonsoft.Json.Formatting.Indented)}");
             var zipFile = new ZipFile();
             if (!String.IsNullOrEmpty(zipPassword))
             {
@@ -81,7 +85,9 @@ namespace Homo.IotApi
             }
 
             zipFile.AddDirectory(zipSourcePath);
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("zip 2", Newtonsoft.Json.Formatting.Indented)}");
             zipFile.Save(firmwareZipPath);
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("zip 3", Newtonsoft.Json.Formatting.Indented)}");
 
             // archived source firmware
             System.IO.Directory.Move(zipSourcePath, $"{staticPath}/archived/{folderName}");
