@@ -234,7 +234,9 @@ void sendSensor()
             endpoint.append("/sensors/");
             endpoint.append(pins[i].pinString);
             std::string postBody = "{\"value\":";
-            postBody.append(digitalRead(pins[i].pin));
+            int value = digitalRead(pins[i].pin);
+            std::string valueString = std::to_string(value);
+            postBody.append(valueString.c_str());
             postBody.append("}");
 
             client.beginRequest();
