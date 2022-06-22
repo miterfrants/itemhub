@@ -17,6 +17,13 @@ namespace Homo.IotApi
             _dbContext = dbContext;
         }
 
+        [HttpGet]
+        public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            return DevicePinDataservice.GetAll(_dbContext, extraPayload.Id, new List<long>() { id }, DEVICE_MODE.SWITCH, null);
+        }
+
+
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
             Summary = "裝置 PIN 開關 - 切換開關",
