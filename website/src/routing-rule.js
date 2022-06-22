@@ -139,7 +139,7 @@ export const RoutingRule = [{
                 controller: CooperationController,
                 html: '/template/cooperation.html'
             }, {
-                path: 'how/?expandedStartUp&expandedGoogleSmartHome',
+                path: 'how/',
                 controller: HowController,
                 html: '/template/how.html',
                 children: [{
