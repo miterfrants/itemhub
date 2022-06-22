@@ -65,9 +65,9 @@ namespace Homo.IotApi
                 int pinNumber = McuPins.Find(x => x.Name == pinString).Value;
                 pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinNumber.ToString()).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
             });
-
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(sourceInoPath, Newtonsoft.Json.Formatting.Indented)}");
             string inoTemplate = System.IO.File.ReadAllText(sourceInoPath);
-
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(inoPath, Newtonsoft.Json.Formatting.Indented)}");
             inoTemplate = inoTemplate.Replace("{CLIENT_ID}", clientId);
             inoTemplate = inoTemplate.Replace("{CLIENT_SECRET}", clientSecret);
             inoTemplate = inoTemplate.Replace("{PINS}", String.Join(";", pins));
