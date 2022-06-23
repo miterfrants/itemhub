@@ -59,7 +59,7 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <div>
                     <Toggle value={value} />
-                    <div className="d-flex mt-5">
+                    <div className="d-flex justify-content-center mt-4">
                         <h3>
                             {devicePin?.device?.name} -{' '}
                             {devicePin?.name || devicePin?.pin}
