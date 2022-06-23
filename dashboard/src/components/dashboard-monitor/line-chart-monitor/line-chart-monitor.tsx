@@ -107,7 +107,7 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 lineChartData.length > 0 ? '' : 'd-none'
                             }`}
                         >
-                            <h3 className="ms-4 mb-0 w-100 text-center">
+                            <h3 className="mb-0 w-100 text-center">
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>
