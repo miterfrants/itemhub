@@ -20,4 +20,5 @@ export interface PinItem {
     mode: number;
     name: string | null;
     createdAt?: string;
+    device?: DeviceItem;
 }

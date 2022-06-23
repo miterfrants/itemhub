@@ -122,5 +122,17 @@ namespace Homo.IotApi
         {
             return ConvertHelper.EnumToList(typeof(DEVICE_MODE));
         }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Dashboard Monitor 模式",
+            Description = ""
+        )]
+        [Route("dashboard-monitor-mode")]
+        [HttpGet]
+        public ActionResult<dynamic> getDashboardMonitorMode()
+        {
+            return ConvertHelper.EnumToList(typeof(DASHBOARD_MONITOR_MODE));
+        }
     }
 }

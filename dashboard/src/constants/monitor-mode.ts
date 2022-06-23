@@ -1,0 +1,5 @@
+export const MONITOR_MODE = {
+    LINE_CHART: 'LINE_CHART',
+    CURRENT_VALUE: 'CURRENT_VALUE',
+    SWITCH: 'SWITCH',
+};

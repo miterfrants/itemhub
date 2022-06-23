@@ -5,4 +5,29 @@
             padding-top: $mobile-header-h;
         }
     }
+    .monitor-item {
+        position: relative;
+        > div {
+            position: absolute;
+        }
+
+        &::after {
+            display: block;
+            content: '';
+            width: 100%;
+            padding-top: 100%;
+        }
+
+        &.one-third {
+            &::after {
+                padding-top: calc(100% / 3);
+            }
+        }
+
+        &.half {
+            &::after {
+                padding-top: 50%;
+            }
+        }
+    }
 }
