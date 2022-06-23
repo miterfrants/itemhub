@@ -112,5 +112,26 @@ namespace Homo.IotApi
             }
             return 30 * 60;
         }
+
+        public static int GetTriggerNotificastionRateLimit(PRICING_PLAN? pricingPlan)
+        {
+            if (pricingPlan == PRICING_PLAN.BASIC)
+            {
+                return 100;
+            }
+            else if (pricingPlan == PRICING_PLAN.ADVANCE)
+            {
+                return 1000;
+            }
+            else if (pricingPlan == PRICING_PLAN.GROWTH)
+            {
+                return 5000;
+            }
+            else if (pricingPlan == PRICING_PLAN.SMALL_BUSINESS)
+            {
+                return 10000;
+            }
+            return 5;
+        }
     }
 }

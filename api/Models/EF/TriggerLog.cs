@@ -12,6 +12,10 @@ namespace Homo.IotApi
         public long TriggerId { get; set; }
         [Required]
         public string Raw { get; set; }
+        [Required]
+        public TRIGGER_TYPE Type { get; set; }
+        [Required]
+        public long OwnerId { get; set; }
 
     }
 }

@@ -30,6 +30,7 @@ namespace Homo.IotApi
         public TRIGGER_TYPE Type { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public TRIGGER_NOTIFICATION_PERIOD NotificationPeriod { get; set; }
 
     }
 }
