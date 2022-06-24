@@ -62,6 +62,10 @@ const OauthClients = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        document.title = 'ItemHub - oAuthClient 列表';
+    }, []);
+
+    useEffect(() => {
         if (oauthClients && oauthClients.length > 0) {
             hasOauthClientsRef.current = true;
         }

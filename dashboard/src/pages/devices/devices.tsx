@@ -63,6 +63,10 @@ const Devices = () => {
     } = useBundleFirmwareApi({ id: shouldBeBundledId });
 
     useEffect(() => {
+        document.title = 'ItemHub - 裝置列表';
+    }, []);
+
+    useEffect(() => {
         if (devices && devices.length > 0) {
             hasDevicesRef.current = true;
         }

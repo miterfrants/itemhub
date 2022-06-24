@@ -177,6 +177,12 @@ const Trigger = () => {
     };
 
     useEffect(() => {
+        if (isCreateMode) {
+            document.title = 'ItemHub - 新增觸發';
+        } else {
+            document.title = 'ItemHub - 編輯觸發';
+        }
+
         getAllDevicesApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

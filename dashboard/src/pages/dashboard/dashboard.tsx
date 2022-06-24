@@ -28,6 +28,7 @@ const Dashboard = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        document.title = 'ItemHub - 監控中心';
         if (dashboardMonitors.length > 0) {
             return;
         }
