@@ -68,6 +68,14 @@ const OauthClient = () => {
     } = useCreateOauthClients({ clientId });
 
     useEffect(() => {
+        if (isCreateMode) {
+            document.title = 'ItemHub - 新增 oAuthClient';
+        } else {
+            document.title = 'ItemHub - 編輯 oAuthClient';
+        }
+    }, []);
+
+    useEffect(() => {
         if (oauthClient || isDeleting || isCreateMode) {
             return;
         }
