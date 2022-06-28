@@ -291,8 +291,11 @@ const DevicePinData = () => {
 
     useEffect(() => {
         if (isCreateMode) {
+            document.title = 'ItemHub - 新增裝置';
             return;
         }
+        document.title = 'ItemHub - 編輯裝置';
+
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id

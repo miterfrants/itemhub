@@ -71,6 +71,10 @@ const Device = () => {
     } = useBundleFirmwareApi({ id: shouldBeBundledId });
 
     useEffect(() => {
+        document.title = 'ItemHub - 裝置內容';
+    }, []);
+
+    useEffect(() => {
         const device =
             (devices || []).filter(
                 (device: DeviceItem) => device.id === Number(id)
