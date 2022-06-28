@@ -12,7 +12,6 @@ import {
     GradientStop,
     Line,
 } from 'reaviz';
-import { SetCookieParams } from '@/types/helpers.type';
 import { PinItem } from '@/types/devices.type';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
@@ -74,7 +73,7 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         setLineChartData(
             responseOfSensorLogs.map((item) => {
                 return {
-                    key: new Date(item.createdAt.split('T')[0]),
+                    key: new Date(item.createdAt),
                     data: item.value,
                 };
             })
