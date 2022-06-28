@@ -60,7 +60,7 @@ namespace Homo.IotApi
                     (deviceIds == null || deviceIds.Contains(x.DeviceId)) &&
                     (pin == null || x.Pin == pin)
                 )
-                .OrderByDescending(x => x.Id)
+                .OrderByDescending(x => x.CreatedAt)
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToList<SensorLog>();
