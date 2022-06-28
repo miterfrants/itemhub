@@ -26,7 +26,7 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
                 (item: PinItem) => item.deviceId === Number(deviceId)
             ) || [];
         setDevicePins(devicePins || null);
-        if (devicePinsFromStore !== null) {
+        if (isPinsGetted) {
             return;
         }
         getDevicePinsApi();
