@@ -30,4 +30,15 @@
             }
         }
     }
+
+    @include media-breakpoint-down(sm) {
+        .monitor-item {
+            &.one-third,
+            &.half {
+                &::after {
+                    padding-top: 100%;
+                }
+            }
+        }
+    }
 }

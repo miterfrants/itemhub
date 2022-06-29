@@ -19,14 +19,19 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
+    const [lineChartMargin, setLineChartMargin] = useState([50, 50, 0, 50]);
     const resizeHandler = useRef(
         debounce(() => {
-            setChartWidth(elementContainerRef.current?.offsetWidth || 0);
+            const chartWidth = elementContainerRef.current?.offsetWidth || 0;
+            setChartWidth(chartWidth);
             setChartHeight(
                 elementContainerRef.current?.offsetHeight
                     ? elementContainerRef.current?.offsetHeight - 80
                     : 0
             );
+            if (chartWidth <= 700) {
+                setLineChartMargin([20, 20, 0, 10]);
+            }
         }, 800)
     );
 
@@ -54,15 +59,11 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     useEffect(() => {
         getSensorLogs();
         getDevicePin();
-        setChartWidth(elementContainerRef.current?.offsetWidth || 0);
-        setChartHeight(
-            elementContainerRef.current?.offsetHeight
-                ? elementContainerRef.current?.offsetHeight - 80
-                : 0
-        );
+        resizeHandler.current();
         const resizeHanlder = resizeHandler.current;
         window.addEventListener('resize', resizeHanlder);
         return () => window.removeEventListener('resize', resizeHanlder);
+
         // eslint-disable-next-line
     }, []);
 
@@ -113,7 +114,7 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 <AreaChart
                                     width={chartWidth}
                                     height={chartHeight}
-                                    margins={[50, 50, 0, 50]}
+                                    margins={lineChartMargin}
                                     data={lineChartData}
                                     series={
                                         <AreaSeries

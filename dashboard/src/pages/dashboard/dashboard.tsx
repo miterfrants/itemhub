@@ -72,7 +72,7 @@ const Dashboard = () => {
                     {dashboardMonitors.map((item: DashboardMonitorItem) => (
                         <div
                             key={item.id}
-                            className={`mb-4 col-${
+                            className={`mb-4 col-12 col-sm-${
                                 item.column * 4
                             } position-relative`}
                         >
@@ -109,7 +109,7 @@ const Dashboard = () => {
 
                             <div
                                 role="button"
-                                className="btn-close position-absolute top-0 end-0 me-4 mt-3"
+                                className="btn-close position-absolute top-0 end-0 me-4 mt-3 d-none d-sm-block"
                                 onClick={() => {
                                     setShouldBeDeleteId(item.id);
                                 }}
