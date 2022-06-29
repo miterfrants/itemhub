@@ -376,9 +376,9 @@ const DevicePinData = () => {
             const targetMcu = microcontrollers.find(
                 (item) => item.id === microcontrollerId
             );
-            if (targetMcu) {
-                setSelectedMicrocontroller(targetMcu);
-            }
+            setSelectedMicrocontroller(
+                targetMcu !== undefined ? targetMcu : null
+            );
             targetKey = targetMcu ? targetMcu.key : '';
         }
 
@@ -546,7 +546,7 @@ const DevicePinData = () => {
                                 </div>
                             )}
                         </div>
-                        {!isCreateMode && (
+                        {!isCreateMode && selectedMicrocontroller && (
                             <div className="mb-4">
                                 <label>選擇 Pin</label>
                                 {!isValidData.selectedPins && (
