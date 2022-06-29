@@ -20,7 +20,7 @@ const char *password = STAPSK;
 std::string host = "itemhub.io";
 std::string remoteDeviceId;
 std::string token;
-std::string postBody = "{\"clientId\":\"vgdxrwbzthzvarkniydzehijlmwzzqtxgatjqlxxntjwhcctckmwrsloyumeacac\",\"clientSecret\":\"cfhffbcywbscvjqqsgdvpbegqkzqkrzgcsmrejzckfyyxqhwtwvaacvbbbovcmoe\"}";
+std::string postBody = "{\"clientId\":\"{CLIENT_ID}\",\"clientSecret\":\"{CLIENT_SECRET}\"}";
 WiFiClientSecure client;
 char *ca(CA_PEM);
 std::vector<ItemhubPin> pins;
