@@ -100,14 +100,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <div className="d-flex align-items-center h-100 justify-content-center">
                     {lineChartData.length <= 0 ? (
-                        <h1 className="mb-0">目前沒有資料</h1>
+                        <h2 className="mb-0 px-45 my-3">暫無資料</h2>
                     ) : (
                         <div
                             className={`${
                                 lineChartData.length > 0 ? '' : 'd-none'
                             }`}
                         >
-                            <h3 className="mb-0 w-100 text-center">
+                            <h3 className="mb-0 w-100 text-center px-45 my-3">
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>

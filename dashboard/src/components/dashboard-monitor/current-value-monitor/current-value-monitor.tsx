@@ -46,11 +46,11 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
                 </div>
             ) : (
                 <div>
-                    <h1 className="mb-0">
-                        {currentValue?.toFixed(4) || '目前沒有資料'}
-                    </h1>
+                    <h2 className="mb-0 text-center px-45 my-3">
+                        {currentValue?.toFixed(4) || '暫無資料'}
+                    </h2>
                     <div className="d-flex justify-content-center mt-4">
-                        <h3>
+                        <h3 className="px-45 my-3">
                             {devicePin?.device?.name} -{' '}
                             {devicePin?.name || devicePin?.pin}
                         </h3>
