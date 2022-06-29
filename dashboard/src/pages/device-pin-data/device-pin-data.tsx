@@ -42,7 +42,9 @@ const DevicePinData = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
-    const [microcontrollerId, setMicrocontrollerId] = useState(0);
+    const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
+        null
+    );
     const [device, setDevice] = useState<DeviceItem | null>(null);
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
@@ -98,7 +100,7 @@ const DevicePinData = () => {
         fetchApi: createDeviceApi,
         isLoading: isCreating,
         data: createDeviceResponse,
-    } = useCreateDeviceApi(name, microcontrollerId);
+    } = useCreateDeviceApi(name, microcontrollerId || -1);
 
     const { fetchApi: createDevicePinsApi } = useCreatePinsApi(
         Number(createDeviceResponse?.id) || Number(id),
@@ -359,13 +361,12 @@ const DevicePinData = () => {
         if (!microcontrollers || microcontrollers.length === 0) {
             return;
         }
+
         if (!isCreateMode && microcontrollerItem.length === 0) {
             return;
         }
-        if (microcontrollerId === 0) {
-            targetKey = microcontrollers[0].key;
-            setMicrocontrollerId(microcontrollers[0].id);
-        } else {
+
+        if (microcontrollerId !== null) {
             targetKey = microcontrollerItem[0].key;
         }
 
@@ -494,9 +495,14 @@ const DevicePinData = () => {
                         <div className="mb-4">
                             <label>裝置類型</label>
                             <select
-                                onChange={(e) =>
-                                    setMicrocontrollerId(Number(e.target.value))
-                                }
+                                onChange={(e) => {
+                                    if (!e.target.value) {
+                                        return;
+                                    }
+                                    setMicrocontrollerId(
+                                        Number(e.target.value)
+                                    );
+                                }}
                                 className="form-select mt-2"
                             >
                                 <option>請選擇單晶片</option>
