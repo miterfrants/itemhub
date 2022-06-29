@@ -494,17 +494,19 @@ const DevicePinData = () => {
                         <div className="mb-4">
                             <label>裝置類型</label>
                             <select
-                                defaultValue={
-                                    device ? device.microcontroller : 0
-                                }
                                 onChange={(e) =>
                                     setMicrocontrollerId(Number(e.target.value))
                                 }
                                 className="form-select mt-2"
                             >
+                                <option>請選擇單晶片</option>
                                 {microcontrollers.map(({ id, key }) => {
                                     return (
-                                        <option key={id} value={id}>
+                                        <option
+                                            key={id}
+                                            value={id}
+                                            selected={id === microcontrollerId}
+                                        >
                                             {key
                                                 .replaceAll('_', ' ')
                                                 .toLowerCase()}
