@@ -13,10 +13,12 @@ export interface DeviceItem {
 }
 
 export interface PinItem {
+    id?: number;
     pin: string;
     deviceId: number;
     value: number | null;
     mode: number;
     name: string | null;
     createdAt?: string;
+    device?: DeviceItem;
 }

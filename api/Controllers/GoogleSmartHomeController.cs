@@ -11,8 +11,6 @@ namespace Homo.IotApi
     [Validate]
     public class GoogleSmartHomeController : ControllerBase
     {
-        private readonly string GoogleDevicePin = "D0";
-        private static List<DevicePinSwitch> DevicePinStates = new List<DevicePinSwitch>();
         private readonly IotDbContext _dbContext;
         public GoogleSmartHomeController(IotDbContext dbContext)
         {

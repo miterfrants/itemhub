@@ -1,0 +1,19 @@
+.monitor-config-dialog {
+    .card {
+        max-width: 500px;
+        width: 75%;
+    }
+    .col-4 {
+        &::before {
+            content: '';
+            white-space: normal;
+            display: inline-block;
+            vertical-align: middle;
+            padding-top: 100%;
+            width: 100%;
+        }
+    }
+    .btn-close {
+        z-index: 1;
+    }
+}

@@ -148,5 +148,17 @@ namespace Homo.IotApi
             // 目前只有實作 device current value 和 notification 
             return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.CHANGE_DEVICE_STATE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
         }
+        
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Dashboard Monitor 模式",
+            Description = ""
+        )]
+        [Route("dashboard-monitor-mode")]
+        [HttpGet]
+        public ActionResult<dynamic> getDashboardMonitorMode()
+        {
+            return ConvertHelper.EnumToList(typeof(DASHBOARD_MONITOR_MODE));
+        }
     }
 }

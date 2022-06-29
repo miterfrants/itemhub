@@ -38,7 +38,7 @@ const OauthClients = () => {
     const hasOauthClientsRef = useRef(false);
     const howToUseLink = `${
         import.meta.env.VITE_WEBSITE_URL
-    }/how/?expandedGoogleSmartHome=true`;
+    }/how/integrate-google-smart-home/`;
 
     const [
         pageTitleSecondaryButtonClassName,
@@ -60,6 +60,10 @@ const OauthClients = () => {
     } = useDeleteOauthClients([shouldBeDeleteId]);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = 'ItemHub - oAuthClient 列表';
+    }, []);
 
     useEffect(() => {
         if (oauthClients && oauthClients.length > 0) {

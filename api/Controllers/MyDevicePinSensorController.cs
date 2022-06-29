@@ -104,8 +104,8 @@ namespace Homo.IotApi
 
                     // check last notification
                     TriggerLog lastTriggerLog = TriggerLogDataservice.GetLastOne(_iotDbContext, trigger.Id, extraPayload.Id, TRIGGER_TYPE.NOTIFICATION);
-                    var diff = DateTime.Now - lastTriggerLog.CreatedAt;
-                    if (diff.TotalMinutes < TriggerNotificationPeriodHelper.GetMinutes(trigger.NotificationPeriod))
+
+                    if (lastTriggerLog != null && (DateTime.Now - lastTriggerLog.CreatedAt).TotalMinutes < TriggerNotificationPeriodHelper.GetMinutes(trigger.NotificationPeriod))
                     {
                         continue;
                     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
@@ -46,8 +47,9 @@ namespace Homo.IotApi
             return record;
         }
 
-        public static void BatchedCreate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> listOfDto)
+        public static List<DevicePin> BatchedCreate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> listOfDto)
         {
+            List<DevicePin> result = new List<DevicePin>();
             listOfDto.ForEach(dto =>
             {
                 DevicePin record = new DevicePin();
@@ -61,8 +63,10 @@ namespace Homo.IotApi
                 record.OwnerId = ownerId;
                 record.DeviceId = deviceId;
                 dbContext.DevicePin.Add(record);
+                result.Add(record);
             });
             dbContext.SaveChanges();
+            return result;
         }
 
         public static void BatchedUpdate(IotDbContext dbContext, long deviceId, long ownerId, List<DTOs.DevicePinsData> dto)
@@ -84,12 +88,12 @@ namespace Homo.IotApi
             });
         }
 
-        public static DevicePin GetOne(IotDbContext dbContext, long id, long ownerId, long deviceId, DEVICE_MODE? mode, string pin)
+        public static DevicePin GetOne(IotDbContext dbContext, long ownerId, long deviceId, DEVICE_MODE? mode, string pin)
         {
             return dbContext.DevicePin
+                .Include(x => x.Device)
                 .Where(x =>
                     x.DeletedAt == null
-                    && x.Id == id
                     && x.DeviceId == deviceId
                     && x.OwnerId == ownerId // 前三項東西都要傳避免有人忘了做檢查
                     && (mode == null || x.Mode == mode)

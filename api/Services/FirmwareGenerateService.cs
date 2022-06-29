@@ -33,7 +33,6 @@ namespace Homo.IotApi
 
             Device device = DeviceDataservice.GetOne(dbContext, ownerId, deviceId);
             List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(dbContext, ownerId, new List<long> { deviceId }, null, null);
-
             if (device.Microcontroller == null)
             {
                 // no microcontroller
@@ -65,7 +64,6 @@ namespace Homo.IotApi
             });
 
             string inoTemplate = System.IO.File.ReadAllText(sourceInoPath);
-
             inoTemplate = inoTemplate.Replace("{CLIENT_ID}", clientId);
             inoTemplate = inoTemplate.Replace("{CLIENT_SECRET}", clientSecret);
             inoTemplate = inoTemplate.Replace("{PINS}", String.Join(";", pins));

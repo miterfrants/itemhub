@@ -17,6 +17,63 @@ namespace IotApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.7");
 
+            modelBuilder.Entity("Homo.IotApi.DashboardMonitor", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Column")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("DeviceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Mode")
+                        .HasColumnType("int");
+
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Pin")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<int>("Row")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Sort")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("Mode");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("Pin");
+
+                    b.HasIndex("Sort");
+
+                    b.ToTable("DashboardMonitor");
+                });
+
             modelBuilder.Entity("Homo.IotApi.Device", b =>
                 {
                     b.Property<long>("Id")
@@ -138,8 +195,8 @@ namespace IotApi.Migrations
 
                     b.Property<string>("Pin")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("Value")
                         .HasColumnType("decimal(65,30)");

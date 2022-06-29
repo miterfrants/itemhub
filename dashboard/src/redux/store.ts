@@ -8,6 +8,8 @@ import menuReducer from './reducers/menu.reducer';
 import dialogReducer from './reducers/dialog.reducer';
 import toasterReducer from './reducers/toaster.reducer';
 import oauthClientRedirectUrisReducer from './reducers/oauth-client-redirect-uris.reducer';
+import monitorConfigDialogReducer from './reducers/monitor-config-dialog.reducer';
+import dashboardMonitorReducer from './reducers/dashboard-monitor.reducer';
 
 const store = configureStore({
     reducer: {
@@ -20,6 +22,8 @@ const store = configureStore({
         dialog: dialogReducer,
         toasters: toasterReducer,
         oauthClientRedirectUris: oauthClientRedirectUrisReducer,
+        monitorConfigDialog: monitorConfigDialogReducer,
+        dashboardMonitors: dashboardMonitorReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({
