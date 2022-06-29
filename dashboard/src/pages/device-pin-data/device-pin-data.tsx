@@ -30,6 +30,7 @@ import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import closeIcon from '@/assets/images/dark-close.svg';
 import ReactTooltip from 'react-tooltip';
+import { Microcontroller } from '@/types/universal.type';
 
 const DevicePinData = () => {
     const navigate = useNavigate();
@@ -52,15 +53,13 @@ const DevicePinData = () => {
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
+    const [selectedMicrocontroller, setSelectedMicrocontroller] =
+        useState<null | Microcontroller>(null);
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
     const [switchMode, setSwitchMode] = useState(1);
     const [sensorMode, setSensorMode] = useState(0);
-
-    const microcontrollerItem = (microcontrollers || []).filter((item) => {
-        return item.id === microcontrollerId;
-    });
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -362,12 +361,14 @@ const DevicePinData = () => {
             return;
         }
 
-        if (!isCreateMode && microcontrollerItem.length === 0) {
-            return;
-        }
-
         if (microcontrollerId !== null) {
-            targetKey = microcontrollerItem[0].key;
+            const targetMcu = microcontrollers.find(
+                (item) => item.id === microcontrollerId
+            );
+            if (targetMcu) {
+                setSelectedMicrocontroller(targetMcu);
+            }
+            targetKey = targetMcu ? targetMcu.key : '';
         }
 
         // refactor: use server-side return key
@@ -377,6 +378,8 @@ const DevicePinData = () => {
             setMicrocontrollerIdImg(arduinoNano33Iot);
         } else if (targetKey === 'ESP_01S') {
             setMicrocontrollerIdImg(esp01s);
+        } else {
+            setMicrocontrollerIdImg('');
         }
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
@@ -531,7 +534,7 @@ const DevicePinData = () => {
                                 )}
 
                                 <div className="d-flex flex-wrap mt-2">
-                                    {microcontrollerItem[0]?.pins.map(
+                                    {selectedMicrocontroller?.pins.map(
                                         (pin, index) => {
                                             return (
                                                 <div
