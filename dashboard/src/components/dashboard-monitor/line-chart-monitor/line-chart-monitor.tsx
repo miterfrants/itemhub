@@ -21,9 +21,11 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
+
     const [lineChartMargin, setLineChartMargin] = useState<Margins | undefined>(
         [50, 50, 0, 50]
     );
+
     const resizeHandler = useRef(
         debounce(() => {
             const chartWidth = elementContainerRef.current?.offsetWidth || 0;
