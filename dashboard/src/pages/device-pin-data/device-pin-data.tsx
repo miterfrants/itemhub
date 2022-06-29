@@ -516,6 +516,14 @@ const DevicePinData = () => {
                                     setMicrocontrollerId(
                                         Number(e.target.value)
                                     );
+
+                                    if (
+                                        Number(e.target.value) !==
+                                        device?.microcontroller
+                                    ) {
+                                        setSelectedPins([]);
+                                    }
+
                                     setIsValidData((prev) => {
                                         return {
                                             ...prev,
