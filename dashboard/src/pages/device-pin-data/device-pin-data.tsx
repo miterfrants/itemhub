@@ -184,6 +184,7 @@ const DevicePinData = () => {
     const [isValidData, setIsValidData] = useState({
         name: true,
         selectedPins: true,
+        selectedMicrocontroller: true,
     });
 
     const validate = () => {
@@ -202,6 +203,16 @@ const DevicePinData = () => {
                 return {
                     ...prev,
                     selectedPins: false,
+                };
+            });
+            isValid = false;
+        }
+
+        if (!microcontrollerId) {
+            setIsValidData((prev) => {
+                return {
+                    ...prev,
+                    selectedMicrocontroller: false,
                 };
             });
             isValid = false;
@@ -505,6 +516,12 @@ const DevicePinData = () => {
                                     setMicrocontrollerId(
                                         Number(e.target.value)
                                     );
+                                    setIsValidData((prev) => {
+                                        return {
+                                            ...prev,
+                                            selectedMicrocontroller: true,
+                                        };
+                                    });
                                 }}
                                 className="form-select mt-2"
                             >
@@ -523,6 +540,11 @@ const DevicePinData = () => {
                                     );
                                 })}
                             </select>
+                            {!isValidData.selectedMicrocontroller && (
+                                <div className="text-danger fs-5">
+                                    單晶片為必填欄位
+                                </div>
+                            )}
                         </div>
                         {!isCreateMode && (
                             <div className="mb-4">
