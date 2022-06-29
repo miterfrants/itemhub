@@ -82,6 +82,7 @@ const Trigger = () => {
         destinationDeviceId: true,
         destinationPin: true,
         email: true,
+        invalidEmail: true,
     });
 
     const validateEditedTrigger = (fetchApi: () => Promise<void>) => {
@@ -151,6 +152,7 @@ const Trigger = () => {
             !editedTriggerData.email &&
             editedTriggerData.type === notificationTriggerType
         ) {
+            // refactor: 抽離 validator
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
@@ -159,6 +161,24 @@ const Trigger = () => {
             });
             isValidateSuccess = false;
         }
+
+        if (
+            editedTriggerData.email &&
+            !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+                editedTriggerData.email
+            ) &&
+            editedTriggerData.type === notificationTriggerType
+        ) {
+            // refactor: 抽離 validator
+            setIsValidEditedTrigger((prev) => {
+                return {
+                    ...prev,
+                    invalidEmail: false,
+                };
+            });
+            isValidateSuccess = false;
+        }
+
         if (isValidateSuccess) {
             fetchApi();
         }
@@ -545,11 +565,23 @@ const Trigger = () => {
                                                 email: value,
                                             };
                                         });
+
+                                        setIsValidEditedTrigger((prev) => {
+                                            return {
+                                                ...prev,
+                                                email: value ? true : false,
+                                            };
+                                        });
                                     }}
                                 />
                                 {!isValidEditedTrigger.email && (
                                     <div className="text-danger mt-1 fs-5">
                                         請輸入 Email
+                                    </div>
+                                )}
+                                {!isValidEditedTrigger.invalidEmail && (
+                                    <div className="text-danger mt-1 fs-5">
+                                        錯誤的 Email 格式
                                     </div>
                                 )}
                             </label>
