@@ -21,6 +21,8 @@ import { AuthRoutingRule } from './routing-rules/auth.routing-rule.js';
 import { TransactionController } from './controllers/transaction.controller.js';
 import { SubscriptionDataService } from './dataservices/subscription.dataservice.js';
 import { RESPONSE_STATUS } from './constants.js';
+import { HowToStartController } from './controllers/how-to-start.controller.js';
+import { HowToIntegrateGoogleSmartHomeController } from './controllers/how-to-integrate-google-smart-home.controller.js';
 
 const gTag = {
     dependency: {
@@ -137,9 +139,16 @@ export const RoutingRule = [{
                 controller: CooperationController,
                 html: '/template/cooperation.html'
             }, {
-                path: 'how/?expandedStartUp&expandedGoogleSmartHome',
+                path: 'how/',
                 controller: HowController,
-                html: '/template/how.html'
+                html: '/template/how.html',
+                children: [{
+                    path: 'start/',
+                    controller: HowToStartController
+                }, {
+                    path: 'integrate-google-smart-home/',
+                    controller: HowToIntegrateGoogleSmartHomeController
+                }]
             }, {
                 path: 'feature/',
                 controller: FeatureController,

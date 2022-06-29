@@ -194,6 +194,10 @@ const Triggers = () => {
     };
 
     useEffect(() => {
+        document.title = 'ItemHub - 觸發列表';
+    }, []);
+
+    useEffect(() => {
         if (
             deletedOneId &&
             deleteOneTriggerResponse &&

@@ -1,9 +1,9 @@
 .how {
     .arrow {
         transition: transform 0.3s;
+        transform: rotate(0deg);
     }
     .up-arrow {
         transform: rotate(-180deg);
-        transition: transform 0.3s;
     }
 }

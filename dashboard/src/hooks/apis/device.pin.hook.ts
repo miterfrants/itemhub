@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAppDispatch } from '@/hooks/redux.hook';
 import { useFetchApi } from '@/hooks/apis/fetch.hook';
-import { DeviceItem, PinItem } from '@/types/devices.type';
+import { PinItem } from '@/types/devices.type';
 import {
     API_URL,
     END_POINT,
@@ -13,10 +13,11 @@ import { pinsActions } from '@/redux/reducers/pins.reducer';
 
 export const useGetDevicePinsApi = ({ id }: { id: number }) => {
     const dispatch = useAppDispatch();
-    const dispatchRefreshPins = useCallback(
+    const dispatchAppendPins = useCallback(
         (data: PinItem[]) => {
-            dispatch(pinsActions.refreshPins(data));
+            dispatch(pinsActions.updatePins(data));
         },
+        // eslint-disable-next-line
         [id, dispatch]
     );
     let apiPath = `${API_URL}${END_POINT.DEVICE_PINS}`;
@@ -26,7 +27,7 @@ export const useGetDevicePinsApi = ({ id }: { id: number }) => {
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,
-        callbackFunc: dispatchRefreshPins,
+        callbackFunc: dispatchAppendPins,
     });
 
     return {
@@ -34,6 +35,39 @@ export const useGetDevicePinsApi = ({ id }: { id: number }) => {
         error,
         devicePins: data,
         getDevicePinsApi: fetchApi,
+    };
+};
+
+export const useGetDevicePinApi = ({
+    id,
+    pin,
+}: {
+    id: number;
+    pin: string;
+}) => {
+    const dispatch = useAppDispatch();
+    const dispatchAppendPins = useCallback(
+        (data: PinItem) => {
+            dispatch(pinsActions.updatePins([data]));
+        },
+        // eslint-disable-next-line
+        [id, dispatch]
+    );
+    let apiPath = `${API_URL}${END_POINT.DEVICE_PIN}`;
+    apiPath = apiPath.replace(':id', id.toString()).replace(':pin', pin);
+
+    const { isLoading, error, data, fetchApi } = useFetchApi<PinItem>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchAppendPins,
+    });
+
+    return {
+        isLoading,
+        error,
+        data,
+        fetchApi,
     };
 };
 
@@ -140,10 +174,10 @@ export const useBundleFirmwareApi = ({ id }: { id: number }) => {
 
 export const useCreatePinsApi = (id: number, pins: PinItem[]) => {
     const dispatch = useAppDispatch();
-    const dispatchRefresh = useCallback(
-        (data: ResponseOK) => {
-            if (data.status === RESPONSE_STATUS.OK) {
-                dispatch(pinsActions.refreshPins(pins));
+    const dispatchAppendPins = useCallback(
+        (data: PinItem[]) => {
+            if (data.length > 0) {
+                dispatch(pinsActions.updatePins(data));
             }
         },
         [dispatch, pins]
@@ -152,12 +186,12 @@ export const useCreatePinsApi = (id: number, pins: PinItem[]) => {
     let apiPath = `${API_URL}${END_POINT.DEVICE_PINS}`;
     apiPath = apiPath.replace(':id', id.toString());
 
-    return useFetchApi<ResponseOK>({
+    return useFetchApi<PinItem[]>({
         apiPath,
         method: HTTP_METHOD.POST,
         payload: pins,
         initialData: null,
-        callbackFunc: dispatchRefresh,
+        callbackFunc: dispatchAppendPins,
     });
 };
 
@@ -166,7 +200,7 @@ export const useUpdatePinsApi = (id: number, pins: PinItem[]) => {
     const dispatchRefresh = useCallback(
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {
-                dispatch(pinsActions.refreshPins(pins));
+                dispatch(pinsActions.updatePins(pins));
             }
         },
         [dispatch, pins]

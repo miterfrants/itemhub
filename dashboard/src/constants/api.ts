@@ -5,6 +5,7 @@ export const END_POINT = {
     TRIGGER_TYPES: 'universal/trigger-types',
     MICROCONTROLLER: 'universal/microcontroller',
     DEVICE_MODE: 'universal/device-mode',
+    DASHBOARD_MONITOR_MODE: 'universal/dashboard-monitor-mode',
     SIGN_WITH_EMAIL: 'auth/sign-in-with-email',
     IS_SIGNED: 'auth/is-sign-in',
     All_DEVICES: 'my/devices/all',
@@ -14,6 +15,7 @@ export const END_POINT = {
     DEVICE_SWITCH_PIN: 'my/devices/:id/switches/:pin',
     DEVICE_PIN: 'my/devices/:id/pins/:pin',
     DEVICE_BUNDLE_FIRMWARE: 'my/devices/:id/bundle-firmware',
+    SENSOR_LOGS: 'my/devices/:id/sensors/:pin',
     OAUTH_CLIENTS: 'my/oauth-clients',
     OAUTH_CLIENT: 'my/oauth-clients/:id',
     OAUTH_CLIENT_REDIRECT_URIS: 'my/oauth-clients/:id/redirect-uris',
@@ -21,6 +23,7 @@ export const END_POINT = {
     TRIGGERS: 'my/triggers',
     TRIGGER: 'my/triggers/:id',
     FIRMWARE: 'firmware/:bundleId',
+    DASHBOARD_MONITORS: 'my/dashboard-monitors',
 };
 
 export const HTTP_METHOD = {

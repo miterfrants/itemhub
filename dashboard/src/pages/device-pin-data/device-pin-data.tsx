@@ -25,7 +25,7 @@ import arduinoNano33Iot from '@/assets/images/arduino-nano-33-iot.svg';
 import particleIoPhoton from '@/assets/images/particle-io-photon.jpeg';
 import esp01s from '@/assets/images/esp-01s.svg';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
-import { PinItem } from '@/types/devices.type';
+import { DeviceItem, PinItem } from '@/types/devices.type';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import closeIcon from '@/assets/images/dark-close.svg';
@@ -38,21 +38,23 @@ const DevicePinData = () => {
     const { id: idFromUrl } = useParams();
     const id: number | null = idFromUrl ? Number(idFromUrl) : null;
     const isCreateMode = id === null;
-    const devices = useAppSelector(selectDevices).devices;
-    const device =
-        (devices || []).filter((device) => device.id === Number(id))[0] || null;
-    const devicePins = useAppSelector(selectDevicePins);
+    const devicesFromStore = useAppSelector(selectDevices).devices;
+    const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
     const [microcontrollerId, setMicrocontrollerId] = useState(0);
+    const [device, setDevice] = useState<DeviceItem | null>(null);
 
-    const [selectedPins, setSelectedPins] = useState(devicePins);
+    const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
+    const devicePinsRef = useRef<PinItem[]>([]);
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
+    const [switchMode, setSwitchMode] = useState(1);
+    const [sensorMode, setSensorMode] = useState(0);
 
     const microcontrollerItem = (microcontrollers || []).filter((item) => {
         return item.id === microcontrollerId;
@@ -74,11 +76,9 @@ const DevicePinData = () => {
         Number(id)
     );
 
-    const { getDevicePinsApi, devicePins: devicePinData } = useGetDevicePinsApi(
-        {
-            id: Number(id),
-        }
-    );
+    const { getDevicePinsApi } = useGetDevicePinsApi({
+        id: Number(id),
+    });
 
     const {
         isLoading: isUpdating,
@@ -100,11 +100,10 @@ const DevicePinData = () => {
         data: createDeviceResponse,
     } = useCreateDeviceApi(name, microcontrollerId);
 
-    const { data: createDevicePinResponse, fetchApi: createDevicePinsApi } =
-        useCreatePinsApi(
-            Number(createDeviceResponse?.id) || Number(id),
-            shouldBeAddedPins || []
-        );
+    const { fetchApi: createDevicePinsApi } = useCreatePinsApi(
+        Number(createDeviceResponse?.id) || Number(id),
+        shouldBeAddedPins || []
+    );
 
     const { fetchApi: updateDevicePinsApi } = useUpdatePinsApi(
         Number(createDeviceResponse?.id) || Number(id),
@@ -217,17 +216,19 @@ const DevicePinData = () => {
 
     const updateDevice = () => {
         const shouldBeUpdatedPins = selectedPins?.filter((item) =>
-            devicePins?.map((devicePin) => devicePin.pin).includes(item.pin)
+            devicePinsRef.current
+                ?.map((devicePin) => devicePin.pin)
+                .includes(item.pin)
         );
 
         const shouldBeAddedPins = selectedPins?.filter(
             (item) =>
-                !devicePins
+                !devicePinsRef.current
                     ?.map((devicePin) => devicePin.pin)
                     .includes(item.pin)
         );
 
-        const shouldBeDeletedPins = devicePins?.filter(
+        const shouldBeDeletedPins = devicePinsRef.current?.filter(
             (devicePin) =>
                 !selectedPins
                     ?.map((selectedPin) => selectedPin.pin)
@@ -249,14 +250,6 @@ const DevicePinData = () => {
         updateDeviceApi();
     };
 
-    const isSwitch = deviceModes.filter((item) => {
-        return item.key === DEVICE_MODE.SWITCH;
-    })[0]?.value;
-
-    const isSensor = deviceModes.filter((item) => {
-        return item.key === DEVICE_MODE.SENSOR;
-    })[0]?.value;
-
     const selectPins = (
         pin: string,
         mode: number,
@@ -274,8 +267,10 @@ const DevicePinData = () => {
             if (targetIndex !== -1) {
                 newSelected?.splice(Number(targetIndex), 1);
             }
-
             const pushData: PinItem = {
+                id: devicePinsRef.current.filter(
+                    (item) => item.pin === pin && item.deviceId === Number(id)
+                )[0]?.id,
                 deviceId: Number(id),
                 pin,
                 mode,
@@ -296,31 +291,69 @@ const DevicePinData = () => {
 
     useEffect(() => {
         if (isCreateMode) {
+            document.title = 'ItemHub - 新增裝置';
             return;
         }
-        getDeviceApi();
-    }, []);
+        document.title = 'ItemHub - 編輯裝置';
+
+        const devicePins =
+            devicePinsFromStore?.filter(
+                (item: PinItem) => item.deviceId === id
+            ) || ([] as PinItem[]);
+        if (devicePinsFromStore === null) {
+            getDevicePinsApi();
+            return;
+        }
+        setSelectedPins(devicePins);
+        devicePinsRef.current = devicePins;
+        // eslint-disable-next-line
+    }, [devicePinsFromStore]);
+
+    useEffect(() => {
+        if (isCreateMode) {
+            return;
+        }
+        const device = (devicesFromStore || []).find(
+            (item: DeviceItem) => item.id === id
+        );
+        if (!device) {
+            getDeviceApi();
+        } else {
+            setDevice(device);
+        }
+        // eslint-disable-next-line
+    }, [devicesFromStore]);
+
+    useEffect(() => {
+        const switchMode = deviceModes.filter((item) => {
+            return item.key === DEVICE_MODE.SWITCH;
+        })[0]?.value;
+
+        if (switchMode !== undefined) {
+            setSwitchMode(switchMode);
+        }
+
+        const sensorMode = deviceModes.filter((item) => {
+            return item.key === DEVICE_MODE.SENSOR;
+        })[0]?.value;
+
+        if (sensorMode !== undefined) {
+            setSensorMode(sensorMode);
+        }
+    }, [deviceModes]);
 
     useEffect(() => {
         if (device !== null) {
             setMicrocontrollerId(Number(device.microcontroller));
             setName(device.name);
-            getDevicePinsApi();
         }
     }, [device]);
-
-    useEffect(() => {
-        setSelectedPins(devicePins);
-    }, [devicePins]);
 
     useEffect(() => {
         ReactTooltip.rebuild();
     }, [selectedPins]);
 
     useEffect(() => {
-        // 切換裝置類型的時候 把選取的 PIN 都清空
-        setSelectedPins([]);
-
         let targetKey = '';
 
         if (!microcontrollers || microcontrollers.length === 0) {
@@ -344,6 +377,7 @@ const DevicePinData = () => {
         } else if (targetKey === 'ESP_01S') {
             setMicrocontrollerIdImg(esp01s);
         }
+        // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
 
     useEffect(() => {
@@ -358,6 +392,7 @@ const DevicePinData = () => {
             );
             navigate(`/dashboard/devices/${id}`);
         }
+        // eslint-disable-next-line
     }, [updateDeviceResponse]);
 
     useEffect(() => {
@@ -372,6 +407,7 @@ const DevicePinData = () => {
             );
             navigate(`/dashboard/devices/edit/${createDeviceResponse.id}`);
         }
+        // eslint-disable-next-line
     }, [createDeviceResponse]);
 
     useEffect(() => {
@@ -379,6 +415,7 @@ const DevicePinData = () => {
             return;
         }
         updateDevicePinsApi();
+        // eslint-disable-next-line
     }, [shouldBeUpdatedPins]);
 
     useEffect(() => {
@@ -386,6 +423,7 @@ const DevicePinData = () => {
             return;
         }
         createDevicePinsApi();
+        // eslint-disable-next-line
     }, [shouldBeAddedPins]);
 
     useEffect(() => {
@@ -393,13 +431,8 @@ const DevicePinData = () => {
             return;
         }
         deleteDevicePinsApi();
+        // eslint-disable-next-line
     }, [shouldBeDeletedPins]);
-
-    useEffect(() => {
-        if (createDevicePinResponse?.status === 'OK') {
-            getDevicePinsApi();
-        }
-    }, [createDevicePinResponse]);
 
     useEffect(() => {
         pinNameInputRef.current?.focus();
@@ -515,7 +548,7 @@ const DevicePinData = () => {
                                                                 );
                                                             }
                                                         )[0]?.mode ===
-                                                        isSwitch ? (
+                                                        switchMode ? (
                                                             <div>開關</div>
                                                         ) : (
                                                             <div>感應器</div>
@@ -555,7 +588,7 @@ const DevicePinData = () => {
                                                             onClick={() => {
                                                                 selectPins(
                                                                     pin.name,
-                                                                    isSwitch,
+                                                                    switchMode,
                                                                     pin.name,
                                                                     0
                                                                 );
@@ -569,7 +602,7 @@ const DevicePinData = () => {
                                                             onClick={() => {
                                                                 selectPins(
                                                                     pin.name,
-                                                                    isSensor,
+                                                                    sensorMode,
                                                                     pin.name,
                                                                     null
                                                                 );

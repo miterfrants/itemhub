@@ -16,6 +16,7 @@ import Footer from './components/footer/footer';
 import Dialog from './components/dialog/dialog';
 import Toaster from './components/toaster/toaster';
 import jwt_decode from 'jwt-decode';
+import MonitorConfigDialog from './components/monitor-config-dialog/monitor-config-dialog';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -62,6 +63,7 @@ const App = () => {
                 </div>
             </div>
             <Dialog />
+            <MonitorConfigDialog />
             <Toaster />
         </div>
     ) : (

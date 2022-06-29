@@ -26,3 +26,9 @@ export interface TriggerType {
     value: number;
     label: string;
 }
+
+export interface DashboardMonitorMode {
+    key: string;
+    value: number;
+    label: string;
+}
