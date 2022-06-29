@@ -19,14 +19,19 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
+    const [lineChartMargin, setLineChartMargin] = useState([50, 50, 0, 50]);
     const resizeHandler = useRef(
         debounce(() => {
-            setChartWidth(elementContainerRef.current?.offsetWidth || 0);
+            const chartWidth = elementContainerRef.current?.offsetWidth || 0;
+            setChartWidth(chartWidth);
             setChartHeight(
                 elementContainerRef.current?.offsetHeight
                     ? elementContainerRef.current?.offsetHeight - 80
                     : 0
             );
+            if (chartWidth <= 700) {
+                setLineChartMargin([20, 20, 0, 10]);
+            }
         }, 800)
     );
 
@@ -54,15 +59,11 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     useEffect(() => {
         getSensorLogs();
         getDevicePin();
-        setChartWidth(elementContainerRef.current?.offsetWidth || 0);
-        setChartHeight(
-            elementContainerRef.current?.offsetHeight
-                ? elementContainerRef.current?.offsetHeight - 80
-                : 0
-        );
+        resizeHandler.current();
         const resizeHanlder = resizeHandler.current;
         window.addEventListener('resize', resizeHanlder);
         return () => window.removeEventListener('resize', resizeHanlder);
+
         // eslint-disable-next-line
     }, []);
 
@@ -99,21 +100,21 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <div className="d-flex align-items-center h-100 justify-content-center">
                     {lineChartData.length <= 0 ? (
-                        <h1 className="mb-0">目前沒有資料</h1>
+                        <h2 className="mb-0 px-45 my-3">暫無資料</h2>
                     ) : (
                         <div
                             className={`${
                                 lineChartData.length > 0 ? '' : 'd-none'
                             }`}
                         >
-                            <h3 className="mb-0 w-100 text-center">
+                            <h3 className="mb-0 w-100 text-center px-45 my-3">
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>
                                 <AreaChart
                                     width={chartWidth}
                                     height={chartHeight}
-                                    margins={[50, 50, 0, 50]}
+                                    margins={lineChartMargin}
                                     data={lineChartData}
                                     series={
                                         <AreaSeries
