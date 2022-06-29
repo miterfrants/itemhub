@@ -30,6 +30,7 @@ import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import closeIcon from '@/assets/images/dark-close.svg';
 import ReactTooltip from 'react-tooltip';
+import { Microcontroller } from '@/types/universal.type';
 
 const DevicePinData = () => {
     const navigate = useNavigate();
@@ -42,7 +43,9 @@ const DevicePinData = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
-    const [microcontrollerId, setMicrocontrollerId] = useState(0);
+    const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
+        null
+    );
     const [device, setDevice] = useState<DeviceItem | null>(null);
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
@@ -50,15 +53,13 @@ const DevicePinData = () => {
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
+    const [selectedMicrocontroller, setSelectedMicrocontroller] =
+        useState<null | Microcontroller>(null);
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
     const [switchMode, setSwitchMode] = useState(1);
     const [sensorMode, setSensorMode] = useState(0);
-
-    const microcontrollerItem = (microcontrollers || []).filter((item) => {
-        return item.id === microcontrollerId;
-    });
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -98,7 +99,7 @@ const DevicePinData = () => {
         fetchApi: createDeviceApi,
         isLoading: isCreating,
         data: createDeviceResponse,
-    } = useCreateDeviceApi(name, microcontrollerId);
+    } = useCreateDeviceApi(name, microcontrollerId || -1);
 
     const { fetchApi: createDevicePinsApi } = useCreatePinsApi(
         Number(createDeviceResponse?.id) || Number(id),
@@ -183,6 +184,7 @@ const DevicePinData = () => {
     const [isValidData, setIsValidData] = useState({
         name: true,
         selectedPins: true,
+        selectedMicrocontroller: true,
     });
 
     const validate = () => {
@@ -201,6 +203,16 @@ const DevicePinData = () => {
                 return {
                     ...prev,
                     selectedPins: false,
+                };
+            });
+            isValid = false;
+        }
+
+        if (!microcontrollerId) {
+            setIsValidData((prev) => {
+                return {
+                    ...prev,
+                    selectedMicrocontroller: false,
                 };
             });
             isValid = false;
@@ -359,14 +371,15 @@ const DevicePinData = () => {
         if (!microcontrollers || microcontrollers.length === 0) {
             return;
         }
-        if (!isCreateMode && microcontrollerItem.length === 0) {
-            return;
-        }
-        if (microcontrollerId === 0) {
-            targetKey = microcontrollers[0].key;
-            setMicrocontrollerId(microcontrollers[0].id);
-        } else {
-            targetKey = microcontrollerItem[0].key;
+
+        if (microcontrollerId !== null) {
+            const targetMcu = microcontrollers.find(
+                (item) => item.id === microcontrollerId
+            );
+            setSelectedMicrocontroller(
+                targetMcu !== undefined ? targetMcu : null
+            );
+            targetKey = targetMcu ? targetMcu.key : '';
         }
 
         // refactor: use server-side return key
@@ -376,6 +389,8 @@ const DevicePinData = () => {
             setMicrocontrollerIdImg(arduinoNano33Iot);
         } else if (targetKey === 'ESP_01S') {
             setMicrocontrollerIdImg(esp01s);
+        } else {
+            setMicrocontrollerIdImg('');
         }
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
@@ -494,17 +509,38 @@ const DevicePinData = () => {
                         <div className="mb-4">
                             <label>裝置類型</label>
                             <select
-                                defaultValue={
-                                    device ? device.microcontroller : 0
-                                }
-                                onChange={(e) =>
-                                    setMicrocontrollerId(Number(e.target.value))
-                                }
+                                onChange={(e) => {
+                                    if (!e.target.value) {
+                                        return;
+                                    }
+                                    setMicrocontrollerId(
+                                        Number(e.target.value)
+                                    );
+
+                                    if (
+                                        Number(e.target.value) !==
+                                        device?.microcontroller
+                                    ) {
+                                        setSelectedPins([]);
+                                    }
+
+                                    setIsValidData((prev) => {
+                                        return {
+                                            ...prev,
+                                            selectedMicrocontroller: true,
+                                        };
+                                    });
+                                }}
                                 className="form-select mt-2"
                             >
+                                <option>請選擇單晶片</option>
                                 {microcontrollers.map(({ id, key }) => {
                                     return (
-                                        <option key={id} value={id}>
+                                        <option
+                                            key={id}
+                                            value={id}
+                                            selected={id === microcontrollerId}
+                                        >
                                             {key
                                                 .replaceAll('_', ' ')
                                                 .toLowerCase()}
@@ -512,8 +548,13 @@ const DevicePinData = () => {
                                     );
                                 })}
                             </select>
+                            {!isValidData.selectedMicrocontroller && (
+                                <div className="text-danger fs-5">
+                                    單晶片為必填欄位
+                                </div>
+                            )}
                         </div>
-                        {!isCreateMode && (
+                        {!isCreateMode && selectedMicrocontroller && (
                             <div className="mb-4">
                                 <label>選擇 Pin</label>
                                 {!isValidData.selectedPins && (
@@ -523,7 +564,7 @@ const DevicePinData = () => {
                                 )}
 
                                 <div className="d-flex flex-wrap mt-2">
-                                    {microcontrollerItem[0]?.pins.map(
+                                    {selectedMicrocontroller?.pins.map(
                                         (pin, index) => {
                                             return (
                                                 <div
