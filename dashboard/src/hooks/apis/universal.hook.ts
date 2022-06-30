@@ -7,6 +7,7 @@ import {
     DeviceMode,
     TriggerOerator,
     Microcontroller,
+    TriggerType,
     DashboardMonitorMode,
 } from '@/types/universal.type';
 
@@ -33,6 +34,58 @@ export const useGetTriggerOperatorsApi = () => {
         gettingTriggerOperators: isLoading,
         gettingTriggerOperatorsErr: error,
         getTriggerOperatorsApi: fetchApi,
+    };
+};
+
+export const useGetTriggerTypesApi = () => {
+    const dispatch = useAppDispatch();
+    const dispatchSetTriggerTypes = useCallback(
+        (data: TriggerType[]) => {
+            if (data) {
+                dispatch(universalActions.setTriggerTypes(data));
+            }
+        },
+        [dispatch]
+    );
+    const apiPath = `${API_URL}${END_POINT.TRIGGER_TYPES}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<TriggerType[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchSetTriggerTypes,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+    };
+};
+
+export const useGetTriggerNotificationPeriodApi = () => {
+    const dispatch = useAppDispatch();
+    const dispatchSetTriggerNotificationPeriod = useCallback(
+        (data: TriggerType[]) => {
+            if (data) {
+                dispatch(universalActions.setTriggerNotificationPeriod(data));
+            }
+        },
+        [dispatch]
+    );
+    const apiPath = `${API_URL}${END_POINT.TRIGGER_NOTIFICATION_PERIODS}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<TriggerType[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchSetTriggerNotificationPeriod,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
     };
 };
 

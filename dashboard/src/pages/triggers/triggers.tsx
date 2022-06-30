@@ -26,6 +26,7 @@ import Spinner from '@/components/spinner/spinner';
 import lightTrashIcon from '@/assets/images/light-trash.svg';
 import pencilIcon from '@/assets/images/pencil.svg';
 import trashIcon from '@/assets/images/trash.svg';
+import { TRIGGER_TYPE } from '@/constants/trigger-type';
 
 const Triggers = () => {
     const navigate = useNavigate();
@@ -36,7 +37,11 @@ const Triggers = () => {
 
     const dispatch = useAppDispatch();
     const [triggerName, setTriggerName] = useState(query.get('name') || '');
-    const { triggerOperators } = useAppSelector(selectUniversal);
+    const { triggerOperators, triggerTypes } = useAppSelector(selectUniversal);
+
+    const changeDeviceStateTriggerType = triggerTypes.find(
+        (item) => item.key === TRIGGER_TYPE.CHANGE_DEVICE_STATE
+    )?.value;
 
     const sourceDeviceNameOptionsRef = useRef<string[]>([]);
     const destinationDeviceNameOptionsRef = useRef<string[]>([]);
@@ -339,13 +344,15 @@ const Triggers = () => {
                                                 destinationPin,
                                                 operator,
                                                 sourceThreshold,
+                                                type,
+                                                email,
                                             },
                                             index
                                         ) => (
                                             <div
                                                 key={`${id}-${index}`}
                                                 role="button"
-                                                onClick={(e) => {
+                                                onClick={() => {
                                                     updateSelectedIds(id);
                                                 }}
                                                 className="row list border-bottom border-black border-opacity-10 p-0 m-0 py-lg-4 px-lg-3"
@@ -399,40 +406,48 @@ const Triggers = () => {
                                                 <div className="d-block d-lg-none col-4 py-3 bg-black bg-opacity-5 text-black text-opacity-45">
                                                     目標
                                                 </div>
-                                                <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
-                                                    <div>
-                                                        {
-                                                            destinationDevice?.name
-                                                        }{' '}
-                                                    </div>
-                                                    <div className="mt-2">
-                                                        <OnlineStatusTag
-                                                            isOnline={
-                                                                destinationDevice?.online ||
-                                                                false
-                                                            }
-                                                        />
-                                                    </div>
+                                                {type ===
+                                                changeDeviceStateTriggerType ? (
+                                                    <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
+                                                        <div>
+                                                            {
+                                                                destinationDevice?.name
+                                                            }{' '}
+                                                        </div>
+                                                        <div className="mt-2">
+                                                            <OnlineStatusTag
+                                                                isOnline={
+                                                                    destinationDevice?.online ||
+                                                                    false
+                                                                }
+                                                            />
+                                                        </div>
 
-                                                    <div className="mt-2">
-                                                        Pin: {destinationPin}{' '}
-                                                    </div>
+                                                        <div className="mt-2">
+                                                            Pin:{' '}
+                                                            {destinationPin}{' '}
+                                                        </div>
 
-                                                    <div className="mt-2">
-                                                        目標狀態:{' '}
-                                                        {destinationDeviceTargetState ===
-                                                        1
-                                                            ? '開'
-                                                            : '關'}
+                                                        <div className="mt-2">
+                                                            目標狀態:{' '}
+                                                            {destinationDeviceTargetState ===
+                                                            1
+                                                                ? '開'
+                                                                : '關'}
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                ) : (
+                                                    <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
+                                                        通知: {email}
+                                                    </div>
+                                                )}
 
                                                 <div className="d-block d-lg-none col-4 py-3 bg-black bg-opacity-5 text-black text-opacity-45">
                                                     操作
                                                 </div>
                                                 <div className="col-8 col-lg-2 py-3 py-lg-0 d-flex justify-content-start flex-wrap">
                                                     <div
-                                                        onClick={(e) => {
+                                                        onClick={() => {
                                                             navigate(
                                                                 `/dashboard/triggers/edit/${id}`
                                                             );

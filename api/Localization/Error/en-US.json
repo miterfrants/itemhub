@@ -24,5 +24,10 @@
     "VERIFY_PHONE_TOKEN_EXPIRED": "Verify phone token expired, back to previous step",
     "VERIFY_RESET_PASSWORD_TOKEN_EXPIRED": "Verify reset password token expired, back to previous step",
     "DUPLICATED_PHONE": "This phone be registerd by other one",
-    "WITHOUT_PERMISSION_TO_GET_EMAIL": "We could not access your email, maybe you dont allow us platform to get email permission"
+    "WITHOUT_PERMISSION_TO_GET_EMAIL": "We could not access your email, maybe you dont allow us platform to get email permission",
+    "TRIGGER_DEST_DEVICE_ID_REQUIRED": "Trigger dest device id required",
+    "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED": "Trigger dest device target state required",
+    "TRIGGER_DEST_PIN_REQUIRED": "Trigger dest pin required",
+    "TRIGGER_EMAIL_REQUIRED": "Trigger email required",
+    "TRIGGER_NOTIFICATION_OVER_USING": "over-using trigger notification"
 }

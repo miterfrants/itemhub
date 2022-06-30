@@ -13,8 +13,10 @@ export interface TriggerItem {
     sourcePin: string;
     sourceThreshold: number;
     destinationDevice: DeviceItem | null;
-    destinationDeviceId: number;
-    destinationDeviceSourceState: number;
-    destinationDeviceTargetState: number;
-    destinationPin: string;
+    destinationDeviceId: number | null;
+    destinationDeviceTargetState: number | null;
+    destinationPin: string | null;
+    type: number;
+    email: string | null;
+    notificationPeriod: number | null;
 }

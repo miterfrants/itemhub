@@ -3,9 +3,11 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
+    useGetTriggerTypesApi,
     useGetTriggerOperatorsApi,
     useGetMicrocontrollersApi,
     useGetDeviceModesApi,
+    useGetTriggerNotificationPeriodApi,
 } from '@/hooks/apis/universal.hook';
 
 import { CookieHelpers } from './helpers/cookie.helper';
@@ -41,18 +43,20 @@ const App = () => {
     }
 
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
+    const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
+    const { getDeviceModesApi } = useGetDeviceModesApi();
+
+    const { fetchApi: getTriggerTypes } = useGetTriggerTypesApi();
+    const { fetchApi: getTriggerNotificationPeriodApi } =
+        useGetTriggerNotificationPeriodApi();
+
     useEffect(() => {
         getTriggerOperatorsApi();
-    }, []);
-
-    const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
-    useEffect(() => {
         getMicrocontrollersApi();
-    }, []);
-
-    const { getDeviceModesApi } = useGetDeviceModesApi();
-    useEffect(() => {
         getDeviceModesApi();
+        getTriggerTypes();
+        getTriggerNotificationPeriodApi();
+        // eslint-disable-next-line
     }, []);
 
     return token ? (

@@ -23,5 +23,7 @@ namespace api.Constants
 
         [Description("新付費會員")]
         NEW_PREIUM_USER = 6,
+        [Description("自動觸發通知")]
+        TRIGGER_NOTIFICATION = 7,
     }
 }

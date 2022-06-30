@@ -3,76 +3,21 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220618130023_TriggerUpdateFieldForNotification")]
+    partial class TriggerUpdateFieldForNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.7");
-
-            modelBuilder.Entity("Homo.IotApi.DashboardMonitor", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Column")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<long>("DeviceId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("EditedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Mode")
-                        .HasColumnType("int");
-
-                    b.Property<long>("OwnerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Pin")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
-
-                    b.Property<int>("Row")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Sort")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("DeviceId");
-
-                    b.HasIndex("Mode");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("Pin");
-
-                    b.HasIndex("Sort");
-
-                    b.ToTable("DashboardMonitor");
-                });
 
             modelBuilder.Entity("Homo.IotApi.Device", b =>
                 {
@@ -195,8 +140,8 @@ namespace IotApi.Migrations
 
                     b.Property<string>("Pin")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
 
                     b.Property<decimal?>("Value")
                         .HasColumnType("decimal(65,30)");
@@ -657,7 +602,7 @@ namespace IotApi.Migrations
                     b.Property<long?>("DestinationDeviceId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal?>("DestinationDeviceTargetState")
+                    b.Property<decimal>("DestinationDeviceTargetState")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("DestinationPin")
@@ -672,9 +617,6 @@ namespace IotApi.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("varchar(255)");
-
-                    b.Property<int>("NotificationPeriod")
-                        .HasColumnType("int");
 
                     b.Property<int>("Operator")
                         .HasColumnType("int");
@@ -735,18 +677,12 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("OwnerId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Raw")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<long>("TriggerId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
