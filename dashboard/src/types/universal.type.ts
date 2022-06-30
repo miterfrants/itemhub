@@ -27,6 +27,11 @@ export interface TriggerType {
     label: string;
 }
 
+export interface TriggerNotificationPeriod {
+    key: string;
+    value: number;
+    label: string;
+}
 export interface DashboardMonitorMode {
     key: string;
     value: number;

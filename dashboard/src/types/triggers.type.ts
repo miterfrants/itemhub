@@ -18,4 +18,5 @@ export interface TriggerItem {
     destinationPin: string | null;
     type: number;
     email: string | null;
+    notificationPeriod: number | null;
 }
