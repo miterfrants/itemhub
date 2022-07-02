@@ -38,6 +38,7 @@ const Triggers = () => {
     const isFilter = !query.keys().next().done;
     const dispatch = useAppDispatch();
     const [triggerName, setTriggerName] = useState(query.get('name') || '');
+    console.log('init triggerName', triggerName);
     const [sourceDeviceName, setSourceDeviceName] = useState(
         query.get('sourceDeviceName') || ''
     );
@@ -96,6 +97,7 @@ const Triggers = () => {
 
     useEffect(() => {
         setTriggerName(query.get('name') || '');
+        console.log('setTriggerName', query.get('name') || '');
         // eslint-disable-next-line
     }, [query.get('name')]);
 
