@@ -99,7 +99,6 @@ namespace Homo.IotApi
                     // 這邊當流量大的時候可能會變成 bottleneck, 未來可以考慮改成 async 的方式去判斷使用者是不是已經超過用量了
                     Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_iotDbContext, extraPayload.Id); // 這邊不能把他省掉, 因為 device 久久換一次 token, 如果把 pricing plan 記載 token, 會造成使用者已經升級了但是這邊還是用舊的 rate limit
                     int rateLimit = 0;
-
                     if (trigger.Email != null)
                     {
                         rateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit(subscription == null ? null : (PRICING_PLAN)subscription.PricingPlan);
@@ -108,7 +107,6 @@ namespace Homo.IotApi
                     {
                         rateLimit = SubscriptionHelper.GetTriggerSmsNotificastionRateLimit(subscription == null ? null : (PRICING_PLAN)subscription.PricingPlan);
                     }
-
                     DateTime startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                     int daysInMonth = System.DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
                     DateTime endOfMonth = startOfMonth.AddDays(daysInMonth - 1).AddHours(23).AddMinutes(59).AddSeconds(59);
@@ -129,8 +127,7 @@ namespace Homo.IotApi
                     beTriggeredList.Add(trigger);
 
                     var deviceName = (devicePin.Device == null ? "" : devicePin.Device.Name);
-
-                    if (trigger.Email != null)
+                    if (!String.IsNullOrEmpty(trigger.Email))
                     {
                         MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TRIGGER_NOTIFICATION, _staticPath);
                         template = MailTemplateHelper.ReplaceVariable(template, new
@@ -160,7 +157,7 @@ namespace Homo.IotApi
                             Content = template.Content
                         }, _systemEmail, trigger.Email, _sendGridApiKey);
                     }
-                    else if (trigger.Phone != null)
+                    else if (!String.IsNullOrEmpty(trigger.Phone))
                     {
                         var subject = _commonLocalizer.Get("triggerNotification", null, new Dictionary<string, string> {
                             {
