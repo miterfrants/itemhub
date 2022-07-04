@@ -32,6 +32,7 @@ const Device = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { search, pathname } = useLocation();
 
     const [microcontrollerName, setMicrocontrollerName] = useState<string>('');
     const [device, setDevice] = useState<DeviceItem | null>(null);
@@ -49,11 +50,11 @@ const Device = () => {
         useDeleteDevicesApi([Number(id)]);
 
     const backToList = () => {
-        navigate('/dashboard/devices');
+        navigate(`/dashboard/devices${search}`);
     };
 
     const jumpToEditPage = () => {
-        navigate(`/dashboard/devices/edit/${Number(id)}`);
+        navigate(`/dashboard/devices/edit/${Number(id)}${search}`);
     };
 
     const bundleFirmware = () => {
@@ -95,7 +96,7 @@ const Device = () => {
                     type: ToasterTypeEnum.INFO,
                 })
             );
-            navigate('/dashboard/devices', { replace: true });
+            navigate(`/dashboard/devices${search}`, { replace: true });
         }
         // eslint-disable-next-line
     }, [deleteDeviceResponse]);
@@ -151,11 +152,11 @@ const Device = () => {
     const breadcrumbs = [
         {
             label: '裝置列表',
-            pathName: '/dashboard/devices',
+            pathName: `/dashboard/devices${search}`,
         },
         {
             label: '裝置詳細頁',
-            pathName: useLocation().pathname,
+            pathName: pathname,
         },
     ];
 

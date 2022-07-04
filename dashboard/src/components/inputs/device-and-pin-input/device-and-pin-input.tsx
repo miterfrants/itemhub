@@ -51,7 +51,7 @@ const DeviceAndPinInputs = ({
                 <AutocompletedSearch
                     datalistId={deviceNameLabel}
                     placeholder="請輸入裝置名稱搜尋"
-                    currentValue={deviceName}
+                    defaultValue={deviceName}
                     isDisabled={isDisabled}
                     isError={isDeviceNameError}
                     errorMessage="請輸入裝置名稱"
