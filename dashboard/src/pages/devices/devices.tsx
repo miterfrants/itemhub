@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
@@ -39,6 +39,7 @@ const Devices = () => {
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
     const dispatch = useDispatch();
+    const { search } = useLocation();
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
@@ -262,7 +263,7 @@ const Devices = () => {
                                                 <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
                                                     <Link
                                                         className="me-4 mb-3"
-                                                        to={`/dashboard/devices/${id}`}
+                                                        to={`/dashboard/devices/${id}${search}`}
                                                         data-tip="編輯"
                                                     >
                                                         <img
