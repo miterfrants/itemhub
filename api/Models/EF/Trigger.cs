@@ -13,13 +13,13 @@ namespace Homo.IotApi
         [Required]
         public long SourceDeviceId { get; set; }
         [Required]
-        [MaxLength(3)]
+        [MaxLength(5)]
         public string SourcePin { get; set; }
         [Required]
         public decimal SourceThreshold { get; set; }
         public Device SourceDevice { get; set; }
         public long? DestinationDeviceId { get; set; }
-        [MaxLength(3)]
+        [MaxLength(5)]
         public string DestinationPin { get; set; }
         public Device DestinationDevice { get; set; }
         public decimal? DestinationDeviceTargetState { get; set; }
