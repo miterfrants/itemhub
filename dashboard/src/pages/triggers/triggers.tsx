@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { RESPONSE_STATUS } from '@/constants/api';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.hook';
@@ -37,8 +37,8 @@ const Triggers = () => {
     const page = Number(query.get('page') || 1);
     const isFilter = !query.keys().next().done;
     const dispatch = useAppDispatch();
+    const { search } = useLocation();
     const [triggerName, setTriggerName] = useState(query.get('name') || '');
-    console.log('init triggerName', triggerName);
     const [sourceDeviceName, setSourceDeviceName] = useState(
         query.get('sourceDeviceName') || ''
     );
@@ -97,7 +97,6 @@ const Triggers = () => {
 
     useEffect(() => {
         setTriggerName(query.get('name') || '');
-        console.log('setTriggerName', query.get('name') || '');
         // eslint-disable-next-line
     }, [query.get('name')]);
 
@@ -258,7 +257,7 @@ const Triggers = () => {
         });
     };
 
-    const search = ({
+    const searchTriggers = ({
         key: keyInSearchInput,
         value: valueInSearchInput,
     }: KeyValuePair) => {
@@ -308,7 +307,7 @@ const Triggers = () => {
                 primaryButtonVisible={hasTriggersRef.current}
                 primaryButtonWording="新增觸發"
                 primaryButtonCallback={() => {
-                    navigate('create');
+                    navigate(`create${search}`);
                 }}
                 secondaryButtonIcon={lightTrashIcon}
                 secondaryButtonClassName={pageTitleSecondaryButtonClassName}
@@ -330,7 +329,7 @@ const Triggers = () => {
                                         setTriggerName(newName);
                                     }}
                                     onSearch={(triggerName) => {
-                                        search({
+                                        searchTriggers({
                                             key: 'name',
                                             value: triggerName,
                                         });
@@ -352,7 +351,7 @@ const Triggers = () => {
                                     onEnterKeyUp={(
                                         newValue: string | undefined
                                     ) => {
-                                        search({
+                                        searchTriggers({
                                             key: 'sourceDeviceName',
                                             value: newValue,
                                         });
@@ -360,7 +359,7 @@ const Triggers = () => {
                                     onClickOption={(
                                         newValue: string | undefined
                                     ) => {
-                                        search({
+                                        searchTriggers({
                                             key: 'sourceDeviceName',
                                             value: newValue,
                                         });
@@ -386,7 +385,7 @@ const Triggers = () => {
                                     onEnterKeyUp={(
                                         newValue: string | undefined
                                     ) => {
-                                        search({
+                                        searchTriggers({
                                             key: 'destinationDeviceName',
                                             value: newValue,
                                         });
@@ -394,7 +393,7 @@ const Triggers = () => {
                                     onClickOption={(
                                         newValue: string | undefined
                                     ) => {
-                                        search({
+                                        searchTriggers({
                                             key: 'destinationDeviceName',
                                             value: newValue,
                                         });
@@ -542,7 +541,7 @@ const Triggers = () => {
                                                     <div
                                                         onClick={() => {
                                                             navigate(
-                                                                `/dashboard/triggers/edit/${id}`
+                                                                `/dashboard/triggers/edit/${id}${search}`
                                                             );
                                                         }}
                                                         data-tip="編輯"

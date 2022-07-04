@@ -51,11 +51,11 @@ const Trigger = () => {
     const breadcrumbs = [
         {
             label: '觸發列表',
-            pathName: '/dashboard/triggers',
+            pathName: `/dashboard/triggers${location.search}`,
         },
         {
             label: isCreateMode ? '新增' : '編輯',
-            pathName: useLocation().pathname,
+            pathName: `${location.pathname}${location.search}`,
         },
     ];
 
@@ -227,7 +227,7 @@ const Trigger = () => {
         });
 
     const back = () => {
-        navigate(`/dashboard/triggers`);
+        navigate(`/dashboard/triggers${location.search}`);
     };
 
     useEffect(() => {
@@ -281,7 +281,7 @@ const Trigger = () => {
 
     useEffect(() => {
         if (createTriggerResponse && createTriggerResponse.id) {
-            navigate(`/dashboard/triggers`);
+            navigate(`/dashboard/triggers${location.search}`);
         }
     }, [navigate, createTriggerResponse]);
 
