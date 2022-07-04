@@ -20,3 +20,17 @@ export interface TriggerItem {
     email: string | null;
     notificationPeriod: number | null;
 }
+
+export interface EditedTrigger {
+    name: string;
+    operator: number;
+    sourceDeviceId: number;
+    sourcePin: string;
+    sourceThreshold: number;
+    destinationDeviceId: number | null;
+    destinationDeviceTargetState: number | null;
+    destinationPin: string | null;
+    type: number;
+    email: string | null;
+    notificationPeriod: number | null;
+}

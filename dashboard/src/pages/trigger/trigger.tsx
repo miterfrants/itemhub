@@ -21,6 +21,7 @@ import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
 import PageTitle from '@/components/page-title/page-title';
 import { TRIGGER_TYPE } from '@/constants/trigger-type';
 import { TriggerNotificationPeriod, TriggerType } from '@/types/universal.type';
+import { EditedTrigger } from '@/types/triggers.type';
 
 const Trigger = () => {
     const navigate = useNavigate();
@@ -60,19 +61,18 @@ const Trigger = () => {
     ];
 
     const [editedTriggerData, setEditedTriggerData] = useState({
-        name: trigger?.name || '',
-        sourceDeviceId: trigger?.sourceDeviceId || 0,
-        sourcePin: trigger?.sourcePin || '',
-        sourceThreshold: trigger?.sourceThreshold || 0,
-        destinationDeviceId: trigger?.destinationDeviceId || null,
-        destinationPin: trigger?.destinationPin || null,
-        destinationDeviceTargetState:
-            trigger?.destinationDeviceTargetState || null,
-        operator: trigger?.operator || 0,
-        type: trigger?.type || 0,
-        email: trigger?.email || null,
-        notificationPeriod: trigger?.notificationPeriod || null,
-    });
+        name: '',
+        sourceDeviceId: 0,
+        sourcePin: '',
+        sourceThreshold: 0,
+        destinationDeviceId: null,
+        destinationPin: null,
+        destinationDeviceTargetState: 1,
+        operator: 0,
+        type: 0,
+        email: null,
+        notificationPeriod: null,
+    } as EditedTrigger);
 
     const [isValidEditedTrigger, setIsValidEditedTrigger] = useState({
         name: true,
@@ -233,7 +233,6 @@ const Trigger = () => {
     useEffect(() => {
         if (isCreateMode) {
             document.title = 'ItemHub - 新增觸發';
-            editedTriggerData.destinationDeviceTargetState = 0;
         } else {
             document.title = 'ItemHub - 編輯觸發';
         }
@@ -462,7 +461,7 @@ const Trigger = () => {
                             destinationDeviceTargetState:
                                 triggerType === notificationTriggerType
                                     ? null
-                                    : 0,
+                                    : 1,
                             type: triggerType,
                             email:
                                 triggerType === changeDeviceStateTriggerType
@@ -531,7 +530,7 @@ const Trigger = () => {
                                     disabled={isReadMode}
                                     value={
                                         editedTriggerData.destinationDeviceTargetState ||
-                                        0
+                                        1
                                     }
                                     onChange={(e) => {
                                         setEditedTriggerData((prev) => {
