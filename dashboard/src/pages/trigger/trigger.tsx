@@ -233,6 +233,7 @@ const Trigger = () => {
     useEffect(() => {
         if (isCreateMode) {
             document.title = 'ItemHub - 新增觸發';
+            editedTriggerData.destinationDeviceTargetState = 0;
         } else {
             document.title = 'ItemHub - 編輯觸發';
         }
@@ -461,7 +462,7 @@ const Trigger = () => {
                             destinationDeviceTargetState:
                                 triggerType === notificationTriggerType
                                     ? null
-                                    : 1,
+                                    : 0,
                             type: triggerType,
                             email:
                                 triggerType === changeDeviceStateTriggerType
