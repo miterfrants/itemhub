@@ -37,6 +37,8 @@ namespace Homo.IotApi
                 DeviceCount = SubscriptionHelper.GetDeviceCount((PRICING_PLAN)x.Value),
                 Frequency = SubscriptionHelper.GetFrequency((PRICING_PLAN)x.Value),
                 StorageTime = SubscriptionHelper.GetStorageTime((PRICING_PLAN)x.Value),
+                NotificationRateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit((PRICING_PLAN)x.Value),
+
             }).ToList<dynamic>();
 
             return pricingPlans;
@@ -148,7 +150,7 @@ namespace Homo.IotApi
             // 目前只有實作 device current value 和 notification 
             return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.CHANGE_DEVICE_STATE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
         }
-        
+
         [SwaggerOperation(
             Tags = new[] { "常數" },
             Summary = "Dashboard Monitor 模式",
