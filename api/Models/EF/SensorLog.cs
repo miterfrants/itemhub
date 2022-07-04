@@ -11,7 +11,7 @@ namespace Homo.IotApi
         public long OwnerId { get; set; }
         public DateTime? DeletedAt { get; set; }
         [Required]
-        [MaxLength(3)]
+        [MaxLength(4)]
         public string Pin { get; set; }
         [Required]
         public decimal? Value { get; set; }

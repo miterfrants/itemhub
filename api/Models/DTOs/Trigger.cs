@@ -10,11 +10,11 @@ namespace Homo.IotApi
 
             public long SourceDeviceId { get; set; }
             [Required]
-            [MaxLength(3)]
+            [MaxLength(4)]
             public string SourcePin { get; set; }
             public decimal SourceThreshold { get; set; }
             public long? DestinationDeviceId { get; set; }
-            [MaxLength(3)]
+            [MaxLength(4)]
             public string DestinationPin { get; set; }
             public decimal? DestinationDeviceTargetState { get; set; }
             public TRIGGER_OPERATOR Operator { get; set; }
