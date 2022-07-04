@@ -25,16 +25,24 @@ namespace Homo.IotApi
         private readonly string _staticPath;
         private readonly string _webSiteUrl;
         private readonly string _adminEmail;
+        private readonly string _smsUsername;
+        private readonly string _smsPassword;
+        private readonly string _smsClientUrl;
         public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings)
         {
+            var secrets = optionAppSettings.Value.Secrets;
+            var common = optionAppSettings.Value.Common;
             _iotDbContext = iotDbContext;
             _dbContext = dbContext;
             _commonLocalizer = commonLocalizer;
-            _systemEmail = optionAppSettings.Value.Common.SystemEmail;
-            _sendGridApiKey = optionAppSettings.Value.Secrets.SendGridApiKey;
-            _staticPath = optionAppSettings.Value.Common.StaticPath;
-            _webSiteUrl = optionAppSettings.Value.Common.WebsiteUrl;
-            _adminEmail = optionAppSettings.Value.Common.AdminEmail;
+            _systemEmail = common.SystemEmail;
+            _sendGridApiKey = secrets.SendGridApiKey;
+            _staticPath = common.StaticPath;
+            _webSiteUrl = common.WebsiteUrl;
+            _adminEmail = common.AdminEmail;
+            _smsUsername = secrets.SmsUsername;
+            _smsPassword = secrets.SmsPassword;
+            _smsClientUrl = common.SmsClientUrl;
         }
 
         [SwaggerOperation(
@@ -78,7 +86,7 @@ namespace Homo.IotApi
                 }
                 else if (
                     trigger.Type == TRIGGER_TYPE.NOTIFICATION &&
-                    trigger.Email != null &&
+                    (trigger.Email != null || trigger.Phone != null) &&
                     (
                         trigger.Operator == TRIGGER_OPERATOR.B && dto.Value > trigger.SourceThreshold ||
                         trigger.Operator == TRIGGER_OPERATOR.BE && dto.Value >= trigger.SourceThreshold ||
@@ -90,8 +98,15 @@ namespace Homo.IotApi
                 {
                     // 這邊當流量大的時候可能會變成 bottleneck, 未來可以考慮改成 async 的方式去判斷使用者是不是已經超過用量了
                     Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_iotDbContext, extraPayload.Id); // 這邊不能把他省掉, 因為 device 久久換一次 token, 如果把 pricing plan 記載 token, 會造成使用者已經升級了但是這邊還是用舊的 rate limit
-                    int rateLimit = SubscriptionHelper.GetTriggerNotificastionRateLimit(subscription == null ? null : (PRICING_PLAN)subscription.PricingPlan);
-
+                    int rateLimit = 0;
+                    if (trigger.Email != null)
+                    {
+                        rateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit(subscription == null ? null : (PRICING_PLAN)subscription.PricingPlan);
+                    }
+                    else if (trigger.Phone != null)
+                    {
+                        rateLimit = SubscriptionHelper.GetTriggerSmsNotificastionRateLimit(subscription == null ? null : (PRICING_PLAN)subscription.PricingPlan);
+                    }
                     DateTime startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                     int daysInMonth = System.DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
                     DateTime endOfMonth = startOfMonth.AddDays(daysInMonth - 1).AddHours(23).AddMinutes(59).AddSeconds(59);
@@ -110,35 +125,51 @@ namespace Homo.IotApi
                         continue;
                     }
                     beTriggeredList.Add(trigger);
-                    MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TRIGGER_NOTIFICATION, _staticPath);
 
                     var deviceName = (devicePin.Device == null ? "" : devicePin.Device.Name);
-                    template = MailTemplateHelper.ReplaceVariable(template, new
+                    if (!String.IsNullOrEmpty(trigger.Email))
                     {
-                        webSiteUrl = _webSiteUrl,
-                        adminEmail = _adminEmail,
-                        hello = _commonLocalizer.Get("hello"),
-                        notificationContent = _commonLocalizer.Get("notificationContent"),
-                        deviceName = deviceName,
-                        pinName = devicePin.Name ?? devicePin.Pin,
-                        labelOfOperator = TriggerOperatorHelper.GetSymbol(trigger.Operator.ToString()),
-                        thresholdValue = trigger.SourceThreshold.ToString("N4"),
-                        eventTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                        link = $"{_webSiteUrl}/dashboard/devices/{trigger.SourceDeviceId}",
-                        callToActionButton = _commonLocalizer.Get("checkout"),
-                        mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
-                    });
+                        MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TRIGGER_NOTIFICATION, _staticPath);
+                        template = MailTemplateHelper.ReplaceVariable(template, new
+                        {
+                            webSiteUrl = _webSiteUrl,
+                            adminEmail = _adminEmail,
+                            hello = _commonLocalizer.Get("hello"),
+                            notificationContent = _commonLocalizer.Get("notificationContent"),
+                            deviceName = deviceName,
+                            pinName = devicePin.Name ?? devicePin.Pin,
+                            labelOfOperator = TriggerOperatorHelper.GetSymbol(trigger.Operator.ToString()),
+                            thresholdValue = trigger.SourceThreshold.ToString("N4"),
+                            eventTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                            link = $"{_webSiteUrl}/dashboard/devices/{trigger.SourceDeviceId}",
+                            callToActionButton = _commonLocalizer.Get("checkout"),
+                            mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
+                        });
 
-                    MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
-                    {
-                        Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string> {
+                        MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                        {
+                            Subject = _commonLocalizer.Get(template.Subject, null, new Dictionary<string, string> {
                                 {
                                     "deviceName",
                                     deviceName
                                 }
                             }),
-                        Content = template.Content
-                    }, _systemEmail, trigger.Email, _sendGridApiKey);
+                            Content = template.Content
+                        }, _systemEmail, trigger.Email, _sendGridApiKey);
+                    }
+                    else if (!String.IsNullOrEmpty(trigger.Phone))
+                    {
+                        var subject = _commonLocalizer.Get("triggerNotification", null, new Dictionary<string, string> {
+                            {
+                                "deviceName",
+                                deviceName
+                            }
+                        });
+                        var content = _commonLocalizer.Get("notificationContent");
+
+                        SmsHelper.Send(SmsProvider.Every8D, _smsUsername, _smsPassword, _smsClientUrl, trigger.Phone, $"{subject} {content}");
+                    }
+
                 }
             }
 
