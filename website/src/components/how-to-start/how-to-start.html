@@ -1,0 +1,87 @@
+<div class="how-to-start">
+    <link href="/components/how-to-start/how-to-start.css" rel="stylesheet">
+    <div onclick="controller.toggleHowToStart" class="d-flex justify-content-between mb-2" role="button">
+        <h3 class="title h3 ">
+            如何開始使用 ItemHub
+        </h3>
+        <img class="arrow {expandedHowToStartArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100" />
+    <div class="how-to-start content {expandedHowToStartVisible}">
+        <div>
+            <h4 class="text-green h4 py-3">新增裝置及要使用的 PIN </h4>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">進入裝置列表頁</h5>
+                <div>
+                    進入裝置列表頁，點選新增裝置。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-1.jpeg" />
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">新增裝置</h5>
+                <div>
+                    輸入裝置名稱、選擇裝置類型，完成新增裝置。
+                </div>
+                <div class="">PS:目前提供 3 種裝置類型，後續會再新增其他裝置類型。</div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-2.jpeg" />
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">選擇要使用的 PIN</h5>
+                <div>
+                    新增裝置後，選擇要使用的 PIN 及 PIN 對應的功能，如: D3 為開關 D7 為感應器。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-1-3.jpeg" />
+            </div>
+        </div>
+        <div>
+            <h4 class="text-green h4 py-3">下載程式碼並燒錄至裝置</h4>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">下載程式碼</h5>
+                <div>
+                    至裝置列表頁或明細頁可下載程式碼，系統會自動生成裝置對應的程式碼。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-1.jpeg" />
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">將程式碼燒錄至裝置</h5>
+                <div>
+                    下載程式碼後，開啟副檔名為 .ino 的檔案，其中 {SSID} 請改成你所使用的 wifi 帳號， {WIFI_PASSWORD} 請改成 wifi
+                    密碼，如: wifi 帳密為 home / testing，則: char ssid[] = "home"; char pass[] =
+                    "testing"，修改 wifi 帳密後存檔並將所有檔案燒錄至裝置內。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-2.jpeg" />
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">確認裝置的連線狀態</h5>
+                <div>
+                    完成程式碼的燒錄後，在裝置列表或明細頁即可看到裝置的狀態會切換成上線狀態即代表連線成功。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-2-3.jpeg" />
+            </div>
+        </div>
+        <div>
+            <h4 class="text-green h4 py-3">查看裝置狀態並設定觸發條件</h4>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">查看裝置即時狀態</h5>
+                <div>
+                    裝置連線成功後，可於裝置列表頁或明細頁即時的切換裝置開關並查看感應器回傳的資料。
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-3-1.jpeg" />
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">設定自動化觸發條件</h5>
+                <div>
+                    於新增觸發頁填入名稱、觸發的條件與 PIN 操作設定<br />
+                    範例：<br />
+                    設定當濕度大於等於 65 執行開啟抽風扇<br />
+                </div>
+                <img class="w-100 mt-4" src="/assets/images/how/howtouse-3-2.jpeg" />
+            </div>
+        </div>
+        <div class="mb-7">
+            <a onclick="controller.sendBasicGaEvent" href="/auth/verify-email/"
+                class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link">立即註冊使用</a>
+        </div>
+    </div>
+
+</div>

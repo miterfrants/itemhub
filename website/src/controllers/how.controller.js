@@ -24,9 +24,9 @@ export class HowController extends RoutingController {
             keywords: 'ItemHub,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
         };
         await super.render({
-            expandedHowToBindGoogleSmartHomeVisible: 'd-none',
+            expandedHowToIntegrateGoogleNestVisible: 'd-none',
             expandedHowToStartVisible: 'd-none',
-            expandedHowToBindGoogleSmartHomeArrowVisible: '',
+            expandedHowToIntegrateGoogleNestArrowVisible: '',
             expandedHowToStartArrowVisible: '',
             howImageVisible: ''
         });
@@ -103,13 +103,13 @@ export class HowController extends RoutingController {
         }
     }
 
-    toggleHowToBindSmartHome () {
-        if (location.pathname.endsWith('integrate-google-smart-home/')) {
+    toggleHowToIntegrateGoogleNest () {
+        if (location.pathname.endsWith('integrate-google-nest/')) {
             history.pushState({}, '', '/how/');
             return;
         }
         this.args.gtag('event', EVENTS.HOW_TO_USE_GOOGLE_HOME);
-        history.pushState({}, '', '/how/integrate-google-smart-home/');
+        history.pushState({}, '', '/how/integrate-google-nest/');
     }
 
     toggleHowToStart () {

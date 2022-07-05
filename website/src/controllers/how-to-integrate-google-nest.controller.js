@@ -17,9 +17,9 @@ export class HowToIntegrateGoogleNestController extends RoutingController {
             keywords: 'Google Nest 串接'
         };
         this.parentController.pageVariable.expandedHowToStartVisible = 'd-none';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeVisible = '';
+        this.parentController.pageVariable.expandedHowToIntegrateGoogleNestVisible = '';
         this.parentController.pageVariable.expandedHowToStartArrowVisible = '';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = 'up-arrow';
+        this.parentController.pageVariable.expandedHowToIntegrateGoogleNestArrowVisible = 'up-arrow';
 
         await super.render({
         });

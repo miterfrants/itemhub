@@ -17,9 +17,9 @@ export class HowToStartController extends RoutingController {
             keywords: '使用教學'
         };
         this.parentController.pageVariable.expandedHowToStartVisible = '';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeVisible = 'd-none';
+        this.parentController.pageVariable.expandedHowToIntegrateGoogleNestVisible = 'd-none';
         this.parentController.pageVariable.expandedHowToStartArrowVisible = 'up-arrow';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = '';
+        this.parentController.pageVariable.expandedHowToIntegrateGoogleNestArrowVisible = '';
 
         await super.render({
         });
