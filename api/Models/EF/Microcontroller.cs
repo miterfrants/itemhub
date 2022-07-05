@@ -16,6 +16,7 @@ namespace Homo.IotApi
         public DateTime? EditedAt { get; set; }
         public long CreatedBy { get; set; }
         public long? EditedBy { get; set; }
-
+        [MaxLength(512)]
+        public string Memo { get; set; }
     }
 }

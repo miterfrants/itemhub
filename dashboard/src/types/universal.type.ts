@@ -9,6 +9,7 @@ export interface Microcontroller {
     id: number;
     key: string;
     pins: Pins[];
+    memo: string;
 }
 
 export interface Pins {
