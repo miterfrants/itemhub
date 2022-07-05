@@ -3,10 +3,10 @@ import {
     BaseComponent
 } from '../../swim/base.component.js';
 
-export class HowToIntegrateGoogleNestComponent extends BaseComponent {
+export class HowToImplementHygrometerComponent extends BaseComponent {
     constructor (elRoot, variable, args) {
         super(elRoot, variable, args);
-        this.id = 'HowToIntegrateGoogleNestComponent';
+        this.id = 'HowToImplementHygrometerComponent';
     }
 
     async render () {
@@ -25,6 +25,6 @@ export class HowToIntegrateGoogleNestComponent extends BaseComponent {
     }
 
     sendGaEvent () {
-        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_INTEGRATE_GOOGLE_NEST);
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_IMPLEMENT_HYGROMETER);
     }
 }

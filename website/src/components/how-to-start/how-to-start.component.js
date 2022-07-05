@@ -1,3 +1,4 @@
+import { EVENTS } from '../../constants.js';
 import {
     BaseComponent
 } from '../../swim/base.component.js';
@@ -21,5 +22,9 @@ export class HowToStartComponent extends BaseComponent {
             }
         });
         this.elHTML.dispatchEvent(event);
+    }
+
+    sendGaEvent () {
+        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_BASIC);
     }
 }

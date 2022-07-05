@@ -1,0 +1,237 @@
+<div class="how-to-implement-hygrometer">
+    <link href="/components/how-to-implement-hygrometer/how-to-implement-hygrometer.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            如何用 ItemHub 實作濕度計
+        </div>
+        <img class="arrow {expandedHowToImplementHygrometerArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToImplementHygrometerVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">材料</h4>
+            <div>
+                <h5>硬體</h5>
+                <p>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://shopee.tw/%E2%96%BA611%E2%97%84%E5%AE%89%E4%BF%A1%E5%8F%AF-%E5%8E%9F%E5%BB%A0-ESP-01S-ESP8266-%E4%B8%B2%E5%8F%A3%E8%BD%89WIFI%E6%A8%A1%E7%B5%84-%E5%B7%A5%E6%A5%AD%E7%B4%9A-%E4%BD%8E%E5%8A%9F%E8%80%97-%E7%84%A1%E7%B7%9A%E6%A8%A1%E7%B5%84-i.4877344.78475397?sp_atk=61474429-25b4-4374-b13a-2b41034241ba&xptdk=61474429-25b4-4374-b13a-2b41034241ba">ESP-01S</a>:
+                            ESP8266 MCU
+                        </li>
+                        <ul>
+                            <li>功能: 單晶片具有 Wifi 功能, 把我們需要的資料送到 Server</li>
+                            <li>價格: $ 65</li>
+                        </ul>
+                        <li class="mt-3">
+                            <a
+                                href="https://shopee.tw/%E3%80%90%E5%82%91%E6%A3%AE%E5%89%B5%E5%B7%A5%E3%80%91DHT11%E6%A8%A1%E7%B5%84-DHT-11-%E6%BA%AB%E6%BF%95%E5%BA%A6%E6%84%9F%E6%B8%AC%E5%99%A8-%E6%BA%AB%E5%BA%A6-%E6%BF%95%E5%BA%A6%E4%BA%8C%E5%90%88%E4%B8%80-Raspberry-Pi-Arduino-i.20917936.347527426?sp_atk=0a28e875-f1ae-4d63-9f7d-7182802b5759&xptdk=0a28e875-f1ae-4d63-9f7d-7182802b5759">DHT11</a>
+                        </li>
+                        <ul>
+                            <li>
+                                功能: 溫室度感測
+                            </li>
+                            <li>
+                                價格: $ 55
+                            </li>
+                        </ul>
+
+                        <li class="mt-3">
+                            其他材料:
+                        </li>
+                        <ul>
+                            <li class="mt-3">
+                                <a
+                                    href="https://shopee.tw/%E3%80%90%E6%A8%82%E5%89%B5%E5%AE%A2%E5%AE%98%E6%96%B9%E5%BA%97%E3%80%91%E3%80%8A%E9%99%84%E7%99%BC%E7%A5%A8%E3%80%8B%E5%8E%9F%E5%BB%A0PL2303-USB%E8%BD%89UART-TTL-%E9%80%9A%E7%94%A8%E7%AB%AF%E5%8F%A3%E6%A8%A1%E7%B5%84-V2-PL2303GS-i.139069730.10541902599">PL2303</a>:
+                                USB 轉 UART/TTL , 可重複使用
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 降壓 ESP-01S 只支援 3.3V 電壓, USB 提供的 5V 電壓會把他燒掉, 傳輸燒錄資訊到 ESP-01S
+                                </li>
+                                <li>
+                                    價格: $ 147
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                <a
+                                    href="https://shopee.tw/%E3%80%90%E6%A8%82%E6%84%8F%E5%89%B5%E5%AE%A2%E5%AE%98%E6%96%B9%E5%BA%97%E3%80%91%E3%80%8A%E9%99%84%E7%99%BC%E7%A5%A8%E3%80%8B400%E5%AD%94%E5%84%AA%E8%B3%AA%E9%BA%B5%E5%8C%85%E6%9D%BF-%E8%BF%B7%E5%B0%BC%E9%BA%B5%E5%8C%85%E6%9D%BF-85x55mm-%E5%AF%A6%E9%A9%97%E6%9D%BF-i.139069730.2122942751?sp_atk=351fde2f-c7ef-463d-8f9d-fe64cd4e4fb2&xptdk=351fde2f-c7ef-463d-8f9d-fe64cd4e4fb2">麵包板</a>
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 比較好把所有元件串接起來
+                                </li>
+                                <li>
+                                    價格: $ 40
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                <a
+                                    href="https://shopee.tw/%E6%9D%9C%E9%82%A6%E7%B7%9A-%E5%85%AC%E5%85%AC-%E5%85%AC%E6%AF%8D-%E6%AF%8D%E6%AF%8D-20%E5%85%AC%E5%88%86-20CM-40PIN-%E7%B4%94%E9%8A%85%E7%B7%9A%E8%8A%AF-Arduino-%E8%B3%87%E6%96%99%E5%82%B3%E8%BC%B8%E7%B7%9A-i.78246604.1692985734?sp_atk=7d7e1272-ae49-49c6-87a8-2db9d2cbb32e&xptdk=7d7e1272-ae49-49c6-87a8-2db9d2cbb32e">杜邦線</a>
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 把不同的電子元件串接在一起
+                                </li>
+                                <li>
+                                    價格: $ 70
+                                </li>
+                            </ul>
+                        </ul>
+                    </ul>
+                </p>
+            </div>
+
+            <div>
+                <h5>軟體</h5>
+
+                <p>
+                    DHT Library: 解讀 DHT11 濕度感測器回傳回來的訊號
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">硬體配置</h4>
+            <div>
+                <h5>燒錄模式</h5>
+                <img class="w-100 mt-1"
+                    src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-flash-mode.png" />
+                <p class="mt-1">
+                    PL2303:RXD ↔ ESP01S:TXD<br />
+                    PL2303:TXD ↔ ESP01S:RXD<br />
+                    PL2303:VCC ↔ ESP01S:VCC<br />
+                    PL2303:GND ↔ ESP01S:GND<br />
+                    PL2303:GND ↔ ESP01S:IO00<br />
+                </p>
+            </div>
+            <div class="mt-3">
+                <h5>運作模式</h5>
+                <img class="w-100 mt-1"
+                    src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-work-mode.png" />
+                <p class="mt-1">
+                    PL2303:VCC ↔ ESP01S:VCC<br />
+                    PL2303:GND ↔ ESP01S:GND<br />
+                    DHT11:DATA ↔ ESP01S:IO00<br />
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">步驟</h4>
+            <div class="mt-3">
+                <h5>ESP-01S 進到燒錄模式</h5>
+            </div>
+
+            <div class="mt-3">
+                <h5>設定 & 下載程式</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增裝置
+                        </li>
+                        <li>
+                            將 IO00 PIN 腳設定為感應器, 下載程式碼
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-setup-device.png" />
+                        </li>
+                    </ul>
+                </p>
+            </div>
+
+            <div class="mt-3">
+                <h5>修改程式</h5>
+                <p>
+                    <ul>
+                        <li>
+                            檢查 Arduino IDE 是否有安裝 DHT Library
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-arduino-ide.png">
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-check-dht-library.png">
+                        </li>
+
+                        <li class="mt-3">
+                            引入 DHT Library 和基本定義
+
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+#include <DHT.h> // 引入 DHT Library
+#define DHTTYPE DHT11 // 定義 DHT 感測器的類型, 才知道要怎麼解讀來的訊號
+#define DHTPIN 0 // 定義濕度感測器是透過哪一隻 PIN 傳過來的
+DHT dht(DHTPIN, DHTTYPE); // 建立 dht 物件可以在 setup 和 loop 都呼叫到這個物件</pre>
+                        </li>
+
+                        <li>
+                            初始化
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+setup() {
+    dht.begin();
+    ........
+}</pre>
+                        </li>
+
+                        <li>
+                            找到以下的程式碼區塊
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+int value = digitalRead(pins[i].pin);
+std::string valueString = std::to_string(value);</pre>
+
+                            改寫成讀取濕度感測器
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+float h = dht.readHumidity();
+std::string valueString = std::to_string(h);
+pins[i].value = valueString;</pre>
+                        </li>
+
+                        <li>
+                            接著選擇晶片類型
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-choose-mcu-type.png" />
+
+                            把剛寫好的程式燒錄到晶片上，這樣就完成了
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-flash-code.png" />
+                        </li>
+                    </ul>
+                </p>
+
+                <p>
+
+                </p>
+            </div>
+
+            <div class=" mt-3">
+                <h5>進到運作模式</h5>
+                <p>回到 運作模式 斷電重啟裝置</p>
+            </div>
+
+            <div class="mt-3">
+                <h5>ItemHub 監控</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增監控項目
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-add-monitor-screen.png" />
+                        </li>
+                        <li>
+                            選擇監控面板的類型
+
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-choose-monitor-type.png" />
+                        </li>
+
+                        <li>設定完成，<a target="_blank" href="/dashboard">回到監控中心</a>，查看濕度計的讀數</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-7">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+</div>

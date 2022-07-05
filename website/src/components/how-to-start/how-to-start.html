@@ -1,6 +1,6 @@
 <div class="how-to-start">
     <link href="/components/how-to-start/how-to-start.css" rel="stylesheet">
-    <div onclick="controller.toggleHowToStart" class="d-flex justify-content-between mb-2" role="button">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2" role="button">
         <h3 class="title h3 ">
             如何開始使用 ItemHub
         </h3>
@@ -79,7 +79,7 @@
             </div>
         </div>
         <div class="mb-7">
-            <a onclick="controller.sendBasicGaEvent" href="/auth/verify-email/"
+            <a onclick="controller.sendGaEvent" href="/auth/verify-email/"
                 class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link">立即註冊使用</a>
         </div>
     </div>

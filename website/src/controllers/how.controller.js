@@ -1,5 +1,4 @@
 import { APP_CONFIG } from '../config.js';
-import { EVENTS } from '../constants.js';
 import {
     RoutingController
 } from '../swim/routing-controller.js';
@@ -25,9 +24,11 @@ export class HowController extends RoutingController {
         };
         await super.render({
             expandedHowToIntegrateGoogleNestVisible: 'd-none',
-            expandedHowToStartVisible: 'd-none',
             expandedHowToIntegrateGoogleNestArrowVisible: '',
+            expandedHowToStartVisible: 'd-none',
             expandedHowToStartArrowVisible: '',
+            expandedHowToImplementHygrometerVisible: 'd-none',
+            expandedHowToImplementHygrometerArrowVisible: '',
             howImageVisible: ''
         });
     }
@@ -103,30 +104,13 @@ export class HowController extends RoutingController {
         }
     }
 
-    toggleHowToIntegrateGoogleNest () {
-        if (location.pathname.endsWith('integrate-google-nest/')) {
+    toggle (e) {
+        const rootClass = Object.values(e.currentTarget.classList).find(item => item.indexOf('how-to') === 0);
+        if (location.pathname.endsWith(`${rootClass.replace('how-to-', '')}/`)) {
             history.pushState({}, '', '/how/');
             return;
         }
-        this.args.gtag('event', EVENTS.HOW_TO_USE_GOOGLE_HOME);
-        history.pushState({}, '', '/how/integrate-google-nest/');
-    }
-
-    toggleHowToStart () {
-        if (location.pathname.endsWith('start/')) {
-            history.pushState({}, '', '/how/');
-            return;
-        }
-        this.args.gtag('event', EVENTS.HOW_TO_USE_BASIC);
-        history.pushState({}, '', '/how/start/');
-    }
-
-    sendGoogleHomeGaEvent () {
-        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_GOOGLE_HOME);
-    }
-
-    sendBasicGaEvent () {
-        this.args.gtag('event', EVENTS.SIGN_UP_FROM_HOW_TO_USE_BASIC);
+        history.pushState({}, '', `/how/${rootClass.replace('how-to-', '')}/`);
     }
 
     buildIndex (query) {

@@ -13,13 +13,20 @@
             <div class="col-12 col-lg-9">
                 <component-how-to-start bind-expanded-how-to-start-visible="expandedHowToStartVisible"
                     bind-expanded-how-to-start-arrow-visible="expandedHowToStartArrowVisible"
-                    on-toggled="controller.toggleHowToStart">
+                    on-toggled="controller.toggle">
                 </component-how-to-start>
                 <component-how-to-integrate-google-nest
                     bind-expanded-how-to-integrate-google-nest-visible="expandedHowToIntegrateGoogleNestVisible"
                     bind-expanded-how-to-integrate-google-nest-arrow-visible="expandedHowToIntegrateGoogleNestArrowVisible"
-                    on-toggled="controller.toggleHowToIntegrateGoogleNest">
+                    on-toggled="controller.toggle">
                 </component-how-to-integrate-google-nest>
+
+                <component-how-to-implement-hygrometer
+                    bind-expanded-how-to-implement-hygrometer-visible="expandedHowToImplementHygrometerVisible"
+                    bind-expanded-how-to-implement-hygrometer-arrow-visible="expandedHowToImplementHygrometerArrowVisible"
+                    on-toggled="controller.toggle">
+                </component-how-to-implement-hygrometer>
+
                 <div class="child-router"></div>
             </div>
         </div>
