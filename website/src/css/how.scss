@@ -9,8 +9,11 @@
         transform: rotate(-180deg);
     }
 
-    .index {
+    .index-container {
         top: 50px;
+    }
+
+    .index {
         > a {
             transition: transform 0.1s;
         }
