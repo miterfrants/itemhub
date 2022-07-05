@@ -27,5 +27,8 @@
     "moreThanMaxNumberOfDeviceInAnyPlan": "over top plan",
     "cartSecretIsNull": "transition is successful, but return unknow format response 'cart secret is null', please contact with us {adminEmail}",
     "cartKeyIsNull": "transition is successful, but return unknow format response 'cart key is null', please contact with us {adminEmail}",
-    "cartTokenIsNull": "transition is successful, but return unknow format response 'cart token is null', please contact with us {adminEmail}"
+    "cartTokenIsNull": "transition is successful, but return unknow format response 'cart token is null', please contact with us {adminEmail}",
+    "triggerNotification": "Itemhub - Trigger Notification {deviceName}",
+    "notificationContent": "your device reach threshould",
+    "checkout": "Checkout"
 }

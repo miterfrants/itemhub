@@ -37,6 +37,7 @@ const DevicePinData = () => {
     const dispatch = useDispatch();
 
     const { id: idFromUrl } = useParams();
+    const { search, pathname } = useLocation();
     const id: number | null = idFromUrl ? Number(idFromUrl) : null;
     const isCreateMode = id === null;
     const devicesFromStore = useAppSelector(selectDevices).devices;
@@ -118,10 +119,10 @@ const DevicePinData = () => {
 
     const back = () => {
         if (isCreateMode) {
-            navigate(`/dashboard/devices/`);
+            navigate(`/dashboard/devices/${search}`);
             return;
         }
-        navigate(`/dashboard/devices/${id}`);
+        navigate(`/dashboard/devices/${id}${search}`);
     };
 
     const editPinName = (name: string) => {
@@ -405,7 +406,7 @@ const DevicePinData = () => {
                     type: ToasterTypeEnum.INFO,
                 })
             );
-            navigate(`/dashboard/devices/${id}`);
+            navigate(`/dashboard/devices/${id}${search}`);
         }
         // eslint-disable-next-line
     }, [updateDeviceResponse]);
@@ -420,7 +421,9 @@ const DevicePinData = () => {
                     type: ToasterTypeEnum.INFO,
                 })
             );
-            navigate(`/dashboard/devices/edit/${createDeviceResponse.id}`);
+            navigate(
+                `/dashboard/devices/edit/${createDeviceResponse.id}${search}`
+            );
         }
         // eslint-disable-next-line
     }, [createDeviceResponse]);
@@ -456,11 +459,11 @@ const DevicePinData = () => {
     const breadcrumbs = [
         {
             label: '裝置列表',
-            pathName: '/dashboard/devices',
+            pathName: `/dashboard/devices${search}`,
         },
         {
             label: isCreateMode ? '新增' : '編輯',
-            pathName: useLocation().pathname,
+            pathName: pathname,
         },
     ];
 

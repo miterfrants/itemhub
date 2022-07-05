@@ -2,6 +2,8 @@ export const API_URL = import.meta.env.VITE_API_URL;
 
 export const END_POINT = {
     TRIGGER_OPERATORS: 'universal/trigger-operators',
+    TRIGGER_TYPES: 'universal/trigger-types',
+    TRIGGER_NOTIFICATION_PERIODS: 'universal/trigger-notification-periods',
     MICROCONTROLLER: 'universal/microcontroller',
     DEVICE_MODE: 'universal/device-mode',
     DASHBOARD_MONITOR_MODE: 'universal/dashboard-monitor-mode',

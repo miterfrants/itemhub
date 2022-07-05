@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
@@ -30,9 +30,8 @@ import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dial
 
 const Devices = () => {
     const query = useQuery();
-    const page = Number(query.get('page') || 1);
     const limit = Number(query.get('limit') || 10);
-
+    const [page, setPage] = useState(1);
     const [deviceName, setDeviceName] = useState(query.get('deviceName') || '');
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
     const [shouldBeBundledId, setShouldBeBundledId] = useState(0);
@@ -40,13 +39,14 @@ const Devices = () => {
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
     const dispatch = useDispatch();
+    const { search } = useLocation();
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
+    const isFilter = !query.keys().next().done;
 
     const navigate = useNavigate();
-
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
         page,
         limit,
@@ -64,7 +64,18 @@ const Devices = () => {
 
     useEffect(() => {
         document.title = 'ItemHub - 裝置列表';
+        // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        setPage(Number(query.get('page') || 1));
+        // eslint-disable-next-line
+    }, [query.get('page')]);
+
+    useEffect(() => {
+        setDeviceName(query.get('deviceName') || '');
+        // eslint-disable-next-line
+    }, [query.get('deviceName')]);
 
     useEffect(() => {
         if (devices && devices.length > 0) {
@@ -74,18 +85,21 @@ const Devices = () => {
 
     useEffect(() => {
         getDevicesApi();
-    }, [page, refreshFlag]);
+        // eslint-disable-next-line
+    }, [query, page, refreshFlag]);
 
     useEffect(() => {
         if (shouldBeDeleteId) {
             deleteMultipleApi();
         }
+        // eslint-disable-next-line
     }, [shouldBeDeleteId]);
 
     useEffect(() => {
         if (responseOfDelete?.status === RESPONSE_STATUS.OK) {
             setRefreshFlag(!refreshFlag);
         }
+        // eslint-disable-next-line
     }, [responseOfDelete]);
 
     useEffect(() => {
@@ -93,19 +107,12 @@ const Devices = () => {
             setIsFirmwarePrepare(true);
             bundleFirmwareApi();
         }
+        // eslint-disable-next-line
     }, [shouldBeBundledId]);
 
     useEffect(() => {
         setIsFirmwarePrepare(false);
     }, [responseOfBundle, errorOfBundle]);
-
-    const refresh = () => {
-        getDevicesApi();
-    };
-
-    const jumpToCreatePage = () => {
-        navigate('create');
-    };
 
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
@@ -158,20 +165,33 @@ const Devices = () => {
                 title="裝置列表"
                 primaryButtonVisible={hasDevicesRef.current}
                 primaryButtonWording="新增裝置"
-                primaryButtonCallback={jumpToCreatePage}
+                primaryButtonCallback={() => {
+                    navigate('create');
+                }}
                 secondaryButtonVisible={hasDevicesRef.current}
                 secondaryButtonWording="重新整理"
-                secondaryButtonCallback={refresh}
+                secondaryButtonCallback={getDevicesApi}
             />
             <div className="card">
-                {!hasDevicesRef.current && devices !== null ? (
+                {!hasDevicesRef.current && devices !== null && !isFilter ? (
                     <EmptyDataToCreateItem itemName="裝置" />
                 ) : (
                     <>
                         <SearchInput
                             placeholder="搜尋裝置"
-                            onChangeValue={(value) => setDeviceName(value)}
-                            onSearch={getDevicesApi}
+                            defaultValue={deviceName}
+                            onChange={(newName) => {
+                                setDeviceName(newName);
+                            }}
+                            onSearch={(deviceName) => {
+                                navigate(
+                                    `/dashboard/devices?${
+                                        deviceName
+                                            ? `deviceName=${deviceName}`
+                                            : ''
+                                    }`
+                                );
+                            }}
                         />
                         {isGetingDevices || devices === null ? (
                             <div className="w-100 d-flex justify-content-center my-4">
@@ -243,7 +263,7 @@ const Devices = () => {
                                                 <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
                                                     <Link
                                                         className="me-4 mb-3"
-                                                        to={`/dashboard/devices/${id}`}
+                                                        to={`/dashboard/devices/${id}${search}`}
                                                         data-tip="編輯"
                                                     >
                                                         <img

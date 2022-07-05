@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import paginationPrev from '@/assets/images/pagination-prev.svg';
 import paginationNext from '@/assets/images/pagination-next.svg';
 import paginationDot from '@/assets/images/pagination-dot.svg';
+import { useQuery } from '@/hooks/query.hook';
 
 const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
     const [pages, setPages] = useState<Array<number>>([]);
@@ -10,6 +11,8 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
     const [isShowPrevDot, setIsShowPrevDot] = useState<boolean>(false);
     const [isShowNextDot, setIsShowNextDot] = useState<boolean>(false);
     const [maxPage, setMaxPage] = useState<number>();
+    const [withoutPageQuery, setWithoutPageQuery] = useState<string[]>([]);
+    const query = useQuery();
 
     useEffect(() => {
         const maxPage = Math.ceil(rowNum / limit);
@@ -37,6 +40,16 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
         setPages(pages);
     }, [rowNum, limit]);
 
+    useEffect(() => {
+        const withoutPageQuery: string[] = [];
+        for (const [key, value] of query.entries()) {
+            if (key !== 'page') {
+                withoutPageQuery.push(`${key}=${value}`);
+            }
+        }
+        setWithoutPageQuery(withoutPageQuery);
+    }, [query]);
+
     return (
         <div
             className="pagination d-flex align-items-center"
@@ -44,13 +57,13 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
         >
             <Link
                 className={`${page === 1 ? 'd-none' : 'item'} `}
-                to={`./?page=${page - 1}`}
+                to={`.?${withoutPageQuery.join('&')}&page=${page - 1}`}
             >
                 <img src={paginationPrev} alt="" />
             </Link>
             <Link
                 className={`${isShowPrevDot ? 'item' : 'd-none'} `}
-                to={`./?page=1`}
+                to={`.?${withoutPageQuery.join('&')}&page=1`}
             >
                 1
             </Link>
@@ -68,7 +81,9 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
                 ) : (
                     <Link
                         className="item"
-                        to={`./?page=${pageNumber}`}
+                        to={`.?${withoutPageQuery.join(
+                            '&'
+                        )}&page=${pageNumber}`}
                         key={pageNumber}
                     >
                         {pageNumber}
@@ -80,13 +95,13 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
             </span>
             <Link
                 className={`${isShowNextDot ? 'item' : 'd-none'} `}
-                to={`./?page=${maxPage}`}
+                to={`.?${withoutPageQuery.join('&')}&page=${maxPage}`}
             >
                 {maxPage}
             </Link>
             <Link
                 className={`${page === maxPage ? 'd-none' : 'item'}`}
-                to={`./?page=${page + 1}`}
+                to={`.?${withoutPageQuery.join('&')}&page=${page + 1}`}
             >
                 <img src={paginationNext} alt="" />
             </Link>

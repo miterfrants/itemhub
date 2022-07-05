@@ -450,8 +450,8 @@ namespace IotApi.Migrations
 
                     b.Property<string>("Pin")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<decimal?>("Value")
                         .IsRequired()
@@ -654,25 +654,27 @@ namespace IotApi.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("DestinationDeviceId")
+                    b.Property<long?>("DestinationDeviceId")
                         .HasColumnType("bigint");
 
-                    b.Property<decimal>("DestinationDeviceSourceState")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("DestinationDeviceTargetState")
+                    b.Property<decimal?>("DestinationDeviceTargetState")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("DestinationPin")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<DateTime?>("EditedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Name")
                         .HasColumnType("varchar(255)");
+
+                    b.Property<int>("NotificationPeriod")
+                        .HasColumnType("int");
 
                     b.Property<int>("Operator")
                         .HasColumnType("int");
@@ -680,16 +682,22 @@ namespace IotApi.Migrations
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Phone")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<long>("SourceDeviceId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("SourcePin")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<decimal>("SourceThreshold")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -701,13 +709,19 @@ namespace IotApi.Migrations
 
                     b.HasIndex("DestinationPin");
 
+                    b.HasIndex("Email");
+
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
 
+                    b.HasIndex("Phone");
+
                     b.HasIndex("SourceDeviceId");
 
                     b.HasIndex("SourcePin");
+
+                    b.HasIndex("Type");
 
                     b.ToTable("Trigger");
                 });
@@ -721,12 +735,18 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<long>("OwnerId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Raw")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<long>("TriggerId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -804,9 +824,7 @@ namespace IotApi.Migrations
                 {
                     b.HasOne("Homo.IotApi.Device", "DestinationDevice")
                         .WithMany()
-                        .HasForeignKey("DestinationDeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DestinationDeviceId");
 
                     b.HasOne("Homo.IotApi.Device", "SourceDevice")
                         .WithMany()

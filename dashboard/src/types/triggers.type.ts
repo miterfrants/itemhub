@@ -13,8 +13,24 @@ export interface TriggerItem {
     sourcePin: string;
     sourceThreshold: number;
     destinationDevice: DeviceItem | null;
-    destinationDeviceId: number;
-    destinationDeviceSourceState: number;
-    destinationDeviceTargetState: number;
-    destinationPin: string;
+    destinationDeviceId: number | null;
+    destinationDeviceTargetState: number | null;
+    destinationPin: string | null;
+    type: number;
+    email: string | null;
+    notificationPeriod: number | null;
+}
+
+export interface EditedTrigger {
+    name: string;
+    operator: number;
+    sourceDeviceId: number;
+    sourcePin: string;
+    sourceThreshold: number;
+    destinationDeviceId: number | null;
+    destinationDeviceTargetState: number | null;
+    destinationPin: string | null;
+    type: number;
+    email: string | null;
+    notificationPeriod: number | null;
 }

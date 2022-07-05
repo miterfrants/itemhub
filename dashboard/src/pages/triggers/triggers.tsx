@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { RESPONSE_STATUS } from '@/constants/api';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux.hook';
@@ -26,17 +26,30 @@ import Spinner from '@/components/spinner/spinner';
 import lightTrashIcon from '@/assets/images/light-trash.svg';
 import pencilIcon from '@/assets/images/pencil.svg';
 import trashIcon from '@/assets/images/trash.svg';
+import { TRIGGER_TYPE } from '@/constants/trigger-type';
+import { KeyValuePair } from '@/types/common.type';
 
 const Triggers = () => {
     const navigate = useNavigate();
     const query = useQuery();
 
-    const limit = Number(query.get('limit') || 5);
+    const limit = Number(query.get('limit') || 10);
     const page = Number(query.get('page') || 1);
-
+    const isFilter = !query.keys().next().done;
     const dispatch = useAppDispatch();
+    const { search } = useLocation();
     const [triggerName, setTriggerName] = useState(query.get('name') || '');
-    const { triggerOperators } = useAppSelector(selectUniversal);
+    const [sourceDeviceName, setSourceDeviceName] = useState(
+        query.get('sourceDeviceName') || ''
+    );
+    const [destinationDeviceName, setDestinationDeviceName] = useState(
+        query.get('destinationDeviceName') || ''
+    );
+    const { triggerOperators, triggerTypes } = useAppSelector(selectUniversal);
+
+    const changeDeviceStateTriggerType = triggerTypes.find(
+        (item) => item.key === TRIGGER_TYPE.CHANGE_DEVICE_STATE
+    )?.value;
 
     const sourceDeviceNameOptionsRef = useRef<string[]>([]);
     const destinationDeviceNameOptionsRef = useRef<string[]>([]);
@@ -51,6 +64,103 @@ const Triggers = () => {
     const { triggers, rowNum } = useAppSelector(selectTriggers);
     const hasTriggersRef = useRef(false);
 
+    const { isGettingTriggers, getTriggersApi } = useGetTriggersApi({
+        page,
+        limit,
+        name: query.get('name') || '',
+        sourceDeviceName: query.get('sourceDeviceName') || '',
+        destinationDeviceName: query.get('destinationDeviceName') || '',
+    });
+
+    const [deletedOneId, setDeletedOneId] = useState(0);
+    const [selectedIds, setSelectedIds] = useState(Array<number>());
+    const [
+        pageTitleSecondaryButtonClassName,
+        setPageTitleSecondaryButtonClassName,
+    ] = useState('btn btn-danger disabled');
+
+    const isSelectAll =
+        triggers?.length !== 0 && selectedIds.length === triggers?.length;
+
+    const {
+        isDeletingTriggers: isDeletingOneTrigger,
+        deleteTriggersApi: deleteOneTriggerApi,
+        deleteTriggersResponse: deleteOneTriggerResponse,
+    } = useDeleteTriggersApi([deletedOneId]);
+
+    const { isDeletingTriggers, deleteTriggersApi, deleteTriggersResponse } =
+        useDeleteTriggersApi(selectedIds);
+
+    useEffect(() => {
+        document.title = 'ItemHub - 觸發列表';
+    }, []);
+
+    useEffect(() => {
+        setTriggerName(query.get('name') || '');
+        // eslint-disable-next-line
+    }, [query.get('name')]);
+
+    useEffect(() => {
+        setSourceDeviceName(query.get('sourceDeviceName') || '');
+        // eslint-disable-next-line
+    }, [query.get('sourceDeviceName')]);
+
+    useEffect(() => {
+        setDestinationDeviceName(query.get('destinationDeviceName') || '');
+        // eslint-disable-next-line
+    }, [query.get('destinationDeviceName')]);
+
+    useEffect(() => {
+        getTriggersApi();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page, query]);
+
+    useEffect(() => {
+        if (
+            deletedOneId &&
+            deleteOneTriggerResponse &&
+            deleteOneTriggerResponse.status === RESPONSE_STATUS.OK
+        ) {
+            dispatch(
+                toasterActions.pushOne({
+                    message: `Trigger ${deletedOneId} 已經成功刪除`,
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
+            setDeletedOneId(0);
+            getTriggersApi();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteOneTriggerResponse]);
+
+    useEffect(() => {
+        if (
+            selectedIds.length !== 0 &&
+            deleteTriggersResponse &&
+            deleteTriggersResponse.status === RESPONSE_STATUS.OK
+        ) {
+            dispatch(
+                toasterActions.pushOne({
+                    message: '多個 Triggers 已經成功刪除',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
+            setSelectedIds([]);
+            getTriggersApi();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteTriggersResponse]);
+
+    useEffect(() => {
+        let pageTitleSecondaryButtonClassName = 'btn btn-danger';
+        if (selectedIds.length === 0 || isDeletingTriggers) {
+            pageTitleSecondaryButtonClassName += ' disabled';
+        }
+        setPageTitleSecondaryButtonClassName(pageTitleSecondaryButtonClassName);
+    }, [selectedIds, isDeletingTriggers]);
+
     useEffect(() => {
         if (triggers && triggers.length > 0) {
             hasTriggersRef.current = true;
@@ -58,11 +168,7 @@ const Triggers = () => {
     }, [triggers]);
 
     useEffect(() => {
-        if (
-            triggers &&
-            sourceDeviceNameOptions.length === 0 &&
-            destinationDeviceNameOptions.length === 0
-        ) {
+        if (triggers) {
             const initialOptions = {
                 sourceDeviceNames: [] as string[],
                 destinationDeviceNames: [] as string[],
@@ -84,7 +190,6 @@ const Triggers = () => {
 
                 return accumOptions;
             }, initialOptions);
-
             sourceDeviceNameOptionsRef.current = options.sourceDeviceNames;
             destinationDeviceNameOptionsRef.current =
                 options.destinationDeviceNames;
@@ -94,62 +199,6 @@ const Triggers = () => {
         sourceDeviceNameOptions.length,
         triggers,
     ]);
-
-    const [sourceDeviceNameFilter, setSourceDeviceNameFilter] = useState('');
-    const [destinationDeviceNameFilter, setDestinationDeviceNameFilter] =
-        useState('');
-
-    const { isGettingTriggers, getTriggersApi } = useGetTriggersApi({
-        page,
-        limit,
-        name: triggerName,
-        sourceDeviceName: sourceDeviceNameFilter,
-        destinationDeviceName: destinationDeviceNameFilter,
-    });
-
-    useEffect(() => {
-        getTriggersApi();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
-
-    const [deletedOneId, setDeletedOneId] = useState(0);
-    const [selectedIds, setSelectedIds] = useState(Array<number>());
-
-    const isSelectAll =
-        triggers?.length !== 0 && selectedIds.length === triggers?.length;
-
-    const toggleSelectAll = () => {
-        if (triggers === null) {
-            return;
-        }
-        if (selectedIds.length === triggers.length) {
-            setSelectedIds([]);
-        } else {
-            setSelectedIds(triggers.map(({ id }) => id));
-        }
-    };
-
-    const updateSelectedIds = (id: number) => {
-        setSelectedIds((previous) => {
-            const newSelectedIds = [...previous];
-            const targetIndex = newSelectedIds.indexOf(id);
-            if (targetIndex !== -1) {
-                newSelectedIds.splice(targetIndex, 1);
-            } else {
-                newSelectedIds.push(id);
-            }
-            return newSelectedIds;
-        });
-    };
-
-    const {
-        isDeletingTriggers: isDeletingOneTrigger,
-        deleteTriggersApi: deleteOneTriggerApi,
-        deleteTriggersResponse: deleteOneTriggerResponse,
-    } = useDeleteTriggersApi([deletedOneId]);
-
-    const { isDeletingTriggers, deleteTriggersApi, deleteTriggersResponse } =
-        useDeleteTriggersApi(selectedIds);
 
     const confirmToDeleteOneTrigger = ({
         id,
@@ -184,64 +233,72 @@ const Triggers = () => {
         );
     };
 
-    const jumpToCreatePage = () => {
-        navigate('create');
+    const toggleSelectAll = () => {
+        if (triggers === null) {
+            return;
+        }
+        if (selectedIds.length === triggers.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(triggers.map(({ id }) => id));
+        }
     };
 
-    useEffect(() => {
-        document.title = 'ItemHub - 觸發列表';
-    }, []);
+    const updateSelectedIds = (id: number) => {
+        setSelectedIds((previous) => {
+            const newSelectedIds = [...previous];
+            const targetIndex = newSelectedIds.indexOf(id);
+            if (targetIndex !== -1) {
+                newSelectedIds.splice(targetIndex, 1);
+            } else {
+                newSelectedIds.push(id);
+            }
+            return newSelectedIds;
+        });
+    };
 
-    useEffect(() => {
-        if (
-            deletedOneId &&
-            deleteOneTriggerResponse &&
-            deleteOneTriggerResponse.status === RESPONSE_STATUS.OK
-        ) {
-            dispatch(
-                toasterActions.pushOne({
-                    message: `Trigger ${deletedOneId} 已經成功刪除`,
-                    duration: 5,
-                    type: ToasterTypeEnum.INFO,
-                })
-            );
-            setDeletedOneId(0);
-            getTriggersApi();
+    const searchTriggers = ({
+        key: keyInSearchInput,
+        value: valueInSearchInput,
+    }: KeyValuePair) => {
+        const newQuery: KeyValuePair[] = [
+            {
+                key: 'name',
+                value:
+                    keyInSearchInput === 'name'
+                        ? valueInSearchInput
+                        : triggerName,
+            },
+            {
+                key: 'sourceDeviceName',
+                value:
+                    keyInSearchInput === 'sourceDeviceName'
+                        ? valueInSearchInput
+                        : sourceDeviceName,
+            },
+            {
+                key: 'destinationDeviceName',
+                value:
+                    keyInSearchInput === 'destinationDeviceName'
+                        ? valueInSearchInput
+                        : destinationDeviceName,
+            },
+        ];
+        const newQueryKeys = newQuery.map((item) => item.key);
+        for (const [key, value] of query.entries()) {
+            if (newQueryKeys.includes(key)) {
+                continue;
+            }
+            newQuery.push({ key, value });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [deleteOneTriggerResponse, getTriggersApi, dispatch]);
 
-    useEffect(() => {
-        if (
-            selectedIds.length !== 0 &&
-            deleteTriggersResponse &&
-            deleteTriggersResponse.status === RESPONSE_STATUS.OK
-        ) {
-            dispatch(
-                toasterActions.pushOne({
-                    message: '多個 Triggers 已經成功刪除',
-                    duration: 5,
-                    type: ToasterTypeEnum.INFO,
-                })
-            );
-            setSelectedIds([]);
-            getTriggersApi();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [deleteTriggersResponse, getTriggersApi, dispatch]);
-
-    const [
-        pageTitleSecondaryButtonClassName,
-        setPageTitleSecondaryButtonClassName,
-    ] = useState('btn btn-danger disabled');
-
-    useEffect(() => {
-        let pageTitleSecondaryButtonClassName = 'btn btn-danger';
-        if (selectedIds.length === 0 || isDeletingTriggers) {
-            pageTitleSecondaryButtonClassName += ' disabled';
-        }
-        setPageTitleSecondaryButtonClassName(pageTitleSecondaryButtonClassName);
-    }, [selectedIds, isDeletingTriggers]);
+        navigate(
+            `/dashboard/triggers?${newQuery
+                .filter((item) => item.value)
+                .map((item) => `${item.key}=${item.value}`)
+                .join('&')}`
+        );
+    };
 
     return (
         <div className="triggers" data-testid="triggers">
@@ -249,7 +306,9 @@ const Triggers = () => {
                 title="觸發列表"
                 primaryButtonVisible={hasTriggersRef.current}
                 primaryButtonWording="新增觸發"
-                primaryButtonCallback={jumpToCreatePage}
+                primaryButtonCallback={() => {
+                    navigate(`create${search}`);
+                }}
                 secondaryButtonIcon={lightTrashIcon}
                 secondaryButtonClassName={pageTitleSecondaryButtonClassName}
                 secondaryButtonVisible={hasTriggersRef.current}
@@ -257,7 +316,7 @@ const Triggers = () => {
                 secondaryButtonCallback={confirmToDeleteTriggers}
             />
             <div className="card">
-                {!hasTriggersRef.current && triggers !== null ? (
+                {!hasTriggersRef.current && triggers !== null && !isFilter ? (
                     <EmptyDataToCreateItem itemName="觸發" />
                 ) : (
                     <>
@@ -265,10 +324,16 @@ const Triggers = () => {
                             <div className="search-wrapper col-12 col-md-6 mb-3 mb-md-0">
                                 <SearchInput
                                     placeholder="搜尋觸發"
-                                    onChangeValue={(value) =>
-                                        setTriggerName(value)
-                                    }
-                                    onSearch={getTriggersApi}
+                                    defaultValue={triggerName}
+                                    onChange={(newName) => {
+                                        setTriggerName(newName);
+                                    }}
+                                    onSearch={(triggerName) => {
+                                        searchTriggers({
+                                            key: 'name',
+                                            value: triggerName,
+                                        });
+                                    }}
                                 />
                             </div>
                             <div className="filter-wrapper col-6 col-md-3">
@@ -276,13 +341,29 @@ const Triggers = () => {
                                     datalistId="sourceDevice"
                                     placeholder="來源裝置篩選"
                                     isDisabled={false}
-                                    currentValue={sourceDeviceNameFilter}
-                                    updateCurrentValue={(newValue) => {
-                                        setSourceDeviceNameFilter(newValue);
+                                    defaultValue={sourceDeviceName}
+                                    updateCurrentValue={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        setSourceDeviceName(newValue || '');
                                     }}
                                     allSuggestions={sourceDeviceNameOptions}
-                                    onEnterKeyUp={getTriggersApi}
-                                    onClickOption={getTriggersApi}
+                                    onEnterKeyUp={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        searchTriggers({
+                                            key: 'sourceDeviceName',
+                                            value: newValue,
+                                        });
+                                    }}
+                                    onClickOption={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        searchTriggers({
+                                            key: 'sourceDeviceName',
+                                            value: newValue,
+                                        });
+                                    }}
                                 />
                             </div>
                             <div className="filter-wrapper col-6 col-md-3">
@@ -290,17 +371,33 @@ const Triggers = () => {
                                     datalistId="destinationDevice"
                                     placeholder="目標裝置篩選"
                                     isDisabled={false}
-                                    currentValue={destinationDeviceNameFilter}
-                                    updateCurrentValue={(newValue) => {
-                                        setDestinationDeviceNameFilter(
-                                            newValue
+                                    defaultValue={destinationDeviceName}
+                                    updateCurrentValue={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        setDestinationDeviceName(
+                                            newValue || ''
                                         );
                                     }}
                                     allSuggestions={
                                         destinationDeviceNameOptions
                                     }
-                                    onEnterKeyUp={getTriggersApi}
-                                    onClickOption={getTriggersApi}
+                                    onEnterKeyUp={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        searchTriggers({
+                                            key: 'destinationDeviceName',
+                                            value: newValue,
+                                        });
+                                    }}
+                                    onClickOption={(
+                                        newValue: string | undefined
+                                    ) => {
+                                        searchTriggers({
+                                            key: 'destinationDeviceName',
+                                            value: newValue,
+                                        });
+                                    }}
                                 />
                             </div>
                         </div>
@@ -339,13 +436,15 @@ const Triggers = () => {
                                                 destinationPin,
                                                 operator,
                                                 sourceThreshold,
+                                                type,
+                                                email,
                                             },
                                             index
                                         ) => (
                                             <div
                                                 key={`${id}-${index}`}
                                                 role="button"
-                                                onClick={(e) => {
+                                                onClick={() => {
                                                     updateSelectedIds(id);
                                                 }}
                                                 className="row list border-bottom border-black border-opacity-10 p-0 m-0 py-lg-4 px-lg-3"
@@ -399,42 +498,50 @@ const Triggers = () => {
                                                 <div className="d-block d-lg-none col-4 py-3 bg-black bg-opacity-5 text-black text-opacity-45">
                                                     目標
                                                 </div>
-                                                <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
-                                                    <div>
-                                                        {
-                                                            destinationDevice?.name
-                                                        }{' '}
-                                                    </div>
-                                                    <div className="mt-2">
-                                                        <OnlineStatusTag
-                                                            isOnline={
-                                                                destinationDevice?.online ||
-                                                                false
-                                                            }
-                                                        />
-                                                    </div>
+                                                {type ===
+                                                changeDeviceStateTriggerType ? (
+                                                    <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
+                                                        <div>
+                                                            {
+                                                                destinationDevice?.name
+                                                            }{' '}
+                                                        </div>
+                                                        <div className="mt-2">
+                                                            <OnlineStatusTag
+                                                                isOnline={
+                                                                    destinationDevice?.online ||
+                                                                    false
+                                                                }
+                                                            />
+                                                        </div>
 
-                                                    <div className="mt-2">
-                                                        Pin: {destinationPin}{' '}
-                                                    </div>
+                                                        <div className="mt-2">
+                                                            Pin:{' '}
+                                                            {destinationPin}{' '}
+                                                        </div>
 
-                                                    <div className="mt-2">
-                                                        目標狀態:{' '}
-                                                        {destinationDeviceTargetState ===
-                                                        1
-                                                            ? '開'
-                                                            : '關'}
+                                                        <div className="mt-2">
+                                                            目標狀態:{' '}
+                                                            {destinationDeviceTargetState ===
+                                                            1
+                                                                ? '開'
+                                                                : '關'}
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                ) : (
+                                                    <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
+                                                        通知: {email}
+                                                    </div>
+                                                )}
 
                                                 <div className="d-block d-lg-none col-4 py-3 bg-black bg-opacity-5 text-black text-opacity-45">
                                                     操作
                                                 </div>
                                                 <div className="col-8 col-lg-2 py-3 py-lg-0 d-flex justify-content-start flex-wrap">
                                                     <div
-                                                        onClick={(e) => {
+                                                        onClick={() => {
                                                             navigate(
-                                                                `/dashboard/triggers/edit/${id}`
+                                                                `/dashboard/triggers/edit/${id}${search}`
                                                             );
                                                         }}
                                                         data-tip="編輯"

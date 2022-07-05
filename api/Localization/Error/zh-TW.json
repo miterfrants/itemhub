@@ -33,5 +33,10 @@
     "DEVICE_OAUTH_CLIENT_EXISTS": "你新增的 Client 已經存在, 請先將裝置的 Client 刪除再重新新增",
     "DEVICE_NOT_FOUND": "找不到裝置",
     "DEIVCE_WITHOUT_MCU": "裝置未設定是哪種類型的 MCU",
-    "OVER_PRICING_PLAN": "超過訂閱方案: {reason}"
+    "OVER_PRICING_PLAN": "超過訂閱方案: {reason}",
+    "TRIGGER_DEST_DEVICE_ID_REQUIRED": "觸發 - 目標裝置 ID 為必填欄位",
+    "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED": "觸發 - 目標狀態為必填欄位",
+    "TRIGGER_DEST_PIN_REQUIRED": "觸發 - 目標 PIN 為必填欄位",
+    "TRIGGER_EMAIL_REQUIRED": "觸發 - Email 為必填欄位",
+    "TRIGGER_NOTIFICATION_OVER_USING": "觸發通知超過訂閱方案的使用量"
 }

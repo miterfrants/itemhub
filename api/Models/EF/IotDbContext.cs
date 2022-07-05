@@ -75,9 +75,12 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.OwnerId });
                 entity.HasIndex(p => new { p.Name });
                 entity.HasOne(p => p.SourceDevice).WithMany().HasForeignKey(p => p.SourceDeviceId);
-                entity.HasOne(p => p.DestinationDevice).WithMany().HasForeignKey(p => p.DestinationDeviceId);
+                entity.HasOne(p => p.DestinationDevice).WithMany().HasForeignKey(p => p.DestinationDeviceId).IsRequired(false);
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.Type });
+                entity.HasIndex(p => new { p.Email });
+                entity.HasIndex(p => new { p.Phone });
             });
 
             modelBuilder.Entity<TriggerLog>(entity =>

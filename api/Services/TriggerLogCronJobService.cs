@@ -50,7 +50,7 @@ namespace Homo.IotApi
                 return Task.CompletedTask;
             }
 
-            TriggerLogDataservice.Delete(_iotDbContext, DateTime.Now.AddDays(-30));
+            TriggerLogDataservice.Delete(_iotDbContext, DateTime.Now.AddDays(-50), null);
             return Task.CompletedTask;
         }
 

@@ -45,6 +45,11 @@ namespace api.Helpers
                 filePath = $"{staticPath}/email/new-premium-user.html";
                 subject = "mailSubjectGetNewPremiumUser";
             }
+            else if (key == MAIL_TEMPLATE.TRIGGER_NOTIFICATION)
+            {
+                filePath = $"{staticPath}/email/trigger-notification.html";
+                subject = "triggerNotification";
+            }
 
             string content = File.ReadAllText(filePath);
             return new MailTemplate()

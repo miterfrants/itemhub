@@ -8,7 +8,7 @@ const AutocompletedSearch = ({
     datalistId,
     placeholder,
     allSuggestions,
-    currentValue,
+    defaultValue,
     updateCurrentValue,
     onEnterKeyUp,
     onClickOption,
@@ -19,14 +19,13 @@ const AutocompletedSearch = ({
     datalistId: string;
     placeholder: string;
     allSuggestions: string[];
-    currentValue: string;
+    defaultValue: string;
     updateCurrentValue: (newValue: string) => void;
-    onEnterKeyUp?: () => void;
-    onClickOption?: () => void;
+    onEnterKeyUp?: (newValue?: string) => void;
+    onClickOption?: (newValue?: string) => void;
 }) => {
     const [filteredSuggestions, setFilteredSuggestions] =
         useState<string[]>(allSuggestions);
-    const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -36,17 +35,17 @@ const AutocompletedSearch = ({
 
     useEffect(() => {
         if (isTriggerOnClickOption.current && onClickOption) {
-            onClickOption();
+            onClickOption(inputRef.current?.value);
             isTriggerOnClickOption.current = false;
         }
-    }, [currentValue, onClickOption]);
+    }, [inputRef.current?.value, onClickOption]);
 
     useEffect(() => {
         if (isTriggerOnEnterKeyUp && onEnterKeyUp) {
-            onEnterKeyUp();
+            onEnterKeyUp(inputRef.current?.value);
             setIsTriggerOnEnterKeyUp(false);
         }
-    }, [currentValue, isTriggerOnEnterKeyUp, onEnterKeyUp]);
+    }, [inputRef.current?.value, isTriggerOnEnterKeyUp, onEnterKeyUp]);
 
     useEffect(() => {
         setFilteredSuggestions(allSuggestions);
@@ -64,6 +63,7 @@ const AutocompletedSearch = ({
             isTriggerOnClickOption.current = true;
         }
 
+        updateCurrentValue(inputRef.current?.value || '');
         const newFilteredOptions = allSuggestions.filter((suggestion) => {
             return (
                 suggestion
@@ -71,31 +71,13 @@ const AutocompletedSearch = ({
                     .indexOf(currentValue.toString().toLowerCase()) > -1
             );
         });
-        setActiveSuggestionIndex(0);
         setFilteredSuggestions(newFilteredOptions);
-        updateCurrentValue(currentValue);
     };
     const handleChangeValueWithDebounce = debounce(handleChangeValue, 300);
 
     const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            const currentValue = filteredSuggestions[activeSuggestionIndex];
-            if (inputRef.current?.value && currentValue) {
-                inputRef.current.value = currentValue;
-                updateCurrentValue(currentValue);
-                setActiveSuggestionIndex(0);
-            }
-            if (onEnterKeyUp) {
-                setIsTriggerOnEnterKeyUp(true);
-            }
-        } else if (e.key === 'ArrowUp') {
-            return activeSuggestionIndex === 0
-                ? null
-                : setActiveSuggestionIndex(activeSuggestionIndex - 1);
-        } else if (e.key === 'ArrowDown') {
-            return activeSuggestionIndex - 1 === filteredSuggestions.length
-                ? null
-                : setActiveSuggestionIndex(activeSuggestionIndex + 1);
+            setIsTriggerOnEnterKeyUp(true);
         }
     };
 
@@ -107,7 +89,7 @@ const AutocompletedSearch = ({
                 placeholder={placeholder}
                 ref={inputRef}
                 disabled={isDisabled}
-                defaultValue={currentValue}
+                defaultValue={defaultValue}
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
                     const nativeEvent = e.nativeEvent as InputEvent;
@@ -119,15 +101,8 @@ const AutocompletedSearch = ({
             />
             <datalist id={datalistId}>
                 {filteredSuggestions.map((suggestion, index) => {
-                    let className;
-                    if (index === activeSuggestionIndex) {
-                        className = 'active-suggestion';
-                    }
                     return (
-                        <option
-                            key={`${suggestion}-${index}`}
-                            className={className}
-                        >
+                        <option key={`${suggestion}-${index}`}>
                             {suggestion}
                         </option>
                     );

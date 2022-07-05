@@ -13,25 +13,24 @@ namespace Homo.IotApi
         [Required]
         public long SourceDeviceId { get; set; }
         [Required]
-        [MaxLength(3)]
+        [MaxLength(5)]
         public string SourcePin { get; set; }
         [Required]
         public decimal SourceThreshold { get; set; }
         public Device SourceDevice { get; set; }
-        [Required]
-        public long DestinationDeviceId { get; set; }
-        [Required]
-        [MaxLength(3)]
+        public long? DestinationDeviceId { get; set; }
+        [MaxLength(5)]
         public string DestinationPin { get; set; }
         public Device DestinationDevice { get; set; }
-        [Required]
-        public decimal DestinationDeviceSourceState { get; set; }
-        [Required]
-        public decimal DestinationDeviceTargetState { get; set; }
-
+        public decimal? DestinationDeviceTargetState { get; set; }
         [Required]
         public TRIGGER_OPERATOR Operator { get; set; }
         public string Name { get; set; }
+        [Required]
+        public TRIGGER_TYPE Type { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public TRIGGER_NOTIFICATION_PERIOD NotificationPeriod { get; set; }
 
     }
 }

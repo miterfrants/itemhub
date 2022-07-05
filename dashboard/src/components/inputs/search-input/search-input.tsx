@@ -1,17 +1,16 @@
 import { useRef } from 'react';
 import searchIcon from '@/assets/images/icon-search.svg';
-import debounce from 'lodash.debounce';
 
 const SearchInput = ({
     placeholder,
     defaultValue = '',
-    onChangeValue,
+    onChange,
     onSearch,
 }: {
     placeholder: string;
     defaultValue?: string;
-    onChangeValue: (value: string) => void;
-    onSearch: () => void;
+    onChange?: (value: string) => void;
+    onSearch: (value: string) => void;
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     let shouldBeTwiceEnter = false;
@@ -20,6 +19,8 @@ const SearchInput = ({
     const searchInputKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.nativeEvent.isComposing) {
             shouldBeTwiceEnter = true;
+        } else if (!e.nativeEvent.isComposing && onChange) {
+            onChange(e.currentTarget.value);
         }
 
         if (e.code === 'Enter') {
@@ -32,8 +33,12 @@ const SearchInput = ({
         ) {
             shouldBeTwiceEnter = false;
             enterCount = 0;
-            onSearch();
+            onSearch(e.currentTarget.value);
         }
+    };
+
+    const searchByButton = () => {
+        onSearch(inputRef.current ? inputRef.current.value : '');
     };
 
     return (
@@ -44,16 +49,12 @@ const SearchInput = ({
                 ref={inputRef}
                 placeholder={placeholder}
                 defaultValue={defaultValue}
-                onChange={debounce(
-                    () => onChangeValue(inputRef.current?.value || ''),
-                    300
-                )}
                 onKeyUp={searchInputKeyUp}
             />
             <button
                 className="position-absolute top-0 end-0 btn d-inline-block shadow-none border-0 p-2"
                 type="button"
-                onClick={onSearch}
+                onClick={searchByButton}
             >
                 <img src={searchIcon} alt="icon-search" />
             </button>
