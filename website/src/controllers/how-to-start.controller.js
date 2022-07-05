@@ -23,5 +23,7 @@ export class HowToStartController extends RoutingController {
 
         await super.render({
         });
+
+        this.parentController.buildIndex('.how-to-start');
     }
 }

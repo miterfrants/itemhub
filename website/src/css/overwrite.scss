@@ -12,6 +12,7 @@ $spacers: (
     45: $spacer * 0.25 * 8,
     5: $spacer * 0.25 * 12,
     6: $spacer * 0.25 * 24,
+    7: $spacer * 0.25 * 48,
 );
 
 $h1-font-size: 38px;
@@ -24,6 +25,8 @@ $h4-font-size: 20px;
 $h4-font-size-for-small-screen: 16px;
 $font-size-base: 16px;
 $font-size-base-for-small-screen: 14px;
+$h5-font-size: $font-size-base;
+$h5-font-size-for-small-screen: $font-size-base-for-small-screen;
 $small-font-size: 14px;
 $small-font-size-for-small-screen: 12px;
 

@@ -3,9 +3,9 @@ import {
     RoutingController
 } from '../swim/routing-controller.js';
 
-export class HowToIntegrateGoogleSmartHomeController extends RoutingController {
+export class HowToIntegrateGoogleNestController extends RoutingController {
     static get id () {
-        return 'HowToIntegrateGoogleSmartHomeController';
+        return 'HowToIntegrateGoogleNestController';
     }
 
     async render () {
@@ -23,5 +23,7 @@ export class HowToIntegrateGoogleSmartHomeController extends RoutingController {
 
         await super.render({
         });
+
+        this.parentController.buildIndex('.how-to-integerate-google-nest');
     }
 }

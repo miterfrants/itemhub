@@ -1,3 +1,5 @@
+@import 'overwrite.scss';
+
 .how {
     .arrow {
         transition: transform 0.3s;
@@ -5,5 +7,17 @@
     }
     .up-arrow {
         transform: rotate(-180deg);
+    }
+
+    .index {
+        top: 50px;
+        > a {
+            transition: transform 0.1s;
+        }
+        > a.active {
+            color: $green !important;
+            font-weight: bolder;
+            transform: scale(1.1) translateX(14px);
+        }
     }
 }

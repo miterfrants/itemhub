@@ -22,7 +22,7 @@ import { TransactionController } from './controllers/transaction.controller.js';
 import { SubscriptionDataService } from './dataservices/subscription.dataservice.js';
 import { RESPONSE_STATUS } from './constants.js';
 import { HowToStartController } from './controllers/how-to-start.controller.js';
-import { HowToIntegrateGoogleSmartHomeController } from './controllers/how-to-integrate-google-smart-home.controller.js';
+import { HowToIntegrateGoogleNestController } from './controllers/how-to-integrate-google-smart-home.controller.js';
 
 const gTag = {
     dependency: {
@@ -147,7 +147,7 @@ export const RoutingRule = [{
                     controller: HowToStartController
                 }, {
                     path: 'integrate-google-smart-home/',
-                    controller: HowToIntegrateGoogleSmartHomeController
+                    controller: HowToIntegrateGoogleNestController
                 }]
             }, {
                 path: 'feature/',
