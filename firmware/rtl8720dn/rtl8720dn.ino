@@ -29,7 +29,6 @@ unsigned long currentDeviceStateTimestamp;
 unsigned long previousDeviceStateTimestamp;
 WiFiSSLClient client;
 int status = WL_IDLE_STATUS;
-const int ledPin = 12;
 
 void setup()
 {
@@ -44,7 +43,7 @@ void setup()
     delay(5000);
   }
 
-  pins.push_back(ItemhubPin(12, "IO00", SWITCH));
+  {PINS};
   AuthResponse authResponse = ItemhubUtilities::Auth(client, ca, host, postBody);
   token = authResponse.token;
   remoteDeviceId = authResponse.remoteDeviceId;
