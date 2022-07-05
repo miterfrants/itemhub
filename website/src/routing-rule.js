@@ -6,7 +6,6 @@ import { OauthController } from './controllers/oauth.controller.js';
 import { CheckoutController } from './controllers/checkout.controller.js';
 import { CooperationController } from './controllers/cooperation.controller.js';
 import { FeatureController } from './controllers/feature.controller.js';
-import { HowController } from './controllers/how.controller.js';
 import { MainController } from './controllers/main.controller.js';
 import { MasterController } from './controllers/master.controller.js';
 import { MeController } from './controllers/me.controller.js';
@@ -21,8 +20,7 @@ import { AuthRoutingRule } from './routing-rules/auth.routing-rule.js';
 import { TransactionController } from './controllers/transaction.controller.js';
 import { SubscriptionDataService } from './dataservices/subscription.dataservice.js';
 import { RESPONSE_STATUS } from './constants.js';
-import { HowToStartController } from './controllers/how-to-start.controller.js';
-import { HowToIntegrateGoogleSmartHomeController } from './controllers/how-to-integrate-google-smart-home.controller.js';
+import { HowRoutingRule } from './routing-rules/how.routing-rule.js';
 
 const gTag = {
     dependency: {
@@ -138,18 +136,7 @@ export const RoutingRule = [{
                 path: 'cooperation/',
                 controller: CooperationController,
                 html: '/template/cooperation.html'
-            }, {
-                path: 'how/',
-                controller: HowController,
-                html: '/template/how.html',
-                children: [{
-                    path: 'start/',
-                    controller: HowToStartController
-                }, {
-                    path: 'integrate-google-smart-home/',
-                    controller: HowToIntegrateGoogleSmartHomeController
-                }]
-            }, {
+            }, HowRoutingRule, {
                 path: 'feature/',
                 controller: FeatureController,
                 html: '/components/feature/feature.html'

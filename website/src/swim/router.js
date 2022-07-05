@@ -41,15 +41,19 @@ export const Router = {
                 if (Router.pauseRouting) {
                     return;
                 }
-                const exitResult = await Router.exit(location.pathname + location.search, newPath, RoutingRule, context);
-                if (exitResult) {
-                    window.SwimAppPreviousState = newPath;
-                    Router.routing(location.pathname + location.search, newPath, RoutingRule, context);
+
+                const removeAnchorNewPath = newPath.split('#')[0];
+                const exitResult = await Router.exit(location.pathname + location.search, removeAnchorNewPath, RoutingRule, context);
+                if (exitResult && removeAnchorNewPath !== location.pathname + location.search) {
+                    window.SwimAppPreviousState = removeAnchorNewPath;
+
+                    Router.routing(location.pathname + location.search, removeAnchorNewPath, RoutingRule, context);
                     if (Router.interrupt) {
                         Router.interrupt();
                     }
-                    return original.apply(this, arguments);
                 }
+
+                return original.apply(this, arguments);
             };
         })(history.pushState);
 
@@ -101,21 +105,24 @@ export const Router = {
                 return;
             }
             if (e.currentTarget.href.indexOf(location.origin) !== -1) {
+                const newPath = e.currentTarget.href.replace(location.origin, '');
+                let originPath = location.pathname;
                 e.preventDefault();
                 e.stopPropagation();
+
+                if (originPath.split('#')[0] === newPath.split('#')[0]) {
+                    window.dispatchEvent(new Event('hashchange'));
+                }
+
                 if (e.currentTarget && e.currentTarget.href) {
                     if (e.currentTarget.href.indexOf(location.origin) === -1) {
                         return;
                     }
                 }
-                const newPath = e.currentTarget.href.replace(location.origin, '');
-                let originPath = location.pathname;
                 if (location.search) {
                     originPath += location.search;
                 }
-                if (`${originPath}#` === newPath) {
-                    return;
-                }
+
                 history.pushState({}, '', newPath);
             }
         }
