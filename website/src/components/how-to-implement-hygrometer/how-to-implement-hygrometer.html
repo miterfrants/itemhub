@@ -181,7 +181,7 @@ DHT dht(DHTPIN, DHTTYPE); // 建立 dht 物件可以在 setup 和 loop 都呼叫
                             初始化
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 setup() {
-    dht.begin();
+    dht.begin(); // 於 setup 塞入這段程式碼初始化
     ........
 }</pre>
                         </li>
@@ -237,7 +237,11 @@ pins[i].value = valueString;</pre>
                                 src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-choose-monitor-type.png" />
                         </li>
 
-                        <li>設定完成，<a target="_blank" href="/dashboard">回到監控中心</a>，查看濕度計的讀數</li>
+                        <li>
+                            設定完成，<a target="_blank" href="/dashboard">回到監控中心</a>，查看濕度計的讀數
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-dashboard-monitor.png" />
+                        </li>
                     </ul>
                 </p>
             </div>
