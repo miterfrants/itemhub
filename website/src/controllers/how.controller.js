@@ -88,6 +88,9 @@ export class HowController extends RoutingController {
             });
         });
         const inViewPortElements = idMap.filter(item => item.bottom > 0);
+        if (inViewPortElements.length === 0) {
+            return;
+        }
         const id = inViewPortElements[0].id;
         if (inViewPortElements.length > 0) {
             setTimeout(() => {
