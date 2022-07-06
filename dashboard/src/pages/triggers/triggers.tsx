@@ -116,6 +116,11 @@ const Triggers = () => {
     }, [page, query]);
 
     useEffect(() => {
+        deleteOneTriggerApi();
+        // eslint-disable-next-line
+    }, [deletedOneId]);
+
+    useEffect(() => {
         if (
             deletedOneId &&
             deleteOneTriggerResponse &&
@@ -128,7 +133,6 @@ const Triggers = () => {
                     type: ToasterTypeEnum.INFO,
                 })
             );
-            setDeletedOneId(0);
             getTriggersApi();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,14 +211,15 @@ const Triggers = () => {
         id: number;
         name: string;
     }) => {
-        setDeletedOneId(id);
         dispatch(
             dialogActions.open({
                 message: '刪除後將無法復原, 請輸入 DELETE 完成刪除',
                 title: `確認刪除 Trigger ${name || id} ?`,
                 type: DialogTypeEnum.PROMPT,
                 checkedMessage: 'DELETE',
-                callback: deleteOneTriggerApi,
+                callback: () => {
+                    setDeletedOneId(id);
+                },
                 promptInvalidMessage: '輸入錯誤，請再次嘗試',
             })
         );
