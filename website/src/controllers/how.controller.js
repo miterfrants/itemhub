@@ -143,7 +143,7 @@ export class HowController extends RoutingController {
         });
         if (htmlIndex.length === 0) {
             this.elHTML.querySelector('.index').innerHTML = '';
-            this.pageVariable.howImageVisible = '';
+            this.pageVariable.howImageVisible = 'd-none d-lg-block';
         } else {
             this.elHTML.querySelector('.index').innerHTML = htmlIndex.join('\n');
             this.pageVariable.howImageVisible = 'd-none';
