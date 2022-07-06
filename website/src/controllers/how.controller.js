@@ -59,7 +59,7 @@ export class HowController extends RoutingController {
 
     scrollingHandler (e) {
         const controller = this.AppCurrentController.parentController;
-        if (controller.constructor.name === 'HowController') {
+        if (controller.constructor.id === 'HowController') {
             controller.throttle(controller.changeHash, 300);
         }
     }
