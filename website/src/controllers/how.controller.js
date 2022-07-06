@@ -29,7 +29,7 @@ export class HowController extends RoutingController {
             expandedHowToStartArrowVisible: '',
             expandedHowToImplementHygrometerVisible: 'd-none',
             expandedHowToImplementHygrometerArrowVisible: '',
-            howImageVisible: ''
+            howImageVisible: 'd-none d-md-block'
         });
     }
 
