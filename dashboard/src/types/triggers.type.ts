@@ -18,6 +18,7 @@ export interface TriggerItem {
     destinationPin: string | null;
     type: number;
     email: string | null;
+    phone: string | null;
     notificationPeriod: number | null;
 }
 
@@ -32,5 +33,6 @@ export interface EditedTrigger {
     destinationPin: string | null;
     type: number;
     email: string | null;
+    phone: string | null;
     notificationPeriod: number | null;
 }

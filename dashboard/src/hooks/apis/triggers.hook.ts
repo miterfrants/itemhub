@@ -28,6 +28,7 @@ export interface EditedTrigger {
     operator: number;
     type: number;
     email: string | null;
+    phone: string | null;
 }
 
 export const useGetTriggersApi = ({
@@ -117,6 +118,7 @@ export const useCreateTriggerApi = ({
     name,
     type,
     email,
+    phone,
 }: EditedTrigger) => {
     const dispatch = useAppDispatch();
     const dispatchAddTrigger = useCallback(
@@ -143,6 +145,7 @@ export const useCreateTriggerApi = ({
             operator,
             type,
             email,
+            phone,
         },
         initialData: null,
         callbackFunc: dispatchAddTrigger,
