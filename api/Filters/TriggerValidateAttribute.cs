@@ -30,7 +30,7 @@ namespace Homo.IotApi
             }
             else if (dto.Type == TRIGGER_TYPE.NOTIFICATION && System.String.IsNullOrEmpty(dto.Email) && System.String.IsNullOrEmpty(dto.Phone))
             {
-                throw new CustomException(ERROR_CODE.TRIGGER_NOTIFICATION_NEEDS_DATA, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.TRIGGER_NOTIFICATION_NEEDS_CONTACT_INFORMATION, System.Net.HttpStatusCode.BadRequest);
             }
         }
     }

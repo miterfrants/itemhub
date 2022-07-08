@@ -84,7 +84,7 @@ const Trigger = () => {
         destinationPin: true,
         email: true,
         phone: true,
-        invalidNotification: true,
+        validedNotification: true,
         invalidEmail: true,
         invalidPhone: true,
     });
@@ -160,7 +160,7 @@ const Trigger = () => {
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
-                    invalidNotification: false,
+                    validedNotification: false,
                 };
             });
             isValidateSuccess = false;
@@ -170,8 +170,7 @@ const Trigger = () => {
             editedTriggerData.email &&
             !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
                 editedTriggerData.email
-            ) &&
-            isValidEditedTrigger.invalidNotification
+            )
         ) {
             // refactor: 抽離 validator
             setIsValidEditedTrigger((prev) => {
@@ -185,8 +184,7 @@ const Trigger = () => {
 
         if (
             editedTriggerData.phone &&
-            !/^09[0-9]{8}$/.test(editedTriggerData.phone) &&
-            isValidEditedTrigger.invalidNotification
+            !/^09[0-9]{8}$/.test(editedTriggerData.phone)
         ) {
             // refactor: 抽離 validator
             setIsValidEditedTrigger((prev) => {
@@ -508,7 +506,7 @@ const Trigger = () => {
                         </option>
                     ))}
                 </select>
-                {!isValidEditedTrigger.invalidNotification && (
+                {!isValidEditedTrigger.validedNotification && (
                     <div className="text-danger mt-1 fs-5">
                         請輸入要通知的 Email 或 手機
                     </div>
@@ -605,7 +603,7 @@ const Trigger = () => {
                                         setIsValidEditedTrigger((prev) => {
                                             return {
                                                 ...prev,
-                                                invalidNotification: value
+                                                validedNotification: value
                                                     ? true
                                                     : false,
                                                 email: value ? true : false,
@@ -640,7 +638,7 @@ const Trigger = () => {
                                         setIsValidEditedTrigger((prev) => {
                                             return {
                                                 ...prev,
-                                                invalidNotification: value
+                                                validedNotification: value
                                                     ? true
                                                     : false,
                                                 phone: value ? true : false,
