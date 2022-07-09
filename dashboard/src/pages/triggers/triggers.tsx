@@ -443,6 +443,7 @@ const Triggers = () => {
                                                 sourceThreshold,
                                                 type,
                                                 email,
+                                                phone,
                                             },
                                             index
                                         ) => (
@@ -535,7 +536,19 @@ const Triggers = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="col-8 col-lg-3 lh-base py-3 py-lg-0">
-                                                        通知: {email}
+                                                        {email && (
+                                                            <div className="mb-2">
+                                                                Email 通知:{' '}
+                                                                {email}
+                                                            </div>
+                                                        )}
+                                                        {phone && (
+                                                            <div>
+                                                                手機通知:{' '}
+                                                                {phone}
+                                                            </div>
+                                                        )}
+                                                        <div />
                                                     </div>
                                                 )}
 
