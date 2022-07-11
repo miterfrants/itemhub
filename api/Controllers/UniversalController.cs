@@ -37,7 +37,8 @@ namespace Homo.IotApi
                 DeviceCount = SubscriptionHelper.GetDeviceCount((PRICING_PLAN)x.Value),
                 Frequency = SubscriptionHelper.GetFrequency((PRICING_PLAN)x.Value),
                 StorageTime = SubscriptionHelper.GetStorageTime((PRICING_PLAN)x.Value),
-                NotificationRateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit((PRICING_PLAN)x.Value),
+                NotificationEmailRateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit((PRICING_PLAN)x.Value),
+                NotificationSmsRateLimit = SubscriptionHelper.GetTriggerSmsNotificastionRateLimit((PRICING_PLAN)x.Value),
 
             }).ToList<dynamic>();
 
