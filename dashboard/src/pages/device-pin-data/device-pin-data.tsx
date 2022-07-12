@@ -30,6 +30,7 @@ import { DeviceItem, PinItem } from '@/types/devices.type';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import ReactTooltip from 'react-tooltip';
 import { Microcontroller } from '@/types/universal.type';
+import { MCU_TYPE } from '@/constants/mcu-type';
 
 const DevicePinData = () => {
     const navigate = useNavigate();
@@ -297,12 +298,11 @@ const DevicePinData = () => {
             targetKey = targetMcu ? targetMcu.key : '';
         }
 
-        // refactor: use server-side return key
-        if (targetKey === 'PARTICLE_IO_PHOTON') {
+        if (targetKey === MCU_TYPE.PARTICLE_IO_PHOTON) {
             setMicrocontrollerIdImg(particleIoPhoton);
-        } else if (targetKey === 'ARDUINO_NANO_33_IOT') {
+        } else if (targetKey === MCU_TYPE.ARDUINO_NANO_33_IOT) {
             setMicrocontrollerIdImg(arduinoNano33Iot);
-        } else if (targetKey === 'ESP_01S') {
+        } else if (targetKey === MCU_TYPE.ESP_01S) {
             setMicrocontrollerIdImg(esp01s);
         } else {
             setMicrocontrollerIdImg('');
