@@ -55,7 +55,8 @@ namespace Homo.IotApi
                         Traits = x.Mode == DEVICE_MODE.SWITCH ? new List<string>() { "action.devices.traits.OnOff" } :
                             x.Mode == DEVICE_MODE.SENSOR ? new List<string>() { "action.devices.traits.SensorState" } : new List<string>() { "action.devices.traits.OnOff" },
                         Type = x.Mode == DEVICE_MODE.SENSOR ? "action.devices.types.SENSOR" :
-                            x.Mode == DEVICE_MODE.SWITCH ? "action.devices.types.SWITCH" : "action.devices.types.SWITCH",
+                            x.Mode == DEVICE_MODE.SWITCH &&
+                            (x.Name.Contains("燈") || x.Name.ToLower().Contains("light")) ? "action.devices.types.LIGHT" : "action.devices.types.SWITCH",
                         WillReportState = true,
                         Attributes = x.Mode == DEVICE_MODE.SENSOR ? new
                         {
