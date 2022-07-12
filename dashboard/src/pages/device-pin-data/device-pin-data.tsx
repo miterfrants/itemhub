@@ -28,8 +28,6 @@ import esp01s from '@/assets/images/esp-01s.svg';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
-// import { DEVICE_MODE } from '@/constants/device-mode';
-// import closeIcon from '@/assets/images/dark-close.svg';
 import ReactTooltip from 'react-tooltip';
 import { Microcontroller } from '@/types/universal.type';
 
@@ -53,15 +51,9 @@ const DevicePinData = () => {
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
     const devicePinsRef = useRef<PinItem[]>([]);
     const { microcontrollers } = useAppSelector(selectUniversal);
-    // const { deviceModes } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
         useState<null | Microcontroller>(null);
-    // const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
-    // const pinNameInputRef = useRef<HTMLInputElement>(null);
-    // const [originalPin, setOriginalPin] = useState('');
-    // const [switchMode, setSwitchMode] = useState(1);
-    // const [sensorMode, setSensorMode] = useState(0);
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -172,7 +164,6 @@ const DevicePinData = () => {
     };
 
     const updateDevice = () => {
-        console.log(selectedPins);
         const shouldBeUpdatedPins = selectedPins?.filter((item) =>
             devicePinsRef.current
                 ?.map((devicePin) => devicePin.pin)
@@ -208,32 +199,28 @@ const DevicePinData = () => {
         updateDeviceApi();
     };
 
-    const selectPins = (
-        pin: string,
-        mode: number,
-        name: string,
-        value: number | null
-    ) => {
+    const updateSelectPins = (target: PinItem) => {
         setSelectedPins(() => {
             const newSelected = [...(selectedPins || [])];
             const targetIndex = newSelected
                 ?.map((item) => {
                     return item.pin;
                 })
-                .indexOf(pin);
+                .indexOf(target.pin);
 
             if (targetIndex !== -1) {
                 newSelected?.splice(Number(targetIndex), 1);
             }
             const pushData: PinItem = {
                 id: devicePinsRef.current.filter(
-                    (item) => item.pin === pin && item.deviceId === Number(id)
+                    (item) =>
+                        item.pin === target.pin && item.deviceId === Number(id)
                 )[0]?.id,
                 deviceId: Number(id),
-                pin,
-                mode,
-                name,
-                value,
+                pin: target.pin,
+                mode: target.mode,
+                name: target.name,
+                value: target.value,
             };
 
             newSelected.push({ ...pushData });
@@ -379,10 +366,6 @@ const DevicePinData = () => {
         // eslint-disable-next-line
     }, [shouldBeDeletedPins]);
 
-    // useEffect(() => {
-    //     pinNameInputRef.current?.focus();
-    // }, [isEditPinNameOpen]);
-
     const breadcrumbs = [
         {
             label: '裝置列表',
@@ -503,13 +486,9 @@ const DevicePinData = () => {
                                     microcontrollerId={
                                         selectedMicrocontroller.id
                                     }
+                                    pinsList={selectedPins}
                                     updateSelectedPins={(newPin) => {
-                                        selectPins(
-                                            newPin.pin,
-                                            newPin.mode,
-                                            newPin.name,
-                                            newPin.value
-                                        );
+                                        updateSelectPins(newPin);
                                     }}
                                     removeSelectedPins={(removePinName) => {
                                         setSelectedPins(

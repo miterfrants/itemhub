@@ -1,23 +1,8 @@
 // refactor: 把它拆成多個 component 避免一段程式這麼長
 import { useState, useEffect, useRef } from 'react';
-// import { useNavigate, useParams, useLocation } from 'react-router-dom';
-// import {
-//     useCreateDeviceApi,
-//     useGetDeviceApi,
-//     useUpdateDeviceApi,
-// } from '@/hooks/apis/devices.hook';
-import {
-    // useDeletePinsApi,
-    useGetDevicePinsApi,
-    // useUpdatePinsApi,
-} from '@/hooks/apis/device.pin.hook';
-
 import { useAppSelector } from '@/hooks/redux.hook';
-// import { selectDevices } from '@/redux/reducers/devices.reducer';
-// import { useDispatch } from 'react-redux';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
-import { CreaetPinItem, PinItem } from '@/types/devices.type';
-import { selectDevicePins } from '@/redux/reducers/pins.reducer';
+import { PinItem } from '@/types/devices.type';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import ReactTooltip from 'react-tooltip';
 import { Microcontroller } from '@/types/universal.type';
@@ -26,20 +11,18 @@ import closeIcon from '@/assets/images/dark-close.svg';
 const DevicePin = ({
     deviceId,
     microcontrollerId,
+    pinsList,
     updateSelectedPins,
     removeSelectedPins,
     isSelectedPinsValid,
 }: {
     deviceId: number;
     microcontrollerId: number;
-    updateSelectedPins: (pins: CreaetPinItem) => void;
+    pinsList: PinItem[];
+    updateSelectedPins: (pins: PinItem) => void;
     removeSelectedPins: (pin: string) => void;
     isSelectedPinsValid: boolean;
 }) => {
-    const devicePinsFromStore = useAppSelector(selectDevicePins);
-
-    const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
-    const devicePinsRef = useRef<PinItem[]>([]);
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
@@ -51,17 +34,13 @@ const DevicePin = ({
     const [switchMode, setSwitchMode] = useState(1);
     const [sensorMode, setSensorMode] = useState(0);
 
-    const { getDevicePinsApi } = useGetDevicePinsApi({
-        id: Number(deviceId),
-    });
-
     const editPinName = (name: string) => {
         setOriginalPin(name);
         setIsEditPinNameOpen(true);
     };
 
     const getShortPinName = (name: string) => {
-        const pinName = selectedPins?.find((pins) => {
+        const pinName = pinsList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -75,7 +54,7 @@ const DevicePin = ({
     };
 
     const getFullPinName = (name: string) => {
-        const newPinName = selectedPins?.find((pins) => {
+        const newPinName = pinsList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -91,106 +70,28 @@ const DevicePin = ({
     };
 
     const updatePinName = () => {
-        const pinData = selectedPins?.find((item) => {
+        const pinData = pinsList?.find((item) => {
             return item.pin === originalPin;
         });
 
         if (!pinData) {
             return;
         }
-        const newPinData: CreaetPinItem = {
+
+        const newPinData: PinItem = {
+            deviceId: deviceId,
             pin: pinData.name || '',
-            mode: sensorMode,
+            mode: pinData.mode,
             name: pinNameInputRef.current?.value || '',
             value: null,
         };
-        console.log(pinData);
 
         if (pinNameInputRef.current) {
             updateSelectedPins(newPinData);
-            selectPins(
-                pinData.pin,
-                pinData.mode,
-                pinNameInputRef.current.value,
-                pinData.value
-            );
             pinNameInputRef.current.value = '';
         }
-
         setIsEditPinNameOpen(false);
-        ReactTooltip.rebuild();
     };
-    const [isValidData, setIsValidData] = useState({
-        selectedPins: true,
-    });
-
-    // const validate = () => {
-    //     let isValid = true;
-
-    //     if (!selectedPins || selectedPins.length === 0) {
-    //         setIsValidData((prev) => {
-    //             return {
-    //                 ...prev,
-    //                 selectedPins: false,
-    //             };
-    //         });
-    //         isValid = false;
-    //     }
-    // };
-
-    const selectPins = (
-        pin: string,
-        mode: number,
-        name: string,
-        value: number | null
-    ) => {
-        setSelectedPins(() => {
-            const newSelected = [...(selectedPins || [])];
-            const targetIndex = newSelected
-                ?.map((item) => {
-                    return item.pin;
-                })
-                .indexOf(pin);
-
-            if (targetIndex !== -1) {
-                newSelected?.splice(Number(targetIndex), 1);
-            }
-            const pushData: PinItem = {
-                id: devicePinsRef.current.filter(
-                    (item) =>
-                        item.pin === pin && item.deviceId === Number(deviceId)
-                )[0]?.id,
-                deviceId: Number(deviceId),
-                pin,
-                mode,
-                name,
-                value,
-            };
-
-            newSelected.push({ ...pushData });
-            return newSelected;
-        });
-        setIsValidData((prev) => {
-            return {
-                ...prev,
-                selectedPins: true,
-            };
-        });
-    };
-
-    useEffect(() => {
-        const devicePins =
-            devicePinsFromStore?.filter(
-                (item: PinItem) => item.deviceId === deviceId
-            ) || ([] as PinItem[]);
-        if (devicePinsFromStore === null) {
-            getDevicePinsApi();
-            return;
-        }
-        setSelectedPins(devicePins);
-        devicePinsRef.current = devicePins;
-        // eslint-disable-next-line
-    }, [devicePinsFromStore]);
 
     useEffect(() => {
         const switchMode = deviceModes.filter((item) => {
@@ -224,10 +125,6 @@ const DevicePin = ({
     }, [microcontrollerId]);
 
     useEffect(() => {
-        ReactTooltip.rebuild();
-    }, [selectedPins]);
-
-    useEffect(() => {
         pinNameInputRef.current?.focus();
     }, [isEditPinNameOpen]);
 
@@ -245,7 +142,7 @@ const DevicePin = ({
                         return (
                             <div
                                 className={`${
-                                    selectedPins
+                                    pinsList
                                         ?.map((pins) => {
                                             return pins.pin;
                                         })
@@ -257,7 +154,7 @@ const DevicePin = ({
                                 key={index}
                             >
                                 <div className="text-center pin-selector">
-                                    {selectedPins?.filter((pins) => {
+                                    {pinsList?.filter((pins) => {
                                         return pins.pin === pin.name;
                                     })[0]?.mode === switchMode ? (
                                         <div>開關</div>
@@ -274,7 +171,7 @@ const DevicePin = ({
                                 <ReactTooltip effect="solid" place="bottom" />
                                 <div
                                     className={`rounded-2 shadow-lg overflow-hidden bg-white pin-option ${
-                                        selectedPins?.find((pins) => {
+                                        pinsList?.find((pins) => {
                                             return pins.pin === pin.name;
                                         })
                                             ? 'pin-option-4'
@@ -285,18 +182,13 @@ const DevicePin = ({
                                         className={`lh-1 p-25`}
                                         role="button"
                                         onClick={() => {
-                                            const pinData: CreaetPinItem = {
+                                            const pinData: PinItem = {
+                                                deviceId: deviceId,
                                                 pin: pin.name,
                                                 mode: switchMode,
                                                 name: pin.name,
                                                 value: 0,
                                             };
-                                            selectPins(
-                                                pin.name,
-                                                switchMode,
-                                                pin.name,
-                                                0
-                                            );
                                             updateSelectedPins(pinData);
                                         }}
                                     >
@@ -306,18 +198,13 @@ const DevicePin = ({
                                         className="lh-1 p-25"
                                         role="button"
                                         onClick={() => {
-                                            const pinData: CreaetPinItem = {
+                                            const pinData: PinItem = {
+                                                deviceId: deviceId,
                                                 pin: pin.name,
                                                 mode: sensorMode,
                                                 name: pin.name,
                                                 value: null,
                                             };
-                                            selectPins(
-                                                pin.name,
-                                                sensorMode,
-                                                pin.name,
-                                                null
-                                            );
                                             updateSelectedPins(pinData);
                                         }}
                                     >
@@ -325,7 +212,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            selectedPins?.find((pins) => {
+                                            pinsList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
@@ -339,7 +226,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            selectedPins?.find((pins) => {
+                                            pinsList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
@@ -347,15 +234,6 @@ const DevicePin = ({
                                         }`}
                                         onClick={() => {
                                             removeSelectedPins(pin.name);
-                                            setSelectedPins(
-                                                selectedPins
-                                                    ? selectedPins.filter(
-                                                          (item) =>
-                                                              item.pin !==
-                                                              pin.name
-                                                      )
-                                                    : []
-                                            );
                                         }}
                                     >
                                         取消設定
@@ -405,13 +283,18 @@ const DevicePin = ({
                     <div className="d-flex align-items-center justify-content-end px-3">
                         <button
                             className="btn btn-secondary me-3 btn-secondary"
-                            onClick={closeEditPinName}
+                            onClick={() => {
+                                closeEditPinName;
+                            }}
                         >
                             取消
                         </button>
                         <button
                             className={`btn btn-primary`}
-                            onClick={updatePinName}
+                            onClick={() => {
+                                updatePinName();
+                                setIsEditPinNameOpen(false);
+                            }}
                         >
                             確認
                         </button>

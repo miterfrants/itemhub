@@ -22,10 +22,3 @@ export interface PinItem {
     createdAt?: string;
     device?: DeviceItem;
 }
-
-export interface CreaetPinItem {
-    pin: string;
-    value: number | null;
-    mode: number;
-    name: string;
-}
