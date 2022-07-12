@@ -557,6 +557,18 @@ const DevicePinData = () => {
                                 </div>
                             )}
                         </div>
+
+                        {selectedMicrocontroller &&
+                            selectedMicrocontroller.memo &&
+                            selectedMicrocontroller.memo.length > 0 && (
+                                <div className="mcu-memo text-warn mt-3 mb-4 d-flex align-items-top">
+                                    <div className="mt-1 me-2 bg-warn text-white rounded-circle align-items-center text-center fw-bold flex-shrink-0">
+                                        !
+                                    </div>
+                                    <div>{selectedMicrocontroller?.memo}</div>
+                                </div>
+                            )}
+
                         {!isCreateMode && selectedMicrocontroller && (
                             <div className="mb-4">
                                 <label>選擇 Pin</label>

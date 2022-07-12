@@ -1,4 +1,5 @@
 import { APP_CONFIG } from '../config.js';
+import { EVENTS } from '../constants.js';
 import {
     RoutingController
 } from '../swim/routing-controller.js';
@@ -16,12 +17,22 @@ export class HowToStartController extends RoutingController {
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
             keywords: '使用教學'
         };
+
+        for (const key in this.parentController.pageVariable) {
+            if (key.indexOf('expandedHowTo') === 0 && key.indexOf('ArrowVisible') !== -1) {
+                this.parentController.pageVariable[key] = '';
+            } else if (key.indexOf('expandedHowTo') === 0 && key.indexOf('ArrowVisible') === -1) {
+                this.parentController.pageVariable[key] = 'd-none';
+            }
+        }
+
         this.parentController.pageVariable.expandedHowToStartVisible = '';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeVisible = 'd-none';
         this.parentController.pageVariable.expandedHowToStartArrowVisible = 'up-arrow';
-        this.parentController.pageVariable.expandedHowToBindGoogleSmartHomeArrowVisible = '';
 
         await super.render({
         });
+
+        this.parentController.buildIndex('.how-to-start');
+        this.args.gtag('event', EVENTS.HOW_TO_USE_BASIC);
     }
 }

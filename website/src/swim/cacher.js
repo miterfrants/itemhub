@@ -31,6 +31,24 @@ import HeaderHTML from '../components/header/header.html';
 import '../components/header/header.scss';
 
 import {
+    HowToImplementHygrometerComponent
+} from '../components/how-to-implement-hygrometer/how-to-implement-hygrometer.component.js';
+import HowToImplementHygrometerHTML from '../components/how-to-implement-hygrometer/how-to-implement-hygrometer.html';
+import '../components/how-to-implement-hygrometer/how-to-implement-hygrometer.scss';
+
+import {
+    HowToIntegrateGoogleNestComponent
+} from '../components/how-to-integrate-google-nest/how-to-integrate-google-nest.component.js';
+import HowToIntegrateGoogleNestHTML from '../components/how-to-integrate-google-nest/how-to-integrate-google-nest.html';
+import '../components/how-to-integrate-google-nest/how-to-integrate-google-nest.scss';
+
+import {
+    HowToStartComponent
+} from '../components/how-to-start/how-to-start.component.js';
+import HowToStartHTML from '../components/how-to-start/how-to-start.html';
+import '../components/how-to-start/how-to-start.scss';
+
+import {
     HowToUseComponent
 } from '../components/how-to-use/how-to-use.component.js';
 import HowToUseHTML from '../components/how-to-use/how-to-use.html';
@@ -84,27 +102,15 @@ import twoFactorAuthHTML from '../template/two-factor-auth.html';
 
 import verifyEmailHTML from '../template/verify-email.html';
 
-import '../css/auth.css';
-import '../css/checkout.css';
-import '../css/common.css';
-import '../css/cooperation.css';
-import '../css/main.css';
-import '../css/master.css';
-import '../css/overwrite.css';
-import '../css/pricing.css';
-import '../css/how.css';
-import '../css/sign-in.css';
-import '../css/transaction.css';
-import '../css/zindex.css';
+import '../css/common.scss';
+import '../css/main.scss';
 import '../css/auth.scss';
 import '../css/checkout.scss';
-import '../css/common.scss';
 import '../css/cooperation.scss';
-import '../css/main.scss';
+import '../css/how.scss';
 import '../css/master.scss';
 import '../css/overwrite.scss';
 import '../css/pricing.scss';
-import '../css/how.scss';
 import '../css/sign-in.scss';
 import '../css/transaction.scss';
 import '../css/zindex.scss';
@@ -129,6 +135,15 @@ export const Cacher = {
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/header/header.css`);
         window.SwimAppComponents.HeaderComponent = HeaderComponent;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/header/header.html`] = HeaderHTML;
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-hygrometer/how-to-implement-hygrometer.css`);
+        window.SwimAppComponents.HowToImplementHygrometerComponent = HowToImplementHygrometerComponent;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-hygrometer/how-to-implement-hygrometer.html`] = HowToImplementHygrometerHTML;
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-integrate-google-nest/how-to-integrate-google-nest.css`);
+        window.SwimAppComponents.HowToIntegrateGoogleNestComponent = HowToIntegrateGoogleNestComponent;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-integrate-google-nest/how-to-integrate-google-nest.html`] = HowToIntegrateGoogleNestHTML;
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-start/how-to-start.css`);
+        window.SwimAppComponents.HowToStartComponent = HowToStartComponent;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-start/how-to-start.html`] = HowToStartHTML;
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-use/how-to-use.css`);
         window.SwimAppComponents.HowToUseComponent = HowToUseComponent;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-use/how-to-use.html`] = HowToUseHTML;
@@ -160,11 +175,23 @@ export const Cacher = {
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/checkout.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/common.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/cooperation.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/how.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/main.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/master.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/overwrite.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/pricing.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/sign-in.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/transaction.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/zindex.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/auth.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/checkout.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/common.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/cooperation.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/how.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/main.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/master.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/overwrite.css`);
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/pricing.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/sign-in.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/transaction.css`);
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/css/zindex.css`);

@@ -289,6 +289,10 @@ namespace IotApi.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("varchar(128)");
 
+                    b.Property<string>("Memo")
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
                     b.Property<string>("Pins")
                         .IsRequired()
                         .HasColumnType("longtext");

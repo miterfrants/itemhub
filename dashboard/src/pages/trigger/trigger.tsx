@@ -71,6 +71,7 @@ const Trigger = () => {
         operator: 0,
         type: 0,
         email: null,
+        phone: null,
         notificationPeriod: null,
     } as EditedTrigger);
 
@@ -82,7 +83,10 @@ const Trigger = () => {
         destinationDeviceId: true,
         destinationPin: true,
         email: true,
+        phone: true,
+        validedNotification: true,
         invalidEmail: true,
+        invalidPhone: true,
     });
 
     const validateEditedTrigger = (fetchApi: () => Promise<void>) => {
@@ -149,14 +153,14 @@ const Trigger = () => {
         }
 
         if (
+            editedTriggerData.type === notificationTriggerType &&
             !editedTriggerData.email &&
-            editedTriggerData.type === notificationTriggerType
+            !editedTriggerData.phone
         ) {
-            // refactor: 抽離 validator
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
-                    email: false,
+                    validedNotification: false,
                 };
             });
             isValidateSuccess = false;
@@ -166,14 +170,27 @@ const Trigger = () => {
             editedTriggerData.email &&
             !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
                 editedTriggerData.email
-            ) &&
-            editedTriggerData.type === notificationTriggerType
+            )
         ) {
             // refactor: 抽離 validator
             setIsValidEditedTrigger((prev) => {
                 return {
                     ...prev,
                     invalidEmail: false,
+                };
+            });
+            isValidateSuccess = false;
+        }
+
+        if (
+            editedTriggerData.phone &&
+            !/^09[0-9]{8}$/.test(editedTriggerData.phone)
+        ) {
+            // refactor: 抽離 validator
+            setIsValidEditedTrigger((prev) => {
+                return {
+                    ...prev,
+                    invalidPhone: false,
                 };
             });
             isValidateSuccess = false;
@@ -263,6 +280,7 @@ const Trigger = () => {
             operator: trigger?.operator || 0,
             type: trigger?.type || 0,
             email: trigger?.email || '',
+            phone: trigger?.phone || '',
             notificationPeriod: trigger?.notificationPeriod,
         });
     }, [trigger]);
@@ -282,6 +300,13 @@ const Trigger = () => {
     useEffect(() => {
         if (createTriggerResponse && createTriggerResponse.id) {
             navigate(`/dashboard/triggers${location.search}`);
+            dispatch(
+                toasterActions.pushOne({
+                    message: '新增成功',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
         }
     }, [navigate, createTriggerResponse]);
 
@@ -467,6 +492,10 @@ const Trigger = () => {
                                 triggerType === changeDeviceStateTriggerType
                                     ? null
                                     : '',
+                            phone:
+                                triggerType === changeDeviceStateTriggerType
+                                    ? null
+                                    : '',
                         });
                     }}
                     value={editedTriggerData.type}
@@ -477,6 +506,11 @@ const Trigger = () => {
                         </option>
                     ))}
                 </select>
+                {!isValidEditedTrigger.validedNotification && (
+                    <div className="text-danger mt-1 fs-5">
+                        請輸入要通知的 Email 或 手機
+                    </div>
+                )}
                 {editedTriggerData.type === changeDeviceStateTriggerType ? (
                     <div className="mt-3">
                         <DeviceAndPinInputs
@@ -569,19 +603,52 @@ const Trigger = () => {
                                         setIsValidEditedTrigger((prev) => {
                                             return {
                                                 ...prev,
+                                                validedNotification: value
+                                                    ? true
+                                                    : false,
                                                 email: value ? true : false,
                                             };
                                         });
                                     }}
                                 />
-                                {!isValidEditedTrigger.email && (
+                                {isValidEditedTrigger.email &&
+                                    !isValidEditedTrigger.invalidEmail && (
+                                        <div className="text-danger mt-1 fs-5">
+                                            錯誤的 Email 格式
+                                        </div>
+                                    )}
+                            </label>
+                        </div>
+                        <div className="row mt-3">
+                            <label className="col-12">
+                                <div className="mb-1">手機</div>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={editedTriggerData.phone || ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setEditedTriggerData((prev) => {
+                                            return {
+                                                ...prev,
+                                                phone: value,
+                                            };
+                                        });
+
+                                        setIsValidEditedTrigger((prev) => {
+                                            return {
+                                                ...prev,
+                                                validedNotification: value
+                                                    ? true
+                                                    : false,
+                                                phone: value ? true : false,
+                                            };
+                                        });
+                                    }}
+                                />
+                                {!isValidEditedTrigger.invalidPhone && (
                                     <div className="text-danger mt-1 fs-5">
-                                        請輸入 Email
-                                    </div>
-                                )}
-                                {!isValidEditedTrigger.invalidEmail && (
-                                    <div className="text-danger mt-1 fs-5">
-                                        錯誤的 Email 格式
+                                        錯誤的手機格式
                                     </div>
                                 )}
                             </label>

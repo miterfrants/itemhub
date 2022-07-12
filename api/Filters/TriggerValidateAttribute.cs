@@ -28,9 +28,9 @@ namespace Homo.IotApi
             {
                 throw new CustomException(ERROR_CODE.TRIGGER_DEST_PIN_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
-            else if (dto.Type == TRIGGER_TYPE.NOTIFICATION && System.String.IsNullOrEmpty(dto.Email))
+            else if (dto.Type == TRIGGER_TYPE.NOTIFICATION && System.String.IsNullOrEmpty(dto.Email) && System.String.IsNullOrEmpty(dto.Phone))
             {
-                throw new CustomException(ERROR_CODE.TRIGGER_EMAIL_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.TRIGGER_NOTIFICATION_NEEDS_CONTACT_INFORMATION, System.Net.HttpStatusCode.BadRequest);
             }
         }
     }

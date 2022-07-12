@@ -1,0 +1,105 @@
+<div class="how-to-integrate-google-nest">
+    <link href="/components/how-to-start/how-to-start.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            如何用 ItemHub 串接 Google
+            Nest
+        </div>
+        <img class="arrow {expandedHowToIntegrateGoogleNestArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToIntegrateGoogleNestVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">建立 oAuthClient</h4>
+            <p>
+                <a target="_blank" href="/dashboard/oauth-clients/create">建立 oAuthClient</a> 提供一組帳號密碼給
+                Google Nest 作為身份認證，避免任何人都可以透過特定的網址修改你的裝置狀態
+                <br />
+                (註: 新增
+                oAuthClient 後，因 server 不會儲存
+                Client Secret 明碼，因此請立即記下 Client Secret)
+                <img class="w-100 mt-1"
+                    src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-create-oauth-client.jpg" />
+            </p>
+        </div>
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">Google Actions Console</h4>
+            <div>
+                <h5 class="fw-bold py-2">
+                    建立 Google Actions Project
+                </h5>
+                <p class="mb-4">
+                    至
+                    <a href="https://console.actions.google.com/" target="_blank">Google Actions
+                        Console</a>
+                    點擊 New project 建立新的專案
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-create-google-actions-project.jpg" />
+                </p>
+                <p class="mb-4">
+                    接著輸入 專案名稱，選擇語言和地區
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-project-setup-basic-infomation.jpg" />
+                </p>
+                <p class="mb-4">
+                    選擇專案類型為 Smart Home，點擊 Start Build 建立專案
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-choose-project-type.jpg" />
+                </p>
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">設定</h5>
+                <p>
+                    先切到 Develop -> Invocation，選擇語言和 Google Smart Home 的顯示名稱
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-setup-name.jpg" />
+                </p>
+                <p>
+                    切到 Develop -> Actions，其中 Fulfillment URL 欄位，填入
+                    https://itemhub.io/api/v1/google-smart-home，讓 Google
+                    Nest 把使用者下的指令傳遞到 ItemHub
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-setup-fulfillment-url.jpg" />
+                </p>
+
+                <p>
+                    切到 Develop -> Account Linking: 輸入 ItemHub 產生的 oAuthClient 資料
+                    <ul class="ps-3">
+                        <li>Client ID 填入於 ItemHub oAuthClient 上產生的 Client ID</li>
+                        <li>Client Secret 填入於 ItemHub oAuthClient 上產生的 Client Secret</li>
+                        <li>Authorization URL 填入 https://itemhub.io/api/v1/oauth</li>
+                        <li>Token URL 填入 https://itemhub.io/api/v1/oauth/token</li>
+                    </ul>
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-oauth-binding.jpg" />
+                </p>
+            </div>
+            <div class="mb-45">
+                <h5 class="fw-bold py-2">取得 Project Id</h5>
+                <p>
+                    於 Project settings 內複製 Project Id 的值
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-get-project-id.jpg" />
+                </p>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-green h4 py-3">新增授權重導網址</h4>
+            <div class="mb-45">
+                <p>
+                    於 Redirect Uris 輸入 https://oauth-redirect.googleusercontent.com/r/{projectId}，其中
+                    {projectId} 需取代成
+                    Google Actions Console 內的對應的 Project Id 的值，如: Project Id 為 testing，則輸入:
+                    https://oauth-redirect.googleusercontent.com/r/testing，儲存後即完成串接 Google
+                    Smart Home。
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/integrate-google-nest/how-to-integrate-google-nest-add-new-oauth-client-redirect-url.jpg" />
+                </p>
+            </div>
+        </div>
+        <div class="mb-7">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+</div>
