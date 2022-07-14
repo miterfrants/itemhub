@@ -8,6 +8,7 @@ import logoIcon from '@/assets/images/logo.svg';
 import logoWordingIcon from '@/assets/images/logo-wording.svg';
 import shieldIcon from '@/assets/images/shield.svg';
 import docIcon from '@/assets/images/doc.svg';
+import lineUs from '@/assets/images/icon-line.png';
 import { useState, useEffect } from 'react';
 
 const Header = () => {
@@ -127,6 +128,15 @@ const Header = () => {
                     }`}
                     onClick={closeMenu}
                 />
+                <div className="position-fixed line-us text-center">
+                    <a
+                        href="https://line.me/ti/p/@151cpegm"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        <img src={lineUs} alt="line-us" />
+                    </a>
+                </div>
             </div>
         </div>
     );
