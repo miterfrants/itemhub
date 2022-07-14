@@ -141,8 +141,7 @@ module.exports = {
                         {
                             search: '{GA_PROPERTY_ID}',
                             replace: config.APP_CONFIG.GA_PROPERTY_ID
-                        },
-                        { search: '{FRESH_CHAT_TOKEN}', replace: config.APP_CONFIG.FRESH_CHAT_TOKEN }
+                        }
                     ]
                 }
             }]
