@@ -19,25 +19,6 @@
     </script>
 
     <script>
-        function initFreshChat() {
-            window.fcWidget.init({
-                token: "{FRESH_CHAT_TOKEN}",
-                host: "https://wchat.freshchat.com"
-            });
-        }
-
-        function initialize(i, t) {
-            var e;
-            i.getElementById(t) ? initFreshChat() : ((e = i.createElement("script")).id = t, e.async = !0, e.src =
-                "https://wchat.freshchat.com/js/widget.js", e.onload = initFreshChat, i.head.appendChild(e))
-        }
-
-        function initiateCall() {
-            setTimeout(() => {
-                initialize(document, "Freshdesk Messaging-js-sdk")
-            }, 1000);
-        }
-
         window.addEventListener ? window.addEventListener("load", initiateCall, !1) : window.attachEvent("load",
             initiateCall, !1);
 
