@@ -30,7 +30,7 @@ import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import ReactTooltip from 'react-tooltip';
 import { Microcontroller } from '@/types/universal.type';
 import { MCU_TYPE } from '@/constants/mcu-type';
-import { ValidationHelpers } from '@/helpers/validation';
+import { ValidationHelpers } from '@/helpers/validation.helper';
 
 const DevicePinData = () => {
     const navigate = useNavigate();
@@ -125,33 +125,30 @@ const DevicePinData = () => {
         selectedMicrocontroller: true,
     });
 
-    const validate = () => {
-        const validName = ValidationHelpers.Require({ value: name });
-        const validSelectedPins = ValidationHelpers.SelectedPins(
-            isCreateMode,
-            selectedPins
-        );
-        const validSelectedMicrocontroller = ValidationHelpers.Require({
-            value: microcontrollerId,
-        });
-
-        setIsValidData(() => {
-            return {
-                name: validName,
-                selectedPins: validSelectedPins,
-                selectedMicrocontroller: validSelectedMicrocontroller,
-            };
-        });
-
-        return validName && validSelectedPins && validSelectedMicrocontroller;
-    };
-
     const sendApi = () => {
         // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
-        const validateReslut = validate();
-        if (!validateReslut) {
+        const validateReslut = ValidationHelpers.DevicePinData(
+            isCreateMode,
+            name,
+            microcontrollerId,
+            selectedPins
+        );
+        if (
+            !validateReslut.name ||
+            !validateReslut.selectedPins ||
+            !validateReslut.selectedMicrocontroller
+        ) {
+            setIsValidData(() => {
+                return {
+                    name: validateReslut.name,
+                    selectedPins: validateReslut.selectedPins,
+                    selectedMicrocontroller:
+                        validateReslut.selectedMicrocontroller,
+                };
+            });
             return;
         }
+
         isCreateMode ? createDeviceApi() : updateDevice();
     };
 
@@ -395,9 +392,9 @@ const DevicePinData = () => {
                                 defaultValue={device ? device.name : ''}
                                 onChange={(e) => {
                                     const validResult =
-                                        ValidationHelpers.Require({
-                                            value: e.target.value,
-                                        });
+                                        ValidationHelpers.Require(
+                                            e.target.value
+                                        );
                                     setName(e.target.value);
                                     setIsValidData((prev) => {
                                         return {
@@ -432,9 +429,9 @@ const DevicePinData = () => {
                                     }
 
                                     const validResult =
-                                        ValidationHelpers.Require({
-                                            value: e.target.value,
-                                        });
+                                        ValidationHelpers.Require(
+                                            e.target.value
+                                        );
 
                                     setIsValidData((prev) => {
                                         return {
