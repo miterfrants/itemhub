@@ -1,4 +1,3 @@
-// refactor: 把它拆成多個 component 避免一段程式這麼長
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
