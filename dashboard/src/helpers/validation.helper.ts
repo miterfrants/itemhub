@@ -8,19 +8,23 @@ export const ValidationHelpers = {
         }
         return true;
     },
-    SelectedPins: (isCreateMode: boolean, selectedPins: PinItem[] | null) => {
+    ValidateSelectedPins: (
+        isCreateMode: boolean,
+        selectedPins: PinItem[] | null
+    ) => {
         if (!isCreateMode && (!selectedPins || selectedPins.length === 0)) {
             return false;
         }
         return true;
     },
-    DevicePinData: (
+    ValidateDevicePinData: (
         isCreateMode: boolean,
         name: string | null,
         microcontroller: number | null,
         selectedPins: PinItem[] | null
     ) => {
         const result = {
+            isValid: false,
             name: false,
             selectedPins: false,
             selectedMicrocontroller: false,
@@ -32,7 +36,9 @@ export const ValidationHelpers = {
         if (ValidationHelpers.Require(microcontroller)) {
             result.selectedMicrocontroller = true;
         }
-        if (ValidationHelpers.SelectedPins(isCreateMode, selectedPins)) {
+        if (
+            ValidationHelpers.ValidateSelectedPins(isCreateMode, selectedPins)
+        ) {
             result.selectedPins = true;
         }
 

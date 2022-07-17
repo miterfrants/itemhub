@@ -127,17 +127,13 @@ const DevicePinData = () => {
 
     const sendApi = () => {
         // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
-        const validateReslut = ValidationHelpers.DevicePinData(
+        const validateReslut = ValidationHelpers.ValidateDevicePinData(
             isCreateMode,
             name,
             microcontrollerId,
             selectedPins
         );
-        if (
-            !validateReslut.name ||
-            !validateReslut.selectedPins ||
-            !validateReslut.selectedMicrocontroller
-        ) {
+        if (!validateReslut.isValid) {
             setIsValidData(() => {
                 return {
                     name: validateReslut.name,
@@ -498,7 +494,7 @@ const DevicePinData = () => {
                                                 : []
                                         );
                                         const validResult =
-                                            ValidationHelpers.SelectedPins(
+                                            ValidationHelpers.ValidateSelectedPins(
                                                 isCreateMode,
                                                 selectedPins
                                                     ? selectedPins.filter(
