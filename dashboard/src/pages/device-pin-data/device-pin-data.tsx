@@ -31,6 +31,7 @@ import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import ReactTooltip from 'react-tooltip';
 import { Microcontroller } from '@/types/universal.type';
 import { MCU_TYPE } from '@/constants/mcu-type';
+import { ValidationHelpers } from '@/helpers/validation';
 
 const DevicePinData = () => {
     const navigate = useNavigate();
@@ -126,42 +127,33 @@ const DevicePinData = () => {
     });
 
     const validate = () => {
-        let isValid = true;
-        if (!name) {
-            setIsValidData((prev) => {
-                return {
-                    ...prev,
-                    name: false,
-                };
-            });
-            isValid = false;
-        }
-        if (!isCreateMode && (!selectedPins || selectedPins.length === 0)) {
-            setIsValidData((prev) => {
-                return {
-                    ...prev,
-                    selectedPins: false,
-                };
-            });
-            isValid = false;
-        }
+        const validName = ValidationHelpers.Require({ value: name });
+        const validSelectedPins = ValidationHelpers.SelectedPins(
+            isCreateMode,
+            selectedPins
+        );
+        const validSelectedMicrocontroller = ValidationHelpers.Require({
+            value: microcontrollerId,
+        });
 
-        if (!microcontrollerId) {
-            setIsValidData((prev) => {
-                return {
-                    ...prev,
-                    selectedMicrocontroller: false,
-                };
-            });
-            isValid = false;
-        }
+        setIsValidData(() => {
+            return {
+                name: validName,
+                selectedPins: validSelectedPins,
+                selectedMicrocontroller: validSelectedMicrocontroller,
+            };
+        });
 
-        if (isValid) {
-            // refactor: validate 只做 validate createDeviceApi 和 updateDevice 拉出去
-            // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
-            isCreateMode ? createDeviceApi() : updateDevice();
+        return validName && validSelectedPins && validSelectedMicrocontroller;
+    };
+
+    const sendApi = () => {
+        // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
+        const validateReslut = validate();
+        if (!validateReslut) {
             return;
         }
+        isCreateMode ? createDeviceApi() : updateDevice();
     };
 
     const updateDevice = () => {
@@ -403,12 +395,15 @@ const DevicePinData = () => {
                                 placeholder="請輸入裝置名稱"
                                 defaultValue={device ? device.name : ''}
                                 onChange={(e) => {
-                                    const value = e.target.value;
+                                    const validResult =
+                                        ValidationHelpers.Require({
+                                            value: e.target.value,
+                                        });
                                     setName(e.target.value);
                                     setIsValidData((prev) => {
                                         return {
                                             ...prev,
-                                            name: value ? true : false,
+                                            name: validResult,
                                         };
                                     });
                                 }}
@@ -437,10 +432,16 @@ const DevicePinData = () => {
                                         setSelectedPins([]);
                                     }
 
+                                    const validResult =
+                                        ValidationHelpers.Require({
+                                            value: e.target.value,
+                                        });
+
                                     setIsValidData((prev) => {
                                         return {
                                             ...prev,
-                                            selectedMicrocontroller: true,
+                                            selectedMicrocontroller:
+                                                validResult,
                                         };
                                     });
                                 }}
@@ -500,6 +501,23 @@ const DevicePinData = () => {
                                                   )
                                                 : []
                                         );
+                                        const validResult =
+                                            ValidationHelpers.SelectedPins(
+                                                isCreateMode,
+                                                selectedPins
+                                                    ? selectedPins.filter(
+                                                          (item) =>
+                                                              item.pin !==
+                                                              removePinName
+                                                      )
+                                                    : []
+                                            );
+                                        setIsValidData((prev) => {
+                                            return {
+                                                ...prev,
+                                                selectedPins: validResult,
+                                            };
+                                        });
                                     }}
                                     isSelectedPinsValid={
                                         isValidData.selectedPins
@@ -524,7 +542,7 @@ const DevicePinData = () => {
                             <button
                                 disabled={isCreating || isUpdating}
                                 className="btn btn-primary"
-                                onClick={validate}
+                                onClick={sendApi}
                             >
                                 {isCreateMode ? (
                                     <div>新增</div>

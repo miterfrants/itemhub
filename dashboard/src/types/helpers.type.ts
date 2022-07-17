@@ -43,3 +43,7 @@ export interface SetCookieParams {
     days?: number;
     unixTimestamp?: number;
 }
+
+export interface Validation {
+    value: string | number | null;
+}
