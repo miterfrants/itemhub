@@ -42,6 +42,11 @@ export const ValidationHelpers = {
             result.selectedPins = true;
         }
 
+        result.isValid =
+            result.name &&
+            result.selectedMicrocontroller &&
+            result.selectedPins;
+
         return result;
     },
 };
