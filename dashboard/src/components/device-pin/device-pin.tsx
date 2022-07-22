@@ -80,7 +80,7 @@ const DevicePin = ({
 
         const newPinData: PinItem = {
             deviceId: deviceId,
-            pin: pinData.name || '',
+            pin: pinData.pin || '',
             mode: pinData.mode,
             name: pinNameInputRef.current?.value || '',
             value: null,
