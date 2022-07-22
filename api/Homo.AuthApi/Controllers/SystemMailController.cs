@@ -66,7 +66,7 @@ namespace Homo.AuthApi
                     websiteUrl = _websiteUrl,
                     adminEmail = _adminEmail,
                     hello = _commonLocalizer.Get("hello"),
-                    link = "https://forms.gle/Thryqq6n4Ck7a2P47",
+                    link = "https://forms.gle/Eo89nMZyhKhpASCCA",
                     mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
                     mailContentSurvey = _commonLocalizer.Get("mailContentSurvey")
                 });
