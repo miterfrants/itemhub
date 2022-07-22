@@ -50,6 +50,11 @@ namespace api.Helpers
                 filePath = $"{staticPath}/email/trigger-notification.html";
                 subject = "triggerNotification";
             }
+            else if (key == MAIL_TEMPLATE.SURVEY)
+            {
+                filePath = $"{staticPath}/email/survey.html";
+                subject = "mailSubjectSurvey";
+            }
 
             string content = File.ReadAllText(filePath);
             return new MailTemplate()
