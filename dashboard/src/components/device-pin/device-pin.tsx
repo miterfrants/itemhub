@@ -284,7 +284,7 @@ const DevicePin = ({
                         <button
                             className="btn btn-secondary me-3 btn-secondary"
                             onClick={() => {
-                                closeEditPinName;
+                                closeEditPinName();
                             }}
                         >
                             取消
