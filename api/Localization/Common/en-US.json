@@ -30,5 +30,7 @@
     "cartTokenIsNull": "transition is successful, but return unknow format response 'cart token is null', please contact with us {adminEmail}",
     "triggerNotification": "Itemhub - Trigger Notification {deviceName}",
     "notificationContent": "your device reach threshould",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "mailSubjectSurvey": "Itemhub - Survey",
+    "mailContentSurvey": ""
 }

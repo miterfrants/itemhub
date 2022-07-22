@@ -25,5 +25,8 @@ namespace api.Constants
         NEW_PREIUM_USER = 6,
         [Description("自動觸發通知")]
         TRIGGER_NOTIFICATION = 7,
+
+        [Description("問卷調查")]
+        SURVEY = 8,
     }
 }
