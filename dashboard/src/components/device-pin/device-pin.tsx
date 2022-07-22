@@ -80,7 +80,7 @@ const DevicePin = ({
 
         const newPinData: PinItem = {
             deviceId: deviceId,
-            pin: pinData.name || '',
+            pin: pinData.pin || '',
             mode: pinData.mode,
             name: pinNameInputRef.current?.value || '',
             value: null,
@@ -284,7 +284,7 @@ const DevicePin = ({
                         <button
                             className="btn btn-secondary me-3 btn-secondary"
                             onClick={() => {
-                                closeEditPinName;
+                                closeEditPinName();
                             }}
                         >
                             取消
