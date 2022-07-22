@@ -55,7 +55,7 @@ namespace Homo.AuthApi
             {
                 throw new CustomException(ERROR_CODE.USER_NOT_FOUND, HttpStatusCode.NotFound);
             }
-            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(users, Newtonsoft.Json.Formatting.Indented));
+
             for (int i = 0; i < users.Count; i++)
             {
                 User user = users[i];

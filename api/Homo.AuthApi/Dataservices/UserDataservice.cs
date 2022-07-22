@@ -73,7 +73,7 @@ namespace Homo.AuthApi
 
         public static List<User> GetSurveyEmail(DBContext dbContext)
         {
-            return dbContext.User.Where(x => x.DeletedAt == null && x.HashPhone != null).ToList();
+            return dbContext.User.Where(x => x.Email != null && x.DeletedAt == null && x.HashPhone != null).ToList();
         }
 
         public static User GetOneByHashPhone(DBContext dbContext, string hashPhone)
