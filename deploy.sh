@@ -3,7 +3,8 @@
 ENV="$NODE_ENV";
 
 cd ./api
-git pull origin dev
+git pull origin dev;
+git submodule update --remote --init;
 
 sudo docker build -t itemhub-api ./
 
