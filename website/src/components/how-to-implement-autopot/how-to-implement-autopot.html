@@ -1,0 +1,184 @@
+<div class="how-to-implement-autopot">
+    <link href="/components/how-to-implement-hygrometer/how-to-implement-hygrometer.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            如何用 ItemHub DIY 自動澆灌
+        </div>
+        <img class="arrow {expandedHowToImplementAutopotArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToImplementAutopotVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">材料</h4>
+            <div>
+                <h5>硬體</h5>
+                <p>
+                    <ul>
+                        <li>
+                            Arduino Nano 33 IoT
+                        </li>
+                        <ul>
+                            <li>功能: 單晶片具有 Wifi 功能, 把我們需要的資料送到 Server</li>
+                            <li>
+
+                            </li>
+                        </ul>
+                        <li class="mt-3">
+                            土壤濕度感測器
+                        </li>
+                        <ul>
+                            <li>
+                                功能: 土壤濕度感測器
+                            </li>
+                            <li>
+
+                            </li>
+                        </ul>
+
+                        <li class="mt-3">
+                            其他材料:
+                        </li>
+                        <ul>
+                            <li class="mt-3">
+                                麵包板
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 比較好把所有元件串接起來
+                                </li>
+                                <li>
+
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                沈水抽水馬達
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 澆灌
+                                </li>
+                                <li>
+
+                                </li>
+                            </ul>
+                        </ul>
+                    </ul>
+                </p>
+            </div>
+
+            <div>
+                <h5>軟體</h5>
+
+                <p>
+                    <ul>
+                        <li>
+                            <a target="_blank" href="https://www.arduino.cc/en/software">Arduino IDE</a>
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">硬體配置</h4>
+            <div class="mt-3">
+                <h5>運作模式</h5>
+                <img class="w-100 mt-1"
+                    src="/assets/images/how/implement-autopot/how-to-implement-autopot-work-mode.png" />
+                <p class="mt-1">
+                    Arduino Nano 33 IoT D0 ↔ 抽水馬達 VIN <br />
+                    Arduino Nano 33 IoT GND ↔ 抽水馬達 GND <br />
+                    Arduino Nano 33 IoT A0 ↔ 土壤濕度感測 A0 <br />
+                    Arduino Nano 33 IoT GND ↔ 土壤濕度感測 GND <br />
+                    Arduino Nano 33 IoT 3V3 ↔ 土壤濕度感測 VCC <br />
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">步驟</h4>
+            <div class="mt-3">
+                <h5>設定 & 下載程式</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增裝置
+                        </li>
+                        <li>
+                            將 D2 PIN 腳設定為開關, A0 PIN 腳設定微感測器, 下載程式碼
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-setup-device.png" />
+                        </li>
+                    </ul>
+                </p>
+            </div>
+
+            <div class="mt-3">
+                <h5>修改程式</h5>
+                <p>
+                    <ul>
+                        <li class="mt-3">
+                            下載的檔案解壓縮並打開 *.ino 檔案
+                        </li>
+
+                        <li class="mt-3">
+                            修改 Wifi 帳密
+
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+#define STASSID "{SSID}"
+#define STAPSK "{WIFI_PASSWORD}"
+</pre>
+                            把 {SSID} 改為 Wifi 的連線名稱<br />
+                            把 {WIFI_PASSWORD} 改為 Wifi 的連線密碼
+                        </li>
+
+                        </li>
+
+                        <li>
+                            找到以下的程式碼區塊
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+int value = digitalRead(pins[i].pin);</pre>
+
+                            改寫成讀取土壤濕度感測器的類比訊號
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+int value = analogRead(pins[i].pin);</pre>
+                        </li>
+
+                        <li>
+                            接著選擇晶片類型為 Arduino SAMD Boards > Arduino NANO 33 IoT
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-choose-mcu-type.png" />
+
+                            把剛寫好的程式燒錄到晶片上，這樣就完成了
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-flash-code.png" />
+                        </li>
+                    </ul>
+                </p>
+
+                <p>
+
+                </p>
+            </div>
+
+            <div class="mt-3">
+                <h5>ItemHub 觸發</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增觸發, 當濕度感測器 (A0) 低於某一個數值的時候, ItemHub 就會將對應的 D2 腳位改成高電位
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-add-trigger.png" />
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-7">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+</div>

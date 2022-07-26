@@ -4,18 +4,18 @@ import {
     RoutingController
 } from '../swim/routing-controller.js';
 
-export class HowToImplementHygrometerController extends RoutingController {
+export class HowToImplementAutopotController extends RoutingController {
     static get id () {
-        return 'HowToImplementHygrometerController';
+        return 'HowToImplementAutopotController';
     }
 
     async render () {
         this.meta = {
-            title: 'DIY 濕度計 - 如何使用 - ItemHub',
-            'og:title': 'DIY 濕度計 - 如何使用 - ItemHub',
-            description: '透過幾個步驟 DIY 濕度計, 監控室內濕度',
+            title: 'DIY 自動澆灌 - 如何使用 - ItemHub',
+            'og:title': 'DIY 自動澆灌 - 如何使用 - ItemHub',
+            description: '透過幾個步驟 DIY 自動澆灌',
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
-            keywords: 'ItemHub DIY 濕度計'
+            keywords: 'ItemHub DIY 自動澆灌'
         };
 
         for (const key in this.parentController.pageVariable) {
@@ -26,13 +26,13 @@ export class HowToImplementHygrometerController extends RoutingController {
             }
         }
 
-        this.parentController.pageVariable.expandedHowToImplementHygrometerVisible = '';
-        this.parentController.pageVariable.expandedHowToImplementHygrometerArrowVisible = 'up-arrow';
+        this.parentController.pageVariable.expandedHowToImplementAutopotVisible = '';
+        this.parentController.pageVariable.expandedHowToImplementAutopotArrowVisible = 'up-arrow';
 
         await super.render({
         });
 
-        this.parentController.buildIndex('.how-to-implement-hygrometer');
-        this.args.gtag('event', EVENTS.HOW_TO_IMPLEMENT_HYGROMETER);
+        this.parentController.buildIndex('.how-to-implement-autopot');
+        this.args.gtag('event', EVENTS.HOW_TO_IMPLEMENT_AUTOPOT);
     }
 }
