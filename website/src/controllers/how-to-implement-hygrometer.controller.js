@@ -11,11 +11,11 @@ export class HowToImplementHygrometerController extends RoutingController {
 
     async render () {
         this.meta = {
-            title: 'DIY 濕度計 - 如何使用 - ItemHub',
-            'og:title': 'DIY 濕度計 - 如何使用 - ItemHub',
-            description: '透過幾個步驟 DIY 濕度計, 監控室內濕度',
+            title: '3 步驟 DIY 濕度計 - 如何使用 - ItemHub',
+            'og:title': '3 步驟 DIY 濕度計 - 如何使用 - ItemHub',
+            description: '透過 3 步驟 DIY 濕度計, 監控室內濕度',
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
-            keywords: 'ItemHub DIY 濕度計'
+            keywords: 'ItemHub 3 步驟 DIY 濕度計'
         };
 
         for (const key in this.parentController.pageVariable) {

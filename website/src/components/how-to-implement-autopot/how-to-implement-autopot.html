@@ -121,7 +121,7 @@
                 <img class="w-100 mt-1"
                     src="/assets/images/how/implement-autopot/how-to-implement-autopot-work-mode.png" />
                 <p class="mt-1">
-                    Arduino Nano 33 IoT D0 ↔ 抽水馬達 VIN <br />
+                    Arduino Nano 33 IoT D2 ↔ 抽水馬達 VIN <br />
                     Arduino Nano 33 IoT GND ↔ 抽水馬達 GND <br />
                     Arduino Nano 33 IoT A0 ↔ 土壤濕度感測 A0 <br />
                     Arduino Nano 33 IoT GND ↔ 土壤濕度感測 GND <br />
@@ -174,7 +174,7 @@
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 int value = digitalRead(pins[i].pin);</pre>
 
-                            改寫成讀取土壤濕度感測器的類比訊號
+                            改寫成以下程式碼，讀取土壤濕度感測器的類比訊號
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 int value = analogRead(pins[i].pin);</pre>
                         </li>
@@ -201,7 +201,7 @@ int value = analogRead(pins[i].pin);</pre>
                 <p>
                     <ul>
                         <li>
-                            新增觸發, 當濕度感測器 (A0) 低於某一個數值的時候, ItemHub 就會將對應的 D2 腳位改成高電位
+                            新增觸發, 當濕度感測器 (A0) 低於某一個數值的時候, ItemHub 就會將對應的 D2 腳位改成啟動(高電位)
                             <img class="w-100 mt-1"
                                 src="/assets/images/how/implement-autopot/how-to-implement-autopot-add-trigger.png" />
                         </li>
