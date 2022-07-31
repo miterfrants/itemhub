@@ -29,6 +29,8 @@ export class HowController extends RoutingController {
             expandedHowToStartArrowVisible: '',
             expandedHowToImplementHygrometerVisible: 'd-none',
             expandedHowToImplementHygrometerArrowVisible: '',
+            expandedHowToImplementAutopotVisible: 'd-none',
+            expandedHowToImplementAutopotArrowVisible: '',
             howImageVisible: 'd-none d-md-block'
         });
     }
