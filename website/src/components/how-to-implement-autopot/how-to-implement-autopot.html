@@ -1,0 +1,224 @@
+<div class="how-to-implement-autopot">
+    <link href="/components/how-to-implement-hygrometer/how-to-implement-hygrometer.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            如何用 ItemHub DIY 自動澆灌
+        </div>
+        <img class="arrow {expandedHowToImplementAutopotArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToImplementAutopotVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">材料</h4>
+            <div>
+                <h5>硬體</h5>
+                <p>
+                    <ul>
+                        <li>
+                            Arduino Nano 33 IoT
+                        </li>
+                        <ul>
+                            <li>功能: 單晶片具有 Wifi 功能, 把我們需要的資料送到 Server</li>
+                            <li>
+                                大約 NTD $1,000 現在價格變動幅度大 (<a
+                                    href="https://shopee.tw/%E7%BE%8E%E5%9C%8B%E5%AE%98%E6%96%B9%E6%8E%88%E6%AC%8A%E7%B6%93%E9%8A%B7-ARDUINO-NANO-33-IOT-%E5%B7%B2%E7%84%8A%E6%8E%92%E9%87%9D-ESP32%E7%84%A1%E7%B7%9A-u-blox-%E8%97%8D%E8%8A%BD-%E7%BE%A9%E5%A4%A7%E5%88%A9%E8%A3%BD-i.10207300.7710932877?sp_atk=308b494d-fa56-49ba-bc3f-b935e90ec0d5&xptdk=308b494d-fa56-49ba-bc3f-b935e90ec0d5"
+                                    target="_blank">蝦皮</a>)
+                            </li>
+                        </ul>
+                        <li class="mt-3">
+                            土壤濕度感測器
+                        </li>
+                        <ul>
+                            <li>
+                                功能: 土壤濕度感測器
+                            </li>
+                            <li>
+                                大約 NTD $30 (<a
+                                    href="https://shopee.tw/%E3%80%90%E7%92%B0%E5%B3%B6%E7%A7%91%E6%8A%80%E3%80%91(B12-5)Arduino-%E5%9C%9F%E5%A3%A4%E6%BF%95%E5%BA%A6%E8%A8%88%E6%AA%A2%E6%B8%AC%E6%A8%A1%E5%A1%8A%E5%9C%9F%E5%A3%A4%E6%BF%95%E5%BA%A6%E5%82%B3%E6%84%9F%E5%99%A8-%E6%A9%9F%E5%99%A8%E4%BA%BA%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BB%8A-i.280233910.4545714279?sp_atk=2007df37-99b8-4f8f-954d-d85a1e98340d&xptdk=2007df37-99b8-4f8f-954d-d85a1e98340d"
+                                    target="_blank">蝦皮</a>)
+                            </li>
+                        </ul>
+
+                        <li class="mt-3">
+                            其他材料:
+                        </li>
+                        <ul>
+                            <li class="mt-3">
+                                麵包板
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 比較好把所有元件串接起來
+                                </li>
+                                <li>
+                                    大約 NTD $50 (<a
+                                        href="https://shopee.tw/%E3%80%90%E6%A8%82%E6%84%8F%E5%89%B5%E5%AE%A2%E5%AE%98%E6%96%B9%E5%BA%97%E3%80%91%E3%80%8A%E9%99%84%E7%99%BC%E7%A5%A8%E3%80%8B400%E5%AD%94%E5%84%AA%E8%B3%AA%E9%BA%B5%E5%8C%85%E6%9D%BF-%E8%BF%B7%E5%B0%BC%E9%BA%B5%E5%8C%85%E6%9D%BF-85x55mm-%E5%AF%A6%E9%A9%97%E6%9D%BF-i.139069730.2122942751?sp_atk=e58e09c2-548c-419a-9dde-9caca56d7870&xptdk=e58e09c2-548c-419a-9dde-9caca56d7870"
+                                        target="_blank">蝦皮</a>)
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                無刷沉水抽水馬達
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 澆灌
+                                </li>
+                                <li>
+                                    大約 NTD $200 (<a
+                                        href="https://shopee.tw/%E3%80%90300-L-H%E3%80%91USB-5V-%E7%9B%B4%E6%B5%81-%E7%84%A1%E5%88%B7-%E5%BE%AE%E5%9E%8B-%E6%B2%89%E6%B0%B4%E9%A6%AC%E9%81%94-%E6%8A%BD%E6%B0%B4%E9%A6%AC%E9%81%94-%E5%B0%8F%E9%A6%AC%E9%81%94-%E9%A6%AC%E9%81%94-%E6%8F%9A%E6%B0%B4%E9%A6%AC%E9%81%94-%E6%8F%9B%E6%B0%B4%E4%BD%8E%E6%B0%B4%E4%BD%8D%E9%81%8E%E6%BF%BE%E5%99%A8-%E6%B7%B9%E6%B0%B4-i.4090725.5296806580?sp_atk=dcacc10f-5701-4f9e-9123-ed6a34f71042&xptdk=dcacc10f-5701-4f9e-9123-ed6a34f71042"
+                                        target="_blank">蝦皮</a>)
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                寶特瓶
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 儲存水源
+                                </li>
+                                <li>
+                                    免費
+                                </li>
+                            </ul>
+
+                            <li class="mt-3">
+                                塑膠軟管
+                            </li>
+                            <ul>
+                                <li>
+                                    功能: 運輸水源
+                                </li>
+                                <li>
+                                    大約 NTD $30 (<a
+                                        href="https://shopee.tw/%E7%8F%BE%E8%B2%A8%E3%80%90%E6%98%A5%E6%97%A5%E6%B0%B4%E6%97%8F%E3%80%91%E6%B0%B4%E6%97%8F%E5%B0%88%E7%94%A8%E8%BB%9F%E7%AE%A1-7%E3%80%818.8%E3%80%8112%E3%80%8116mm-%E5%9C%93%E6%A1%B6-%E7%AE%A1%E5%AD%90-%E5%9C%93%E6%A1%B6%E8%BB%9F%E7%AE%A1-%E6%B2%89%E6%B0%B4%E9%A6%AC%E9%81%94%E8%BB%9F%E7%AE%A1-%E6%B0%B4%E7%AE%A1-%E6%B0%B4%E6%97%8F%E9%85%8D%E7%AE%A1-%E6%B0%B4%E6%97%8F%E8%BB%9F%E7%AE%A1-i.74940784.2447001923?sp_atk=128589a7-8738-49c1-8007-e9734a38b309&xptdk=128589a7-8738-49c1-8007-e9734a38b309"
+                                        target="_blank">蝦皮</a>)
+                                </li>
+                            </ul>
+                        </ul>
+                    </ul>
+                </p>
+            </div>
+
+            <div>
+                <h5>軟體</h5>
+
+                <p>
+                    <ul>
+                        <li>
+                            <a target="_blank" href="https://www.arduino.cc/en/software">Arduino IDE</a>
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">硬體配置</h4>
+            <div class="mt-3">
+                <h5>運作模式</h5>
+                <img class="w-100 mt-1"
+                    src="/assets/images/how/implement-autopot/how-to-implement-autopot-work-mode.png" />
+                <p class="mt-1">
+                    Arduino Nano 33 IoT D2 ↔ 抽水馬達 VIN <br />
+                    Arduino Nano 33 IoT GND ↔ 抽水馬達 GND <br />
+                    Arduino Nano 33 IoT A0 ↔ 土壤濕度感測 A0 <br />
+                    Arduino Nano 33 IoT GND ↔ 土壤濕度感測 GND <br />
+                    Arduino Nano 33 IoT 3V3 ↔ 土壤濕度感測 VCC <br />
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">步驟</h4>
+            <div class="mt-3">
+                <h5>設定 & 下載程式</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增裝置
+                        </li>
+                        <li>
+                            將 D2 PIN 腳設定為開關, A0 PIN 腳設定微感測器, 下載程式碼
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-setup-device.png" />
+                        </li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-3">
+                <h5>確認是否有安裝 Arduino SAMD 板</h5>
+                <p>
+                    <img class="w-100 mt-1"
+                        src="/assets/images/how/implement-autopot/how-to-implement-autopot-install-samd-board.png" />
+                </p>
+            </div>
+            <div class="mt-3">
+                <h5>修改程式</h5>
+                <p>
+                    <ul>
+                        <li class="mt-3">
+                            下載的檔案解壓縮並打開 *.ino 檔案
+                        </li>
+
+                        <li class="mt-3">
+                            修改 Wifi 帳密
+
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+#define STASSID "{SSID}"
+#define STAPSK "{WIFI_PASSWORD}"
+</pre>
+                            把 {SSID} 改為 Wifi 的連線名稱<br />
+                            把 {WIFI_PASSWORD} 改為 Wifi 的連線密碼
+                        </li>
+
+                        </li>
+
+                        <li>
+                            找到以下的程式碼區塊
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+int value = digitalRead(pins[i].pin);</pre>
+
+                            改寫成以下程式碼，讀取土壤濕度感測器的類比訊號
+                            <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+int value = analogRead(pins[i].pin);</pre>
+                        </li>
+
+                        <li>
+                            接著選擇晶片類型為 Arduino SAMD Boards > Arduino NANO 33 IoT
+                            <img class="w-100 mt-1 mb-3"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-choose-mcu-type.png" />
+
+                            把剛寫好的程式燒錄到晶片上，這樣就完成了
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-flash-code.png" />
+                        </li>
+                    </ul>
+                </p>
+
+                <p>
+
+                </p>
+            </div>
+
+            <div class="mt-3">
+                <h5>ItemHub 觸發</h5>
+                <p>
+                    <ul>
+                        <li>
+                            新增觸發, 當濕度感測器 (A0) 低於某一個數值的時候, ItemHub 就會將對應的 D2 腳位改成啟動(高電位)
+                            <img class="w-100 mt-1"
+                                src="/assets/images/how/implement-autopot/how-to-implement-autopot-add-trigger.png" />
+                        </li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-7">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+</div>
