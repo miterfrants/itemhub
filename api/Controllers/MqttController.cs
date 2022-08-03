@@ -42,8 +42,8 @@ namespace Homo.IotApi
 
         public Task ValidateConnection(ValidatingConnectionEventArgs eventArgs)
         {
-            Console.WriteLine($"Client '{eventArgs.ClientId}' Try to Connect.");
-            OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.ClientId);
+            Console.WriteLine($"Client '{eventArgs.ClientId}' try to Connecting....");
+            OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.Username);
             if (client == null)
             {
                 eventArgs.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
