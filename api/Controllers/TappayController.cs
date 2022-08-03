@@ -1,6 +1,4 @@
 using Swashbuckle.AspNetCore.Annotations;
-using api.Constants;
-using api.Helpers;
 using Homo.Api;
 using Homo.AuthApi;
 using Homo.Core.Constants;

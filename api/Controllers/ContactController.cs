@@ -4,8 +4,6 @@ using Homo.AuthApi;
 using Homo.Core.Constants;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
-using api.Constants;
-using api.Helpers;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Homo.IotApi

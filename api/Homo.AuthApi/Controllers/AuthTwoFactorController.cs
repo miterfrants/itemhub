@@ -4,8 +4,6 @@ using Microsoft.Extensions.Options;
 using Homo.Core.Constants;
 using Homo.Core.Helpers;
 using Homo.Api;
-using api.Constants;
-using api.Helpers;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Homo.AuthApi

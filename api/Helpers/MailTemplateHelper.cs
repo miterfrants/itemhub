@@ -1,8 +1,7 @@
-using api.Constants;
 using System.IO;
 using System.Reflection;
 
-namespace api.Helpers
+namespace Homo.AuthApi
 {
     public class MailTemplateHelper
     {
