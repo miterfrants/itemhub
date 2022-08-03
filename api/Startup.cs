@@ -77,9 +77,10 @@ namespace Homo.IotApi
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
 
-            services.AddHostedMqttServer(optionsBuilder => { optionsBuilder.WithDefaultEndpoint(); });
-            services.AddMqttConnectionHandler();
-            services.AddConnections();
+            services
+                .AddHostedMqttServer(optionsBuilder => { optionsBuilder.WithDefaultEndpoint(); })
+                .AddMqttConnectionHandler()
+                .AddConnections();
 
             services.AddSingleton<ErrorMessageLocalizer>(new ErrorMessageLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 namespace Homo.IotApi
 {
     [Route("v1/mqtt")]
-    [SwaggerUiInvisibility]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Validate]
     public class MqttController
     {
@@ -42,6 +42,7 @@ namespace Homo.IotApi
 
         public Task ValidateConnection(ValidatingConnectionEventArgs eventArgs)
         {
+            Console.WriteLine($"Client '{eventArgs.ClientId}' Try to Connect.");
             OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.ClientId);
             if (client == null)
             {
