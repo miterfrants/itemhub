@@ -28,8 +28,35 @@ export class TwoFactorAuthController extends RoutingController {
             return;
         }
 
-        const payload = window.jwt_decode(token);
+        const dashboardToken = CookieUtil.getCookie('dashboardToken');
+        const dashboardRefreshToken = CookieUtil.getCookie('dashboardRefreshToken');
 
+        if (dashboardToken && dashboardRefreshToken) {
+            const now = new Date();
+            const payloadOfDashboardToken = window.jwt_decode(dashboardToken);
+            const expiredAt = new Date(payloadOfDashboardToken.exp * 1000);
+            const jwtLifeHours = (expiredAt - now) / 1000 / 60 / 60;
+
+            console.log(jwtLifeHours);
+
+            const payloadOfRefreshJwt = window.jwt_decode(dashboardRefreshToken);
+            const expiredAtOfRefreshJwt = new Date(payloadOfRefreshJwt.exp * 1000);
+            const refreshJwtLifeHours = (expiredAtOfRefreshJwt - now) / 1000 / 60 / 60;
+
+            if (jwtLifeHours < 3 * 24 && refreshJwtLifeHours > 0) {
+                const resp = await AuthDataService.RefreshDashboardToken({ refreshToken: dashboardRefreshToken });
+                if (resp.status === RESPONSE_STATUS.OK) {
+                    const payload = window.jwt_decode(resp.data.token);
+                    const payloadOfRefreshToken = window.jwt_decode(resp.data.refreshToken);
+                    CookieUtil.setCookie('dashboardToken', resp.data.token, null, payload.exp);
+                    CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, payloadOfRefreshToken.exp);
+                    location.href = APP_CONFIG.DASHBOARD_URL;
+                    return;
+                }
+            }
+        }
+
+        const payload = window.jwt_decode(token);
         await super.render({
             isSentVisible: 'd-none',
             email: payload.extra.Email,
@@ -100,12 +127,16 @@ export class TwoFactorAuthController extends RoutingController {
             elButton.removeAttribute('disabled');
             return;
         }
+        const dashboardPayload = window.jwt_decode(resp.data.token);
+        const refreshPayload = window.jwt_decode(resp.data.refreshToken);
 
         if (APP_CONFIG.ENV === 'dev') {
+            CookieUtil.setCookie('dashboardToken', resp.data.token, null, dashboardPayload.exp);
+            CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, refreshPayload.exp);
             location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${resp.data.token}`;
         } else {
-            const dashboardPayload = window.jwt_decode(resp.data.token);
             CookieUtil.setCookie('dashboardToken', resp.data.token, null, dashboardPayload.exp);
+            CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, refreshPayload.exp);
             location.href = APP_CONFIG.DASHBOARD_URL;
         }
     }

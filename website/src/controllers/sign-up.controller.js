@@ -179,8 +179,15 @@ export class SignUpController extends RoutingController {
         const payload = window.jwt_decode(resp.data.token);
         CookieUtil.setCookie('token', resp.data.token, null, payload.exp);
 
+        const payloadOfRefreshToken = window.jwt_decode(resp.data.refreshToken);
+        CookieUtil.setCookie('refreshToken', resp.data.refreshToken, null, payloadOfRefreshToken.exp);
+
         const dashboardPayload = window.jwt_decode(resp.data.dashboardToken);
         CookieUtil.setCookie('dashboardToken', resp.data.dashboardToken, null, dashboardPayload.exp);
+
+        const payloadOfDashboardRefreshToken = window.jwt_decode(resp.data.dashboardRefreshToken);
+        CookieUtil.setCookie('dashboardRefreshToken', resp.data.dashboardRefreshToken, null, payloadOfDashboardRefreshToken.exp);
+
         this.args.gtag('event', EVENTS.SIGN_UP);
         history.pushState({}, '', '/auth/finish/');
     }

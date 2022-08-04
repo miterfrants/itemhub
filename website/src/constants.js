@@ -16,6 +16,8 @@ export const API = {
     SEND_SMS: 'auth/send-sms',
     VERIFY_PHONE: 'auth/verify-phone',
     SIGN_UP: 'auth/sign-up',
+    REFRESH_TOKEN: 'auth/refresh-token',
+    REFRESH_DASHBOARD_TOKEN: 'auth/refresh-dashboard-token',
     REGISTER_FOR_EARLY_BIRD: 'auth/register-for-early-bird',
     SIGN_IN_WITH_EMAIL: 'auth/sign-in-with-email',
     SIGN_IN_WITH_SOCIAL_MEDIA: 'auth/sign-in-with-social-media',
