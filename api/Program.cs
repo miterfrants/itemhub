@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using MQTTnet.AspNetCore;
-
 namespace Homo.IotApi
 {
     public class Program
@@ -20,10 +19,6 @@ namespace Homo.IotApi
                     option.ListenAnyIP(1883, listenOption => listenOption.UseMqtt());
                     option.ListenAnyIP(5000);
                     option.ListenAnyIP(8080);
-                    option.Listen(System.Net.IPAddress.Loopback, 5001, listenOptions =>
-                    {
-                        listenOptions.UseHttps();
-                    });
                 });
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSentry();

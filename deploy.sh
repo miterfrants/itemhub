@@ -17,6 +17,7 @@ fi
 sudo docker run -d \
    -e ASPNETCORE_URLS=http://\*:8080 -e ASPNETCORE_ENVIRONMENT=prod \
    -p 8099:8080 \
+   -p 18330:1833 \
    --name itemhub-api \
    -v /var/project/itemhub/api/appsettings.json:/app/appsettings.json \
    -v /var/project/itemhub/api/secrets.json:/app/secrets.json \
