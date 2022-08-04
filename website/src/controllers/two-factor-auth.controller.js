@@ -37,13 +37,11 @@ export class TwoFactorAuthController extends RoutingController {
             const expiredAt = new Date(payloadOfDashboardToken.exp * 1000);
             const jwtLifeHours = (expiredAt - now) / 1000 / 60 / 60;
 
-            console.log(jwtLifeHours);
-
             const payloadOfRefreshJwt = window.jwt_decode(dashboardRefreshToken);
             const expiredAtOfRefreshJwt = new Date(payloadOfRefreshJwt.exp * 1000);
             const refreshJwtLifeHours = (expiredAtOfRefreshJwt - now) / 1000 / 60 / 60;
 
-            if (jwtLifeHours < 3 * 24 && refreshJwtLifeHours > 0) {
+            if (jwtLifeHours < 12 && refreshJwtLifeHours > 0) {
                 const resp = await AuthDataService.RefreshDashboardToken({ refreshToken: dashboardRefreshToken });
                 if (resp.status === RESPONSE_STATUS.OK) {
                     const payload = window.jwt_decode(resp.data.token);
