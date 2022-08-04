@@ -1,5 +1,5 @@
 using System.ComponentModel;
-namespace api.Constants
+namespace Homo.AuthApi
 {
     public enum MAIL_TEMPLATE
     {

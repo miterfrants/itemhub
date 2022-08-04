@@ -7,7 +7,6 @@ using SendGrid.Helpers.Mail;
 using Amazon;
 using Amazon.SimpleEmailV2;
 using Amazon.SimpleEmailV2.Model;
-using api.Helpers;
 
 namespace Homo.AuthApi
 {

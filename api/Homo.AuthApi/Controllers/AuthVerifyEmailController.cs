@@ -9,8 +9,6 @@ using Swashbuckle.AspNetCore.Annotations;
 using Homo.Core.Constants;
 using Homo.Core.Helpers;
 using Homo.Api;
-using api.Constants;
-using api.Helpers;
 
 namespace Homo.AuthApi
 {

@@ -1,15 +1,11 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 
 using Homo.Core.Constants;
 using Homo.Api;
-using api.Constants;
-using api.Helpers;
 
 namespace Homo.AuthApi
 {

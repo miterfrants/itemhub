@@ -12,6 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Linq;
 using Homo.Api;
+using MQTTnet.Server;
+using MQTTnet.Protocol;
+using MQTTnet.AspNetCore;
 
 namespace Homo.IotApi
 {
@@ -73,9 +76,17 @@ namespace Homo.IotApi
                 });
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+            services
+                .AddHostedMqttServer(optionsBuilder => { optionsBuilder.WithDefaultEndpoint(); })
+                .AddMqttConnectionHandler()
+                .AddConnections();
+
             services.AddSingleton<ErrorMessageLocalizer>(new ErrorMessageLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<ValidationLocalizer>(new ValidationLocalizer(appSettings.Common.LocalizationResourcesPath));
+            services.AddSingleton<MqttController>();
+
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;
             services.AddDbContext<IotDbContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
@@ -149,7 +160,7 @@ namespace Homo.IotApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MqttController mqttController)
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
@@ -182,6 +193,16 @@ namespace Homo.IotApi
             app.UseHttpsRedirection();
             app.UsePathBase(new PathString($"/{apiPrefix}"));
             app.UseRouting();
+            app.UseMqttServer(
+                server =>
+                {
+                    /*
+                     * Attach event handlers etc. if required.
+                     */
+
+                    server.ValidatingConnectionAsync += mqttController.ValidateConnection;
+                    server.ClientConnectedAsync += mqttController.OnClientConnected;
+                });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();
             app.UseAuthorization();

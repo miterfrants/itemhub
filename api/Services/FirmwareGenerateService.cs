@@ -59,8 +59,8 @@ namespace Homo.IotApi
             devicePins.ForEach(item =>
             {
                 string pinString = item.Pin;
-                int pinNumber = McuPins.Find(x => x.Name == pinString).Value;
-                pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinNumber.ToString()).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
+                string pinValue = McuPins.Find(x => x.Name == pinString).Value;
+                pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinValue).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
             });
 
             string inoTemplate = System.IO.File.ReadAllText(sourceInoPath);

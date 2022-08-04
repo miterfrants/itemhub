@@ -5,8 +5,6 @@ using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Swashbuckle.AspNetCore.Annotations;
 
-using api.Constants;
-using api.Helpers;
 using Homo.Core.Constants;
 using Homo.Core.Helpers;
 using Homo.Api;
