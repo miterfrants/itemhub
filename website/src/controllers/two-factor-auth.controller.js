@@ -44,10 +44,10 @@ export class TwoFactorAuthController extends RoutingController {
             if (jwtLifeHours < 12 && refreshJwtLifeHours > 0) {
                 const resp = await AuthDataService.RefreshDashboardToken({ refreshToken: dashboardRefreshToken });
                 if (resp.status === RESPONSE_STATUS.OK) {
-                    const payload = window.jwt_decode(resp.data.token);
-                    const payloadOfRefreshToken = window.jwt_decode(resp.data.refreshToken);
-                    CookieUtil.setCookie('dashboardToken', resp.data.token, null, payload.exp);
-                    CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, payloadOfRefreshToken.exp);
+                    const payload = window.jwt_decode(resp.data.dashboardToken);
+                    const payloadOfRefreshToken = window.jwt_decode(resp.data.dashboardRefreshToken);
+                    CookieUtil.setCookie('dashboardToken', resp.data.dashboardToken, null, payload.exp);
+                    CookieUtil.setCookie('dashboardRefreshToken', resp.data.dashboardRefreshToken, null, payloadOfRefreshToken.exp);
                     location.href = APP_CONFIG.DASHBOARD_URL;
                     return;
                 }
