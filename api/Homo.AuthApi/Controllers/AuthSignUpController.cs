@@ -35,6 +35,7 @@ namespace Homo.AuthApi
         private readonly bool _authByCookie;
         private readonly string _PKCS1PublicKeyPath;
         private readonly string _phoneHashSalt;
+        private readonly string _refreshJwtKey;
         public AuthSignUpController(DBContext dbContext, IOptions<AppSettings> appSettings, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, Homo.Api.CommonLocalizer commonLocalizer)
         {
             Secrets secrets = (Secrets)appSettings.Value.Secrets;
@@ -138,19 +139,24 @@ namespace Homo.AuthApi
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, userPayload);
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload);
             string dashboardToken = JWTHelper.GenerateToken(_dashboardJwtKey, 3 * 24 * 60, userPayload);
-
+            string dashboardRefreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload);
             if (_authByCookie)
             {
                 Response.Cookies.Append("token", token, AuthHelper.GetSecureCookieOptions());
+                Response.Cookies.Append("refreshToken", refreshToken, AuthHelper.GetSecureCookieOptions());
                 Response.Cookies.Append("dashboardToken", dashboardToken, AuthHelper.GetSecureCookieOptions());
+                Response.Cookies.Append("dashboardRefreshToken", dashboardRefreshToken, AuthHelper.GetSecureCookieOptions());
             }
             else
             {
                 return new
                 {
                     Token = token,
-                    DashboardToken = dashboardToken
+                    RefreshToken = refreshToken,
+                    DashboardToken = dashboardToken,
+                    DashboardRefreshToken = dashboardRefreshToken,
                 };
             }
 

@@ -26,6 +26,7 @@ namespace Homo.AuthApi
         private readonly string _fbClientSecret;
         private readonly string _googleClientSecret;
         private readonly string _lineClientSecret;
+        private readonly string _refreshJwtKey;
         public AuthSignInController(
             DBContext dbContext
             , CommonLocalizer localizer
@@ -44,6 +45,7 @@ namespace Homo.AuthApi
             _lineClientId = common.LineClientId;
             _lineClientSecret = secrets.LineClientSecret;
             _authByCookie = common.AuthByCookie;
+            _refreshJwtKey = secrets.RefreshJwtKey;
         }
 
         [SwaggerOperation(
@@ -118,9 +120,12 @@ namespace Homo.AuthApi
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, extraPayload, roles);
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, extraPayload, roles);
             if (_authByCookie)
             {
                 Response.Cookies.Append("token", token, AuthHelper.GetSecureCookieOptions());
+                Response.Cookies.Append("refreshToken", refreshToken, AuthHelper.GetSecureCookieOptions());
+
                 return new
                 {
                     status = CUSTOM_RESPONSE.OK,
@@ -128,7 +133,7 @@ namespace Homo.AuthApi
             }
             else
             {
-                return new { token = token };
+                return new { token = token, refreshToken = refreshToken };
             }
 
         }
@@ -204,9 +209,11 @@ namespace Homo.AuthApi
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, extraPayload, roles);
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, extraPayload, roles);
             if (_authByCookie)
             {
                 Response.Cookies.Append("token", token, AuthHelper.GetSecureCookieOptions());
+                Response.Cookies.Append("refreshToken", refreshToken, AuthHelper.GetSecureCookieOptions());
                 return new
                 {
                     status = CUSTOM_RESPONSE.OK,
@@ -214,7 +221,7 @@ namespace Homo.AuthApi
             }
             else
             {
-                return new { token = token };
+                return new { token = token, refreshToken = refreshToken };
             }
         }
 

@@ -21,6 +21,8 @@ import { TransactionController } from './controllers/transaction.controller.js';
 import { SubscriptionDataService } from './dataservices/subscription.dataservice.js';
 import { RESPONSE_STATUS } from './constants.js';
 import { HowRoutingRule } from './routing-rules/how.routing-rule.js';
+import { AuthDataService } from './dataservices/auth.dataservice.js';
+import { Toaster } from './util/toaster.js';
 
 const gTag = {
     dependency: {
@@ -53,7 +55,10 @@ export const RoutingRule = [{
     dependency: [{
         url: '/third-party/jwt-decode.min.js',
         checkVariable: 'jwt_decode'
-    }, gTag.dependency],
+    }, gTag.dependency, {
+        url: '/third-party/moment.js',
+        checkVariable: 'moment'
+    }],
     children: [AuthRoutingRule, {
         path: '/oauth/?state&code',
         skipSitemap: true,
@@ -98,8 +103,13 @@ export const RoutingRule = [{
                 return CookieUtil.getCookie('token');
             }
         }, {
+            key: 'refreshToken',
+            func: () => {
+                return CookieUtil.getCookie('refreshToken');
+            }
+        }, {
             key: 'me',
-            func: (args) => {
+            func: async (args) => {
                 if (!args.token) {
                     return {
                         id: null,
@@ -109,7 +119,34 @@ export const RoutingRule = [{
                     };
                 }
 
-                const extra = window.jwt_decode(args.token).extra;
+                if (args.token && !args.refreshToken) {
+                    CookieUtil.eraseCookie('token');
+                    history.replaceState({}, '', '/pricing/');
+                    return;
+                }
+
+                const now = new Date();
+                const payload = window.jwt_decode(args.token);
+                const extra = payload.extra;
+                const expiredAt = new Date(payload.exp * 1000);
+                const jwtLifeHours = (expiredAt - now) / 1000 / 60 / 60;
+
+                const payloadOfRefreshJwt = window.jwt_decode(args.refreshToken);
+                const expiredAtOfRefreshJwt = new Date(payloadOfRefreshJwt.exp * 1000);
+                const refreshJwtLifeHours = (expiredAtOfRefreshJwt - now) / 1000 / 60 / 60;
+                if (jwtLifeHours < 3 * 24 && refreshJwtLifeHours > 0) {
+                    const resp = await AuthDataService.RefreshToken({ refreshToken: args.refreshToken });
+                    if (resp.status !== RESPONSE_STATUS.OK) {
+                        Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
+                        history.replaceState({}, '', '/auth/sign-in/');
+                    }
+
+                    const payload = window.jwt_decode(resp.data.token);
+                    const payloadOfRefreshToken = window.jwt_decode(resp.data.refreshToken);
+                    CookieUtil.setCookie('token', resp.data.token, null, payload.exp);
+                    CookieUtil.setCookie('refreshToken', resp.data.refreshToken, null, payloadOfRefreshToken.exp);
+                }
+
                 return {
                     id: extra.Id,
                     name: `${extra.LastName || ''}${extra.FirstName || ''}`,

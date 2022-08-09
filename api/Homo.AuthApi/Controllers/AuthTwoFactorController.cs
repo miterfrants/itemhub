@@ -23,6 +23,7 @@ namespace Homo.AuthApi
         private readonly string _websiteUrl;
         private readonly string _adminEmail;
         private readonly string _staticPath;
+        private readonly string _refreshJwtKey;
 
         public AuthTwoFactorController(
             DBContext dbContext
@@ -39,6 +40,7 @@ namespace Homo.AuthApi
             _websiteUrl = appSettings.Value.Common.WebsiteUrl;
             _adminEmail = appSettings.Value.Common.AdminEmail;
             _staticPath = appSettings.Value.Common.StaticPath;
+            _refreshJwtKey = appSettings.Value.Secrets.RefreshJwtKey;
         }
 
         [SwaggerOperation(
@@ -104,7 +106,8 @@ namespace Homo.AuthApi
             }
             VerifyCodeDataservice.UseVerifyCode(verifyCode, _dbContext);
             string token = JWTHelper.GenerateToken(_dashboardJwtKey, 14 * 24 * 60, extraPayload);
-            return new { token = token };
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, extraPayload);
+            return new { token = token, refreshToken = refreshToken };
         }
     }
 }
