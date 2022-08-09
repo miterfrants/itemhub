@@ -51,6 +51,8 @@ export class TwoFactorAuthController extends RoutingController {
                     location.href = APP_CONFIG.DASHBOARD_URL;
                     return;
                 }
+            } else if (jwtLifeHours >= 12) {
+                location.href = APP_CONFIG.DASHBOARD_URL;
             }
         }
 
