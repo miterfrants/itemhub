@@ -2,7 +2,7 @@ window.SwimAppLoaderCache = [];
 
 export class Loader {
     constructor () {
-        this.max = 100;
+        this.max = 300;
         this.checkCount = 0;
     }
 
