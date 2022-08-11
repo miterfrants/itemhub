@@ -2,15 +2,15 @@ window.SwimAppLoaderCache = [];
 
 export class Loader {
     constructor () {
-        this.max = 10000;
+        this.max = 100;
         this.checkCount = 0;
     }
 
     async load (dependency) {
         for (let i = 0; i < dependency.length; i++) {
-            if (dependency[i].dependency) {
+            if (dependency[i]) {
                 const loader = new Loader();
-                await loader.load(dependency[i].dependency);
+                await loader.load(dependency[i]);
             }
         }
         await this._load(dependency);
@@ -100,6 +100,7 @@ export class Loader {
             } else {
                 // refactor throw error
                 console.error(dependency);
+                resolve();
             }
         }
     }
