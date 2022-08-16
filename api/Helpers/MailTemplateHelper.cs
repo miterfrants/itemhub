@@ -54,6 +54,10 @@ namespace Homo.AuthApi
                 filePath = $"{staticPath}/email/survey.html";
                 subject = "mailSubjectSurvey";
             }
+            else if (key == MAIL_TEMPLATE.INVITE)
+            {
+                filePath = $"{staticPath}/email/invite.html";
+            }
 
             string content = File.ReadAllText(filePath);
             return new MailTemplate()

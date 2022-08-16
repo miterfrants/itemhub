@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
-
+using System.Collections.Generic;
 using Homo.Core.Constants;
 using Homo.Api;
+using Newtonsoft.Json;
 
 namespace Homo.AuthApi
 {
@@ -67,6 +68,55 @@ namespace Homo.AuthApi
                 Subject = _commonLocalizer.Get(template.Subject),
                 Content = template.Content
             }, _systemEmail, user.Email, _sendGridApiKey);
+            return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "系統信" },
+            Summary = "發送客製信件",
+            Description = ""
+        )]
+
+        [Route("custom-email")]
+        [HttpPost]
+        public async Task<dynamic> sendCustomEmail([FromBody] DTOs.CustomEmail dto)
+        {
+            User user = null;
+            if (dto.IsUser)
+            {
+                user = UserDataservice.GetSurveyEmail(_dbContext, dto.Email);
+            }
+
+            if (dto.IsUser && user == null)
+            {
+                throw new CustomException(ERROR_CODE.USER_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+
+            ConvertHelper.EnumList targetTemplate = ConvertHelper.EnumToList(typeof(MAIL_TEMPLATE)).Find(x => x.Key == dto.TemplateName);
+
+            if (targetTemplate == null)
+            {
+                throw new CustomException(ERROR_CODE.MAIL_TEMPLATE_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+
+
+            MailTemplate template = MailTemplateHelper.Get((MAIL_TEMPLATE)targetTemplate.Value, _staticPath);
+
+            template = MailTemplateHelper.ReplaceVariable(template, new
+            {
+                websiteUrl = _websiteUrl,
+                adminEmail = _adminEmail,
+                hello = _commonLocalizer.Get("hello"),
+                mailContent = dto.Content,
+                mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
+            });
+
+            await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+            {
+                Subject = dto.Subject,
+                Content = template.Content
+            }, _systemEmail, dto.Email, _sendGridApiKey);
+
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
