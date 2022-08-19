@@ -39,6 +39,24 @@ export const AuthDataService = {
             body: JSON.stringify(data)
         });
     },
+    RefreshToken: async (data) => {
+        const api = APP_CONFIG.API_ENDPOINT + API.REFRESH_TOKEN;
+        return ApiHelper.sendRequest(api, {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + data.refreshToken
+            }
+        });
+    },
+    RefreshDashboardToken: async (data) => {
+        const api = APP_CONFIG.API_ENDPOINT + API.REFRESH_DASHBOARD_TOKEN;
+        return ApiHelper.sendRequest(api, {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + data.refreshToken
+            }
+        });
+    },
     SignUp: async (data) => {
         const api = APP_CONFIG.API_ENDPOINT + API.SIGN_UP;
         const token = data.token;

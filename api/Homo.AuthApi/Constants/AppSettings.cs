@@ -22,7 +22,7 @@ namespace Homo.AuthApi
         public string SmsUsername { get; set; }
         public string SmsPassword { get; set; }
         public string DashboardJwtKey { get; set; }
-
+        public string RefreshJwtKey { get; set; }
     }
 
     public class Common : Homo.Api.ICommon

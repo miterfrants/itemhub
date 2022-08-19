@@ -39,19 +39,8 @@ export class HeaderComponent extends BaseComponent {
     }
 
     redirectToDashboard () {
-        const dashboardToken = CookieUtil.getCookie('dashboardToken');
-        let validatedDashboardToken = false;
-
-        if (dashboardToken) {
-            const payload = window.jwt_decode(dashboardToken);
-            const nowUnixTimestamp = new Date() / 1000;
-            validatedDashboardToken = payload.exp >= nowUnixTimestamp;
-        }
-
         const token = CookieUtil.getCookie('token');
-        if (token && dashboardToken && validatedDashboardToken) {
-            location.href = APP_CONFIG.DASHBOARD_URL;
-        } else if (token && (!dashboardToken || !validatedDashboardToken)) {
+        if (token) {
             history.pushState({}, '', '/auth/two-factor-auth/');
         } else if (!token) {
             history.replaceState({}, '', `/auth/sign-in/?redirectUrl=${encodeURIComponent('/auth/two-factor-auth/')}`);

@@ -28,7 +28,8 @@ namespace Homo.IotApi
                 , _authType
                 , secrets.JwtKey
                 , secrets.SignUpJwtKey
-                , secrets.AnonymousJwtKey); ;
+                , secrets.AnonymousJwtKey
+                , secrets.RefreshJwtKey);
         }
     }
 }

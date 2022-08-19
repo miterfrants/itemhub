@@ -11,7 +11,8 @@ namespace Homo.AuthApi
     {
         SIGN_UP,
         COMMON,
-        ANONYMOUS
+        ANONYMOUS,
+        REFRESH
     }
     public class AuthorizeFactory : ActionFilterAttribute, IFilterFactory
     {
@@ -34,12 +35,13 @@ namespace Homo.AuthApi
                 , _authType
                 , secrets.JwtKey
                 , secrets.SignUpJwtKey
-                , secrets.AnonymousJwtKey);
+                , secrets.AnonymousJwtKey
+                , secrets.RefreshJwtKey);
 
             return attribute;
         }
 
-        public static AuthorizeAttribute BuildAuthorizeAttribute(string[] roles, bool authByCookie, AUTH_TYPE authType, string commonJwtKey, string signUpJwtKey, string anonymousJwtKey)
+        public static AuthorizeAttribute BuildAuthorizeAttribute(string[] roles, bool authByCookie, AUTH_TYPE authType, string commonJwtKey, string signUpJwtKey, string anonymousJwtKey, string refreshJwtKey)
         {
             AuthorizeAttribute attribute = new AuthorizeAttribute(roles);
             attribute.authByCookie = authByCookie;
@@ -56,6 +58,10 @@ namespace Homo.AuthApi
             {
                 attribute.isAnonymous = true;
                 attribute._jwtKey = anonymousJwtKey;
+            }
+            else if (authType == AUTH_TYPE.REFRESH)
+            {
+                attribute._jwtKey = refreshJwtKey;
             }
             return attribute;
         }

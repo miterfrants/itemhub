@@ -39,14 +39,14 @@ bs.init({
             next();
         }
     },
-    port: 443,
-    https: {
-        key: './ssl/key.pem',
-        cert: './ssl/server.crt'
-    },
+    port: 80,
+    // https: {
+    //     key: './ssl/key.pem',
+    //     cert: './ssl/server.crt'
+    // },
     host: 'dev.itemhub.io',
     open: false
 });
 
 console.log('if u can\'n see anything, plesae add dev.itemhub.io domain name to your etc/hosts');
-open('https://dev.itemhub.io');
+open('http://dev.itemhub.io');

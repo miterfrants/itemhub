@@ -34,6 +34,9 @@ const Trigger = () => {
     const { triggerOperators, triggerTypes, triggerNotificationPeriod } =
         useAppSelector(selectUniversal);
     const { triggers } = useAppSelector(selectTriggers);
+    const [currentTargetStateValue, setCurrentTargetStateValue] = useState<
+        number | null
+    >(null);
 
     const trigger =
         triggers?.filter((trigger) => trigger.id === triggerId)[0] || null;
@@ -283,6 +286,10 @@ const Trigger = () => {
             phone: trigger?.phone || '',
             notificationPeriod: trigger?.notificationPeriod,
         });
+
+        if (trigger.destinationDeviceTargetState !== null) {
+            setCurrentTargetStateValue(trigger.destinationDeviceTargetState);
+        }
     }, [trigger]);
 
     useEffect(() => {
@@ -562,10 +569,6 @@ const Trigger = () => {
                                 <select
                                     className="form-select"
                                     disabled={isReadMode}
-                                    value={
-                                        editedTriggerData.destinationDeviceTargetState ||
-                                        1
-                                    }
                                     onChange={(e) => {
                                         setEditedTriggerData((prev) => {
                                             return {
@@ -574,10 +577,23 @@ const Trigger = () => {
                                                     parseInt(e.target.value),
                                             };
                                         });
+                                        setCurrentTargetStateValue(
+                                            parseInt(e.target.value)
+                                        );
                                     }}
                                 >
-                                    <option value="1">開</option>
-                                    <option value="0">關</option>
+                                    <option
+                                        value="1"
+                                        selected={currentTargetStateValue === 1}
+                                    >
+                                        開
+                                    </option>
+                                    <option
+                                        value="0"
+                                        selected={currentTargetStateValue === 0}
+                                    >
+                                        關
+                                    </option>
                                 </select>
                             </label>
                         </div>

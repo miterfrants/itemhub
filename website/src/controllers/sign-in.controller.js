@@ -80,7 +80,9 @@ export class SignInController extends RoutingController {
             return;
         }
         const payload = window.jwt_decode(resp.data.token);
+        const payloadOfRefreshToken = window.jwt_decode(resp.data.refreshToken);
         CookieUtil.setCookie('token', resp.data.token, null, payload.exp);
+        CookieUtil.setCookie('refreshToken', resp.data.refreshToken, null, payloadOfRefreshToken.exp);
         if (this.args.redirectUrl && this.args.redirectUrl.indexOf('http') === 0) {
             location.href = this.args.redirectUrl;
         } else {
