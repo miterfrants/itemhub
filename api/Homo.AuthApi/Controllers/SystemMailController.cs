@@ -3,9 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
-
+using System.Collections.Generic;
 using Homo.Core.Constants;
 using Homo.Api;
+using Newtonsoft.Json;
 
 namespace Homo.AuthApi
 {
@@ -38,36 +39,61 @@ namespace Homo.AuthApi
 
         [SwaggerOperation(
             Tags = new[] { "系統信" },
-            Summary = "發送問卷信件",
+            Summary = "發送客製信件",
             Description = ""
         )]
 
-        [Route("send-survey-email")]
+        [Route("custom-email")]
         [HttpPost]
-        public async Task<dynamic> sendSurveyEmail([FromBody] DTOs.SendEmail dto)
+        public async Task<dynamic> sendCustomEmail([FromBody] DTOs.CustomEmail dto, DTOs.JwtExtraPayload extraPayload)
         {
-            User user = UserDataservice.GetSurveyEmail(_dbContext, dto.Email);
-            if (user == null)
+            User admin = UserDataservice.GetOne(_dbContext, extraPayload.Id, true);
+            if (admin == null || !admin.IsManager.GetValueOrDefault())
+            {
+                throw new CustomException(ERROR_CODE.UNAUTH_ACCESS_API, HttpStatusCode.NotFound);
+            }
+
+            User user = null;
+            if (dto.IsUser)
+            {
+                user = UserDataservice.GetSurveyEmail(_dbContext, dto.Email);
+            }
+
+            if (dto.IsUser && user == null)
             {
                 throw new CustomException(ERROR_CODE.USER_NOT_FOUND, HttpStatusCode.NotFound);
             }
-            MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.SURVEY, _staticPath);
+
+            ConvertHelper.EnumList targetTemplate = ConvertHelper.EnumToList(typeof(MAIL_TEMPLATE)).Find(x => x.Key == dto.TemplateName);
+
+            if (targetTemplate == null)
+            {
+                throw new CustomException(ERROR_CODE.MAIL_TEMPLATE_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+
+            MailTemplate template = MailTemplateHelper.Get((MAIL_TEMPLATE)targetTemplate.Value, _staticPath);
+
             template = MailTemplateHelper.ReplaceVariable(template, new
             {
                 websiteUrl = _websiteUrl,
                 adminEmail = _adminEmail,
                 hello = _commonLocalizer.Get("hello"),
-                link = "https://forms.gle/Eo89nMZyhKhpASCCA",
+                mailContent = dto.Content,
                 mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
-                mailContentSurvey = _commonLocalizer.Get("mailContentSurvey")
             });
+
+            template = MailTemplateHelper.ReplaceVariable(template, dto.Variable);
 
             await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
             {
-                Subject = _commonLocalizer.Get(template.Subject),
+                Subject = dto.Subject,
                 Content = template.Content
-            }, _systemEmail, user.Email, _sendGridApiKey);
-            return new { status = CUSTOM_RESPONSE.OK };
+            }, _systemEmail, dto.Email, _sendGridApiKey);
+
+            return new
+            {
+                status = CUSTOM_RESPONSE.OK
+            };
         }
 
     }
