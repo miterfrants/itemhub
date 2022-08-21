@@ -28,5 +28,8 @@ namespace Homo.AuthApi
 
         [Description("問卷調查")]
         SURVEY = 8,
+
+        [Description("邀請使用")]
+        INVITE = 9,
     }
 }
