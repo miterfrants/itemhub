@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Homo.AuthApi
 {
@@ -78,6 +79,18 @@ namespace Homo.AuthApi
                 newContent = newContent.Replace("{{" + prop.Name + "}}", value.ToString());
             }
 
+            return new MailTemplate() { Subject = newSubject, Content = newContent };
+        }
+        public static MailTemplate ReplaceVariable(MailTemplate template, Dictionary<string, string> variable)
+        {
+            string newSubject = template.Subject;
+            string newContent = template.Content;
+
+            foreach (string key in variable.Keys)
+            {
+                newSubject = newSubject.Replace("{{" + key + "}}", variable[key]);
+                newContent = newContent.Replace("{{" + key + "}}", variable[key]);
+            }
             return new MailTemplate() { Subject = newSubject, Content = newContent };
         }
     }

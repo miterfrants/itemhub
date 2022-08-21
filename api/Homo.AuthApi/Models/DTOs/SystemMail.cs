@@ -23,6 +23,7 @@ namespace Homo.AuthApi
             public string Subject { get; set; }
             public string Content { get; set; }
             public Boolean IsUser { get; set; }
+            public Dictionary<string, string> Variable { get; set; }
 
         }
 

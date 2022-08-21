@@ -79,8 +79,14 @@ namespace Homo.AuthApi
 
         [Route("custom-email")]
         [HttpPost]
-        public async Task<dynamic> sendCustomEmail([FromBody] DTOs.CustomEmail dto)
+        public async Task<dynamic> sendCustomEmail([FromBody] DTOs.CustomEmail dto, DTOs.JwtExtraPayload extraPayload)
         {
+            User admin = UserDataservice.GetOne(_dbContext, extraPayload.Id, true);
+            if (admin == null || !admin.IsManager.GetValueOrDefault())
+            {
+                throw new CustomException(ERROR_CODE.UNAUTH_ACCESS_API, HttpStatusCode.NotFound);
+            }
+
             User user = null;
             if (dto.IsUser)
             {
@@ -99,7 +105,6 @@ namespace Homo.AuthApi
                 throw new CustomException(ERROR_CODE.MAIL_TEMPLATE_NOT_FOUND, HttpStatusCode.NotFound);
             }
 
-
             MailTemplate template = MailTemplateHelper.Get((MAIL_TEMPLATE)targetTemplate.Value, _staticPath);
 
             template = MailTemplateHelper.ReplaceVariable(template, new
@@ -111,13 +116,18 @@ namespace Homo.AuthApi
                 mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
             });
 
+            template = MailTemplateHelper.ReplaceVariable(template, dto.Variable);
+
             await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
             {
                 Subject = dto.Subject,
                 Content = template.Content
             }, _systemEmail, dto.Email, _sendGridApiKey);
 
-            return new { status = CUSTOM_RESPONSE.OK };
+            return new
+            {
+                status = CUSTOM_RESPONSE.OK
+            };
         }
 
     }
