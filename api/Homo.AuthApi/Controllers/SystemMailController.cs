@@ -39,40 +39,6 @@ namespace Homo.AuthApi
 
         [SwaggerOperation(
             Tags = new[] { "系統信" },
-            Summary = "發送問卷信件",
-            Description = ""
-        )]
-
-        [Route("send-survey-email")]
-        [HttpPost]
-        public async Task<dynamic> sendSurveyEmail([FromBody] DTOs.SendEmail dto)
-        {
-            User user = UserDataservice.GetSurveyEmail(_dbContext, dto.Email);
-            if (user == null)
-            {
-                throw new CustomException(ERROR_CODE.USER_NOT_FOUND, HttpStatusCode.NotFound);
-            }
-            MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.SURVEY, _staticPath);
-            template = MailTemplateHelper.ReplaceVariable(template, new
-            {
-                websiteUrl = _websiteUrl,
-                adminEmail = _adminEmail,
-                hello = _commonLocalizer.Get("hello"),
-                link = "https://forms.gle/Eo89nMZyhKhpASCCA",
-                mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
-                mailContentSurvey = _commonLocalizer.Get("mailContentSurvey")
-            });
-
-            await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
-            {
-                Subject = _commonLocalizer.Get(template.Subject),
-                Content = template.Content
-            }, _systemEmail, user.Email, _sendGridApiKey);
-            return new { status = CUSTOM_RESPONSE.OK };
-        }
-
-        [SwaggerOperation(
-            Tags = new[] { "系統信" },
             Summary = "發送客製信件",
             Description = ""
         )]
