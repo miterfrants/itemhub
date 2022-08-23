@@ -239,6 +239,7 @@ namespace Homo.IotApi
                 {
                     server.ValidatingConnectionAsync += mqttController.ValidateConnection;
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
+                    server.ApplicationMessageNotConsumedAsync += mqttController.OnConsumingMessageReceivced;
                 });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();
