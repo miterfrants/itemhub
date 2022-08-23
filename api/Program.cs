@@ -17,31 +17,6 @@ namespace Homo.IotApi
             Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseKestrel(Options =>
-                {
-                    Options.ListenAnyIP(1883, listenOptions =>
-                    {
-                        listenOptions.KestrelServerOptions.ConfigureHttpsDefaults(httpsOptions =>
-                        {
-                            httpsOptions.CheckCertificateRevocation = true;
-                            httpsOptions.ServerCertificate = new X509Certificate2("secrets/mqtt-server-cert.pfx");
-                            httpsOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
-                            httpsOptions.ClientCertificateValidation = (certificate2, validationChain, policyErrors) =>
-                                {
-                                    if (policyErrors == SslPolicyErrors.RemoteCertificateNotAvailable || policyErrors == SslPolicyErrors.RemoteCertificateNameMismatch)
-                                    {
-                                        return false;
-                                    }
-                                    return true;
-                                };
-                        });
-                        listenOptions.UseHttps();
-                        listenOptions.UseMqtt();
-
-                    });
-                    Options.ListenAnyIP(5000);
-                    Options.ListenAnyIP(8080);
-                });
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSentry();
             });

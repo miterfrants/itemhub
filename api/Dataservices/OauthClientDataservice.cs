@@ -62,7 +62,6 @@ namespace Homo.IotApi
 
         public static OauthClient GetOneByClientId(IotDbContext dbContext, string clientId)
         {
-            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(clientId, Newtonsoft.Json.Formatting.Indented)}");
             return dbContext.OauthClient.FirstOrDefault(x =>
                 x.DeletedAt == null
                 && x.ClientId == clientId
