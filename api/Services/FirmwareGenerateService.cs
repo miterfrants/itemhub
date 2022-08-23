@@ -42,7 +42,7 @@ namespace Homo.IotApi
             Microcontroller mcu = MicrocontrollerDataservice.GetOne(dbContext, device.Microcontroller.GetValueOrDefault());
             string mcuName = mcu.Key.ToString().ToLower().Replace("_", "-");
 
-            string microcontrollerFirmwareTemplatePath = $"{firmwareTemplatePath}/{mcuName}";
+            string microcontrollerFirmwareTemplatePath = $"{firmwareTemplatePath}/{mcuName}/http";
             string folderName = CryptographicHelper.GetSpecificLengthRandomString(32, true, false);
             string firmwareZipPath = $"{staticPath}/firmware/{folderName}.zip";
             string destPath = $"{staticPath}/firmware/{folderName}/{folderName}";
