@@ -10,11 +10,15 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using System.Linq;
 using Homo.Api;
-using MQTTnet.Server;
-using MQTTnet.Protocol;
+using System.Security.Cryptography.X509Certificates;
 using MQTTnet.AspNetCore;
+using MQTTnet.Server;
+using System.Security.Authentication;
+using System.Net.Security;
+using System.Linq;
+
+
 
 namespace Homo.IotApi
 {
@@ -76,9 +80,46 @@ namespace Homo.IotApi
                 });
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
+            var certificate = new X509Certificate2("secrets/mqtt-server-cert.pfx");
+            var ca = new X509Certificate2("secrets/mqtt-ca-cert.pem");
+
+            MQTTnet.Server.MqttServerOptions options = (new MqttServerOptionsBuilder())
+                .WithEncryptedEndpoint()
+                .WithEncryptedEndpointPort(8883)
+                .WithEncryptionCertificate(certificate)
+                .WithEncryptionSslProtocol(SslProtocols.Tls12)
+                .WithClientCertificate().Build();
+
+            options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
+                {
+                    try
+                    {
+                        if (sslPolicyErrors == SslPolicyErrors.None)
+                        {
+                            return true;
+                        }
+
+                        if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                        {
+                            chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
+                            chain.ChainPolicy.ExtraStore.Add(ca);
+
+                            chain.Build((X509Certificate2)cer);
+
+                            return chain.ChainElements.Cast<X509ChainElement>().Any(a => a.Certificate.Thumbprint == ca.Thumbprint);
+                        }
+                    }
+                    catch { }
+
+                    return false;
+                };
+
 
             services
-                .AddHostedMqttServer(optionsBuilder => { optionsBuilder.WithDefaultEndpoint(); })
+                .AddMqttTcpServerAdapter()
+                .AddHostedMqttServer(options)
+                .AddMqttTcpServerAdapter()
                 .AddMqttConnectionHandler()
                 .AddConnections();
 
@@ -199,7 +240,6 @@ namespace Homo.IotApi
                     /*
                      * Attach event handlers etc. if required.
                      */
-
                     server.ValidatingConnectionAsync += mqttController.ValidateConnection;
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
                 });

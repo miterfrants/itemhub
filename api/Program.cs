@@ -1,6 +1,9 @@
+using System.Net.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using MQTTnet.AspNetCore;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Security.Cryptography.X509Certificates;
 namespace Homo.IotApi
 {
     public class Program
@@ -14,12 +17,6 @@ namespace Homo.IotApi
             Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseKestrel(option =>
-                {
-                    option.ListenAnyIP(1883, listenOption => listenOption.UseMqtt());
-                    option.ListenAnyIP(5000);
-                    option.ListenAnyIP(8080);
-                });
                 webBuilder.UseStartup<Startup>();
                 webBuilder.UseSentry();
             });
