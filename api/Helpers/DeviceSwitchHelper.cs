@@ -31,8 +31,8 @@ namespace Homo.IotApi
                     {
                         return true;
                     };
-                    var certificate = new X509Certificate("secrets/mqtt-client-cert.pfx");
-                    var ca = new X509Certificate("secrets/mqtt-ca-cert.pem");
+                    var certificate = new X509Certificate("secrets/mqtt-server.pfx");
+                    var ca = new X509Certificate("secrets/mqtt-root-ca.crt");
                     options.Certificates = new List<X509Certificate>() { certificate, ca };
 
                 }))

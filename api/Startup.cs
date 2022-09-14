@@ -80,15 +80,16 @@ namespace Homo.IotApi
                 });
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
-            var certificate = new X509Certificate2("secrets/mqtt-server-cert.pfx");
-            var ca = new X509Certificate2("secrets/mqtt-ca-cert.pem");
+            var certificate = new X509Certificate2("secrets/mqtt-server.pfx");
+            var ca = new X509Certificate2("secrets/mqtt-root-ca.crt");
 
             MQTTnet.Server.MqttServerOptions options = (new MqttServerOptionsBuilder())
                 .WithEncryptedEndpoint()
                 .WithEncryptedEndpointPort(8883)
                 .WithEncryptionCertificate(certificate)
                 .WithEncryptionSslProtocol(SslProtocols.Tls12)
-                .WithClientCertificate().Build();
+                .WithClientCertificate()
+                .Build();
 
             options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
                 {
@@ -107,7 +108,11 @@ namespace Homo.IotApi
 
                             chain.Build((X509Certificate2)cer);
 
-                            return chain.ChainElements.Cast<X509ChainElement>().Any(a => a.Certificate.Thumbprint == ca.Thumbprint);
+                            return chain.ChainElements.Cast<X509ChainElement>().Any(a =>
+                            {
+                                System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                                return a.Certificate.Thumbprint == ca.Thumbprint;
+                            });
                         }
                     }
                     catch { }
