@@ -12,10 +12,6 @@ namespace Homo.IotApi
         public static Task<MqttClientConnectResult> Connect(MQTTnet.Client.MqttClient broker, string mqttUsername, string mqttPassword
             )
         {
-            if (broker == null)
-            {
-                System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("aaaaa", Newtonsoft.Json.Formatting.Indented)}");
-            }
             if (broker.IsConnected)
             {
                 return Task.Run(() =>

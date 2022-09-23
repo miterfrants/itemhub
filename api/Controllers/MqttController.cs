@@ -124,7 +124,6 @@ namespace Homo.IotApi
 
         public async Task OnPublishing(InterceptingPublishEventArgs args)
         {
-            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(args.ApplicationMessage.Topic, Newtonsoft.Json.Formatting.Indented)}");
             bool isSensor = args.ApplicationMessage.Topic.EndsWith("/sensor");
             bool isDeviceState = args.ApplicationMessage.Topic.EndsWith("online");
             // 收到 client 來的 mqtt message topic {pin}/sensor
