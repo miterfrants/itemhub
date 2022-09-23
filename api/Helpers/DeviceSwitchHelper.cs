@@ -13,36 +13,14 @@ namespace Homo.IotApi
     public class DeviceSwitchHelper
     {
         public static async Task Update(IotDbContext iotDbContext, long ownerId,
-            long deviceId, string pin, DTOs.DevicePinSwitchValue dto, string mqttUsername, string mqttPassword
+            long deviceId, string pin, DTOs.DevicePinSwitchValue dto, MQTTnet.Client.MqttClient mqttBroker
             )
         {
             // http
             DevicePinDataservice.UpdateValueByDeviceId(iotDbContext, ownerId, deviceId, pin, dto.Value);
 
             // mqtt
-            var options = new MqttClientOptionsBuilder()
-                .WithTcpServer("127.0.0.1", 8883)
-                .WithClientId("api-server")
-                .WithTls((options =>
-                {
-                    options.UseTls = true;
-                    options.SslProtocol = SslProtocols.Tls12;
-                    options.CertificateValidationHandler = (o) =>
-                    {
-                        return true;
-                    };
-                    var certificate = new X509Certificate("secrets/mqtt-server.pfx");
-                    var ca = new X509Certificate("secrets/mqtt-root-ca.crt");
-                    options.Certificates = new List<X509Certificate>() { certificate, ca };
-
-                }))
-                .WithCredentials(mqttUsername, mqttPassword)
-                .WithCleanSession()
-                .Build();
-
-            MQTTnet.Client.MqttClient client = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
-            await client.ConnectAsync(options, CancellationToken.None);
-            await client.PublishAsync(new MqttApplicationMessageBuilder()
+            await mqttBroker.PublishAsync(new MqttApplicationMessageBuilder()
                 .WithTopic($"{deviceId}/{pin}/switch")
                 .WithPayload(
                     Newtonsoft.Json.JsonConvert.SerializeObject(

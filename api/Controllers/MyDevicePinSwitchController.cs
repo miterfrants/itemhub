@@ -19,11 +19,13 @@ namespace Homo.IotApi
     public class MyDeviceSwitchController : ControllerBase
     {
         private readonly IotDbContext _dbContext;
+        private readonly MQTTnet.Client.MqttClient _mqttBroker;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
-        public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings)
+        public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, MQTTnet.Client.MqttClient mqttBroker)
         {
             _dbContext = dbContext;
+            _mqttBroker = mqttBroker;
             _mqttUsername = appSettings.Value.Secrets.MqttUsername;
             _mqttPassword = appSettings.Value.Secrets.MqttPassword;
         }
@@ -49,7 +51,8 @@ namespace Homo.IotApi
         [Route("{pin}")]
         public async Task<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            await DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _mqttUsername, _mqttPassword);
+            await MqttBrokerHelper.Connect(_mqttBroker, _mqttUsername, _mqttPassword);
+            await DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _mqttBroker);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

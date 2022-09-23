@@ -27,9 +27,10 @@ namespace Homo.IotApi
         private readonly string _smsUsername;
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
+        private readonly MQTTnet.Client.MqttClient _mqttBroker;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
-        public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings)
+        public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, MQTTnet.Client.MqttClient mqttBroker)
         {
             var secrets = optionAppSettings.Value.Secrets;
             var common = optionAppSettings.Value.Common;
@@ -44,8 +45,7 @@ namespace Homo.IotApi
             _smsUsername = secrets.SmsUsername;
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
-            _mqttUsername = secrets.MqttUsername;
-            _mqttPassword = secrets.MqttPassword;
+            _mqttBroker = mqttBroker;
         }
 
         [SwaggerOperation(
@@ -58,7 +58,9 @@ namespace Homo.IotApi
         [Route("{pin}")]
         public async Task<dynamic> create([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.CreateSensorLog dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _mqttUsername, _mqttPassword);
+
+            await MqttBrokerHelper.Connect(_mqttBroker, _mqttUsername, _mqttPassword);
+            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _mqttBroker);
             return new
             {
                 status = CUSTOM_RESPONSE.OK

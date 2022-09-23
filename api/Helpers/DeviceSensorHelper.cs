@@ -15,7 +15,7 @@ namespace Homo.IotApi
             long deviceId, string pin, DTOs.CreateSensorLog dto, CommonLocalizer commonLocalizer,
             string mailTemplatePath, string websiteUrl, string systemEmail, string adminEmail, string smsUsername, string smsPassword,
             string smsClientUrl, string sendGridApiKey,
-            string mqttUsername, string mqttPassword
+            MQTTnet.Client.MqttClient mqttBroker
             )
         {
             DevicePin devicePin = DevicePinDataservice.GetOneByDeviceIdAndPin(iotDbContext, ownerId, deviceId, null, pin);
@@ -45,7 +45,7 @@ namespace Homo.IotApi
                 )
                 {
                     beTriggeredList.Add(trigger);
-                    await DeviceSwitchHelper.Update(iotDbContext, ownerId, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, new DTOs.DevicePinSwitchValue() { Value = trigger.DestinationDeviceTargetState.GetValueOrDefault() }, mqttUsername, mqttPassword);
+                    await DeviceSwitchHelper.Update(iotDbContext, ownerId, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, new DTOs.DevicePinSwitchValue() { Value = trigger.DestinationDeviceTargetState.GetValueOrDefault() }, mqttBroker);
                 }
                 else if (
                     trigger.Type == TRIGGER_TYPE.NOTIFICATION &&
