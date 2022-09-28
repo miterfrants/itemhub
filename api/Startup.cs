@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Homo.Api;
+using MQTTnet;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using System.Security.Authentication;
@@ -81,7 +82,7 @@ namespace Homo.IotApi
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
             var certificate = new X509Certificate2("secrets/mqtt-server.pfx");
-            var ca = new X509Certificate2("secrets/mqtt-root-ca.crt");
+            var ca = new X509Certificate2("secrets/chain.crt");
 
             MQTTnet.Server.MqttServerOptions options = (new MqttServerOptionsBuilder())
                 .WithEncryptedEndpoint()
@@ -105,7 +106,7 @@ namespace Homo.IotApi
                             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
                             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
                             chain.ChainPolicy.ExtraStore.Add(ca);
-
+                            System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
                             chain.Build((X509Certificate2)cer);
 
                             return chain.ChainElements.Cast<X509ChainElement>().Any(a =>
@@ -132,6 +133,10 @@ namespace Homo.IotApi
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<ValidationLocalizer>(new ValidationLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<MqttController>();
+
+            // mqtt
+            MQTTnet.Client.MqttClient mqttBroker = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
+            services.AddSingleton<MQTTnet.Client.MqttClient>(mqttBroker);
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;
@@ -244,7 +249,8 @@ namespace Homo.IotApi
                 {
                     server.ValidatingConnectionAsync += mqttController.ValidateConnection;
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
-                    server.ApplicationMessageNotConsumedAsync += mqttController.OnConsumingMessageReceivced;
+                    server.ClientSubscribedTopicAsync += mqttController.OnClientSubscribed;
+                    server.InterceptingPublishAsync += mqttController.OnPublishing;
                 });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();

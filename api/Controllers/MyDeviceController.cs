@@ -163,9 +163,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> online([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceDataservice.Switch(_dbContext, ownerId, id, true);
-            DeviceActivityLogDataservice.Create(_dbContext, ownerId, id);
-            TimeoutOfflineDeviceService.StartAsync(ownerId, id, _dbConnectionString);
+            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
