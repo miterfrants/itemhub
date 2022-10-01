@@ -1,20 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using System.Linq;
 using Homo.Api;
-using MQTTnet.Server;
-using MQTTnet.Protocol;
+using MQTTnet;
 using MQTTnet.AspNetCore;
+using MQTTnet.Server;
+using System.Security.Authentication;
+using System.Net.Security;
+using System.Linq;
+
+
 
 namespace Homo.IotApi
 {
@@ -76,9 +81,51 @@ namespace Homo.IotApi
                 });
             }
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
+            var certificate = new X509Certificate2("secrets/mqtt-server.pfx");
+            var ca = new X509Certificate2("secrets/chain.crt");
+
+            MQTTnet.Server.MqttServerOptions options = (new MqttServerOptionsBuilder())
+                .WithEncryptedEndpoint()
+                .WithEncryptedEndpointPort(8883)
+                .WithEncryptionCertificate(certificate)
+                .WithEncryptionSslProtocol(SslProtocols.Tls12)
+                .WithClientCertificate()
+                .Build();
+
+            options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
+                {
+                    try
+                    {
+                        if (sslPolicyErrors == SslPolicyErrors.None)
+                        {
+                            return true;
+                        }
+
+                        if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                        {
+                            chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
+                            chain.ChainPolicy.ExtraStore.Add(ca);
+                            System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                            chain.Build((X509Certificate2)cer);
+
+                            return chain.ChainElements.Cast<X509ChainElement>().Any(a =>
+                            {
+                                System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                                return a.Certificate.Thumbprint == ca.Thumbprint;
+                            });
+                        }
+                    }
+                    catch { }
+
+                    return false;
+                };
+
 
             services
-                .AddHostedMqttServer(optionsBuilder => { optionsBuilder.WithDefaultEndpoint(); })
+                .AddMqttTcpServerAdapter()
+                .AddHostedMqttServer(options)
+                .AddMqttTcpServerAdapter()
                 .AddMqttConnectionHandler()
                 .AddConnections();
 
@@ -86,6 +133,10 @@ namespace Homo.IotApi
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<ValidationLocalizer>(new ValidationLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<MqttController>();
+
+            // mqtt
+            MQTTnet.Client.MqttClient mqttBroker = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
+            services.AddSingleton<MQTTnet.Client.MqttClient>(mqttBroker);
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;
@@ -196,12 +247,10 @@ namespace Homo.IotApi
             app.UseMqttServer(
                 server =>
                 {
-                    /*
-                     * Attach event handlers etc. if required.
-                     */
-
                     server.ValidatingConnectionAsync += mqttController.ValidateConnection;
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
+                    server.ClientSubscribedTopicAsync += mqttController.OnClientSubscribed;
+                    server.InterceptingPublishAsync += mqttController.OnPublishing;
                 });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();

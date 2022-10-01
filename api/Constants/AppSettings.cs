@@ -25,6 +25,8 @@ namespace Homo.IotApi
         public string TapPayMerchantIdNot3D { get; set; }
 
         public string DashboardJwtKey { get; set; }
+        public string MqttUsername { get; set; }
+        public string MqttPassword { get; set; }
 
     }
 

@@ -1,8 +1,15 @@
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+
+using Swashbuckle.AspNetCore.Annotations;
+using MQTTnet;
+using MQTTnet.Client;
+
 using Homo.Api;
 using Homo.Core.Constants;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Homo.IotApi
 {
@@ -12,9 +19,15 @@ namespace Homo.IotApi
     public class MyDeviceSwitchController : ControllerBase
     {
         private readonly IotDbContext _dbContext;
-        public MyDeviceSwitchController(IotDbContext dbContext)
+        private readonly MQTTnet.Client.MqttClient _mqttBroker;
+        private readonly string _mqttUsername;
+        private readonly string _mqttPassword;
+        public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, MQTTnet.Client.MqttClient mqttBroker)
         {
             _dbContext = dbContext;
+            _mqttBroker = mqttBroker;
+            _mqttUsername = appSettings.Value.Secrets.MqttUsername;
+            _mqttPassword = appSettings.Value.Secrets.MqttPassword;
         }
 
         [SwaggerOperation(
@@ -36,9 +49,10 @@ namespace Homo.IotApi
         )]
         [HttpPatch]
         [Route("{pin}")]
-        public ActionResult<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public async Task<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            DevicePinDataservice.UpdateValueByDeviceId(_dbContext, extraPayload.Id, id, pin, dto.Value);
+            await MqttBrokerHelper.Connect(_mqttBroker, _mqttUsername, _mqttPassword);
+            await DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _mqttBroker);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
