@@ -94,6 +94,7 @@ namespace Homo.IotApi
 
             options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
                 {
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
                     try
                     {
                         if (sslPolicyErrors == SslPolicyErrors.None)

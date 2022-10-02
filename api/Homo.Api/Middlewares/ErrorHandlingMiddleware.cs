@@ -77,6 +77,7 @@ namespace Homo.Api
             }
 
             SendErrorToSentry(ex, context.Request.Body, context.Request.QueryString, userId);
+            System.Console.WriteLine($"Error: {Newtonsoft.Json.JsonConvert.SerializeObject(ex.ToString(), Newtonsoft.Json.Formatting.Indented)}");
 
             Dictionary<string, dynamic> payload = null;
             if (ex.GetType() == typeof(Homo.Core.Constants.CustomException))
