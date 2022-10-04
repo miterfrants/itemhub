@@ -52,7 +52,6 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.ClientId, p.DeletedAt }).IsUnique();
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.CreatedAt });
-                entity.HasIndex(p => new { p.DeletedAt });
             });
 
             modelBuilder.Entity<Device>(entity =>
@@ -64,6 +63,7 @@ namespace Homo.IotApi
                 entity.HasOne(p => p.Zone).WithMany().HasForeignKey(p => p.ZoneId);
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
+                entity.Property(p => p.Protocol).HasDefaultValueSql(((int)FIRMWARE_PROTOCOL.HTTP).ToString());
             });
 
             modelBuilder.Entity<Trigger>(entity =>
