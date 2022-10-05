@@ -38,3 +38,9 @@ export interface DashboardMonitorMode {
     value: number;
     label: string;
 }
+
+export interface Protocols {
+    key: string;
+    value: number;
+    label: string;
+}

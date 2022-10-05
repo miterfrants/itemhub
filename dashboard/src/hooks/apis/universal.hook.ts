@@ -9,6 +9,7 @@ import {
     Microcontroller,
     TriggerType,
     DashboardMonitorMode,
+    Protocols,
 } from '@/types/universal.type';
 
 export const useGetTriggerOperatorsApi = () => {
@@ -167,5 +168,32 @@ export const useGetDashboardMonitorModesApi = () => {
         isLoading,
         error,
         getDashboardMonitorModesApi: fetchApi,
+    };
+};
+
+export const useGetProtocols = () => {
+    const dispatch = useAppDispatch();
+    const dispatchGetProtocols = useCallback(
+        (data: Protocols[]) => {
+            if (data) {
+                dispatch(universalActions.setProtocols(data));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.PROTOCOLS}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<DeviceMode[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchGetProtocols,
+    });
+
+    return {
+        isLoading,
+        error,
+        getProtocols: fetchApi,
     };
 };

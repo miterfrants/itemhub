@@ -9,7 +9,6 @@ import {
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import Pins from '@/components/pins/pins';
 import PageTitle from '@/components/page-title/page-title';
-import moment from 'moment';
 import pencilIcon from '@/assets/images/pencil.svg';
 import cloudIcon from '@/assets/images/cloud.svg';
 import trashIcon from '@/assets/images/trash.svg';
@@ -27,6 +26,7 @@ import ReactTooltip from 'react-tooltip';
 import OnlineStatusTag from '@/components/online-status-tag/online-status-tag';
 import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
+import { selectUniversal } from '@/redux/reducers/universal.reducer';
 
 const Devices = () => {
     const query = useQuery();
@@ -38,6 +38,7 @@ const Devices = () => {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
+    const { protocols } = useAppSelector(selectUniversal);
     const dispatch = useDispatch();
     const { search } = useLocation();
     const hasDevicesRef = useRef(false);
@@ -212,144 +213,161 @@ const Devices = () => {
                                 <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
                                     <div className="col-3">裝置名稱</div>
                                     <div className="col-2">狀態</div>
-                                    <div className="col-2">建立時間</div>
+                                    <div className="col-2">Protocol</div>
                                     <div className="col-3">Pins Data</div>
                                     <div className="col-2">操作</div>
                                 </div>
                                 <div className="devices-list">
                                     {devices.map(
-                                        ({ id, name, createdAt, online }) => (
-                                            <div
-                                                className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
-                                                key={id}
-                                                title={`建立時間: ${createdAt}`}
-                                            >
-                                                <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    裝置名稱
-                                                </div>
-                                                <div className="col-8 col-lg-3 p-3 p-lg-0">
-                                                    <div className="fw-bold lh-base mb-2 mb-lg-0">
-                                                        {name}
+                                        ({
+                                            id,
+                                            name,
+                                            createdAt,
+                                            online,
+                                            protocol,
+                                        }) => {
+                                            const targetProtocol =
+                                                protocols.find(
+                                                    (item) =>
+                                                        item.value === protocol
+                                                )?.key;
+                                            return (
+                                                <div
+                                                    className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
+                                                    key={id}
+                                                    title={`建立時間: ${createdAt}`}
+                                                >
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        裝置名稱
                                                     </div>
-                                                </div>
-                                                <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    狀態
-                                                </div>
-                                                <div className="col-8 col-lg-2 p-3 p-lg-0">
-                                                    <OnlineStatusTag
-                                                        isOnline={online}
-                                                    />
-                                                </div>
-                                                <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    建立時間
-                                                </div>
-                                                <div className="col-8 col-lg-2 p-3 p-lg-0">
-                                                    {moment(createdAt).format(
-                                                        'YYYY-MM-DD HH:mm'
-                                                    )}
-                                                </div>
-                                                <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    Pins Data
-                                                </div>
-                                                <div className="col-8 col-lg-3 p-3 p-lg-0">
-                                                    <Pins
-                                                        deviceId={Number(id)}
-                                                        isEditMode={false}
-                                                    />
-                                                </div>
-                                                <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                    操作
-                                                </div>
-                                                <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
-                                                    <Link
-                                                        className="me-4 mb-3"
-                                                        to={`/dashboard/devices/${id}${search}`}
-                                                        data-tip="編輯"
-                                                    >
-                                                        <img
-                                                            className="icon"
-                                                            src={pencilIcon}
+                                                    <div className="col-8 col-lg-3 p-3 p-lg-0">
+                                                        <div className="fw-bold lh-base mb-2 mb-lg-0">
+                                                            {name}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        狀態
+                                                    </div>
+                                                    <div className="col-8 col-lg-2 p-3 p-lg-0">
+                                                        <OnlineStatusTag
+                                                            isOnline={online}
                                                         />
-                                                    </Link>
-                                                    <div
-                                                        className="me-4 mb-3"
-                                                        role="button"
-                                                        onClick={() => {
-                                                            if (
-                                                                isFirmwarePrepare
-                                                            ) {
-                                                                return;
-                                                            }
-                                                            bundleFirmware(id);
-                                                        }}
-                                                        data-tip="下載程式碼"
-                                                    >
-                                                        {isFirmwarePrepare &&
-                                                        shouldBeBundledId ===
-                                                            id ? (
+                                                    </div>
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        Protocol
+                                                    </div>
+                                                    <div className="col-8 col-lg-2 p-3 px-lg-3 py-lg-0">
+                                                        {targetProtocol}
+                                                    </div>
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        Pins Data
+                                                    </div>
+                                                    <div className="col-8 col-lg-3 p-3 p-lg-0">
+                                                        <Pins
+                                                            deviceId={Number(
+                                                                id
+                                                            )}
+                                                            isEditMode={false}
+                                                        />
+                                                    </div>
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        操作
+                                                    </div>
+                                                    <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
+                                                        <Link
+                                                            className="me-4 mb-3"
+                                                            to={`/dashboard/devices/${id}${search}`}
+                                                            data-tip="編輯"
+                                                        >
                                                             <img
-                                                                title="正在產生 firmware project"
                                                                 className="icon"
-                                                                src={
-                                                                    compassIcon
-                                                                }
+                                                                src={pencilIcon}
                                                             />
-                                                        ) : (
-                                                            <div className="position-relative">
+                                                        </Link>
+                                                        <div
+                                                            className="me-4 mb-3"
+                                                            role="button"
+                                                            onClick={() => {
+                                                                if (
+                                                                    isFirmwarePrepare
+                                                                ) {
+                                                                    return;
+                                                                }
+                                                                bundleFirmware(
+                                                                    id
+                                                                );
+                                                            }}
+                                                            data-tip="下載程式碼"
+                                                        >
+                                                            {isFirmwarePrepare &&
+                                                            shouldBeBundledId ===
+                                                                id ? (
                                                                 <img
+                                                                    title="正在產生 firmware project"
                                                                     className="icon"
                                                                     src={
-                                                                        cloudIcon
+                                                                        compassIcon
                                                                     }
                                                                 />
-                                                                <img
-                                                                    className={`icon position-absolute ${
-                                                                        isFirmwarePrepare &&
-                                                                        shouldBeBundledId !==
-                                                                            id
-                                                                            ? ''
-                                                                            : 'd-none'
-                                                                    }`}
-                                                                    src={
-                                                                        stopIcon
-                                                                    }
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div
-                                                        className="me-4 mb-3"
-                                                        role="button"
-                                                        onClick={() => {
-                                                            deleteOne(id);
-                                                        }}
-                                                        data-tip="刪除"
-                                                    >
-                                                        <img
-                                                            className="icon"
-                                                            src={trashIcon}
-                                                        />
-                                                    </div>
+                                                            ) : (
+                                                                <div className="position-relative">
+                                                                    <img
+                                                                        className="icon"
+                                                                        src={
+                                                                            cloudIcon
+                                                                        }
+                                                                    />
+                                                                    <img
+                                                                        className={`icon position-absolute ${
+                                                                            isFirmwarePrepare &&
+                                                                            shouldBeBundledId !==
+                                                                                id
+                                                                                ? ''
+                                                                                : 'd-none'
+                                                                        }`}
+                                                                        src={
+                                                                            stopIcon
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div
+                                                            className="me-4 mb-3"
+                                                            role="button"
+                                                            onClick={() => {
+                                                                deleteOne(id);
+                                                            }}
+                                                            data-tip="刪除"
+                                                        >
+                                                            <img
+                                                                className="icon"
+                                                                src={trashIcon}
+                                                            />
+                                                        </div>
 
-                                                    <div
-                                                        className="me-4 mb-3"
-                                                        role="button"
-                                                        onClick={() => {
-                                                            popupMonitorConfig(
-                                                                id
-                                                            );
-                                                        }}
-                                                        data-tip="加到監控中心"
-                                                    >
-                                                        <img
-                                                            className="icon"
-                                                            src={displayIcon}
-                                                        />
+                                                        <div
+                                                            className="me-4 mb-3"
+                                                            role="button"
+                                                            onClick={() => {
+                                                                popupMonitorConfig(
+                                                                    id
+                                                                );
+                                                            }}
+                                                            data-tip="加到監控中心"
+                                                        >
+                                                            <img
+                                                                className="icon"
+                                                                src={
+                                                                    displayIcon
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <ReactTooltip effect="solid" />
                                                     </div>
-                                                    <ReactTooltip effect="solid" />
                                                 </div>
-                                            </div>
-                                        )
+                                            );
+                                        }
                                     )}
                                 </div>
                                 <div

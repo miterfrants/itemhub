@@ -44,6 +44,7 @@ const DevicePinData = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
+    const [protocol, setProtocol] = useState<number | null>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
     );
@@ -51,7 +52,7 @@ const DevicePinData = () => {
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
     const devicePinsRef = useRef<PinItem[]>([]);
-    const { microcontrollers } = useAppSelector(selectUniversal);
+    const { microcontrollers, protocols } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
         useState<null | Microcontroller>(null);
@@ -87,6 +88,7 @@ const DevicePinData = () => {
             microcontroller: microcontrollerId
                 ? Number(microcontrollerId)
                 : device?.microcontroller,
+            protocol: protocol === null ? device?.protocol : protocol,
         },
     });
 
@@ -459,6 +461,34 @@ const DevicePinData = () => {
                                     單晶片為必填欄位
                                 </div>
                             )}
+                        </div>
+
+                        <div className="mb-4">
+                            <label>Protocol</label>
+                            <select
+                                className="form-select mt-2"
+                                onChange={(e) => {
+                                    if (!e.target.value) {
+                                        return;
+                                    }
+                                    setProtocol(Number(e.target.value));
+                                }}
+                            >
+                                <option>請選擇通訊方式</option>
+                                {protocols.map(({ value, key, label }) => {
+                                    return (
+                                        <option
+                                            key={key}
+                                            value={value}
+                                            selected={
+                                                value === device?.protocol
+                                            }
+                                        >
+                                            {label}
+                                        </option>
+                                    );
+                                })}
+                            </select>
                         </div>
 
                         {selectedMicrocontroller &&
