@@ -65,10 +65,10 @@ namespace Homo.IotApi
 
             // create bundle log
             string randomBundleId = CryptographicHelper.GetSpecificLengthRandomString(32, true, false);
-            FirmwareBundleLogDataservice.Create(_dbContext, extraPayload.Id, id, randomBundleId);
+            FirmwareBundleLogDataservice.Create(_dbContext, extraPayload.Id, id, randomBundleId, device.Protocol);
 
             // pass client id, client secrets and bundle id to asyn bundle firmware function
-            string bundleName = FirmwareGenerateService.Generate(_dbc, _firmwareTemplatePath, _staticPath, id, extraPayload.Id, randomClientId, clientSecret, randomBundleId, dto.ZipPassword);
+            string bundleName = FirmwareGenerateService.Generate(_dbc, _firmwareTemplatePath, _staticPath, id, extraPayload.Id, randomClientId, clientSecret, randomBundleId, dto.ZipPassword, device.Protocol);
 
             Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
             var buffer = System.IO.File.ReadAllBytes($"{_staticPath}/firmware/{bundleName}.zip");
