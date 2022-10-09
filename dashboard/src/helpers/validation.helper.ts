@@ -8,6 +8,12 @@ export const ValidationHelpers = {
         }
         return true;
     },
+    RequireNumber: (validation: number | null) => {
+        if (validation == null) {
+            return false;
+        }
+        return true;
+    },
     ValidateSelectedPins: (
         isCreateMode: boolean,
         selectedPins: PinItem[] | null
@@ -43,7 +49,7 @@ export const ValidationHelpers = {
         ) {
             result.selectedPins = true;
         }
-        if (ValidationHelpers.Require(selectedProtocol)) {
+        if (ValidationHelpers.RequireNumber(selectedProtocol)) {
             result.selectedProtocol = true;
         }
 
