@@ -21,13 +21,15 @@ export const ValidationHelpers = {
         isCreateMode: boolean,
         name: string | null,
         microcontroller: number | null,
-        selectedPins: PinItem[] | null
+        selectedPins: PinItem[] | null,
+        selectedProtocol: number | null
     ) => {
         const result = {
             isValid: false,
             name: false,
             selectedPins: false,
             selectedMicrocontroller: false,
+            selectedProtocol: false,
         };
 
         if (ValidationHelpers.Require(name)) {
@@ -41,11 +43,15 @@ export const ValidationHelpers = {
         ) {
             result.selectedPins = true;
         }
+        if (ValidationHelpers.Require(selectedProtocol)) {
+            result.selectedProtocol = true;
+        }
 
         result.isValid =
             result.name &&
             result.selectedMicrocontroller &&
-            result.selectedPins;
+            result.selectedPins &&
+            result.selectedProtocol;
 
         return result;
     },

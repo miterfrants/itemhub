@@ -125,6 +125,7 @@ const DevicePinData = () => {
         name: true,
         selectedPins: true,
         selectedMicrocontroller: true,
+        selectedProtocol: true,
     });
 
     const sendApi = () => {
@@ -133,7 +134,8 @@ const DevicePinData = () => {
             isCreateMode,
             name,
             microcontrollerId,
-            selectedPins
+            selectedPins,
+            protocol
         );
         if (!validateReslut.isValid) {
             setIsValidData(() => {
@@ -142,6 +144,7 @@ const DevicePinData = () => {
                     selectedPins: validateReslut.selectedPins,
                     selectedMicrocontroller:
                         validateReslut.selectedMicrocontroller,
+                    selectedProtocol: validateReslut.selectedProtocol,
                 };
             });
             return;
@@ -464,13 +467,23 @@ const DevicePinData = () => {
                         </div>
 
                         <div className="mb-4">
-                            <label>Protocol</label>
+                            <label>通訊方式</label>
                             <select
                                 className="form-select mt-2"
                                 onChange={(e) => {
                                     if (!e.target.value) {
                                         return;
                                     }
+                                    const validResult =
+                                        ValidationHelpers.Require(
+                                            e.target.value
+                                        );
+                                    setIsValidData((prev) => {
+                                        return {
+                                            ...prev,
+                                            selectedProtocol: validResult,
+                                        };
+                                    });
                                     setProtocol(Number(e.target.value));
                                 }}
                             >
@@ -489,6 +502,11 @@ const DevicePinData = () => {
                                     );
                                 })}
                             </select>
+                            {!isValidData.selectedProtocol && (
+                                <div className="text-danger fs-5">
+                                    通訊方式為必填欄位
+                                </div>
+                            )}
                         </div>
 
                         {selectedMicrocontroller &&
