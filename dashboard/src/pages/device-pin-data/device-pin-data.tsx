@@ -96,7 +96,7 @@ const DevicePinData = () => {
         fetchApi: createDeviceApi,
         isLoading: isCreating,
         data: createDeviceResponse,
-    } = useCreateDeviceApi(name, microcontrollerId || -1);
+    } = useCreateDeviceApi(name, microcontrollerId || -1, protocol || -1);
 
     const { fetchApi: createDevicePinsApi } = useCreatePinsApi(
         Number(createDeviceResponse?.id) || Number(id),
