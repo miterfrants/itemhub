@@ -263,6 +263,7 @@ const DevicePinData = () => {
         if (device !== null) {
             setMicrocontrollerId(Number(device.microcontroller));
             setName(device.name);
+            setProtocol(device.protocol);
         }
     }, [device]);
 
