@@ -77,7 +77,7 @@ namespace Homo.IotApi
                     if (usage >= rateLimit)
                     {
                         UserDataservice.SetIsOverSubscriptionPlan(dbContext, ownerId);
-                        throw new CustomException(ERROR_CODE.TRIGGER_NOTIFICATION_OVER_USING, System.Net.HttpStatusCode.Forbidden);
+                        continue;
                     }
 
                     // check last notification
