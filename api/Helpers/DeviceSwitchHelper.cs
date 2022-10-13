@@ -20,14 +20,14 @@ namespace Homo.IotApi
             DevicePinDataservice.UpdateValueByDeviceId(iotDbContext, ownerId, deviceId, pin, dto.Value);
 
             // mqtt
-            await mqttBroker.PublishAsync(new MqttApplicationMessageBuilder()
-                .WithTopic($"{deviceId}/{pin}/switch")
-                .WithPayload(
-                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                        new DTOs.DevicePinSwitchValue { Value = dto.Value }
-                    )
-                )
-                .Build());
+            // await mqttBroker.PublishAsync(new MqttApplicationMessageBuilder()
+            //     .WithTopic($"{deviceId}/{pin}/switch")
+            //     .WithPayload(
+            //         Newtonsoft.Json.JsonConvert.SerializeObject(
+            //             new DTOs.DevicePinSwitchValue { Value = dto.Value }
+            //         )
+            //     )
+            //     .Build());
 
         }
     }
