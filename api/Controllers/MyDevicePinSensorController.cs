@@ -27,10 +27,10 @@ namespace Homo.IotApi
         private readonly string _smsUsername;
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
-        private readonly MQTTnet.Client.MqttClient _mqttBroker;
+        private readonly List<MqttPublisher> _localMqttPublishers;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
-        public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, MQTTnet.Client.MqttClient mqttBroker)
+        public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, List<MqttPublisher> localMqttPublishers)
         {
             var secrets = optionAppSettings.Value.Secrets;
             var common = optionAppSettings.Value.Common;
@@ -45,7 +45,7 @@ namespace Homo.IotApi
             _smsUsername = secrets.SmsUsername;
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
-            _mqttBroker = mqttBroker;
+            _localMqttPublishers = localMqttPublishers;
         }
 
         [SwaggerOperation(
@@ -58,9 +58,9 @@ namespace Homo.IotApi
         [Route("{pin}")]
         public async Task<dynamic> create([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.CreateSensorLog dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-
-            await MqttBrokerHelper.Connect(_mqttBroker, _mqttUsername, _mqttPassword);
-            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _mqttBroker);
+            SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
+            MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
+            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
             return new
             {
                 status = CUSTOM_RESPONSE.OK

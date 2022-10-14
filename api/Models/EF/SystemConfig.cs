@@ -10,7 +10,7 @@ namespace Homo.IotApi
         [MaxLength(64)]
         public string Key { get; set; }
         [Required]
-        [MaxLength(64)]
+        [MaxLength(4096)]
         public string Value { get; set; }
 
     }
