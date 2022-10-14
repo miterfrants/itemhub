@@ -17,7 +17,7 @@ export class HeaderComponent extends BaseComponent {
             hasSignedVisibility: CookieUtil.getCookie('token') ? 'd-block' : 'd-none',
             isExpanded: false,
             dashboardUrl: APP_CONFIG.DASHBOARD_URL,
-            API_ENDPOINT: APP_CONFIG.API_ENDPOINT
+            FRONT_END_URL: APP_CONFIG.FRONT_END_URL
         });
     }
 
