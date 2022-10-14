@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
-using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {

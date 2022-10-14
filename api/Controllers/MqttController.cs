@@ -144,6 +144,7 @@ namespace Homo.IotApi
             // prevent client subscribe topic that end withs /sensor and /status
             if (args.TopicFilter.Topic.EndsWith("/sensor") || args.TopicFilter.Topic.EndsWith("status"))
             {
+                System.Console.WriteLine($"No Permission For Subscribe Sensor Or Status");
                 return Task.FromException(new Exception("no permission"));
             }
 
@@ -157,11 +158,13 @@ namespace Homo.IotApi
             long.TryParse(deviceIdStringType, out deviceId);
             if (userId == 0)
             {
+                System.Console.WriteLine($"No Permission For Subscribe Other Device");
                 return Task.FromException(new Exception("no permission"));
             }
             Device device = DeviceDataservice.GetOne(_iotDbContext, userId, deviceId);
             if (device == null)
             {
+                System.Console.WriteLine($"No Permission For Subscribe Other Device");
                 return Task.FromException(new Exception("no permission"));
             }
             return Task.CompletedTask;

@@ -45,7 +45,7 @@ namespace Homo.IotApi
                 )
                 {
                     beTriggeredList.Add(trigger);
-                    await DeviceSwitchHelper.Update(iotDbContext, ownerId, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, new DTOs.DevicePinSwitchValue() { Value = trigger.DestinationDeviceTargetState.GetValueOrDefault() }, localMqttPublishers);
+                    DeviceSwitchHelper.Update(iotDbContext, ownerId, trigger.DestinationDeviceId.GetValueOrDefault(), trigger.DestinationPin, new DTOs.DevicePinSwitchValue() { Value = trigger.DestinationDeviceTargetState.GetValueOrDefault() }, localMqttPublishers);
                 }
                 else if (
                     trigger.Type == TRIGGER_TYPE.NOTIFICATION &&

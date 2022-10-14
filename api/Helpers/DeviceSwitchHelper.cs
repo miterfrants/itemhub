@@ -12,7 +12,7 @@ namespace Homo.IotApi
 
     public class DeviceSwitchHelper
     {
-        public static async Task Update(IotDbContext iotDbContext, long ownerId,
+        public static void Update(IotDbContext iotDbContext, long ownerId,
             long deviceId, string pin, DTOs.DevicePinSwitchValue dto, List<MqttPublisher> localMqttPublishers
             )
         {
