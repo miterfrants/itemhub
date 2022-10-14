@@ -30,7 +30,7 @@ namespace Homo.IotApi
         private readonly MQTTnet.AspNetCore.MqttHostedServer _mqttHostedServer;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
-        private MQTTnet.Client.MqttClient _mqttBroker;
+        private List<MqttPublisher> _localMqttPublishers;
         private readonly string _systemEmail;
         private readonly string _sendGridApiKey;
         private readonly string _staticPath;
@@ -40,8 +40,7 @@ namespace Homo.IotApi
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
 
-
-        public MqttController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, MQTTnet.Client.MqttClient mqttBroker)
+        public MqttController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublisher)
         {
             _iotDbContext = iotDbContext;
             _dbContext = dbContext;
@@ -54,7 +53,7 @@ namespace Homo.IotApi
             _mqttHostedServer = mqttHostedServer;
             _mqttUsername = optionAppSettings.Value.Secrets.MqttUsername;
             _mqttPassword = optionAppSettings.Value.Secrets.MqttPassword;
-            _mqttBroker = mqttBroker;
+            _localMqttPublishers = localMqttPublisher;
             _commonLocalizer = commonLocalizer;
             _systemEmail = common.SystemEmail;
             _sendGridApiKey = secrets.SendGridApiKey;
@@ -65,27 +64,6 @@ namespace Homo.IotApi
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
             _dbc = secrets.DBConnectionString;
-
-            var mqttClientOptions = new MqttClientOptionsBuilder()
-                            .WithTcpServer("127.0.0.1", 8883)
-                            .WithClientId("api-server")
-                            .WithTls((options =>
-                            {
-                                options.UseTls = true;
-                                options.SslProtocol = SslProtocols.Tls12;
-                                options.CertificateValidationHandler = (o) =>
-                                {
-                                    return true;
-                                };
-                                var certificate = new X509Certificate("secrets/mqtt-server.pfx");
-                                var ca = new X509Certificate("secrets/chain.crt");
-                                options.Certificates = new List<X509Certificate>() { certificate, ca };
-
-                            }))
-                            .WithCredentials(secrets.MqttUsername, secrets.MqttPassword)
-                            .WithCleanSession()
-                            .Build();
-            mqttBroker.ConnectAsync(mqttClientOptions, CancellationToken.None);
         }
 
         public Task OnClientConnected(ClientConnectedEventArgs eventArgs)
@@ -151,7 +129,7 @@ namespace Homo.IotApi
                     string pin = raw[0];
                     var payload = System.Text.Encoding.Default.GetString(args.ApplicationMessage.Payload);
                     var dto = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.CreateSensorLog>(payload);
-                    await DeviceSensorHelper.Create(_dbContext, _iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _mqttBroker);
+                    await DeviceSensorHelper.Create(_dbContext, _iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
                 }
                 else if (isDeviceState)
                 {

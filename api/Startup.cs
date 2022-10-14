@@ -97,6 +97,7 @@ namespace Homo.IotApi
                     System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
                     try
                     {
+                        return true;
                         if (sslPolicyErrors == SslPolicyErrors.None)
                         {
                             return true;
@@ -136,8 +137,8 @@ namespace Homo.IotApi
             services.AddSingleton<MqttController>();
 
             // mqtt
-            MQTTnet.Client.MqttClient mqttBroker = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
-            services.AddSingleton<MQTTnet.Client.MqttClient>(mqttBroker);
+            List<MqttPublisher> localMqttPublishers = new List<MqttPublisher>();
+            services.AddSingleton<List<MqttPublisher>>(localMqttPublishers);
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;
