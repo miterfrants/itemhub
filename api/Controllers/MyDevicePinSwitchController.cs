@@ -49,10 +49,11 @@ namespace Homo.IotApi
         )]
         [HttpPatch]
         [Route("{pin}")]
-        public async Task<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            MqttPublisherHelper.Connect(_localMqttPublishers, _mqttUsername, _mqttPassword);
-            await DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
+            SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_dbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
+            MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
+            DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

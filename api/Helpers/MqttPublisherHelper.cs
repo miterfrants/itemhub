@@ -12,11 +12,10 @@ namespace Homo.IotApi
 
     public class MqttPublisherHelper
     {
-        public static void Connect(List<MqttPublisher> localMqttPublishers, string mqttUsername, string mqttPassword
+        public static void Connect(string localMqttPublisherEndpointsRaw, List<MqttPublisher> localMqttPublishers, string mqttUsername, string mqttPassword
             )
         {
-            string localMqttEndpoints = "[{\"id\": \"self\", \"ip\": \"127.0.0.1\"}]";
-            List<MqttEndpoint> mqttEndpoints = Newtonsoft.Json.JsonConvert.DeserializeObject<List<MqttEndpoint>>(localMqttEndpoints);
+            List<MqttEndpoint> mqttEndpoints = Newtonsoft.Json.JsonConvert.DeserializeObject<List<MqttEndpoint>>(localMqttPublisherEndpointsRaw);
             List<string> localMqttPublishersIds = localMqttPublishers.Select(x => x.Id).ToList<string>();
             List<MqttClientConnectResult> result = new List<MqttClientConnectResult>();
             // new clients
@@ -36,24 +35,41 @@ namespace Homo.IotApi
                                         };
                                         var certificate = new X509Certificate("secrets/mqtt-server.pfx");
                                         var ca = new X509Certificate("secrets/chain.crt");
-
+                                        options.Certificates = new List<X509Certificate>() { certificate, ca };
                                     }))
                                     .WithCredentials(mqttUsername, mqttPassword)
                                     .WithCleanSession()
                                     .Build();
                     MQTTnet.Client.MqttClient client = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
                     Task<MqttClientConnectResult> result = client.ConnectAsync(mqttClientOptions, CancellationToken.None);
-                    result.Wait();
-                    localMqttPublishers.Add(new MqttPublisher()
+                    try
                     {
-                        IP = endpoint.IP,
-                        Id = endpoint.Id,
-                        Client = client
-                    });
+                        result.Wait();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        System.Console.WriteLine($"Mqtt Error: {endpoint.IP}: {ex.ToString()}");
+                    }
+
+                    // 多個 request 過來的時候可能會並行的發生, 所以這邊要再多做一個判斷避免 localMqttPublishers 中間有沒連線的 mqtt client
+                    if (client.IsConnected && localMqttPublishers.Where(x => x.Id == endpoint.Id).Count() == 0)
+                    {
+                        localMqttPublishers.Add(new MqttPublisher()
+                        {
+                            IP = endpoint.IP,
+                            Id = endpoint.Id,
+                            Client = client
+                        });
+                    }
+                    else
+                    {
+                        client.DisconnectAsync();
+                        client.Dispose();
+                    }
                 });
 
             // check client connected 
-            localMqttPublishers.ForEach(async publisher =>
+            localMqttPublishers.ForEach(publisher =>
             {
                 if (!publisher.Client.IsConnected)
                 {
@@ -68,8 +84,10 @@ namespace Homo.IotApi
                                         {
                                             return true;
                                         };
+
                                         var certificate = new X509Certificate("secrets/mqtt-server.pfx");
                                         var ca = new X509Certificate("secrets/chain.crt");
+                                        options.Certificates = new List<X509Certificate>() { certificate, ca };
 
                                     }))
                                     .WithCredentials(mqttUsername, mqttPassword)

@@ -94,10 +94,9 @@ namespace Homo.IotApi
 
             options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
                 {
-                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"TLS Policy Error: {Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
                     try
                     {
-                        return true;
                         if (sslPolicyErrors == SslPolicyErrors.None)
                         {
                             return true;
@@ -108,12 +107,12 @@ namespace Homo.IotApi
                             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
                             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
                             chain.ChainPolicy.ExtraStore.Add(ca);
-                            System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                            System.Console.WriteLine($"CA Fingerprint: {Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
                             chain.Build((X509Certificate2)cer);
 
                             return chain.ChainElements.Cast<X509ChainElement>().Any(a =>
                             {
-                                System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                                System.Console.WriteLine($"Chain Fingerprint: {Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
                                 return a.Certificate.Thumbprint == ca.Thumbprint;
                             });
                         }
@@ -134,9 +133,12 @@ namespace Homo.IotApi
             services.AddSingleton<ErrorMessageLocalizer>(new ErrorMessageLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<ValidationLocalizer>(new ValidationLocalizer(appSettings.Common.LocalizationResourcesPath));
-            services.AddSingleton<MqttController>();
 
             // mqtt
+            if (_env.EnvironmentName.ToLower() != "development" && _env.EnvironmentName.ToLower() != "migration")
+            {
+                services.AddSingleton<MqttController>();
+            }
             List<MqttPublisher> localMqttPublishers = new List<MqttPublisher>();
             services.AddSingleton<List<MqttPublisher>>(localMqttPublishers);
 
