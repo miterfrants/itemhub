@@ -75,8 +75,7 @@ namespace Homo.IotApi
 
         public Task ValidateConnection(ValidatingConnectionEventArgs eventArgs)
         {
-            Console.WriteLine($"Client '{eventArgs.ClientId}' try to connect. Username: '{eventArgs.UserName}', Password: '{eventArgs.Password}'");
-            Console.WriteLine($"Local mqttUserName: {_mqttUsername}, {_mqttPassword}");
+            Console.WriteLine($"Client '{eventArgs.ClientId}' try to connect.");
             if (eventArgs.UserName == _mqttUsername && eventArgs.Password == _mqttPassword)
             {
                 return Task.CompletedTask;
