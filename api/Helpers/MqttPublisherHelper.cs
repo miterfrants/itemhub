@@ -41,7 +41,27 @@ namespace Homo.IotApi
                                     .WithCleanSession()
                                     .Build();
                     MQTTnet.Client.MqttClient client = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
+                    MqttPublisher publisher = new MqttPublisher()
+                    {
+                        IP = endpoint.IP,
+                        Id = endpoint.Id,
+                        Client = client
+                    };
+                    client.ConnectingAsync += e =>
+                    {
+                        publisher.IsConnecting = true;
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("aaaa", Newtonsoft.Json.Formatting.Indented)}");
+                        return Task.CompletedTask;
+                    };
+                    client.DisconnectedAsync += e =>
+                    {
+                        publisher.IsDisconnected = true;
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("bbbb", Newtonsoft.Json.Formatting.Indented)}");
+                        return Task.CompletedTask;
+                    };
                     Task<MqttClientConnectResult> result = client.ConnectAsync(mqttClientOptions, CancellationToken.None);
+
+
                     try
                     {
                         result.Wait();
@@ -54,12 +74,7 @@ namespace Homo.IotApi
                     // 多個 request 過來的時候可能會並行的發生, 所以這邊要再多做一個判斷避免 localMqttPublishers 中間有沒連線的 mqtt client
                     if (client.IsConnected && localMqttPublishers.Where(x => x.Id == endpoint.Id).Count() == 0)
                     {
-                        localMqttPublishers.Add(new MqttPublisher()
-                        {
-                            IP = endpoint.IP,
-                            Id = endpoint.Id,
-                            Client = client
-                        });
+                        localMqttPublishers.Add(publisher);
                     }
                     else
                     {
@@ -71,7 +86,7 @@ namespace Homo.IotApi
             // check client connected 
             localMqttPublishers.ForEach(publisher =>
             {
-                if (!publisher.Client.IsConnected)
+                if (!publisher.Client.IsConnected && !publisher.IsConnecting && !publisher.IsDisconnected)
                 {
                     var mqttClientOptions = new MqttClientOptionsBuilder()
                                     .WithTcpServer(publisher.IP, 8883)
@@ -117,6 +132,8 @@ namespace Homo.IotApi
         public string Id { get; set; }
         public string IP { get; set; }
         public MQTTnet.Client.MqttClient Client { get; set; }
+        public bool IsConnecting { get; set; }
+        public bool IsDisconnected { get; set; }
     }
 
     public class MqttEndpoint
