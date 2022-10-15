@@ -49,7 +49,13 @@ namespace Homo.IotApi
                     };
                     client.ConnectingAsync += e =>
                     {
+                        publisher.IsDisconnected = false;
                         publisher.IsConnecting = true;
+                        return Task.CompletedTask;
+                    };
+                    client.ConnectedAsync += e =>
+                    {
+                        publisher.IsConnecting = false;
                         return Task.CompletedTask;
                     };
                     client.DisconnectedAsync += e =>

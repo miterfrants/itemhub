@@ -22,14 +22,23 @@ namespace Homo.IotApi
             // mqtt
             localMqttPublishers.ForEach(publisher =>
             {
-                publisher.Client.PublishAsync(new MqttApplicationMessageBuilder()
-                .WithTopic($"{deviceId}/{pin}/switch")
-                .WithPayload(
-                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                        new DTOs.DevicePinSwitchValue { Value = dto.Value }
-                    )
-                )
-                .Build());
+                try
+                {
+                    publisher.Client.PublishAsync(new MqttApplicationMessageBuilder()
+                        .WithTopic($"{deviceId}/{pin}/switch")
+                        .WithPayload(
+                            Newtonsoft.Json.JsonConvert.SerializeObject(
+                                new DTOs.DevicePinSwitchValue { Value = dto.Value }
+                            )
+                        )
+                        .Build());
+                }
+                catch (System.Exception ex)
+                {
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(publisher, Newtonsoft.Json.Formatting.Indented)}");
+                    throw ex;
+                }
+
             });
         }
     }
