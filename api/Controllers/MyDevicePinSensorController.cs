@@ -46,6 +46,8 @@ namespace Homo.IotApi
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
             _localMqttPublishers = localMqttPublishers;
+            _mqttUsername = secrets.MqttUsername;
+            _mqttPassword = secrets.MqttPassword;
         }
 
         [SwaggerOperation(
