@@ -84,7 +84,7 @@ namespace Homo.IotApi
             // check client connected 
             localMqttPublishers.ForEach(publisher =>
             {
-                if (!publisher.Client.IsConnected && !publisher.IsConnecting && !publisher.IsDisconnected)
+                if (!publisher.Client.IsConnected && !publisher.IsConnecting)
                 {
                     var mqttClientOptions = new MqttClientOptionsBuilder()
                                     .WithTcpServer(publisher.IP, 8883)
