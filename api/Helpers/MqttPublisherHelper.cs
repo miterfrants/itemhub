@@ -50,13 +50,11 @@ namespace Homo.IotApi
                     client.ConnectingAsync += e =>
                     {
                         publisher.IsConnecting = true;
-                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("aaaa", Newtonsoft.Json.Formatting.Indented)}");
                         return Task.CompletedTask;
                     };
                     client.DisconnectedAsync += e =>
                     {
                         publisher.IsDisconnected = true;
-                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("bbbb", Newtonsoft.Json.Formatting.Indented)}");
                         return Task.CompletedTask;
                     };
                     Task<MqttClientConnectResult> result = client.ConnectAsync(mqttClientOptions, CancellationToken.None);
