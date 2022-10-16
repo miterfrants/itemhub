@@ -391,7 +391,7 @@ const DevicePinData = () => {
                                     !isValidData.name && 'border-danger'
                                 }`}
                                 placeholder="請輸入裝置名稱"
-                                defaultValue={device ? device.name : ''}
+                                value={name}
                                 onChange={(e) => {
                                     const validResult =
                                         ValidationHelpers.Require(
@@ -432,7 +432,7 @@ const DevicePinData = () => {
 
                                     const validResult =
                                         ValidationHelpers.Require(
-                                            e.target.value
+                                            Number(e.target.value)
                                         );
 
                                     setIsValidData((prev) => {
@@ -477,7 +477,7 @@ const DevicePinData = () => {
                                     }
                                     const validResult =
                                         ValidationHelpers.Require(
-                                            e.target.value
+                                            Number(e.target.value)
                                         );
                                     setIsValidData((prev) => {
                                         return {

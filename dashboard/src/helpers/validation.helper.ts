@@ -3,13 +3,12 @@ import { PinItem } from '@/types/devices.type';
 
 export const ValidationHelpers = {
     Require: (validation: string | number | null) => {
-        if (!validation) {
-            return false;
-        }
-        return true;
-    },
-    RequireNumber: (validation: number | null) => {
-        if (validation == null) {
+        if (
+            (typeof validation === 'number' && isNaN(validation)) ||
+            (typeof validation === 'string' && validation === '') ||
+            validation == undefined ||
+            validation == null
+        ) {
             return false;
         }
         return true;
@@ -49,7 +48,7 @@ export const ValidationHelpers = {
         ) {
             result.selectedPins = true;
         }
-        if (ValidationHelpers.RequireNumber(selectedProtocol)) {
+        if (ValidationHelpers.Require(selectedProtocol)) {
             result.selectedProtocol = true;
         }
 
