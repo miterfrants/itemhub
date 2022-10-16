@@ -1,5 +1,8 @@
-資料夾路徑
+```
+.
+├── README.md
+└── dev-ops
+    └── db
+        └── manually-dump-tips.md
 
--   dev-ops
-    -   db
-        -   manually-dump-tips
+```
