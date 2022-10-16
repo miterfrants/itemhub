@@ -94,7 +94,7 @@ namespace Homo.IotApi
 
             options.TlsEndpointOptions.RemoteCertificateValidationCallback += (sender, cer, chain, sslPolicyErrors) =>
                 {
-                    System.Console.WriteLine($"SSL Policy Error:{Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"TLS Policy Error: {Newtonsoft.Json.JsonConvert.SerializeObject(sslPolicyErrors, Newtonsoft.Json.Formatting.Indented)}");
                     try
                     {
                         if (sslPolicyErrors == SslPolicyErrors.None)
@@ -107,12 +107,12 @@ namespace Homo.IotApi
                             chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
                             chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
                             chain.ChainPolicy.ExtraStore.Add(ca);
-                            System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                            System.Console.WriteLine($"CA Fingerprint: {Newtonsoft.Json.JsonConvert.SerializeObject(ca.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
                             chain.Build((X509Certificate2)cer);
 
                             return chain.ChainElements.Cast<X509ChainElement>().Any(a =>
                             {
-                                System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
+                                System.Console.WriteLine($"Chain Fingerprint: {Newtonsoft.Json.JsonConvert.SerializeObject(a.Certificate.Thumbprint, Newtonsoft.Json.Formatting.Indented)}");
                                 return a.Certificate.Thumbprint == ca.Thumbprint;
                             });
                         }
@@ -133,11 +133,14 @@ namespace Homo.IotApi
             services.AddSingleton<ErrorMessageLocalizer>(new ErrorMessageLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<CommonLocalizer>(new CommonLocalizer(appSettings.Common.LocalizationResourcesPath));
             services.AddSingleton<ValidationLocalizer>(new ValidationLocalizer(appSettings.Common.LocalizationResourcesPath));
-            services.AddSingleton<MqttController>();
 
             // mqtt
-            MQTTnet.Client.MqttClient mqttBroker = (MQTTnet.Client.MqttClient)new MqttFactory().CreateMqttClient();
-            services.AddSingleton<MQTTnet.Client.MqttClient>(mqttBroker);
+            if (_env.EnvironmentName.ToLower() != "development" && _env.EnvironmentName.ToLower() != "migration")
+            {
+                services.AddSingleton<MqttController>();
+            }
+            List<MqttPublisher> localMqttPublishers = new List<MqttPublisher>();
+            services.AddSingleton<List<MqttPublisher>>(localMqttPublishers);
 
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;

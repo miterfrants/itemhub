@@ -128,7 +128,6 @@ namespace Homo.IotApi
             modelBuilder.Entity<SystemConfig>(entity =>
             {
                 entity.HasIndex(p => new { p.Key });
-                entity.HasIndex(p => new { p.Value });
             });
 
             modelBuilder.Entity<DevicePin>(entity =>

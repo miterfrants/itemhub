@@ -7,5 +7,6 @@ namespace Homo.IotApi
         public static string CLEAR_TRIGGER_LOG_LOCKER = "CLEAR_TRIGGER_LOG_LOCKER";
         public static string CLEAR_EXPIRED_PIN_DATA_LOCKER = "CLEAR_EXPIRED_PIN_DATA_LOCKER";
         public static string SEND_OVER_PLAN_NOTIFICATION_LOCKER = "SEND_OVER_PLAN_NOTIFICATION_LOCKER";
+        public static string LOCAL_MQTT_PUBLISHER_ENDPOINTS = "LOCAL_MQTT_PUBLISHER_ENDPOINTS";
     }
 }
