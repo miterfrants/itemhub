@@ -21,5 +21,6 @@ namespace Homo.IotApi
         public long Microcontroller { get; set; }
 
         public string Filename { get; set; }
+        public FIRMWARE_PROTOCOL Protocol { get; set; }
     }
 }

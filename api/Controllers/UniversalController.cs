@@ -164,5 +164,17 @@ namespace Homo.IotApi
         {
             return ConvertHelper.EnumToList(typeof(DASHBOARD_MONITOR_MODE));
         }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Firmware Protocol",
+            Description = ""
+        )]
+        [Route("protocols")]
+        [HttpGet]
+        public ActionResult<dynamic> getFirmwareProtocol()
+        {
+            return ConvertHelper.EnumToList(typeof(FIRMWARE_PROTOCOL));
+        }
     }
 }
