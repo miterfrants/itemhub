@@ -1,5 +1,6 @@
 using System;
 using Homo.Api;
+using System.Collections.Generic;
 
 namespace Homo.IotApi
 {
@@ -18,5 +19,7 @@ namespace Homo.IotApi
         public long? EditedBy { get; set; }
         [MaxLength(512)]
         public string Memo { get; set; }
+        [MaxLength(1024)]
+        public string SupportedProtocols { get; set; }
     }
 }

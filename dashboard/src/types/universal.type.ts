@@ -10,6 +10,7 @@ export interface Microcontroller {
     key: string;
     pins: Pins[];
     memo: string;
+    supportedProtocols: string[];
 }
 
 export interface Pins {

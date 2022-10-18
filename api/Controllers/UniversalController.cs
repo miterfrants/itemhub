@@ -124,6 +124,7 @@ namespace Homo.IotApi
                 x.Key,
                 Pins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTOs.McuPin>>(x.Pins),
                 Memo = x.Memo,
+                SupportedProtocols = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(x.SupportedProtocols)
             }).ToList();
         }
 
