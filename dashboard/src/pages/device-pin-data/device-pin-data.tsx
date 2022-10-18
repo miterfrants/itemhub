@@ -268,6 +268,24 @@ const DevicePinData = () => {
     }, [device]);
 
     useEffect(() => {
+        const selectedMicrocontroller = microcontrollers.find(
+            (item) => item.id === microcontrollerId
+        );
+        if (
+            selectedMicrocontroller &&
+            selectedMicrocontroller.supportedProtocols.length === 1
+        ) {
+            const protocolValue = protocols.find(
+                (protocol) =>
+                    protocol.key ===
+                    selectedMicrocontroller.supportedProtocols[0]
+            )?.value;
+            setProtocol(protocolValue || 0);
+        }
+        // eslint-disable-next-line
+    }, [microcontrollerId]);
+
+    useEffect(() => {
         ReactTooltip.rebuild();
     }, [selectedPins]);
 
@@ -469,43 +487,60 @@ const DevicePinData = () => {
 
                         <div className="mb-4">
                             <label>通訊方式</label>
-                            <select
-                                className="form-select mt-2"
-                                onChange={(e) => {
-                                    if (!e.target.value) {
-                                        return;
+                            {selectedMicrocontroller?.supportedProtocols
+                                .length === 1 ? (
+                                <div>
+                                    目前僅支援
+                                    {
+                                        selectedMicrocontroller
+                                            ?.supportedProtocols[0]
                                     }
-                                    const validResult =
-                                        ValidationHelpers.Require(
-                                            Number(e.target.value)
-                                        );
-                                    setIsValidData((prev) => {
-                                        return {
-                                            ...prev,
-                                            selectedProtocol: validResult,
-                                        };
-                                    });
-                                    setProtocol(Number(e.target.value));
-                                }}
-                            >
-                                <option>請選擇通訊方式</option>
-                                {protocols.map(({ value, key, label }) => {
-                                    return (
-                                        <option
-                                            key={key}
-                                            value={value}
-                                            selected={
-                                                value === device?.protocol
+                                </div>
+                            ) : (
+                                <div>
+                                    <select
+                                        className="form-select mt-2"
+                                        onChange={(e) => {
+                                            if (!e.target.value) {
+                                                return;
                                             }
-                                        >
-                                            {label}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                            {!isValidData.selectedProtocol && (
-                                <div className="text-danger fs-5">
-                                    通訊方式為必填欄位
+                                            const validResult =
+                                                ValidationHelpers.Require(
+                                                    Number(e.target.value)
+                                                );
+                                            setIsValidData((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    selectedProtocol:
+                                                        validResult,
+                                                };
+                                            });
+                                            setProtocol(Number(e.target.value));
+                                        }}
+                                    >
+                                        <option>請選擇通訊方式</option>
+                                        {protocols.map(
+                                            ({ value, key, label }) => {
+                                                return (
+                                                    <option
+                                                        key={key}
+                                                        value={value}
+                                                        selected={
+                                                            value ===
+                                                            device?.protocol
+                                                        }
+                                                    >
+                                                        {label}
+                                                    </option>
+                                                );
+                                            }
+                                        )}
+                                    </select>
+                                    {!isValidData.selectedProtocol && (
+                                        <div className="text-danger fs-5">
+                                            通訊方式為必填欄位
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
