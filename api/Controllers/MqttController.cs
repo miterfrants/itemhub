@@ -5,14 +5,10 @@ using Homo.Api;
 using System.Collections.Generic;
 using Homo.Core.Helpers;
 using Homo.AuthApi;
-using MQTTnet.Client;
 using MQTTnet.Server;
 using MQTTnet.Protocol;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Threading;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
@@ -40,7 +36,7 @@ namespace Homo.IotApi
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
 
-        public MqttController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublisher)
+        public MqttController(IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublisher)
         {
             AppSettings settings = optionAppSettings.Value;
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
@@ -48,6 +44,8 @@ namespace Homo.IotApi
             DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
             DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
             iotBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
+            dbContextBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
+
             _iotDbContext = new IotDbContext(iotBuilder.Options);
             _dbContext = new DBContext(dbContextBuilder.Options);
             _jwtKey = optionAppSettings.Value.Secrets.JwtKey;
@@ -85,7 +83,6 @@ namespace Homo.IotApi
             {
                 return Task.CompletedTask;
             }
-
             OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.UserName);
             if (client == null)
             {
@@ -93,9 +90,9 @@ namespace Homo.IotApi
                 System.Console.WriteLine($"MQTT Connect Error:{Newtonsoft.Json.JsonConvert.SerializeObject("BadUserNameOrPassword Client Not Found", Newtonsoft.Json.Formatting.Indented)}");
                 return Task.CompletedTask;
             }
-
             string hashClientSecrets = CryptographicHelper.GenerateSaltedHash(eventArgs.Password, client.Salt);
             User user = UserDataservice.GetOne(_dbContext, client.OwnerId, true);
+
             if (client.HashClientSecrets != hashClientSecrets)
             {
                 eventArgs.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
