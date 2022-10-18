@@ -3,14 +3,16 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221004083402_AddFirmwareProtocol")]
+    partial class AddFirmwareProtocol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -560,12 +562,14 @@ namespace IotApi.Migrations
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasMaxLength(4096)
-                        .HasColumnType("varchar(4096)");
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Key");
+
+                    b.HasIndex("Value");
 
                     b.ToTable("SystemConfig");
                 });

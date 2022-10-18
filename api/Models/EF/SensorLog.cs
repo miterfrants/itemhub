@@ -17,6 +17,6 @@ namespace Homo.IotApi
         public decimal? Value { get; set; }
         [Required]
         public long DeviceId { get; set; }
-        public Device Device { get; set; }
+        public virtual Device Device { get; set; }
     }
 }

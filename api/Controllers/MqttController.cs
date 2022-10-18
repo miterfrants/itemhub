@@ -45,6 +45,7 @@ namespace Homo.IotApi
             DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
             iotBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
             dbContextBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
+
             _iotDbContext = new IotDbContext(iotBuilder.Options);
             _dbContext = new DBContext(dbContextBuilder.Options);
             _jwtKey = optionAppSettings.Value.Secrets.JwtKey;
@@ -98,6 +99,7 @@ namespace Homo.IotApi
                 System.Console.WriteLine($"MQTT Connect Error:{Newtonsoft.Json.JsonConvert.SerializeObject("BadUserNameOrPassword Password Error", Newtonsoft.Json.Formatting.Indented)}");
                 return Task.CompletedTask;
             }
+
             eventArgs.SessionItems.Add("userId", client.OwnerId);
             eventArgs.SessionItems.Add("deviceId", client.DeviceId.GetValueOrDefault());
             return Task.CompletedTask;

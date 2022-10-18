@@ -20,6 +20,6 @@ namespace Homo.IotApi
         public decimal? Value { get; set; }
         [Required]
         public long DeviceId { get; set; }
-        public Homo.IotApi.Device Device { get; set; }
+        public virtual Homo.IotApi.Device Device { get; set; }
     }
 }
