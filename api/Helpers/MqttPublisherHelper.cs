@@ -78,10 +78,12 @@ namespace Homo.IotApi
                     // 多個 request 過來的時候可能會並行的發生, 所以這邊要再多做一個判斷避免 localMqttPublishers 中間有沒連線的 mqtt client
                     if (client.IsConnected && localMqttPublishers.Where(x => x.Id == endpoint.Id).Count() == 0)
                     {
+                        System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt connected", Newtonsoft.Json.Formatting.Indented)}");
                         localMqttPublishers.Add(publisher);
                     }
                     else
                     {
+                        System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt already connected run disconnect and dispose", Newtonsoft.Json.Formatting.Indented)}");
                         client.DisconnectAsync();
                         client.Dispose();
                     }
@@ -92,6 +94,7 @@ namespace Homo.IotApi
             {
                 if (!publisher.Client.IsConnected && !publisher.IsConnecting)
                 {
+                    System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt exists and status is not connectd annd connecting", Newtonsoft.Json.Formatting.Indented)}");
                     var mqttClientOptions = new MqttClientOptionsBuilder()
                                     .WithTcpServer(publisher.IP, 8883)
                                     .WithClientId("api-server")
