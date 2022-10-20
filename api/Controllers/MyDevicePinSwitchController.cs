@@ -33,12 +33,12 @@ namespace Homo.IotApi
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
             Summary = "裝置 PIN 開關 - 取得所有開關 PIN",
-            Description = ""
+            Description = "僅會輸出 id, value, pin"
         )]
         [HttpGet]
         public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return DevicePinDataservice.GetAll(_dbContext, extraPayload.Id, new List<long>() { id }, DEVICE_MODE.SWITCH, null);
+            return DevicePinDataservice.GetAllSummary(_dbContext, extraPayload.Id, new List<long>() { id }, DEVICE_MODE.SWITCH, null);
         }
 
 

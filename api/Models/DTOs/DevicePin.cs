@@ -25,6 +25,16 @@ namespace Homo.IotApi
 
         }
 
+        public partial class DevicePinSummary : DTOs
+        {
+            public long Id { get; set; }
+            [Required]
+            [MaxLength(5)]
+            public string Pin { get; set; }
+            public decimal? Value { get; set; }
+
+        }
+
         public partial class CreateDevicePin : DTOs
         {
             public long Id { get; set; }
