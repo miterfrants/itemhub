@@ -28,7 +28,7 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import ReactTooltip from 'react-tooltip';
-import { Microcontroller } from '@/types/universal.type';
+import { Microcontroller, Pins } from '@/types/universal.type';
 import { MCU_TYPE } from '@/constants/mcu-type';
 import { ValidationHelpers } from '@/helpers/validation.helper';
 
@@ -44,6 +44,8 @@ const DevicePinData = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
+    const [customPinName, setCustomPinName] = useState('');
+    const customPinNameRef = useRef<HTMLInputElement>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
     );
@@ -55,6 +57,10 @@ const DevicePinData = () => {
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
         useState<null | Microcontroller>(null);
+
+    const [customPins, setCustomPins] = useState<Pins[]>([]);
+    const [validateCustomPinName, setValidateCustomPinName] =
+        useState<boolean>(false);
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -124,6 +130,39 @@ const DevicePinData = () => {
         selectedPins: true,
         selectedMicrocontroller: true,
     });
+
+    const addCustomPins = () => {
+        const existCustomPins = (customPins || []).find(
+            (customPins) => customPins.name === customPinName
+        );
+        if (existCustomPins) {
+            dispatch(
+                toasterActions.pushOne({
+                    message: '已有同樣名字的 Pin',
+                    duration: 5,
+                    type: ToasterTypeEnum.ERROR,
+                })
+            );
+            return;
+        }
+
+        setCustomPins(() => {
+            const newCustomPins = [...(customPins || [])];
+
+            const pushData: Pins = {
+                name: customPinName,
+                value: null,
+            };
+
+            newCustomPins.push({ ...pushData });
+            return newCustomPins;
+        });
+
+        if (customPinNameRef.current) {
+            customPinNameRef.current.value = '';
+            customPinNameRef.current?.focus();
+        }
+    };
 
     const sendApi = () => {
         // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
@@ -236,6 +275,23 @@ const DevicePinData = () => {
         }
         setSelectedPins(devicePins);
         devicePinsRef.current = devicePins;
+
+        const originalCustomPins = devicePins.map((item) => item.pin);
+
+        setCustomPins(() => {
+            const newCustomPins = [...(customPins || [])];
+            originalCustomPins.forEach((item) => {
+                const pushData: Pins = {
+                    name: item,
+                    value: null,
+                };
+
+                newCustomPins.push({ ...pushData });
+            });
+
+            return newCustomPins;
+        });
+
         // eslint-disable-next-line
     }, [devicePinsFromStore]);
 
@@ -350,6 +406,14 @@ const DevicePinData = () => {
         // eslint-disable-next-line
     }, [shouldBeDeletedPins]);
 
+    useEffect(() => {
+        if (customPinName.length > 6) {
+            setValidateCustomPinName(false);
+            return;
+        }
+        setValidateCustomPinName(true);
+    }, [customPinName]);
+
     const breadcrumbs = [
         {
             label: '裝置列表',
@@ -460,6 +524,52 @@ const DevicePinData = () => {
                                 </div>
                             )}
                         </div>
+                        {!isCreateMode &&
+                            selectedMicrocontroller?.key === MCU_TYPE.其他 && (
+                                <div className="mb-4">
+                                    <div className="d-flex mt-5 mb-3 fs-5">
+                                        新增 Pin
+                                        <hr className="bg-gray flex-grow-1 ms-3" />
+                                    </div>
+                                    <label>Pin 名稱</label>
+                                    <div className="d-flex align-items-top mt-2">
+                                        <div className="col-8 col-lg-3">
+                                            <input
+                                                type="text"
+                                                className={`form-control ${
+                                                    !validateCustomPinName &&
+                                                    'border-danger'
+                                                }`}
+                                                ref={customPinNameRef}
+                                                placeholder="限5字內"
+                                                onChange={(e) => {
+                                                    setCustomPinName(
+                                                        e.target.value
+                                                    );
+                                                }}
+                                            />
+                                            {!validateCustomPinName && (
+                                                <div className="text-danger fs-5">
+                                                    限5字內
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="col-4 col-lg-3 ms-3">
+                                            <button
+                                                disabled={
+                                                    customPinName.length ===
+                                                        0 ||
+                                                    !validateCustomPinName
+                                                }
+                                                className="btn btn-primary"
+                                                onClick={addCustomPins}
+                                            >
+                                                <div>新增</div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                         {selectedMicrocontroller &&
                             selectedMicrocontroller.memo &&
@@ -471,31 +581,23 @@ const DevicePinData = () => {
                                     <div>{selectedMicrocontroller?.memo}</div>
                                 </div>
                             )}
-
-                        {!isCreateMode && selectedMicrocontroller && (
-                            <div>
-                                <DevicePin
-                                    deviceId={id}
-                                    microcontrollerId={
-                                        selectedMicrocontroller.id
-                                    }
-                                    pinsList={selectedPins}
-                                    updateSelectedPins={(newPin) => {
-                                        updateSelectPins(newPin);
-                                    }}
-                                    removeSelectedPins={(removePinName) => {
-                                        setSelectedPins(
-                                            selectedPins
-                                                ? selectedPins.filter(
-                                                      (item) =>
-                                                          item.pin !==
-                                                          removePinName
-                                                  )
-                                                : []
-                                        );
-                                        const validResult =
-                                            ValidationHelpers.ValidateSelectedPins(
-                                                isCreateMode,
+                        {!isCreateMode &&
+                            selectedMicrocontroller &&
+                            (selectedMicrocontroller.pins.length > 0 ||
+                                (customPins && customPins.length > 0)) && (
+                                <div>
+                                    <DevicePin
+                                        deviceId={id}
+                                        microcontrollerId={
+                                            selectedMicrocontroller.id
+                                        }
+                                        selectedPinsList={selectedPins}
+                                        customPinsList={customPins}
+                                        updateSelectedPins={(newPin) => {
+                                            updateSelectPins(newPin);
+                                        }}
+                                        removeSelectedPins={(removePinName) => {
+                                            setSelectedPins(
                                                 selectedPins
                                                     ? selectedPins.filter(
                                                           (item) =>
@@ -504,19 +606,30 @@ const DevicePinData = () => {
                                                       )
                                                     : []
                                             );
-                                        setIsValidData((prev) => {
-                                            return {
-                                                ...prev,
-                                                selectedPins: validResult,
-                                            };
-                                        });
-                                    }}
-                                    isSelectedPinsValid={
-                                        isValidData.selectedPins
-                                    }
-                                />
-                            </div>
-                        )}
+                                            const validResult =
+                                                ValidationHelpers.ValidateSelectedPins(
+                                                    isCreateMode,
+                                                    selectedPins
+                                                        ? selectedPins.filter(
+                                                              (item) =>
+                                                                  item.pin !==
+                                                                  removePinName
+                                                          )
+                                                        : []
+                                                );
+                                            setIsValidData((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    selectedPins: validResult,
+                                                };
+                                            });
+                                        }}
+                                        isSelectedPinsValid={
+                                            isValidData.selectedPins
+                                        }
+                                    />
+                                </div>
+                            )}
                         <div className="mb-4 text-center">
                             <img
                                 className="w-100 microcontroller-img"

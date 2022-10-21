@@ -5,34 +5,38 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import ReactTooltip from 'react-tooltip';
-import { Microcontroller } from '@/types/universal.type';
+import { Microcontroller, Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
+import { MCU_TYPE } from '@/constants/mcu-type';
 
 const DevicePin = ({
     deviceId,
     microcontrollerId,
-    pinsList,
+    selectedPinsList,
+    customPinsList,
     updateSelectedPins,
     removeSelectedPins,
     isSelectedPinsValid,
 }: {
     deviceId: number;
     microcontrollerId: number;
-    pinsList: PinItem[];
+    selectedPinsList: PinItem[];
+    customPinsList: Pins[];
     updateSelectedPins: (pins: PinItem) => void;
     removeSelectedPins: (pin: string) => void;
     isSelectedPinsValid: boolean;
 }) => {
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
-    const [selectedMicrocontroller, setSelectedMicrocontroller] =
-        useState<null | Microcontroller>(null);
+    // const [selectedMicrocontroller, setSelectedMicrocontroller] =
+    //     useState<null | Microcontroller>(null);
 
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
     const [switchMode, setSwitchMode] = useState(1);
     const [sensorMode, setSensorMode] = useState(0);
+    const [microcontrollerPins, setMicrocontrollerPins] = useState<Pins[]>([]);
 
     const editPinName = (name: string) => {
         setOriginalPin(name);
@@ -40,7 +44,7 @@ const DevicePin = ({
     };
 
     const getShortPinName = (name: string) => {
-        const pinName = pinsList?.find((pins) => {
+        const pinName = selectedPinsList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -54,7 +58,7 @@ const DevicePin = ({
     };
 
     const getFullPinName = (name: string) => {
-        const newPinName = pinsList?.find((pins) => {
+        const newPinName = selectedPinsList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -70,7 +74,7 @@ const DevicePin = ({
     };
 
     const updatePinName = () => {
-        const pinData = pinsList?.find((item) => {
+        const pinData = selectedPinsList?.find((item) => {
             return item.pin === originalPin;
         });
 
@@ -112,17 +116,26 @@ const DevicePin = ({
     }, [deviceModes]);
 
     useEffect(() => {
-        if (microcontrollerId !== null) {
-            const targetMcu = microcontrollers.find(
-                (item) => item.id === microcontrollerId
-            );
-            setSelectedMicrocontroller(
-                targetMcu !== undefined ? targetMcu : null
-            );
+        if (!microcontrollerId) {
+            return;
+        }
+
+        const targetMcu = microcontrollers.find(
+            (item) => item.id === microcontrollerId
+        );
+
+        if (!targetMcu) {
+            return;
+        }
+
+        if (targetMcu?.key == MCU_TYPE.其他) {
+            setMicrocontrollerPins(customPinsList);
+        } else {
+            setMicrocontrollerPins(targetMcu.pins);
         }
 
         // eslint-disable-next-line
-    }, [microcontrollerId]);
+    }, [microcontrollerId, customPinsList]);
 
     useEffect(() => {
         pinNameInputRef.current?.focus();
@@ -138,11 +151,11 @@ const DevicePin = ({
                     </div>
                 )}
                 <div className="d-flex flex-wrap mt-2">
-                    {selectedMicrocontroller?.pins.map((pin, index) => {
+                    {microcontrollerPins.map((pin, index) => {
                         return (
                             <div
                                 className={`${
-                                    pinsList
+                                    selectedPinsList
                                         ?.map((pins) => {
                                             return pins.pin;
                                         })
@@ -154,7 +167,7 @@ const DevicePin = ({
                                 key={index}
                             >
                                 <div className="text-center pin-selector">
-                                    {pinsList?.filter((pins) => {
+                                    {selectedPinsList?.filter((pins) => {
                                         return pins.pin === pin.name;
                                     })[0]?.mode === switchMode ? (
                                         <div>開關</div>
@@ -171,7 +184,7 @@ const DevicePin = ({
                                 <ReactTooltip effect="solid" place="bottom" />
                                 <div
                                     className={`rounded-2 shadow-lg overflow-hidden bg-white pin-option ${
-                                        pinsList?.find((pins) => {
+                                        selectedPinsList?.find((pins) => {
                                             return pins.pin === pin.name;
                                         })
                                             ? 'pin-option-4'
@@ -212,7 +225,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            pinsList?.find((pins) => {
+                                            selectedPinsList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
@@ -226,7 +239,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            pinsList?.find((pins) => {
+                                            selectedPinsList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
