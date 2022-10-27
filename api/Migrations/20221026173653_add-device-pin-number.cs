@@ -16,6 +16,7 @@ namespace IotApi.Migrations
 
             migrationBuilder.Sql("CREATE TEMPORARY TABLE MicrocontrollerPinsNumber SELECT id AS MicrocontrollerId ,name AS pinsName, value AS pinsValue FROM Microcontroller CROSS JOIN JSON_TABLE (Microcontroller.Pins, '$[*]' COLUMNS(name text path '$.name',value text path '$.value')) as pinsData ");
             migrationBuilder.Sql("UPDATE DevicePin LEFT JOIN Device ON DevicePin.DeviceId = Device.id LEFT JOIN MicrocontrollerPinsNumber ON MicrocontrollerPinsNumber.MicrocontrollerId = Device.Microcontroller AND DevicePin.Pin = MicrocontrollerPinsNumber.pinsName SET PinNumber = pinsValue WHERE Device.Microcontroller IS NOT NULL AND pinsName IS NOT NULL");
+            migrationBuilder.Sql("DROP TEMPORARY TABLE MicrocontrollerPinsNumber");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
