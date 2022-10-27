@@ -5,7 +5,7 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
 import { DEVICE_MODE } from '@/constants/device-mode';
 import ReactTooltip from 'react-tooltip';
-import { Microcontroller, Pins } from '@/types/universal.type';
+import { Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
 import { MCU_TYPE } from '@/constants/mcu-type';
 
@@ -28,9 +28,6 @@ const DevicePin = ({
 }) => {
     const { microcontrollers } = useAppSelector(selectUniversal);
     const { deviceModes } = useAppSelector(selectUniversal);
-    // const [selectedMicrocontroller, setSelectedMicrocontroller] =
-    //     useState<null | Microcontroller>(null);
-
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
@@ -85,6 +82,7 @@ const DevicePin = ({
         const newPinData: PinItem = {
             deviceId: deviceId,
             pin: pinData.pin || '',
+            pinNumber: pinData.pinNumber || '',
             mode: pinData.mode,
             name: pinNameInputRef.current?.value || '',
             value: null,
@@ -198,6 +196,7 @@ const DevicePin = ({
                                             const pinData: PinItem = {
                                                 deviceId: deviceId,
                                                 pin: pin.name,
+                                                pinNumber: pin.value,
                                                 mode: switchMode,
                                                 name: pin.name,
                                                 value: 0,
@@ -214,6 +213,7 @@ const DevicePin = ({
                                             const pinData: PinItem = {
                                                 deviceId: deviceId,
                                                 pin: pin.name,
+                                                pinNumber: pin.value,
                                                 mode: sensorMode,
                                                 name: pin.name,
                                                 value: null,

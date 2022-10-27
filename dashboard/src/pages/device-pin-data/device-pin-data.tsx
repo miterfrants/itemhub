@@ -45,7 +45,9 @@ const DevicePinData = () => {
 
     const [name, setName] = useState('');
     const [customPinName, setCustomPinName] = useState('');
+    const [customPinValue, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
+    const customPinValueRef = useRef<HTMLInputElement>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
     );
@@ -59,8 +61,6 @@ const DevicePinData = () => {
         useState<null | Microcontroller>(null);
 
     const [customPins, setCustomPins] = useState<Pins[]>([]);
-    const [validateCustomPinName, setValidateCustomPinName] =
-        useState<boolean>(false);
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -125,6 +125,11 @@ const DevicePinData = () => {
         navigate(`/dashboard/devices/${id}${search}`);
     };
 
+    const [isValidCustomData, setIsValidCustomData] = useState({
+        name: true,
+        value: true,
+    });
+
     const [isValidData, setIsValidData] = useState({
         name: true,
         selectedPins: true,
@@ -132,6 +137,20 @@ const DevicePinData = () => {
     });
 
     const addCustomPins = () => {
+        const validateReslut = ValidationHelpers.ValidateCustomPinData(
+            customPinName,
+            customPinValue
+        );
+        if (!validateReslut.isValid) {
+            setIsValidCustomData(() => {
+                return {
+                    name: validateReslut.name,
+                    value: validateReslut.value,
+                };
+            });
+            return;
+        }
+
         const existCustomPins = (customPins || []).find(
             (customPins) => customPins.name === customPinName
         );
@@ -151,12 +170,16 @@ const DevicePinData = () => {
 
             const pushData: Pins = {
                 name: customPinName,
-                value: null,
+                value: customPinValue,
             };
 
             newCustomPins.push({ ...pushData });
             return newCustomPins;
         });
+
+        if (customPinValueRef.current) {
+            customPinValueRef.current.value = '';
+        }
 
         if (customPinNameRef.current) {
             customPinNameRef.current.value = '';
@@ -245,6 +268,7 @@ const DevicePinData = () => {
                 mode: target.mode,
                 name: target.name,
                 value: target.value,
+                pinNumber: target.pinNumber,
             };
 
             newSelected.push({ ...pushData });
@@ -273,27 +297,45 @@ const DevicePinData = () => {
             getDevicePinsApi();
             return;
         }
+
+        if (devicePins.length === 0) {
+            return;
+        }
         setSelectedPins(devicePins);
+
         devicePinsRef.current = devicePins;
 
-        const originalCustomPins = devicePins.map((item) => item.pin);
+        let targetKey = '';
+        if (microcontrollers !== null) {
+            const targetMcu = microcontrollers.find(
+                (item) => item.id === devicePins[0].device?.microcontroller
+            );
+            setSelectedMicrocontroller(
+                targetMcu !== undefined ? targetMcu : null
+            );
+            targetKey = targetMcu ? targetMcu.key : '';
+        }
 
-        setCustomPins(() => {
-            const newCustomPins = [...(customPins || [])];
-            originalCustomPins.forEach((item) => {
-                const pushData: Pins = {
-                    name: item,
-                    value: null,
-                };
+        // 裝置類型為其他時，將 devicePins 塞至 customPins，後面才可以判斷有沒有重複
+        if (targetKey === MCU_TYPE.其他) {
+            setCustomPins(() => {
+                const newCustomPins: Pins[] = [];
 
-                newCustomPins.push({ ...pushData });
+                devicePins.forEach((item) => {
+                    const pushData: Pins = {
+                        name: item.pin,
+                        value: item.pinNumber,
+                    };
+
+                    newCustomPins.push({ ...pushData });
+                });
+
+                return newCustomPins;
             });
-
-            return newCustomPins;
-        });
+        }
 
         // eslint-disable-next-line
-    }, [devicePinsFromStore]);
+    }, [devicePinsFromStore, microcontrollers]);
 
     useEffect(() => {
         if (isCreateMode) {
@@ -405,14 +447,6 @@ const DevicePinData = () => {
         deleteDevicePinsApi();
         // eslint-disable-next-line
     }, [shouldBeDeletedPins]);
-
-    useEffect(() => {
-        if (customPinName.length > 6) {
-            setValidateCustomPinName(false);
-            return;
-        }
-        setValidateCustomPinName(true);
-    }, [customPinName]);
 
     const breadcrumbs = [
         {
@@ -531,35 +565,90 @@ const DevicePinData = () => {
                                         新增 Pin
                                         <hr className="bg-gray flex-grow-1 ms-3" />
                                     </div>
-                                    <label>Pin 名稱</label>
-                                    <div className="d-flex align-items-top mt-2">
-                                        <div className="col-8 col-lg-3">
+                                    <div className="row align-items-top mt-2">
+                                        <div className="col-4">
+                                            <label>Pin</label>
                                             <input
                                                 type="text"
                                                 className={`form-control ${
-                                                    !validateCustomPinName &&
+                                                    !isValidCustomData.name &&
                                                     'border-danger'
                                                 }`}
                                                 ref={customPinNameRef}
                                                 placeholder="限5字內"
                                                 onChange={(e) => {
+                                                    const validResult =
+                                                        ValidationHelpers.Require(
+                                                            e.target.value
+                                                        ) &&
+                                                        ValidationHelpers.ValidLength(
+                                                            e.target.value,
+                                                            5
+                                                        );
+
                                                     setCustomPinName(
                                                         e.target.value
                                                     );
+                                                    setIsValidCustomData(
+                                                        (prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                name: validResult,
+                                                            };
+                                                        }
+                                                    );
                                                 }}
                                             />
-                                            {!validateCustomPinName && (
+                                            {!isValidCustomData.name && (
                                                 <div className="text-danger fs-5">
-                                                    限5字內
+                                                    請輸入 5 字內的 Pin 名稱
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="col-4 col-lg-3 ms-3">
+                                        <div className="col-4">
+                                            <label>Pin 代碼</label>
+                                            <input
+                                                type="text"
+                                                className={`form-control ${
+                                                    !isValidCustomData.value &&
+                                                    'border-danger'
+                                                }`}
+                                                ref={customPinValueRef}
+                                                placeholder="限5字內"
+                                                onChange={(e) => {
+                                                    const validResult =
+                                                        ValidationHelpers.Require(
+                                                            e.target.value
+                                                        ) &&
+                                                        ValidationHelpers.ValidLength(
+                                                            e.target.value,
+                                                            5
+                                                        );
+                                                    setCustomPinValue(
+                                                        e.target.value
+                                                    );
+                                                    setIsValidCustomData(
+                                                        (prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                value: validResult,
+                                                            };
+                                                        }
+                                                    );
+                                                }}
+                                            />
+                                            {!isValidCustomData.value && (
+                                                <div className="text-danger fs-5">
+                                                    請輸入 5 字內的 Pin Value
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="col-4">
+                                            <label>&nbsp;</label>
                                             <button
                                                 disabled={
-                                                    customPinName.length ===
-                                                        0 ||
-                                                    !validateCustomPinName
+                                                    !isValidCustomData.name ||
+                                                    !isValidCustomData.value
                                                 }
                                                 className="btn btn-primary"
                                                 onClick={addCustomPins}

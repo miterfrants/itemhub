@@ -14,7 +14,7 @@ export interface Microcontroller {
 
 export interface Pins {
     name: string;
-    value: number | null;
+    value: string;
 }
 export interface DeviceMode {
     key: string;

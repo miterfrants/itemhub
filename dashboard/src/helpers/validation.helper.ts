@@ -49,4 +49,36 @@ export const ValidationHelpers = {
 
         return result;
     },
+    ValidLength: (validation: string | null, limit: number) => {
+        if (!validation) {
+            return false;
+        }
+        if (validation.length > limit) {
+            return false;
+        }
+        return true;
+    },
+    ValidateCustomPinData: (name: string | null, value: string | null) => {
+        const result = {
+            isValid: false,
+            name: false,
+            value: false,
+        };
+
+        if (
+            ValidationHelpers.Require(name) &&
+            ValidationHelpers.ValidLength(name, 5)
+        ) {
+            result.name = true;
+        }
+        if (
+            ValidationHelpers.Require(value) &&
+            ValidationHelpers.ValidLength(value, 5)
+        ) {
+            result.value = true;
+        }
+
+        result.isValid = result.name && result.value;
+        return result;
+    },
 };
