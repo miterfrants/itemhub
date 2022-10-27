@@ -54,12 +54,11 @@ namespace Homo.IotApi
             CopyDirectory(microcontrollerFirmwareTemplatePath, destPath, true);
             string pinTemplate = "pins.push_back(ItemhubPin({PIN_NUMBER}, \"{PIN_STRING}\", {PIN_MODE}))";
             List<string> pins = new List<string>();
-            var targetMcu = dbContext.Microcontroller.Where(x => x.Id == device.Microcontroller).FirstOrDefault();
-            var McuPins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTOs.McuPin>>(targetMcu.Pins);
+
             devicePins.ForEach(item =>
             {
                 string pinString = item.Pin;
-                string pinValue = McuPins.Find(x => x.Name == pinString).Value;
+                string pinValue = item.PinNumber;
                 pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinValue).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
             });
 
