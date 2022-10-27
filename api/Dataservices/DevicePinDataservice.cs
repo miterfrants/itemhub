@@ -19,6 +19,7 @@ namespace Homo.IotApi
                     OwnerId = x.Pin.OwnerId,
                     DeletedAt = x.Pin.DeletedAt,
                     Pin = x.Pin.Pin,
+                    PinNumber = x.Pin.PinNumber,
                     Mode = x.Pin.Mode,
                     Name = x.Pin.Name,
                     Value = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.Value :
@@ -173,6 +174,7 @@ namespace Homo.IotApi
                 OwnerId = pin.OwnerId,
                 DeletedAt = pin.DeletedAt,
                 Pin = pin.Pin,
+                PinNumber = pin.PinNumber,
                 Mode = pin.Mode,
                 Name = pin.Name,
                 Value = pin.Value,
