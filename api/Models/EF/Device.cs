@@ -19,5 +19,6 @@ namespace Homo.IotApi
         [MaxLength(128)]
         public bool Online { get; set; }
         public long? Microcontroller { get; set; }
+        public FIRMWARE_PROTOCOL Protocol { get; set; }
     }
 }

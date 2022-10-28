@@ -13,6 +13,7 @@ namespace Homo.IotApi
             public long? ZoneId { get; set; }
             public string Info { get; set; }
             public long? Microcontroller { get; set; }
+            public FIRMWARE_PROTOCOL Protocol { get; set; }
         }
     }
 }

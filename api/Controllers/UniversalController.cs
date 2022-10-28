@@ -124,6 +124,7 @@ namespace Homo.IotApi
                 x.Key,
                 Pins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTOs.McuPin>>(x.Pins),
                 Memo = x.Memo,
+                SupportedProtocols = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(x.SupportedProtocols)
             }).ToList();
         }
 
@@ -163,6 +164,18 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getDashboardMonitorMode()
         {
             return ConvertHelper.EnumToList(typeof(DASHBOARD_MONITOR_MODE));
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Firmware Protocol",
+            Description = ""
+        )]
+        [Route("protocols")]
+        [HttpGet]
+        public ActionResult<dynamic> getFirmwareProtocol()
+        {
+            return ConvertHelper.EnumToList(typeof(FIRMWARE_PROTOCOL));
         }
     }
 }

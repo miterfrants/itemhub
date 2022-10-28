@@ -48,6 +48,7 @@ const DevicePinData = () => {
     const [customPinValue, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
     const customPinValueRef = useRef<HTMLInputElement>(null);
+    const [protocol, setProtocol] = useState<number | null>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
     );
@@ -55,7 +56,7 @@ const DevicePinData = () => {
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
     const devicePinsRef = useRef<PinItem[]>([]);
-    const { microcontrollers } = useAppSelector(selectUniversal);
+    const { microcontrollers, protocols } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
         useState<null | Microcontroller>(null);
@@ -93,6 +94,7 @@ const DevicePinData = () => {
             microcontroller: microcontrollerId
                 ? Number(microcontrollerId)
                 : device?.microcontroller,
+            protocol: protocol === null ? device?.protocol : protocol,
         },
     });
 
@@ -100,7 +102,7 @@ const DevicePinData = () => {
         fetchApi: createDeviceApi,
         isLoading: isCreating,
         data: createDeviceResponse,
-    } = useCreateDeviceApi(name, microcontrollerId || -1);
+    } = useCreateDeviceApi(name, microcontrollerId || -1, protocol || 0);
 
     const { fetchApi: createDevicePinsApi } = useCreatePinsApi(
         Number(createDeviceResponse?.id) || Number(id),
@@ -134,6 +136,7 @@ const DevicePinData = () => {
         name: true,
         selectedPins: true,
         selectedMicrocontroller: true,
+        selectedProtocol: true,
     });
 
     const addCustomPins = () => {
@@ -193,7 +196,8 @@ const DevicePinData = () => {
             isCreateMode,
             name,
             microcontrollerId,
-            selectedPins
+            selectedPins,
+            protocol
         );
         if (!validateReslut.isValid) {
             setIsValidData(() => {
@@ -202,6 +206,7 @@ const DevicePinData = () => {
                     selectedPins: validateReslut.selectedPins,
                     selectedMicrocontroller:
                         validateReslut.selectedMicrocontroller,
+                    selectedProtocol: validateReslut.selectedProtocol,
                 };
             });
             return;
@@ -356,8 +361,27 @@ const DevicePinData = () => {
         if (device !== null) {
             setMicrocontrollerId(Number(device.microcontroller));
             setName(device.name);
+            setProtocol(device.protocol);
         }
     }, [device]);
+
+    useEffect(() => {
+        const selectedMicrocontroller = microcontrollers.find(
+            (item) => item.id === microcontrollerId
+        );
+        if (
+            selectedMicrocontroller &&
+            selectedMicrocontroller.supportedProtocols.length === 1
+        ) {
+            const protocolValue = protocols.find(
+                (protocol) =>
+                    protocol.key ===
+                    selectedMicrocontroller.supportedProtocols[0]
+            )?.value;
+            setProtocol(protocolValue || 0);
+        }
+        // eslint-disable-next-line
+    }, [microcontrollerId]);
 
     useEffect(() => {
         ReactTooltip.rebuild();
@@ -483,7 +507,7 @@ const DevicePinData = () => {
                                     !isValidData.name && 'border-danger'
                                 }`}
                                 placeholder="請輸入裝置名稱"
-                                defaultValue={device ? device.name : ''}
+                                value={name}
                                 onChange={(e) => {
                                     const validResult =
                                         ValidationHelpers.Require(
@@ -524,7 +548,7 @@ const DevicePinData = () => {
 
                                     const validResult =
                                         ValidationHelpers.Require(
-                                            e.target.value
+                                            Number(e.target.value)
                                         );
 
                                     setIsValidData((prev) => {
@@ -659,6 +683,66 @@ const DevicePinData = () => {
                                     </div>
                                 </div>
                             )}
+
+                        <div className="mb-4">
+                            <label>通訊方式</label>
+                            {selectedMicrocontroller?.supportedProtocols
+                                .length === 1 ? (
+                                <div>
+                                    目前僅支援
+                                    {
+                                        selectedMicrocontroller
+                                            ?.supportedProtocols[0]
+                                    }
+                                </div>
+                            ) : (
+                                <div>
+                                    <select
+                                        className="form-select mt-2"
+                                        onChange={(e) => {
+                                            if (!e.target.value) {
+                                                return;
+                                            }
+                                            const validResult =
+                                                ValidationHelpers.Require(
+                                                    Number(e.target.value)
+                                                );
+                                            setIsValidData((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    selectedProtocol:
+                                                        validResult,
+                                                };
+                                            });
+                                            setProtocol(Number(e.target.value));
+                                        }}
+                                    >
+                                        <option>請選擇通訊方式</option>
+                                        {protocols.map(
+                                            ({ value, key, label }) => {
+                                                return (
+                                                    <option
+                                                        key={key}
+                                                        value={value}
+                                                        selected={
+                                                            value ===
+                                                            device?.protocol
+                                                        }
+                                                    >
+                                                        {label}
+                                                    </option>
+                                                );
+                                            }
+                                        )}
+                                    </select>
+                                    {!isValidData.selectedProtocol && (
+                                        <div className="text-danger fs-5">
+                                            通訊方式為必填欄位
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
 
                         {selectedMicrocontroller &&
                             selectedMicrocontroller.memo &&

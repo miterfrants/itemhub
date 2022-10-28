@@ -29,6 +29,7 @@ const Device = () => {
     const id: number | null = idFromUrl ? Number(idFromUrl) : null;
 
     const devices = useAppSelector(selectDevices).devices;
+    const { protocols } = useAppSelector(selectUniversal);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -36,6 +37,10 @@ const Device = () => {
 
     const [microcontrollerName, setMicrocontrollerName] = useState<string>('');
     const [device, setDevice] = useState<DeviceItem | null>(null);
+
+    const targetProtocol = protocols.find(
+        (item) => item.value === device?.protocol
+    )?.key;
 
     const { isLoading: isGetting, fetchApi: getDeviceApi } = useGetDeviceApi(
         Number(id)
@@ -227,6 +232,14 @@ const Device = () => {
                                     deviceId={Number(id)}
                                     isEditMode={false}
                                 />
+                            </div>
+                        </div>
+                        <div className="col-12 col-lg-6 d-flex p-0 item">
+                            <div className="d-flex fs-5 bg-black bg-opacity-5 text-black text-opacity-45 item-title py-2 px-25">
+                                Protocol
+                            </div>
+                            <div className="text-break text-black text-opacity-65 py-2 px-25">
+                                {targetProtocol}
                             </div>
                         </div>
                     </div>

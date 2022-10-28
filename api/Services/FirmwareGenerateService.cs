@@ -23,7 +23,8 @@ namespace Homo.IotApi
             string clientId,
             string clientSecret,
             string bundleId,
-            string zipPassword
+            string zipPassword,
+            FIRMWARE_PROTOCOL protocol
         )
         {
             DbContextOptionsBuilder<IotDbContext> builder = new DbContextOptionsBuilder<IotDbContext>();
@@ -47,7 +48,8 @@ namespace Homo.IotApi
                 mcuName = "esp-01s";
             }
 
-            string microcontrollerFirmwareTemplatePath = $"{firmwareTemplatePath}/{mcuName}/http";
+            string protocolString = protocol == FIRMWARE_PROTOCOL.HTTP ? "http" : "mqtt";
+            string microcontrollerFirmwareTemplatePath = $"{firmwareTemplatePath}/{mcuName}/{protocolString}";
             string folderName = CryptographicHelper.GetSpecificLengthRandomString(32, true, false);
             string firmwareZipPath = $"{staticPath}/firmware/{folderName}.zip";
             string destPath = $"{staticPath}/firmware/{folderName}/{folderName}";
@@ -70,6 +72,7 @@ namespace Homo.IotApi
             string inoTemplate = System.IO.File.ReadAllText(sourceInoPath);
             inoTemplate = inoTemplate.Replace("{CLIENT_ID}", clientId);
             inoTemplate = inoTemplate.Replace("{CLIENT_SECRET}", clientSecret);
+            inoTemplate = inoTemplate.Replace("{DEVICE_ID}", deviceId.ToString());
             inoTemplate = inoTemplate.Replace("{PINS}", String.Join(";", pins));
 
             System.IO.File.WriteAllText(inoPath, inoTemplate);

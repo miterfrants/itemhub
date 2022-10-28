@@ -97,15 +97,15 @@ namespace Homo.IotApi
                     string btn = "";
                     if (nextSubscription > pricingPlans.Count - 1)
                     {
-                        content = "mailContentOverTopPlanDescription";
+                        content = _commonLocalizer.Get("mailContentOverTopPlanDescription");
                         link = "mailto:itemhub.tw@gmail.com";
-                        btn = "mailContentOverTopPlanBtn";
+                        btn = _commonLocalizer.Get("mailContentOverTopPlanBtn");
                     }
                     else
                     {
-                        content = "mailContentOverPlanDescription";
+                        content = _commonLocalizer.Get("mailContentOverPlanDescription");
                         link = $"{_websiteUrl}/checkout/?pricingPlan={nextSubscription}";
-                        btn = "mailContentOverPlanBtn";
+                        btn = _commonLocalizer.Get("mailContentOverPlanBtn");
                     }
 
                     MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.OVER_SUBSCRIPTION, _staticPath);
@@ -115,8 +115,8 @@ namespace Homo.IotApi
                         adminEmail = _adminEmail,
                         link = link,
                         hello = _commonLocalizer.Get("hello"),
-                        mailContentDescription = _commonLocalizer.Get(content),
-                        mailContentBtn = _commonLocalizer.Get(btn),
+                        mailContentDescription = content,
+                        mailContentBtn = btn,
                         mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
                     });
 

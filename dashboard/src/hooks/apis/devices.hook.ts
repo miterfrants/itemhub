@@ -183,7 +183,11 @@ export const useBundleFirmwareApi = ({ id }: { id: number }) => {
     };
 };
 
-export const useCreateDeviceApi = (name: string, microcontroller: number) => {
+export const useCreateDeviceApi = (
+    name: string,
+    microcontroller: number,
+    protocol: number
+) => {
     const dispatch = useAppDispatch();
     const dispatchRefresh = useCallback(
         (response: DeviceItem) => {
@@ -200,6 +204,7 @@ export const useCreateDeviceApi = (name: string, microcontroller: number) => {
         payload: {
             name,
             microcontroller,
+            protocol,
         },
         initialData: null,
         callbackFunc: dispatchRefresh,

@@ -8,6 +8,7 @@ import {
     useGetMicrocontrollersApi,
     useGetDeviceModesApi,
     useGetTriggerNotificationPeriodApi,
+    useGetProtocols,
 } from '@/hooks/apis/universal.hook';
 
 import { CookieHelpers } from './helpers/cookie.helper';
@@ -45,6 +46,7 @@ const App = () => {
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
     const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
     const { getDeviceModesApi } = useGetDeviceModesApi();
+    const { getProtocols } = useGetProtocols();
 
     const { fetchApi: getTriggerTypes } = useGetTriggerTypesApi();
     const { fetchApi: getTriggerNotificationPeriodApi } =
@@ -55,6 +57,7 @@ const App = () => {
         getMicrocontrollersApi();
         getDeviceModesApi();
         getTriggerTypes();
+        getProtocols();
         getTriggerNotificationPeriodApi();
         // eslint-disable-next-line
     }, []);
