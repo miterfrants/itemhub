@@ -52,16 +52,16 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     };
 
     useEffect(() => {
+        // 完成 setValue 再執行 setIsInitialized true
+        if (!isInitialized && pinItem.value === value) {
+            setIsInitialized(true);
+        }
         if (!isInitialized || value === undefined || !isSwitch) {
             return;
         }
         updateDeviceSwitchPinApi();
         // eslint-disable-next-line
     }, [value, isSwitch]);
-
-    useEffect(() => {
-        setIsInitialized(true);
-    }, []);
 
     useEffect(() => {
         setName(nameFromProps || '');
