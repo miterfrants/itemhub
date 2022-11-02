@@ -1,4 +1,5 @@
 import { PinItem } from '@/types/devices.type';
+import { Pins } from '@/types/universal.type';
 // import { Validation } from '@/types/helpers.type';
 
 export const ValidationHelpers = {
@@ -70,6 +71,7 @@ export const ValidationHelpers = {
         return true;
     },
     ValidateCustomPinData: (
+        customPins: Pins[],
         pinName: string | null,
         pinNumber: string | null
     ) => {
@@ -77,6 +79,7 @@ export const ValidationHelpers = {
             isValid: false,
             pinName: false,
             pinNumber: false,
+            duplicate: false,
         };
 
         if (
@@ -92,7 +95,15 @@ export const ValidationHelpers = {
             result.pinNumber = true;
         }
 
-        result.isValid = result.pinName && result.pinNumber;
+        const existCustomPins = (customPins || []).find(
+            (customPins) => customPins.name === pinName
+        );
+
+        if (existCustomPins) {
+            result.duplicate = true;
+        }
+
+        result.isValid = result.pinName && result.pinNumber && result.duplicate;
         return result;
     },
 };

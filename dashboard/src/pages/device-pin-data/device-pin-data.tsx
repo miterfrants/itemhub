@@ -141,23 +141,12 @@ const DevicePinData = () => {
 
     const addCustomPins = () => {
         const validateReslut = ValidationHelpers.ValidateCustomPinData(
+            customPins,
             customPinName,
             customPinNumber
         );
-        if (!validateReslut.isValid) {
-            setIsValidCustomPinData(() => {
-                return {
-                    name: validateReslut.pinName,
-                    pinNumber: validateReslut.pinNumber,
-                };
-            });
-            return;
-        }
 
-        const existCustomPins = (customPins || []).find(
-            (customPins) => customPins.name === customPinName
-        );
-        if (existCustomPins) {
+        if (!validateReslut.isValid && validateReslut.duplicate) {
             dispatch(
                 toasterActions.pushOne({
                     message: '已有同樣名字的 Pin',
@@ -165,6 +154,15 @@ const DevicePinData = () => {
                     type: ToasterTypeEnum.ERROR,
                 })
             );
+        }
+
+        if (!validateReslut.isValid) {
+            setIsValidCustomPinData(() => {
+                return {
+                    name: validateReslut.pinName,
+                    pinNumber: validateReslut.pinNumber,
+                };
+            });
             return;
         }
 
