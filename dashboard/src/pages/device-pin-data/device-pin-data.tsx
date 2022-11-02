@@ -127,7 +127,7 @@ const DevicePinData = () => {
         navigate(`/dashboard/devices/${id}${search}`);
     };
 
-    const [isValidCustomData, setIsValidCustomData] = useState({
+    const [isValidCustomPinData, setIsValidCustomPinData] = useState({
         name: true,
         pinNumber: true,
     });
@@ -145,7 +145,7 @@ const DevicePinData = () => {
             customPinNumber
         );
         if (!validateReslut.isValid) {
-            setIsValidCustomData(() => {
+            setIsValidCustomPinData(() => {
                 return {
                     name: validateReslut.pinName,
                     pinNumber: validateReslut.pinNumber,
@@ -595,7 +595,7 @@ const DevicePinData = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control ${
-                                                    !isValidCustomData.name &&
+                                                    !isValidCustomPinData.name &&
                                                     'border-danger'
                                                 }`}
                                                 ref={customPinNameRef}
@@ -613,7 +613,7 @@ const DevicePinData = () => {
                                                     setCustomPinName(
                                                         e.target.value
                                                     );
-                                                    setIsValidCustomData(
+                                                    setIsValidCustomPinData(
                                                         (prev) => {
                                                             return {
                                                                 ...prev,
@@ -623,7 +623,7 @@ const DevicePinData = () => {
                                                     );
                                                 }}
                                             />
-                                            {!isValidCustomData.name && (
+                                            {!isValidCustomPinData.name && (
                                                 <div className="text-danger fs-5">
                                                     請輸入 5 字內的 Pin 名稱
                                                 </div>
@@ -634,7 +634,7 @@ const DevicePinData = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control ${
-                                                    !isValidCustomData.pinNumber &&
+                                                    !isValidCustomPinData.pinNumber &&
                                                     'border-danger'
                                                 }`}
                                                 ref={customPinValueRef}
@@ -651,7 +651,7 @@ const DevicePinData = () => {
                                                     setCustomPinValue(
                                                         e.target.value
                                                     );
-                                                    setIsValidCustomData(
+                                                    setIsValidCustomPinData(
                                                         (prev) => {
                                                             return {
                                                                 ...prev,
@@ -661,7 +661,7 @@ const DevicePinData = () => {
                                                     );
                                                 }}
                                             />
-                                            {!isValidCustomData.pinNumber && (
+                                            {!isValidCustomPinData.pinNumber && (
                                                 <div className="text-danger fs-5">
                                                     請輸入 5 字內的 Pin Value
                                                 </div>
@@ -671,8 +671,8 @@ const DevicePinData = () => {
                                             <label>&nbsp;</label>
                                             <button
                                                 disabled={
-                                                    !isValidCustomData.name ||
-                                                    !isValidCustomData.pinNumber
+                                                    !isValidCustomPinData.name ||
+                                                    !isValidCustomPinData.pinNumber
                                                 }
                                                 className="btn btn-primary"
                                                 onClick={addCustomPins}
