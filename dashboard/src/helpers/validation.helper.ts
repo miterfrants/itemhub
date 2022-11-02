@@ -69,27 +69,30 @@ export const ValidationHelpers = {
         }
         return true;
     },
-    ValidateCustomPinData: (name: string | null, value: string | null) => {
+    ValidateCustomPinData: (
+        pinName: string | null,
+        pinNumber: string | null
+    ) => {
         const result = {
             isValid: false,
-            name: false,
-            value: false,
+            pinName: false,
+            pinNumber: false,
         };
 
         if (
-            ValidationHelpers.Require(name) &&
-            ValidationHelpers.ValidLength(name, 5)
+            ValidationHelpers.Require(pinName) &&
+            ValidationHelpers.ValidLength(pinName, 5)
         ) {
-            result.name = true;
+            result.pinName = true;
         }
         if (
-            ValidationHelpers.Require(value) &&
-            ValidationHelpers.ValidLength(value, 5)
+            ValidationHelpers.Require(pinNumber) &&
+            ValidationHelpers.ValidLength(pinNumber, 5)
         ) {
-            result.value = true;
+            result.pinNumber = true;
         }
 
-        result.isValid = result.name && result.value;
+        result.isValid = result.pinName && result.pinNumber;
         return result;
     },
 };

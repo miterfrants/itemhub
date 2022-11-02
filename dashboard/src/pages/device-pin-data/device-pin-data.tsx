@@ -45,7 +45,7 @@ const DevicePinData = () => {
 
     const [name, setName] = useState('');
     const [customPinName, setCustomPinName] = useState('');
-    const [customPinValue, setCustomPinValue] = useState('');
+    const [customPinNumber, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
     const customPinValueRef = useRef<HTMLInputElement>(null);
     const [protocol, setProtocol] = useState<number | null>(null);
@@ -129,7 +129,7 @@ const DevicePinData = () => {
 
     const [isValidCustomData, setIsValidCustomData] = useState({
         name: true,
-        value: true,
+        pinNumber: true,
     });
 
     const [isValidData, setIsValidData] = useState({
@@ -142,13 +142,13 @@ const DevicePinData = () => {
     const addCustomPins = () => {
         const validateReslut = ValidationHelpers.ValidateCustomPinData(
             customPinName,
-            customPinValue
+            customPinNumber
         );
         if (!validateReslut.isValid) {
             setIsValidCustomData(() => {
                 return {
-                    name: validateReslut.name,
-                    value: validateReslut.value,
+                    name: validateReslut.pinName,
+                    pinNumber: validateReslut.pinNumber,
                 };
             });
             return;
@@ -173,7 +173,7 @@ const DevicePinData = () => {
 
             const pushData: Pins = {
                 name: customPinName,
-                value: customPinValue,
+                value: customPinNumber,
             };
 
             newCustomPins.push({ ...pushData });
@@ -634,7 +634,7 @@ const DevicePinData = () => {
                                             <input
                                                 type="text"
                                                 className={`form-control ${
-                                                    !isValidCustomData.value &&
+                                                    !isValidCustomData.pinNumber &&
                                                     'border-danger'
                                                 }`}
                                                 ref={customPinValueRef}
@@ -661,7 +661,7 @@ const DevicePinData = () => {
                                                     );
                                                 }}
                                             />
-                                            {!isValidCustomData.value && (
+                                            {!isValidCustomData.pinNumber && (
                                                 <div className="text-danger fs-5">
                                                     請輸入 5 字內的 Pin Value
                                                 </div>
@@ -672,7 +672,7 @@ const DevicePinData = () => {
                                             <button
                                                 disabled={
                                                     !isValidCustomData.name ||
-                                                    !isValidCustomData.value
+                                                    !isValidCustomData.pinNumber
                                                 }
                                                 className="btn btn-primary"
                                                 onClick={addCustomPins}
