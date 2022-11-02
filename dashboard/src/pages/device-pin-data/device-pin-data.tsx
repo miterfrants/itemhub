@@ -47,7 +47,7 @@ const DevicePinData = () => {
     const [customPinName, setCustomPinName] = useState('');
     const [customPinNumber, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
-    const customPinValueRef = useRef<HTMLInputElement>(null);
+    const customPinNumberRef = useRef<HTMLInputElement>(null);
     const [protocol, setProtocol] = useState<number | null>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
@@ -180,8 +180,8 @@ const DevicePinData = () => {
             return newCustomPins;
         });
 
-        if (customPinValueRef.current) {
-            customPinValueRef.current.value = '';
+        if (customPinNumberRef.current) {
+            customPinNumberRef.current.value = '';
         }
 
         if (customPinNameRef.current) {
@@ -637,7 +637,7 @@ const DevicePinData = () => {
                                                     !isValidCustomPinData.pinNumber &&
                                                     'border-danger'
                                                 }`}
-                                                ref={customPinValueRef}
+                                                ref={customPinNumberRef}
                                                 placeholder="限5字內"
                                                 onChange={(e) => {
                                                     const validResult =
