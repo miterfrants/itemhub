@@ -2,5 +2,5 @@ export const MCU_TYPE = {
     PARTICLE_IO_PHOTON: 'PARTICLE_IO_PHOTON',
     ARDUINO_NANO_33_IOT: 'ARDUINO_NANO_33_IOT',
     ESP_01S: 'ESP_01S',
-    其他: '其他',
+    OTHER: 'OTHER',
 };

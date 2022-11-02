@@ -12,16 +12,16 @@ import { MCU_TYPE } from '@/constants/mcu-type';
 const DevicePin = ({
     deviceId,
     microcontrollerId,
-    selectedPinsList,
-    customPinsList,
+    selectedPinList,
+    customPinList,
     updateSelectedPins,
     removeSelectedPins,
     isSelectedPinsValid,
 }: {
     deviceId: number;
     microcontrollerId: number;
-    selectedPinsList: PinItem[];
-    customPinsList: Pins[];
+    selectedPinList: PinItem[];
+    customPinList: Pins[];
     updateSelectedPins: (pins: PinItem) => void;
     removeSelectedPins: (pin: string) => void;
     isSelectedPinsValid: boolean;
@@ -41,7 +41,7 @@ const DevicePin = ({
     };
 
     const getShortPinName = (name: string) => {
-        const pinName = selectedPinsList?.find((pins) => {
+        const pinName = selectedPinList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -55,7 +55,7 @@ const DevicePin = ({
     };
 
     const getFullPinName = (name: string) => {
-        const newPinName = selectedPinsList?.find((pins) => {
+        const newPinName = selectedPinList?.find((pins) => {
             return pins.pin === name;
         })?.name;
 
@@ -71,7 +71,7 @@ const DevicePin = ({
     };
 
     const updatePinName = () => {
-        const pinData = selectedPinsList?.find((item) => {
+        const pinData = selectedPinList?.find((item) => {
             return item.pin === originalPin;
         });
 
@@ -126,14 +126,14 @@ const DevicePin = ({
             return;
         }
 
-        if (targetMcu?.key == MCU_TYPE.其他) {
-            setMicrocontrollerPins(customPinsList);
+        if (targetMcu?.key == MCU_TYPE.OTHER) {
+            setMicrocontrollerPins(customPinList);
         } else {
             setMicrocontrollerPins(targetMcu.pins);
         }
 
         // eslint-disable-next-line
-    }, [microcontrollerId, customPinsList]);
+    }, [microcontrollerId, customPinList]);
 
     useEffect(() => {
         pinNameInputRef.current?.focus();
@@ -153,7 +153,7 @@ const DevicePin = ({
                         return (
                             <div
                                 className={`${
-                                    selectedPinsList
+                                    selectedPinList
                                         ?.map((pins) => {
                                             return pins.pin;
                                         })
@@ -165,7 +165,7 @@ const DevicePin = ({
                                 key={index}
                             >
                                 <div className="text-center pin-selector">
-                                    {selectedPinsList?.filter((pins) => {
+                                    {selectedPinList?.filter((pins) => {
                                         return pins.pin === pin.name;
                                     })[0]?.mode === switchMode ? (
                                         <div>開關</div>
@@ -182,7 +182,7 @@ const DevicePin = ({
                                 <ReactTooltip effect="solid" place="bottom" />
                                 <div
                                     className={`rounded-2 shadow-lg overflow-hidden bg-white pin-option ${
-                                        selectedPinsList?.find((pins) => {
+                                        selectedPinList?.find((pins) => {
                                             return pins.pin === pin.name;
                                         })
                                             ? 'pin-option-4'
@@ -225,7 +225,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            selectedPinsList?.find((pins) => {
+                                            selectedPinList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
@@ -239,7 +239,7 @@ const DevicePin = ({
                                     </div>
                                     <div
                                         className={`lh-1 p-25 ${
-                                            selectedPinsList?.find((pins) => {
+                                            selectedPinList?.find((pins) => {
                                                 return pins.pin === pin.name;
                                             })
                                                 ? ''
