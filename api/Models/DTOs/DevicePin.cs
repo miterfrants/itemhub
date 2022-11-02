@@ -15,6 +15,7 @@ namespace Homo.IotApi
             [Required]
             [MaxLength(5)]
             public string Pin { get; set; }
+            [Required]
             [MaxLength(5)]
             public string PinNumber { get; set; }
             [Required]
@@ -47,6 +48,7 @@ namespace Homo.IotApi
             [Required]
             [MaxLength(5)]
             public string Pin { get; set; }
+            [Required]
             [MaxLength(5)]
             public string PinNumber { get; set; }
             [Required]
@@ -69,6 +71,7 @@ namespace Homo.IotApi
         public partial class DevicePinsData : DTOs
         {
             public string Pin { get; set; }
+            [Required]
             [MaxLength(5)]
             public string PinNumber { get; set; }
             public decimal? Value { get; set; }
