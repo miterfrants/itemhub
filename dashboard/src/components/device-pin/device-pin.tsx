@@ -196,7 +196,7 @@ const DevicePin = ({
                                             const pinData: PinItem = {
                                                 deviceId: deviceId,
                                                 pin: pin.name,
-                                                pinNumber: pin.value,
+                                                pinNumber: pin.pinNumber,
                                                 mode: switchMode,
                                                 name: pin.name,
                                                 value: 0,
@@ -213,7 +213,7 @@ const DevicePin = ({
                                             const pinData: PinItem = {
                                                 deviceId: deviceId,
                                                 pin: pin.name,
-                                                pinNumber: pin.value,
+                                                pinNumber: pin.pinNumber,
                                                 mode: sensorMode,
                                                 name: pin.name,
                                                 value: null,

@@ -171,7 +171,7 @@ const DevicePinData = () => {
 
             const pushData: Pins = {
                 name: customPinName,
-                value: customPinNumber,
+                pinNumber: customPinNumber,
             };
 
             newCustomPins.push({ ...pushData });
@@ -327,7 +327,7 @@ const DevicePinData = () => {
                 devicePins.forEach((item) => {
                     const pushData: Pins = {
                         name: item.pin,
-                        value: item.pinNumber,
+                        pinNumber: item.pinNumber,
                     };
 
                     newCustomPins.push({ ...pushData });
