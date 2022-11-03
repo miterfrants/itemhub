@@ -103,7 +103,8 @@ export const ValidationHelpers = {
             result.duplicate = true;
         }
 
-        result.isValid = result.pinName && result.pinNumber && result.duplicate;
+        result.isValid =
+            result.pinName && result.pinNumber && !result.duplicate;
         return result;
     },
 };

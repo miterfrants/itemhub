@@ -292,6 +292,16 @@ const DevicePinData = () => {
         }
         document.title = 'ItemHub - 編輯裝置';
 
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        if (isCreateMode) {
+            document.title = 'ItemHub - 新增裝置';
+            return;
+        }
+        document.title = 'ItemHub - 編輯裝置';
+
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
@@ -301,40 +311,29 @@ const DevicePinData = () => {
             return;
         }
 
-        if (devicePins.length === 0) {
+        // devicePins 沒有資料時，不用執行 set SelectedPins
+        if (devicePins.length === 0 || microcontrollers === null) {
             return;
         }
-        setSelectedPins(devicePins);
 
+        setSelectedPins(devicePins);
         devicePinsRef.current = devicePins;
 
+        const targetMcu = microcontrollers.find(
+            (item) => item.id === devicePins[0].device?.microcontroller
+        );
+
         let targetKey = '';
-        if (microcontrollers !== null) {
-            const targetMcu = microcontrollers.find(
-                (item) => item.id === devicePins[0].device?.microcontroller
-            );
-            setSelectedMicrocontroller(
-                targetMcu !== undefined ? targetMcu : null
-            );
-            targetKey = targetMcu ? targetMcu.key : '';
-        }
+        targetKey = targetMcu ? targetMcu.key : '';
 
         // 裝置類型為其他時，將 devicePins 塞至 customPins，後面才可以判斷有沒有重複
         if (targetKey === MCU_TYPE.OTHER) {
-            setCustomPins(() => {
-                const newCustomPins: Pins[] = [];
-
-                devicePins.forEach((item) => {
-                    const pushData: Pins = {
-                        name: item.pin,
-                        pinNumber: item.pinNumber,
-                    };
-
-                    newCustomPins.push({ ...pushData });
-                });
-
-                return newCustomPins;
-            });
+            setCustomPins([
+                ...devicePins.map((item) => ({
+                    name: item.pin,
+                    pinNumber: item.pinNumber,
+                })),
+            ]);
         }
 
         // eslint-disable-next-line
@@ -364,6 +363,36 @@ const DevicePinData = () => {
     }, [device]);
 
     useEffect(() => {
+        ReactTooltip.rebuild();
+    }, [selectedPins]);
+
+    useEffect(() => {
+        if (
+            !microcontrollers ||
+            microcontrollers.length === 0 ||
+            !microcontrollerId
+        ) {
+            return;
+        }
+
+        let targetKey = '';
+
+        const targetMcu = microcontrollers.find(
+            (item) => item.id === microcontrollerId
+        );
+        setSelectedMicrocontroller(targetMcu !== undefined ? targetMcu : null);
+        targetKey = targetMcu ? targetMcu.key : '';
+
+        if (targetKey === MCU_TYPE.PARTICLE_IO_PHOTON) {
+            setMicrocontrollerIdImg(particleIoPhoton);
+        } else if (targetKey === MCU_TYPE.ARDUINO_NANO_33_IOT) {
+            setMicrocontrollerIdImg(arduinoNano33Iot);
+        } else if (targetKey === MCU_TYPE.ESP_01S) {
+            setMicrocontrollerIdImg(esp01s);
+        } else {
+            setMicrocontrollerIdImg('');
+        }
+
         const selectedMicrocontroller = microcontrollers.find(
             (item) => item.id === microcontrollerId
         );
@@ -378,39 +407,7 @@ const DevicePinData = () => {
             )?.value;
             setProtocol(protocolValue || 0);
         }
-        // eslint-disable-next-line
-    }, [microcontrollerId]);
 
-    useEffect(() => {
-        ReactTooltip.rebuild();
-    }, [selectedPins]);
-
-    useEffect(() => {
-        let targetKey = '';
-
-        if (!microcontrollers || microcontrollers.length === 0) {
-            return;
-        }
-
-        if (microcontrollerId !== null) {
-            const targetMcu = microcontrollers.find(
-                (item) => item.id === microcontrollerId
-            );
-            setSelectedMicrocontroller(
-                targetMcu !== undefined ? targetMcu : null
-            );
-            targetKey = targetMcu ? targetMcu.key : '';
-        }
-
-        if (targetKey === MCU_TYPE.PARTICLE_IO_PHOTON) {
-            setMicrocontrollerIdImg(particleIoPhoton);
-        } else if (targetKey === MCU_TYPE.ARDUINO_NANO_33_IOT) {
-            setMicrocontrollerIdImg(arduinoNano33Iot);
-        } else if (targetKey === MCU_TYPE.ESP_01S) {
-            setMicrocontrollerIdImg(esp01s);
-        } else {
-            setMicrocontrollerIdImg('');
-        }
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
 
