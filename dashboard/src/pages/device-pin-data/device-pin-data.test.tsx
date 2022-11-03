@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import DevicePinData from './device-pin-data';
+import DeviceForm from './device-pin-data';
 
 describe('<DevicePinData />', () => {
     test('it should mount', () => {
-        render(<DevicePinData />);
+        render(<DeviceForm />);
 
         const devicePinData = screen.getByTestId('DevicePinData');
 

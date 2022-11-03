@@ -15,7 +15,7 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
 import PageTitle from '@/components/page-title/page-title';
-import DevicePin from '@/components/device-pin/device-pin';
+import DevicePins from '@/components/device-pin/device-pin';
 import { useDispatch } from 'react-redux';
 import {
     toasterActions,
@@ -32,7 +32,7 @@ import { Microcontroller, Pins } from '@/types/universal.type';
 import { MCU_TYPE } from '@/constants/mcu-type';
 import { ValidationHelpers } from '@/helpers/validation.helper';
 
-const DevicePinData = () => {
+const DeviceForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -754,7 +754,7 @@ const DevicePinData = () => {
                             (selectedMicrocontroller.pins.length > 0 ||
                                 (customPins && customPins.length > 0)) && (
                                 <div>
-                                    <DevicePin
+                                    <DevicePins
                                         deviceId={id}
                                         microcontrollerId={
                                             selectedMicrocontroller.id
@@ -831,4 +831,4 @@ const DevicePinData = () => {
     );
 };
 
-export default DevicePinData;
+export default DeviceForm;

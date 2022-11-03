@@ -9,7 +9,7 @@ import { Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
 import { MCU_TYPE } from '@/constants/mcu-type';
 
-const DevicePin = ({
+const DevicePins = ({
     deviceId,
     microcontrollerId,
     selectedPinList,
@@ -325,4 +325,4 @@ const DevicePin = ({
     );
 };
 
-export default DevicePin;
+export default DevicePins;
