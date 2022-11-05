@@ -15,7 +15,7 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
 import PageTitle from '@/components/page-title/page-title';
-import DevicePins from '@/components/device-pin/device-pin';
+import DevicePins from '@/components/device-pins/device-pins';
 import { useDispatch } from 'react-redux';
 import {
     toasterActions,
@@ -190,7 +190,7 @@ const DeviceForm = () => {
 
     const sendApi = () => {
         // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
-        const validateReslut = ValidationHelpers.ValidateDevicePinData(
+        const validateReslut = ValidationHelpers.ValidateDeviceForm(
             isCreateMode,
             name,
             microcontrollerId,
@@ -296,12 +296,6 @@ const DeviceForm = () => {
     }, []);
 
     useEffect(() => {
-        if (isCreateMode) {
-            document.title = 'ItemHub - 新增裝置';
-            return;
-        }
-        document.title = 'ItemHub - 編輯裝置';
-
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
@@ -480,7 +474,7 @@ const DeviceForm = () => {
 
     return (
         <div
-            className="form-data device-pin-data mx-auto"
+            className="form-data device-form mx-auto"
             data-testid="device-pin-data"
         >
             <PageTitle

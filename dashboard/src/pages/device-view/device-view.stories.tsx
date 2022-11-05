@@ -1,5 +1,5 @@
 /* eslint-disable */
-import DeviceView from './devices';
+import DeviceView from './device-view';
 
 export default {
     title: 'Devices',

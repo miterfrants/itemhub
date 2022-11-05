@@ -23,7 +23,7 @@ export const ValidationHelpers = {
         }
         return true;
     },
-    ValidateDevicePinData: (
+    ValidateDeviceForm: (
         isCreateMode: boolean,
         name: string | null,
         microcontroller: number | null,

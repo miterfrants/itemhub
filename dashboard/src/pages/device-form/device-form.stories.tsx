@@ -1,8 +1,8 @@
 /* eslint-disable */
-import DeviceForm from './device-pin-data';
+import DeviceForm from './device-form';
 
 export default {
-    title: 'DevicePinData',
+    title: 'DeviceForm',
 };
 
 export const Default = () => <DeviceForm />;
