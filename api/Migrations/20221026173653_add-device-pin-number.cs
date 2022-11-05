@@ -19,7 +19,7 @@ namespace IotApi.Migrations
             migrationBuilder.Sql("DROP TEMPORARY TABLE MicrocontrollerPinsNumber");
 
             migrationBuilder.Sql("UPDATE Microcontroller set Pins =  REPLACE(Pins, 'value', 'pinNumber') ");
-            migrationBuilder.Sql("UPDATE Microcontroller set DeletedAt = null WHERE `Key` = 'OTHER' ");
+            migrationBuilder.Sql("UPDATE Microcontroller set DeletedAt = null WHERE `Key` = 'CUSTOM' ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

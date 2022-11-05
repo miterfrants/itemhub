@@ -327,7 +327,7 @@ const DeviceForm = () => {
         targetKey = targetMcu ? targetMcu.key : '';
 
         // 裝置類型為其他時，將 devicePins 塞至 customPins，後面才可以判斷有沒有重複
-        if (targetKey === MCU_TYPE.OTHER) {
+        if (targetKey === MCU_TYPE.CUSTOM) {
             setCustomPins([
                 ...devicePins.map((item) => ({
                     name: item.pin,
@@ -578,7 +578,8 @@ const DeviceForm = () => {
                             )}
                         </div>
                         {!isCreateMode &&
-                            selectedMicrocontroller?.key === MCU_TYPE.OTHER && (
+                            selectedMicrocontroller?.key ===
+                                MCU_TYPE.CUSTOM && (
                                 <div className="mb-4">
                                     <div className="d-flex mt-5 mb-3 fs-5">
                                         新增 Pin

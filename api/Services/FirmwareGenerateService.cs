@@ -43,7 +43,7 @@ namespace Homo.IotApi
             Microcontroller mcu = MicrocontrollerDataservice.GetOne(dbContext, device.Microcontroller.GetValueOrDefault());
             string mcuName = mcu.Key.ToString().ToLower().Replace("_", "-");
             // 裝置類型為其他，使用 esp-01s 當範本
-            if (mcu.Key == "OTHER")
+            if (mcu.Key == "CUSTOM")
             {
                 mcuName = "esp-01s";
             }

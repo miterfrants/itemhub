@@ -126,7 +126,7 @@ const DevicePins = ({
             return;
         }
 
-        if (targetMcu?.key == MCU_TYPE.OTHER) {
+        if (targetMcu?.key == MCU_TYPE.CUSTOM) {
             setMicrocontrollerPins(customPinList);
         } else {
             setMicrocontrollerPins(targetMcu.pins);
