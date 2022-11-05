@@ -157,11 +157,9 @@ const DeviceForm = () => {
         }
 
         if (!validateReslut.isValid) {
-            setIsValidCustomPinData(() => {
-                return {
-                    name: validateReslut.pinName,
-                    pinNumber: validateReslut.pinNumber,
-                };
+            setIsValidCustomPinData({
+                name: validateReslut.pinName,
+                pinNumber: validateReslut.pinNumber,
             });
             return;
         }
@@ -198,14 +196,11 @@ const DeviceForm = () => {
             protocol
         );
         if (!validateReslut.isValid) {
-            setIsValidData(() => {
-                return {
-                    name: validateReslut.name,
-                    selectedPins: validateReslut.selectedPins,
-                    selectedMicrocontroller:
-                        validateReslut.selectedMicrocontroller,
-                    selectedProtocol: validateReslut.selectedProtocol,
-                };
+            setIsValidData({
+                name: validateReslut.name,
+                selectedPins: validateReslut.selectedPins,
+                selectedMicrocontroller: validateReslut.selectedMicrocontroller,
+                selectedProtocol: validateReslut.selectedProtocol,
             });
             return;
         }
@@ -558,9 +553,11 @@ const DeviceForm = () => {
                                             value={id}
                                             selected={id === microcontrollerId}
                                         >
-                                            {key
-                                                .replaceAll('_', ' ')
-                                                .toLowerCase()}
+                                            {key === 'CUSTOM'
+                                                ? '自定義'
+                                                : key
+                                                      .replaceAll('_', ' ')
+                                                      .toLowerCase()}
                                         </option>
                                     );
                                 })}
