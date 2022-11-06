@@ -15,7 +15,7 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
 import PageTitle from '@/components/page-title/page-title';
-import DevicePin from '@/components/device-pin/device-pin';
+import DevicePins from '@/components/device-pins/device-pins';
 import { useDispatch } from 'react-redux';
 import {
     toasterActions,
@@ -28,11 +28,11 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import ReactTooltip from 'react-tooltip';
-import { Microcontroller } from '@/types/universal.type';
+import { Microcontroller, Pins } from '@/types/universal.type';
 import { MCU_TYPE } from '@/constants/mcu-type';
 import { ValidationHelpers } from '@/helpers/validation.helper';
 
-const DevicePinData = () => {
+const DeviceForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -44,6 +44,10 @@ const DevicePinData = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
+    const [customPinName, setCustomPinName] = useState('');
+    const [customPinNumber, setCustomPinValue] = useState('');
+    const customPinNameRef = useRef<HTMLInputElement>(null);
+    const customPinNumberRef = useRef<HTMLInputElement>(null);
     const [protocol, setProtocol] = useState<number | null>(null);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
@@ -56,6 +60,8 @@ const DevicePinData = () => {
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
         useState<null | Microcontroller>(null);
+
+    const [customPins, setCustomPins] = useState<Pins[]>([]);
 
     const [shouldBeAddedPins, setShouldBeAddedPins] = useState<
         PinItem[] | null
@@ -121,6 +127,11 @@ const DevicePinData = () => {
         navigate(`/dashboard/devices/${id}${search}`);
     };
 
+    const [isValidCustomPinData, setIsValidCustomPinData] = useState({
+        name: true,
+        pinNumber: true,
+    });
+
     const [isValidData, setIsValidData] = useState({
         name: true,
         selectedPins: true,
@@ -128,9 +139,56 @@ const DevicePinData = () => {
         selectedProtocol: true,
     });
 
+    const addCustomPins = () => {
+        const validateReslut = ValidationHelpers.ValidateCustomPinData(
+            customPins,
+            customPinName,
+            customPinNumber
+        );
+
+        if (!validateReslut.isValid && validateReslut.duplicate) {
+            dispatch(
+                toasterActions.pushOne({
+                    message: '已有同樣名字的 Pin',
+                    duration: 5,
+                    type: ToasterTypeEnum.ERROR,
+                })
+            );
+        }
+
+        if (!validateReslut.isValid) {
+            setIsValidCustomPinData({
+                name: validateReslut.pinName,
+                pinNumber: validateReslut.pinNumber,
+            });
+            return;
+        }
+
+        setCustomPins(() => {
+            const newCustomPins = [...(customPins || [])];
+
+            const pushData: Pins = {
+                name: customPinName,
+                pinNumber: customPinNumber,
+            };
+
+            newCustomPins.push({ ...pushData });
+            return newCustomPins;
+        });
+
+        if (customPinNumberRef.current) {
+            customPinNumberRef.current.value = '';
+        }
+
+        if (customPinNameRef.current) {
+            customPinNameRef.current.value = '';
+            customPinNameRef.current?.focus();
+        }
+    };
+
     const sendApi = () => {
         // refactor: createDeviceApi() 和 updateDevice() 沒有統一規則
-        const validateReslut = ValidationHelpers.ValidateDevicePinData(
+        const validateReslut = ValidationHelpers.ValidateDeviceForm(
             isCreateMode,
             name,
             microcontrollerId,
@@ -138,14 +196,11 @@ const DevicePinData = () => {
             protocol
         );
         if (!validateReslut.isValid) {
-            setIsValidData(() => {
-                return {
-                    name: validateReslut.name,
-                    selectedPins: validateReslut.selectedPins,
-                    selectedMicrocontroller:
-                        validateReslut.selectedMicrocontroller,
-                    selectedProtocol: validateReslut.selectedProtocol,
-                };
+            setIsValidData({
+                name: validateReslut.name,
+                selectedPins: validateReslut.selectedPins,
+                selectedMicrocontroller: validateReslut.selectedMicrocontroller,
+                selectedProtocol: validateReslut.selectedProtocol,
             });
             return;
         }
@@ -211,6 +266,7 @@ const DevicePinData = () => {
                 mode: target.mode,
                 name: target.name,
                 value: target.value,
+                pinNumber: target.pinNumber,
             };
 
             newSelected.push({ ...pushData });
@@ -231,6 +287,10 @@ const DevicePinData = () => {
         }
         document.title = 'ItemHub - 編輯裝置';
 
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
@@ -239,10 +299,34 @@ const DevicePinData = () => {
             getDevicePinsApi();
             return;
         }
+
+        // devicePins 沒有資料時，不用執行 set SelectedPins
+        if (devicePins.length === 0 || microcontrollers === null) {
+            return;
+        }
+
         setSelectedPins(devicePins);
         devicePinsRef.current = devicePins;
+
+        const targetMcu = microcontrollers.find(
+            (item) => item.id === devicePins[0].device?.microcontroller
+        );
+
+        let targetKey = '';
+        targetKey = targetMcu ? targetMcu.key : '';
+
+        // 裝置類型為其他時，將 devicePins 塞至 customPins，後面才可以判斷有沒有重複
+        if (targetKey === MCU_TYPE.CUSTOM) {
+            setCustomPins([
+                ...devicePins.map((item) => ({
+                    name: item.pin,
+                    pinNumber: item.pinNumber,
+                })),
+            ]);
+        }
+
         // eslint-disable-next-line
-    }, [devicePinsFromStore]);
+    }, [devicePinsFromStore, microcontrollers]);
 
     useEffect(() => {
         if (isCreateMode) {
@@ -268,6 +352,36 @@ const DevicePinData = () => {
     }, [device]);
 
     useEffect(() => {
+        ReactTooltip.rebuild();
+    }, [selectedPins]);
+
+    useEffect(() => {
+        if (
+            !microcontrollers ||
+            microcontrollers.length === 0 ||
+            !microcontrollerId
+        ) {
+            return;
+        }
+
+        let targetKey = '';
+
+        const targetMcu = microcontrollers.find(
+            (item) => item.id === microcontrollerId
+        );
+        setSelectedMicrocontroller(targetMcu !== undefined ? targetMcu : null);
+        targetKey = targetMcu ? targetMcu.key : '';
+
+        if (targetKey === MCU_TYPE.PARTICLE_IO_PHOTON) {
+            setMicrocontrollerIdImg(particleIoPhoton);
+        } else if (targetKey === MCU_TYPE.ARDUINO_NANO_33_IOT) {
+            setMicrocontrollerIdImg(arduinoNano33Iot);
+        } else if (targetKey === MCU_TYPE.ESP_01S) {
+            setMicrocontrollerIdImg(esp01s);
+        } else {
+            setMicrocontrollerIdImg('');
+        }
+
         const selectedMicrocontroller = microcontrollers.find(
             (item) => item.id === microcontrollerId
         );
@@ -282,39 +396,7 @@ const DevicePinData = () => {
             )?.value;
             setProtocol(protocolValue || 0);
         }
-        // eslint-disable-next-line
-    }, [microcontrollerId]);
 
-    useEffect(() => {
-        ReactTooltip.rebuild();
-    }, [selectedPins]);
-
-    useEffect(() => {
-        let targetKey = '';
-
-        if (!microcontrollers || microcontrollers.length === 0) {
-            return;
-        }
-
-        if (microcontrollerId !== null) {
-            const targetMcu = microcontrollers.find(
-                (item) => item.id === microcontrollerId
-            );
-            setSelectedMicrocontroller(
-                targetMcu !== undefined ? targetMcu : null
-            );
-            targetKey = targetMcu ? targetMcu.key : '';
-        }
-
-        if (targetKey === MCU_TYPE.PARTICLE_IO_PHOTON) {
-            setMicrocontrollerIdImg(particleIoPhoton);
-        } else if (targetKey === MCU_TYPE.ARDUINO_NANO_33_IOT) {
-            setMicrocontrollerIdImg(arduinoNano33Iot);
-        } else if (targetKey === MCU_TYPE.ESP_01S) {
-            setMicrocontrollerIdImg(esp01s);
-        } else {
-            setMicrocontrollerIdImg('');
-        }
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
 
@@ -387,7 +469,7 @@ const DevicePinData = () => {
 
     return (
         <div
-            className="form-data device-pin-data mx-auto"
+            className="form-data device-form mx-auto"
             data-testid="device-pin-data"
         >
             <PageTitle
@@ -471,9 +553,11 @@ const DevicePinData = () => {
                                             value={id}
                                             selected={id === microcontrollerId}
                                         >
-                                            {key
-                                                .replaceAll('_', ' ')
-                                                .toLowerCase()}
+                                            {key === 'CUSTOM'
+                                                ? '自定義'
+                                                : key
+                                                      .replaceAll('_', ' ')
+                                                      .toLowerCase()}
                                         </option>
                                     );
                                 })}
@@ -484,6 +568,108 @@ const DevicePinData = () => {
                                 </div>
                             )}
                         </div>
+                        {!isCreateMode &&
+                            selectedMicrocontroller?.key ===
+                                MCU_TYPE.CUSTOM && (
+                                <div className="mb-4">
+                                    <div className="d-flex mt-5 mb-3 fs-5">
+                                        新增 Pin
+                                        <hr className="bg-gray flex-grow-1 ms-3" />
+                                    </div>
+                                    <div className="row align-items-top mt-2">
+                                        <div className="col-4">
+                                            <label>Pin</label>
+                                            <input
+                                                type="text"
+                                                className={`form-control ${
+                                                    !isValidCustomPinData.name &&
+                                                    'border-danger'
+                                                }`}
+                                                ref={customPinNameRef}
+                                                placeholder="限5字內"
+                                                onChange={(e) => {
+                                                    const validResult =
+                                                        ValidationHelpers.Require(
+                                                            e.target.value
+                                                        ) &&
+                                                        ValidationHelpers.ValidLength(
+                                                            e.target.value,
+                                                            5
+                                                        );
+
+                                                    setCustomPinName(
+                                                        e.target.value
+                                                    );
+                                                    setIsValidCustomPinData(
+                                                        (prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                name: validResult,
+                                                            };
+                                                        }
+                                                    );
+                                                }}
+                                            />
+                                            {!isValidCustomPinData.name && (
+                                                <div className="text-danger fs-5">
+                                                    請輸入 5 字內的 Pin 名稱
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="col-4">
+                                            <label>Pin 代碼</label>
+                                            <input
+                                                type="text"
+                                                className={`form-control ${
+                                                    !isValidCustomPinData.pinNumber &&
+                                                    'border-danger'
+                                                }`}
+                                                ref={customPinNumberRef}
+                                                placeholder="限5字內"
+                                                onChange={(e) => {
+                                                    const validResult =
+                                                        ValidationHelpers.Require(
+                                                            e.target.value
+                                                        ) &&
+                                                        ValidationHelpers.ValidLength(
+                                                            e.target.value,
+                                                            5
+                                                        );
+                                                    setCustomPinValue(
+                                                        e.target.value
+                                                    );
+                                                    setIsValidCustomPinData(
+                                                        (prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                value: validResult,
+                                                            };
+                                                        }
+                                                    );
+                                                }}
+                                            />
+                                            {!isValidCustomPinData.pinNumber && (
+                                                <div className="text-danger fs-5">
+                                                    請輸入 5 字內的 Pin Value
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="col-4">
+                                            <label>&nbsp;</label>
+                                            <button
+                                                disabled={
+                                                    !isValidCustomPinData.name ||
+                                                    !isValidCustomPinData.pinNumber
+                                                }
+                                                className="btn btn-primary"
+                                                onClick={addCustomPins}
+                                            >
+                                                <div>新增</div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                         <div className="mb-4">
                             <label>通訊方式</label>
@@ -555,31 +741,23 @@ const DevicePinData = () => {
                                     <div>{selectedMicrocontroller?.memo}</div>
                                 </div>
                             )}
-
-                        {!isCreateMode && selectedMicrocontroller && (
-                            <div>
-                                <DevicePin
-                                    deviceId={id}
-                                    microcontrollerId={
-                                        selectedMicrocontroller.id
-                                    }
-                                    pinsList={selectedPins}
-                                    updateSelectedPins={(newPin) => {
-                                        updateSelectPins(newPin);
-                                    }}
-                                    removeSelectedPins={(removePinName) => {
-                                        setSelectedPins(
-                                            selectedPins
-                                                ? selectedPins.filter(
-                                                      (item) =>
-                                                          item.pin !==
-                                                          removePinName
-                                                  )
-                                                : []
-                                        );
-                                        const validResult =
-                                            ValidationHelpers.ValidateSelectedPins(
-                                                isCreateMode,
+                        {!isCreateMode &&
+                            selectedMicrocontroller &&
+                            (selectedMicrocontroller.pins.length > 0 ||
+                                (customPins && customPins.length > 0)) && (
+                                <div>
+                                    <DevicePins
+                                        deviceId={id}
+                                        microcontrollerId={
+                                            selectedMicrocontroller.id
+                                        }
+                                        selectedPinList={selectedPins}
+                                        customPinList={customPins}
+                                        updateSelectedPins={(newPin) => {
+                                            updateSelectPins(newPin);
+                                        }}
+                                        removeSelectedPins={(removePinName) => {
+                                            setSelectedPins(
                                                 selectedPins
                                                     ? selectedPins.filter(
                                                           (item) =>
@@ -588,19 +766,30 @@ const DevicePinData = () => {
                                                       )
                                                     : []
                                             );
-                                        setIsValidData((prev) => {
-                                            return {
-                                                ...prev,
-                                                selectedPins: validResult,
-                                            };
-                                        });
-                                    }}
-                                    isSelectedPinsValid={
-                                        isValidData.selectedPins
-                                    }
-                                />
-                            </div>
-                        )}
+                                            const validResult =
+                                                ValidationHelpers.ValidateSelectedPins(
+                                                    isCreateMode,
+                                                    selectedPins
+                                                        ? selectedPins.filter(
+                                                              (item) =>
+                                                                  item.pin !==
+                                                                  removePinName
+                                                          )
+                                                        : []
+                                                );
+                                            setIsValidData((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    selectedPins: validResult,
+                                                };
+                                            });
+                                        }}
+                                        isSelectedPinsValid={
+                                            isValidData.selectedPins
+                                        }
+                                    />
+                                </div>
+                            )}
                         <div className="mb-4 text-center">
                             <img
                                 className="w-100 microcontroller-img"
@@ -634,4 +823,4 @@ const DevicePinData = () => {
     );
 };
 
-export default DevicePinData;
+export default DeviceForm;

@@ -14,6 +14,8 @@ namespace Homo.IotApi
         [Required]
         [MaxLength(5)]
         public string Pin { get; set; }
+        [MaxLength(5)]
+        public string PinNumber { get; set; }
         [Required]
         public DEVICE_MODE Mode { get; set; }
         public string Name { get; set; }

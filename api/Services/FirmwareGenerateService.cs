@@ -42,6 +42,11 @@ namespace Homo.IotApi
 
             Microcontroller mcu = MicrocontrollerDataservice.GetOne(dbContext, device.Microcontroller.GetValueOrDefault());
             string mcuName = mcu.Key.ToString().ToLower().Replace("_", "-");
+            // 裝置類型為其他，使用 esp-01s 當範本
+            if (mcu.Key == "CUSTOM")
+            {
+                mcuName = "esp-01s";
+            }
 
             string protocolString = protocol == FIRMWARE_PROTOCOL.HTTP ? "http" : "mqtt";
             string microcontrollerFirmwareTemplatePath = $"{firmwareTemplatePath}/{mcuName}/{protocolString}";
@@ -56,12 +61,11 @@ namespace Homo.IotApi
             CopyDirectory(microcontrollerFirmwareTemplatePath, destPath, true);
             string pinTemplate = "pins.push_back(ItemhubPin({PIN_NUMBER}, \"{PIN_STRING}\", {PIN_MODE}))";
             List<string> pins = new List<string>();
-            var targetMcu = dbContext.Microcontroller.Where(x => x.Id == device.Microcontroller).FirstOrDefault();
-            var McuPins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DTOs.McuPin>>(targetMcu.Pins);
+
             devicePins.ForEach(item =>
             {
                 string pinString = item.Pin;
-                string pinValue = McuPins.Find(x => x.Name == pinString).Value;
+                string pinValue = item.PinNumber;
                 pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinValue).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
             });
 

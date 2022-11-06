@@ -28,7 +28,7 @@ import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 
-const Devices = () => {
+const DeviceView = () => {
     const query = useQuery();
     const limit = Number(query.get('limit') || 10);
     const [page, setPage] = useState(1);
@@ -390,4 +390,4 @@ const Devices = () => {
     );
 };
 
-export default Devices;
+export default DeviceView;
