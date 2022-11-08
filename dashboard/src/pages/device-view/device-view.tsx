@@ -180,7 +180,7 @@ const DeviceView = () => {
                     <>
                         <SearchInput
                             placeholder="搜尋裝置"
-                            defaultValue={deviceName}
+                            value={deviceName}
                             onChange={(newName) => {
                                 setDeviceName(newName);
                             }}
