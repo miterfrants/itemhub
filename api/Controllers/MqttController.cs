@@ -102,14 +102,20 @@ namespace Homo.IotApi
                 }
                 catch (System.Exception)
                 {
-
+                    iotDbContext.Dispose();
                     System.Console.WriteLine($"Client not connected: {publisher.IP}, {publisher.Id}");
                 }
 
             });
+
+            iotDbContext.Dispose();
             return Task.CompletedTask;
         }
 
+        public Task OnClientDisconnected(ClientDisconnectedEventArgs args)
+        {
+            return Task.CompletedTask;
+        }
 
         public Task ValidateConnection(ValidatingConnectionEventArgs eventArgs)
         {
@@ -132,6 +138,8 @@ namespace Homo.IotApi
             {
                 eventArgs.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                 System.Console.WriteLine($"MQTT Connect Error:{Newtonsoft.Json.JsonConvert.SerializeObject("BadUserNameOrPassword Client Not Found", Newtonsoft.Json.Formatting.Indented)}");
+                iotDbContext.Dispose();
+                dbContext.Dispose();
                 return Task.CompletedTask;
             }
             string hashClientSecrets = CryptographicHelper.GenerateSaltedHash(eventArgs.Password, client.Salt);
@@ -141,11 +149,15 @@ namespace Homo.IotApi
             {
                 eventArgs.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
                 System.Console.WriteLine($"MQTT Connect Error:{Newtonsoft.Json.JsonConvert.SerializeObject("BadUserNameOrPassword Password Error", Newtonsoft.Json.Formatting.Indented)}");
+                iotDbContext.Dispose();
+                dbContext.Dispose();
                 return Task.CompletedTask;
             }
 
             eventArgs.SessionItems.Add("userId", client.OwnerId);
             eventArgs.SessionItems.Add("deviceId", client.DeviceId.GetValueOrDefault());
+            iotDbContext.Dispose();
+            dbContext.Dispose();
             return Task.CompletedTask;
         }
 
@@ -193,6 +205,8 @@ namespace Homo.IotApi
                 {
                     DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId);
                 }
+                iotDbContext.Dispose();
+                dbContext.Dispose();
 
             }
         }
@@ -225,6 +239,7 @@ namespace Homo.IotApi
             iotBuilder.UseMySql(_dbc, _mysqlVersion);
             var iotDbContext = new IotDbContext(iotBuilder.Options);
             Device device = DeviceDataservice.GetOne(iotDbContext, userId, deviceId);
+            iotDbContext.Dispose();
             if (device == null)
             {
                 System.Console.WriteLine($"No Permission For Subscribe Other Device");

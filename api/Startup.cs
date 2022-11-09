@@ -265,6 +265,7 @@ namespace Homo.IotApi
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
                     server.ClientSubscribedTopicAsync += mqttController.OnClientSubscribed;
                     server.InterceptingPublishAsync += mqttController.OnPublishing;
+                    server.ClientDisconnectedAsync += mqttController.OnClientDisconnected;
                 });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();
