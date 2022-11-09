@@ -48,6 +48,10 @@ const Trigger = () => {
         (item) => item.key === TRIGGER_TYPE.NOTIFICATION
     )?.value;
 
+    const [inputValue, setInputValue] = useState(
+        trigger?.name ? trigger.name : ''
+    );
+
     const isCreateMode = !idFromUrl;
     const isEditMode = location.pathname.includes('edit') && triggerId !== null;
     const isReadMode = !isCreateMode && !isEditMode && trigger !== null;
@@ -351,9 +355,10 @@ const Trigger = () => {
                         type="text"
                         id="trigger-name"
                         placeholder="輸入名稱"
-                        defaultValue={trigger?.name}
+                        value={inputValue}
                         onChange={(e) => {
                             const value = e.target.value;
+                            setInputValue(value);
                             setEditedTriggerData((prev) => {
                                 return {
                                     ...prev,

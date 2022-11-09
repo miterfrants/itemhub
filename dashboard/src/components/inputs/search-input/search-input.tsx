@@ -1,14 +1,14 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import searchIcon from '@/assets/images/icon-search.svg';
 
 const SearchInput = ({
     placeholder,
-    defaultValue = '',
+    value = '',
     onChange,
     onSearch,
 }: {
     placeholder: string;
-    defaultValue?: string;
+    value?: string;
     onChange?: (value: string) => void;
     onSearch: (value: string) => void;
 }) => {
@@ -41,6 +41,8 @@ const SearchInput = ({
         onSearch(inputRef.current ? inputRef.current.value : '');
     };
 
+    const [inputValue, setInputValue] = useState(value);
+
     return (
         <div className="position-relative search-input">
             <input
@@ -48,7 +50,8 @@ const SearchInput = ({
                 type="text"
                 ref={inputRef}
                 placeholder={placeholder}
-                defaultValue={defaultValue}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 onKeyUp={searchInputKeyUp}
             />
             <button
