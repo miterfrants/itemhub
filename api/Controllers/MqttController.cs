@@ -5,6 +5,7 @@ using Homo.Api;
 using System.Collections.Generic;
 using Homo.Core.Helpers;
 using Homo.AuthApi;
+using MQTTnet;
 using MQTTnet.Server;
 using MQTTnet.Protocol;
 using Microsoft.AspNetCore.Mvc;
@@ -72,6 +73,31 @@ namespace Homo.IotApi
         public Task OnClientConnected(ClientConnectedEventArgs eventArgs)
         {
             Console.WriteLine($"Client '{eventArgs.ClientId}' connected.");
+            OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.UserName);
+            List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(_iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, DEVICE_MODE.SWITCH, null);
+            _localMqttPublishers.ForEach(publisher =>
+            {
+                try
+                {
+                    devicePins.ForEach(devicePin =>
+                    {
+                        publisher.Client.PublishAsync(new MqttApplicationMessageBuilder()
+                        .WithTopic($"{client.DeviceId.GetValueOrDefault()}/{devicePin.Pin}/switch")
+                        .WithPayload(
+                            Newtonsoft.Json.JsonConvert.SerializeObject(
+                                new DTOs.DevicePinSwitchValue { Value = devicePin.Value.GetValueOrDefault() }
+                            )
+                        )
+                        .Build());
+                    });
+                }
+                catch (System.Exception)
+                {
+
+                    System.Console.WriteLine($"Client not connected: {publisher.IP}, {publisher.Id}");
+                }
+
+            });
             return Task.CompletedTask;
         }
 
