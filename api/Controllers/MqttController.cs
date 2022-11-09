@@ -20,8 +20,6 @@ namespace Homo.IotApi
     public class MqttController
     {
         private readonly Homo.Api.CommonLocalizer _commonLocalizer;
-        private readonly IotDbContext _iotDbContext;
-        private readonly DBContext _dbContext;
         private readonly string _dbc;
         private readonly string _jwtKey;
         private readonly MQTTnet.AspNetCore.MqttHostedServer _mqttHostedServer;
@@ -36,19 +34,13 @@ namespace Homo.IotApi
         private readonly string _smsUsername;
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
+        private readonly MySqlServerVersion _mysqlVersion;
 
         public MqttController(IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublisher)
         {
             AppSettings settings = optionAppSettings.Value;
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
+            _mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
 
-            DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
-            DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
-            iotBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
-            dbContextBuilder.UseMySql(optionAppSettings.Value.Secrets.DBConnectionString, serverVersion);
-
-            _iotDbContext = new IotDbContext(iotBuilder.Options);
-            _dbContext = new DBContext(dbContextBuilder.Options);
             _jwtKey = optionAppSettings.Value.Secrets.JwtKey;
 
             var secrets = optionAppSettings.Value.Secrets;
@@ -73,22 +65,39 @@ namespace Homo.IotApi
         public Task OnClientConnected(ClientConnectedEventArgs eventArgs)
         {
             Console.WriteLine($"Client '{eventArgs.ClientId}' connected.");
-            OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.UserName);
-            List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(_iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, DEVICE_MODE.SWITCH, null);
+            if (eventArgs.UserName == _mqttUsername)
+            {
+                return Task.CompletedTask;
+            }
+
+            DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
+            iotBuilder.UseMySql(_dbc, _mysqlVersion);
+            var iotDbContext = new IotDbContext(iotBuilder.Options);
+
+            SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
+            MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
+            OauthClient client = OauthClientDataservice.GetOneByClientId(iotDbContext, eventArgs.ClientId);
+            List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, DEVICE_MODE.SWITCH, null);
+
             _localMqttPublishers.ForEach(publisher =>
             {
+
                 try
                 {
                     devicePins.ForEach(devicePin =>
                     {
-                        publisher.Client.PublishAsync(new MqttApplicationMessageBuilder()
-                        .WithTopic($"{client.DeviceId.GetValueOrDefault()}/{devicePin.Pin}/switch")
-                        .WithPayload(
-                            Newtonsoft.Json.JsonConvert.SerializeObject(
-                                new DTOs.DevicePinSwitchValue { Value = devicePin.Value.GetValueOrDefault() }
-                            )
-                        )
-                        .Build());
+                        Task.Run(async delegate
+                        {
+                            await Task.Delay(1000);
+                            return publisher.Client.PublishAsync(new MqttApplicationMessageBuilder()
+                                .WithTopic($"{client.DeviceId.GetValueOrDefault()}/{devicePin.Pin}/switch")
+                                .WithPayload(
+                                    Newtonsoft.Json.JsonConvert.SerializeObject(
+                                        new DTOs.DevicePinSwitchValue { Value = devicePin.Value.GetValueOrDefault() }
+                                    )
+                                )
+                                .Build());
+                        });
                     });
                 }
                 catch (System.Exception)
@@ -109,7 +118,16 @@ namespace Homo.IotApi
             {
                 return Task.CompletedTask;
             }
-            OauthClient client = OauthClientDataservice.GetOneByClientId(_iotDbContext, eventArgs.UserName);
+
+            DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
+            dbContextBuilder.UseMySql(_dbc, _mysqlVersion);
+            var dbContext = new DBContext(dbContextBuilder.Options);
+
+            DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
+            iotBuilder.UseMySql(_dbc, _mysqlVersion);
+            var iotDbContext = new IotDbContext(iotBuilder.Options);
+
+            OauthClient client = OauthClientDataservice.GetOneByClientId(iotDbContext, eventArgs.UserName);
             if (client == null)
             {
                 eventArgs.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
@@ -117,7 +135,7 @@ namespace Homo.IotApi
                 return Task.CompletedTask;
             }
             string hashClientSecrets = CryptographicHelper.GenerateSaltedHash(eventArgs.Password, client.Salt);
-            User user = UserDataservice.GetOne(_dbContext, client.OwnerId, true);
+            User user = UserDataservice.GetOne(dbContext, client.OwnerId, true);
 
             if (client.HashClientSecrets != hashClientSecrets)
             {
@@ -155,16 +173,25 @@ namespace Homo.IotApi
                 }
 
                 List<string> raw = args.ApplicationMessage.Topic.Split("/").ToList<string>();
+
+                DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
+                dbContextBuilder.UseMySql(_dbc, _mysqlVersion);
+                var dbContext = new DBContext(dbContextBuilder.Options);
+
+                DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                iotBuilder.UseMySql(_dbc, _mysqlVersion);
+                var iotDbContext = new IotDbContext(iotBuilder.Options);
+
                 if (isSensor)
                 {
                     string pin = raw[0];
                     var payload = System.Text.Encoding.Default.GetString(args.ApplicationMessage.Payload);
                     var dto = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.CreateSensorLog>(payload);
-                    await DeviceSensorHelper.Create(_dbContext, _iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
+                    await DeviceSensorHelper.Create(dbContext, iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
                 }
                 else if (isDeviceState)
                 {
-                    DeviceStateHelper.Create(_iotDbContext, _dbc, ownerId, deviceId);
+                    DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId);
                 }
 
             }
@@ -192,7 +219,12 @@ namespace Homo.IotApi
                 System.Console.WriteLine($"No Permission For Subscribe Other Device");
                 return Task.FromException(new Exception("no permission"));
             }
-            Device device = DeviceDataservice.GetOne(_iotDbContext, userId, deviceId);
+
+
+            DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
+            iotBuilder.UseMySql(_dbc, _mysqlVersion);
+            var iotDbContext = new IotDbContext(iotBuilder.Options);
+            Device device = DeviceDataservice.GetOne(iotDbContext, userId, deviceId);
             if (device == null)
             {
                 System.Console.WriteLine($"No Permission For Subscribe Other Device");
