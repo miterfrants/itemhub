@@ -76,7 +76,7 @@ namespace Homo.IotApi
 
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
-            OauthClient client = OauthClientDataservice.GetOneByClientId(iotDbContext, eventArgs.ClientId);
+            OauthClient client = OauthClientDataservice.GetOneByClientId(iotDbContext, eventArgs.UserName);
             List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, DEVICE_MODE.SWITCH, null);
 
             _localMqttPublishers.ForEach(publisher =>
@@ -93,7 +93,7 @@ namespace Homo.IotApi
                                 .WithTopic($"{client.DeviceId.GetValueOrDefault()}/{devicePin.Pin}/switch")
                                 .WithPayload(
                                     Newtonsoft.Json.JsonConvert.SerializeObject(
-                                        new DTOs.DevicePinSwitchValue { Value = devicePin.Value.GetValueOrDefault() }
+                                        new DTOs.DevicePinSwitchValue { Value = System.Math.Truncate(100 * devicePin.Value.GetValueOrDefault()) / 100 }
                                     )
                                 )
                                 .Build());
