@@ -36,22 +36,26 @@ namespace Homo.IotApi
                 {
                     await ScheduleJob(cancellationToken);
                 }
-                _timer = new System.Timers.Timer(delay.TotalMilliseconds);
-                _timer.Elapsed += async (sender, args) =>
+                else
                 {
-                    _timer.Dispose();  // reset and dispose timer
-                    _timer = null;
+                    _timer = new System.Timers.Timer(delay.TotalMilliseconds);
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    _timer.Elapsed += async (sender, args) =>
                     {
-                        await DoWork(cancellationToken);
-                    }
+                        _timer.Dispose();  // reset and dispose timer
+                        _timer = null;
 
-                    if (!cancellationToken.IsCancellationRequested)
-                    {
-                        await ScheduleJob(cancellationToken);    // reschedule next
-                    }
-                };
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            await DoWork(cancellationToken);
+                        }
+
+                        if (!cancellationToken.IsCancellationRequested)
+                        {
+                            await ScheduleJob(cancellationToken);    // reschedule next
+                        }
+                    };
+                }
                 _timer.Start();
             }
             await Task.CompletedTask;
