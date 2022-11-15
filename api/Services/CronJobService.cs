@@ -76,9 +76,9 @@ namespace Homo.IotApi
                         await ScheduleJob(cancellationToken);    // reschedule next
                     }
                 };
-            }
 
-            _timer.Start();
+                _timer.Start();
+            }
 
             await Task.CompletedTask;
         }
