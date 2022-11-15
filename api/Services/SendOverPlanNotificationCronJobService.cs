@@ -22,7 +22,8 @@ namespace Homo.IotApi
 
         private readonly string _staticPath;
 
-        public SendOverPlanNotificationCronJobService(IScheduleConfig<SendOverPlanNotificationCronJobService> config, IServiceProvider serviceProvider, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer) : base(config.CronExpression, config.TimeZoneInfo, serviceProvider)
+        public SendOverPlanNotificationCronJobService(IScheduleConfig<SendOverPlanNotificationCronJobService> config, IServiceProvider serviceProvider, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer)
+        : base(config.CronExpression, config.TimeZoneInfo, serviceProvider, appSettings, "SendOverPlanNotificationCronJobService", env)
         {
             _commonLocalizer = commonLocalizer;
             _envName = env.EnvironmentName;
