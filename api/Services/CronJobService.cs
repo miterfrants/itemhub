@@ -52,7 +52,10 @@ namespace Homo.IotApi
             var delay = next.Value - DateTimeOffset.Now;
             if (delay.TotalMilliseconds <= 0)   // prevent non-positive values from being passed into Timer
             {
-                sendEmailToAdmin(_cronJobName, "delay.TotalMilliseconds.");
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await DoWork(cancellationToken);
+                }
                 await ScheduleJob(cancellationToken);
             }
             else
@@ -73,8 +76,10 @@ namespace Homo.IotApi
                         await ScheduleJob(cancellationToken);    // reschedule next
                     }
                 };
-                _timer.Start();
             }
+
+            _timer.Start();
+
             await Task.CompletedTask;
         }
 
