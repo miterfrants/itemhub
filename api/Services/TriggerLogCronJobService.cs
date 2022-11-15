@@ -16,7 +16,7 @@ namespace Homo.IotApi
         private readonly string _dbc;
 
         public ClearTriggerLogCronJob(IScheduleConfig<ClearTriggerLogCronJob> config, IServiceProvider serviceProvider, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, IOptions<AppSettings> appSettings)
-            : base(config.CronExpression, config.TimeZoneInfo, serviceProvider)
+            : base(config.CronExpression, config.TimeZoneInfo, serviceProvider, appSettings, "ClearTriggerLogCronJob", env)
         {
             _envName = env.EnvironmentName;
             _dbc = appSettings.Value.Secrets.DBConnectionString;
