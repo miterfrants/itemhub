@@ -12,7 +12,7 @@ namespace Homo.IotApi
         public class McuPin
         {
             public string Name { get; set; }
-            public string Value { get; set; }
+            public string PinNumber { get; set; }
         }
     }
 }

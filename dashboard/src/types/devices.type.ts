@@ -10,11 +10,13 @@ export interface DeviceItem {
     zone: null | string;
     zoneId: null | number;
     microcontroller: number;
+    protocol: number;
 }
 
 export interface PinItem {
     id?: number;
     pin: string;
+    pinNumber: string;
     deviceId: number;
     value: number | null;
     mode: number;

@@ -10,11 +10,12 @@ export interface Microcontroller {
     key: string;
     pins: Pins[];
     memo: string;
+    supportedProtocols: string[];
 }
 
 export interface Pins {
     name: string;
-    value: number;
+    pinNumber: string;
 }
 export interface DeviceMode {
     key: string;
@@ -34,6 +35,12 @@ export interface TriggerNotificationPeriod {
     label: string;
 }
 export interface DashboardMonitorMode {
+    key: string;
+    value: number;
+    label: string;
+}
+
+export interface Protocols {
     key: string;
     value: number;
     label: string;

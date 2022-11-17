@@ -16,12 +16,25 @@ namespace Homo.IotApi
             [MaxLength(5)]
             public string Pin { get; set; }
             [Required]
+            [MaxLength(5)]
+            public string PinNumber { get; set; }
+            [Required]
             public DEVICE_MODE Mode { get; set; }
             public string Name { get; set; }
             public decimal? Value { get; set; }
             [Required]
             public long DeviceId { get; set; }
             public Homo.IotApi.Device Device { get; set; }
+
+        }
+
+        public partial class DevicePinSummary : DTOs
+        {
+            public long Id { get; set; }
+            [Required]
+            [MaxLength(5)]
+            public string Pin { get; set; }
+            public decimal? Value { get; set; }
 
         }
 
@@ -35,6 +48,9 @@ namespace Homo.IotApi
             [Required]
             [MaxLength(5)]
             public string Pin { get; set; }
+            [Required]
+            [MaxLength(5)]
+            public string PinNumber { get; set; }
             [Required]
             public DEVICE_MODE Mode { get; set; }
             public string Name { get; set; }
@@ -55,6 +71,9 @@ namespace Homo.IotApi
         public partial class DevicePinsData : DTOs
         {
             public string Pin { get; set; }
+            [Required]
+            [MaxLength(5)]
+            public string PinNumber { get; set; }
             public decimal? Value { get; set; }
             public DEVICE_MODE Mode { get; set; }
             public string Name { get; set; }

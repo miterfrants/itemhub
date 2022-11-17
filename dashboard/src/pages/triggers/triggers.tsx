@@ -329,7 +329,7 @@ const Triggers = () => {
                             <div className="search-wrapper col-12 col-md-6 mb-3 mb-md-0">
                                 <SearchInput
                                     placeholder="搜尋觸發"
-                                    defaultValue={triggerName}
+                                    value={triggerName}
                                     onChange={(newName) => {
                                         setTriggerName(newName);
                                     }}
@@ -346,7 +346,7 @@ const Triggers = () => {
                                     datalistId="sourceDevice"
                                     placeholder="來源裝置篩選"
                                     isDisabled={false}
-                                    defaultValue={sourceDeviceName}
+                                    value={sourceDeviceName}
                                     updateCurrentValue={(
                                         newValue: string | undefined
                                     ) => {
@@ -376,7 +376,7 @@ const Triggers = () => {
                                     datalistId="destinationDevice"
                                     placeholder="目標裝置篩選"
                                     isDisabled={false}
-                                    defaultValue={destinationDeviceName}
+                                    value={destinationDeviceName}
                                     updateCurrentValue={(
                                         newValue: string | undefined
                                     ) => {

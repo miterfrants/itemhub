@@ -94,7 +94,7 @@ namespace Homo.IotApi
             {
                 if (!publisher.Client.IsConnected && !publisher.IsConnecting)
                 {
-                    System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt exists and status is not connectd annd connecting", Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt exists and status is not connectd and connecting", Newtonsoft.Json.Formatting.Indented)}");
                     var mqttClientOptions = new MqttClientOptionsBuilder()
                                     .WithTcpServer(publisher.IP, 8883)
                                     .WithClientId("api-server")

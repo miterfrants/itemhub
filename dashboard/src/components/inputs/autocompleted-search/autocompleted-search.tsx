@@ -8,7 +8,7 @@ const AutocompletedSearch = ({
     datalistId,
     placeholder,
     allSuggestions,
-    defaultValue,
+    value,
     updateCurrentValue,
     onEnterKeyUp,
     onClickOption,
@@ -19,7 +19,7 @@ const AutocompletedSearch = ({
     datalistId: string;
     placeholder: string;
     allSuggestions: string[];
-    defaultValue: string;
+    value: string;
     updateCurrentValue: (newValue: string) => void;
     onEnterKeyUp?: (newValue?: string) => void;
     onClickOption?: (newValue?: string) => void;
@@ -32,6 +32,7 @@ const AutocompletedSearch = ({
 
     const isTriggerOnClickOption = useRef(false);
     const [isTriggerOnEnterKeyUp, setIsTriggerOnEnterKeyUp] = useState(false);
+    const [inputValue, setInputValue] = useState(value);
 
     useEffect(() => {
         if (isTriggerOnClickOption.current && onClickOption) {
@@ -89,7 +90,7 @@ const AutocompletedSearch = ({
                 placeholder={placeholder}
                 ref={inputRef}
                 disabled={isDisabled}
-                defaultValue={defaultValue}
+                value={inputValue}
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
                     const nativeEvent = e.nativeEvent as InputEvent;
@@ -97,6 +98,7 @@ const AutocompletedSearch = ({
                         currentValue: inputRef.current?.value || '',
                         nativeEvent,
                     });
+                    setInputValue(e.target.value);
                 }}
             />
             <datalist id={datalistId}>

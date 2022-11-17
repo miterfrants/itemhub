@@ -146,13 +146,19 @@ namespace Homo.IotApi
             var secrets = (Homo.IotApi.Secrets)appSettings.Secrets;
             services.AddDbContext<IotDbContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
             services.AddDbContext<Homo.AuthApi.DBContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
-            if (_env.EnvironmentName.ToLower() != "dev" && _env.EnvironmentName.ToLower() != "migration")
+            if (
+                _env.EnvironmentName.ToLower() != "dev"
+                && _env.EnvironmentName.ToLower() != "development"
+                && _env.EnvironmentName.ToLower() != "migration")
             {
+                System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("aaaaaaaa", Newtonsoft.Json.Formatting.Indented)}");
                 StartupOfflineService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
             }
 
             services.AddControllers();
-            if (_env.EnvironmentName.ToLower() != "dev")
+            if (
+                _env.EnvironmentName.ToLower() != "dev" && _env.EnvironmentName.ToLower() != "development"
+            )
             {
                 services.AddCronJob<AutoPaymentCronJob>(c =>
                 {
@@ -215,7 +221,11 @@ namespace Homo.IotApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MqttController mqttController)
+        public void Configure(
+            IApplicationBuilder app
+        , IWebHostEnvironment env
+        , MqttController mqttController
+        )
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
@@ -255,6 +265,7 @@ namespace Homo.IotApi
                     server.ClientConnectedAsync += mqttController.OnClientConnected;
                     server.ClientSubscribedTopicAsync += mqttController.OnClientSubscribed;
                     server.InterceptingPublishAsync += mqttController.OnPublishing;
+                    server.ClientDisconnectedAsync += mqttController.OnClientDisconnected;
                 });
             app.UseMiddleware(typeof(IotApiErrorHandlingMiddleware));
             app.UseAuthentication();

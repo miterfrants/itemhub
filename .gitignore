@@ -3,3 +3,4 @@ dev-ops
 static/firmware
 static/upload
 static/archived
+!guideline/*
