@@ -20,7 +20,7 @@ namespace Homo.IotApi
             CancellationToken cancellationToken = tokenSource.Token;
             var task = Task.Run(async () =>
             {
-                await Task.Delay(16000);
+                await Task.Delay(60 * 1000);
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return;
