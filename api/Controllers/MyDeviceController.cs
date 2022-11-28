@@ -62,34 +62,84 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpPost]
-        public ActionResult<dynamic> create([FromBody] DTOs.DevicePayload dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> create([FromBody] DTOs.DevicePayload dto, AuthApi.DTOs.JwtPayload payload)
         {
-            long ownerId = extraPayload.Id;
-            Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_dbContext, ownerId);
-            int subscriptionLevel = subscription == null ? -1 : subscription.PricingPlan;
-            decimal deviceCountInPricingPlan = subscriptionLevel == -1 ? 2 : SubscriptionHelper.GetDeviceCount((PRICING_PLAN)subscription.PricingPlan);
-            decimal currentDeviceCount = DeviceDataservice.GetRowNum(_dbContext, ownerId, null);
+            string authorization = Request.Headers["Authorization"];
+            string token = authorization == null ? "" : authorization.Substring("Bearer ".Length).Trim();
 
-            if (currentDeviceCount + 1 > deviceCountInPricingPlan)
-            {
-                var pricingPlans = ConvertHelper.EnumToList(typeof(PRICING_PLAN));
-                string reason = "";
-                if (subscriptionLevel + 1 > pricingPlans.Count - 1)
-                {
-                    reason = _commonLocalizer.Get("moreThanMaxNumberOfDeviceInAnyPlan", null, new Dictionary<string, string>() { { "adminEmail", _adminEmail } });
-                }
-                else
-                {
-                    decimal deviceCountInNextLevelPricingPlan = SubscriptionHelper.GetDeviceCount((PRICING_PLAN)(subscriptionLevel + 1));
-                    reason = _commonLocalizer.Get("moreThanMaxNumberOfDevice", null, new Dictionary<string, string>() { { "deviceCountInNextLevelPricingPlan", deviceCountInNextLevelPricingPlan.ToString() } });
-                }
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("start", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("this is token", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(token, Newtonsoft.Json.Formatting.Indented));
+            // var ccc = JWTHelper.DecodeToken<AuthApi.DTOs.JwtPayload>(token);
+            AuthApi.DTOs.JwtPayload ccc = JWTHelper.DecodeToken<AuthApi.DTOs.JwtPayload>(token);
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("--", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("this is ccc", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ccc, Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("--", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("this is ccc.extra.Id", Newtonsoft.Json.Formatting.Indented));
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ccc.Extra.Id, Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("--", Newtonsoft.Json.Formatting.Indented));
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("this is ccc.roles", Newtonsoft.Json.Formatting.Indented));
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ccc.Roles, Newtonsoft.Json.Formatting.Indented));
+            // string[] ccccc = ccc.roles.ToArray();
 
-                throw new CustomException(ERROR_CODE.OVER_PRICING_PLAN, System.Net.HttpStatusCode.Forbidden, new Dictionary<string, string>(){{
-                    "reason", reason
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ccccc, Newtonsoft.Json.Formatting.Indented));
+
+            // string zz = Newtonsoft.Json.JsonConvert.SerializeObject(ccc.Extra);
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(zz, Newtonsoft.Json.Formatting.Indented));
+
+            // var extra = JWTHelper.DecodeToken<AuthApi.DTOs.JwtExtraPayload>(zz);
+
+
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("extra", Newtonsoft.Json.Formatting.Indented));
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(extra, Newtonsoft.Json.Formatting.Indented));
+            // // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("DecodeToken ", Newtonsoft.Json.Formatting.Indented));
+            // // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(aa, Newtonsoft.Json.Formatting.Indented));
+
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("Roles: ", Newtonsoft.Json.Formatting.Indented));
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(aa.roles, Newtonsoft.Json.Formatting.Indented));
+            // var bb = Newtonsoft.Json.JsonConvert.SerializeObject(aa.extra.Email)
+
+
+            // string[] roles = Newtonsoft.Json.JsonConvert.DeserializeObject<List<string>>(aa.roles); ;
+            // string[] roles = aa.roles.Select(x => x.Roles).ToArray();
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("3", Newtonsoft.Json.Formatting.Indented));
+            // System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(roles, Newtonsoft.Json.Formatting.Indented));
+
+            System.Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject("end", Newtonsoft.Json.Formatting.Indented));
+
+
+            // long ownerId = extraPayload.Id;
+            // Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_dbContext, ownerId);
+            // int subscriptionLevel = subscription == null ? -1 : subscription.PricingPlan;
+            // decimal deviceCountInPricingPlan = subscriptionLevel == -1 ? 2 : SubscriptionHelper.GetDeviceCount((PRICING_PLAN)subscription.PricingPlan);
+            // decimal currentDeviceCount = DeviceDataservice.GetRowNum(_dbContext, ownerId, null);
+            // // extraPayload.IsInRole(ROLE.ADMIN.ToString()
+            // if (currentDeviceCount + 1 > deviceCountInPricingPlan)
+            // {
+            //     var pricingPlans = ConvertHelper.EnumToList(typeof(PRICING_PLAN));
+            //     string reason = "";
+            //     if (subscriptionLevel + 1 > pricingPlans.Count - 1)
+            //     {
+            //         reason = _commonLocalizer.Get("moreThanMaxNumberOfDeviceInAnyPlan", null, new Dictionary<string, string>() { { "adminEmail", _adminEmail } });
+            //     }
+            //     else
+            //     {
+            //         decimal deviceCountInNextLevelPricingPlan = SubscriptionHelper.GetDeviceCount((PRICING_PLAN)(subscriptionLevel + 1));
+            //         reason = _commonLocalizer.Get("moreThanMaxNumberOfDevice", null, new Dictionary<string, string>() { { "deviceCountInNextLevelPricingPlan", deviceCountInNextLevelPricingPlan.ToString() } });
+            //     }
+
+            //     throw new CustomException(ERROR_CODE.OVER_PRICING_PLAN, System.Net.HttpStatusCode.Forbidden, new Dictionary<string, string>(){{
+            //         "reason", reason
+            //     }});
+            // }
+
+            throw new CustomException(ERROR_CODE.OVER_PRICING_PLAN, System.Net.HttpStatusCode.Forbidden, new Dictionary<string, string>(){{
+                    "reason", "CC"
                 }});
-            }
 
-            Device rewRecord = DeviceDataservice.Create(_dbContext, ownerId, dto);
+            // Device rewRecord = DeviceDataservice.Create(_dbContext, ownerId, dto);
+            Device rewRecord = new Device();
             return rewRecord;
         }
 

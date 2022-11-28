@@ -10,6 +10,8 @@ namespace Homo.AuthApi
         [Description("Only Sign In")]
         NO,
         [Description("Group Manage")]
-        GROUP
+        GROUP,
+        [Description("VIP Group")]
+        VIP
     }
 }

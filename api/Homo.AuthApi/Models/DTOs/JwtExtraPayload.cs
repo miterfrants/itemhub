@@ -1,7 +1,14 @@
+using System.Collections.Generic;
+
 namespace Homo.AuthApi
 {
     public abstract partial class DTOs
     {
+        public class JwtPayload
+        {
+            public int exp { get; set; }
+            public string role { get; set; }
+        }
         public class JwtExtraPayload
         {
             public long Id { get; set; }

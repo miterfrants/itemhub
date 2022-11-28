@@ -5,6 +5,8 @@ using Homo.Core.Constants;
 using Homo.Core.Helpers;
 using Homo.Api;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Homo.AuthApi
 {
@@ -105,8 +107,12 @@ namespace Homo.AuthApi
                 throw new CustomException(ERROR_CODE.VERIFY_CODE_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
             }
             VerifyCodeDataservice.UseVerifyCode(verifyCode, _dbContext);
-            string token = JWTHelper.GenerateToken(_dashboardJwtKey, 14 * 24 * 60, extraPayload);
-            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, extraPayload);
+
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(_dbContext, user.Id);
+            string[] roles = permissions.Select(x => x.Roles).ToArray();
+
+            string token = JWTHelper.GenerateToken(_dashboardJwtKey, 14 * 24 * 60, extraPayload, roles);
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, extraPayload, roles);
             return new { token = token, refreshToken = refreshToken };
         }
     }

@@ -43,7 +43,6 @@ namespace Homo.AuthApi
             }
             return false;
         }
-
         public static dynamic DecodeToken<T>(string token)
         {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
