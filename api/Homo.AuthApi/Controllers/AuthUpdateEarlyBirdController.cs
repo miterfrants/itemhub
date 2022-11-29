@@ -79,12 +79,12 @@ namespace Homo.AuthApi
             };
 
             List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(_dbContext, extraPayload.Id);
-            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
+            string[] roles = permissions.Select(x => x.Roles).ToArray();
 
-            string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, userPayload);
-            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload);
-            string dashboardToken = JWTHelper.GenerateToken(_dashboardJwtKey, 3 * 24 * 60, userPayload);
-            string dashboardRefreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload);
+            string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, userPayload, roles);
+            string refreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload, roles);
+            string dashboardToken = JWTHelper.GenerateToken(_dashboardJwtKey, 3 * 24 * 60, userPayload, roles);
+            string dashboardRefreshToken = JWTHelper.GenerateToken(_refreshJwtKey, 6 * 30 * 24 * 60, userPayload, roles);
 
             if (_authByCookie)
             {
