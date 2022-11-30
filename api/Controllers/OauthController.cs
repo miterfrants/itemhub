@@ -102,7 +102,7 @@ namespace Homo.IotApi
                 Int32 unixTimestamp = (Int32)(expirationTime.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                 User user = UserDataservice.GetOne(_dbContext, oauthClient.OwnerId);
                 List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(_dbContext, user.Id);
-                string[] roles = permissions.Select(x => x.Roles).ToArray();
+                string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
                 var extraPayload = new Homo.AuthApi.DTOs.JwtExtraPayload()
                 {
                     Id = user.Id,

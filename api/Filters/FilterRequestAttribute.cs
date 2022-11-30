@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Homo.Core.Constants;
 using System.Linq;
 using Homo.AuthApi;
+using System.Collections.Generic;
 
 namespace Homo.IotApi
 {
@@ -57,8 +58,12 @@ namespace Homo.IotApi
                 pricingPlan = (PRICING_PLAN)checkData.Subscription.PricingPlan;
             }
 
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, checkData.DevicePinSensor.OwnerId);
+            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
+            bool isVIP = roles.Any(x => x == "VIP");
+
             int requestFrequency = (int)SubscriptionHelper.GetFrequency(pricingPlan);
-            if (checkData != null && checkData.DevicePinSensor != null && checkData.DevicePinSensor.CreatedAt.AddSeconds(requestFrequency) >= DateTime.Now)
+            if ((checkData != null && checkData.DevicePinSensor != null && checkData.DevicePinSensor.CreatedAt.AddSeconds(requestFrequency) >= DateTime.Now) && !isVIP)
             {
                 dbContext.User.Where(x => x.Id == checkData.DevicePinSensor.OwnerId).UpdateFromQuery(x => new User()
                 {
