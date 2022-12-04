@@ -17,7 +17,7 @@ namespace Homo.IotApi
         {
             IOptions<Homo.IotApi.AppSettings> config = serviceProvider.GetService<IOptions<Homo.IotApi.AppSettings>>();
             var secrets = (Secrets)config.Value.Secrets;
-            FilterRequestAttribute attribute = new FilterRequestAttribute(secrets.DBConnectionString);
+            FilterRequestAttribute attribute = new FilterRequestAttribute(secrets.DBConnectionString, secrets.DashboardJwtKey);
             return attribute;
         }
     }

@@ -15,7 +15,8 @@ namespace Homo.IotApi
             long deviceId, string pin, DTOs.CreateSensorLog dto, CommonLocalizer commonLocalizer,
             string mailTemplatePath, string websiteUrl, string systemEmail, string adminEmail, string smsUsername, string smsPassword,
             string smsClientUrl, string sendGridApiKey,
-            List<MqttPublisher> localMqttPublishers
+            List<MqttPublisher> localMqttPublishers, bool isVIP
+
             )
         {
             DevicePin devicePin = DevicePinDataservice.GetOneByDeviceIdAndPin(iotDbContext, ownerId, deviceId, null, pin);
@@ -28,10 +29,6 @@ namespace Homo.IotApi
             SensorLogDataservice.Create(iotDbContext, ownerId, deviceId, pin, dto);
             List<Trigger> triggers = TriggerDataservice.GetAll(iotDbContext, ownerId, deviceId, pin);
             List<Trigger> beTriggeredList = new List<Trigger>();
-
-            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, ownerId);
-            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
-            bool isVIP = roles.Any(x => x == "VIP");
 
             for (int i = 0; i < triggers.Count(); i++)
             {
@@ -95,7 +92,7 @@ namespace Homo.IotApi
                     beTriggeredList.Add(trigger);
 
                     var deviceName = (devicePin.Device == null ? "" : devicePin.Device.Name);
-                    if ((!String.IsNullOrEmpty(trigger.Email)) && !isVIP)
+                    if (!String.IsNullOrEmpty(trigger.Email))
                     {
                         MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TRIGGER_NOTIFICATION, mailTemplatePath);
                         template = MailTemplateHelper.ReplaceVariable(template, new
@@ -125,7 +122,7 @@ namespace Homo.IotApi
                             Content = template.Content
                         }, systemEmail, trigger.Email, sendGridApiKey);
                     }
-                    else if ((!String.IsNullOrEmpty(trigger.Phone)) && !isVIP)
+                    else if (!String.IsNullOrEmpty(trigger.Phone))
                     {
                         var subject = commonLocalizer.Get("triggerNotification", null, new Dictionary<string, string> {
                             {
