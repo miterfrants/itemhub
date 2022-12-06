@@ -47,7 +47,7 @@ namespace Homo.AuthApi
         public static dynamic DecodeToken<T>(string token)
         {
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(handler.ReadJwtToken(token).Payload));
+            return JsonConvert.DeserializeObject<T>(handler.ReadJwtToken(token).Payload.SerializeToJson());
         }
 
         public static DTOs.JwtExtraPayload GetExtraPayload(string key, string token)

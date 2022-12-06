@@ -62,7 +62,7 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpPost]
-        public ActionResult<dynamic> create([FromBody] DTOs.DevicePayload dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> create([FromBody] DTOs.DevicePayload dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload, bool isVIP)
         {
             long ownerId = extraPayload.Id;
             Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_dbContext, ownerId);
@@ -70,7 +70,7 @@ namespace Homo.IotApi
             decimal deviceCountInPricingPlan = subscriptionLevel == -1 ? 2 : SubscriptionHelper.GetDeviceCount((PRICING_PLAN)subscription.PricingPlan);
             decimal currentDeviceCount = DeviceDataservice.GetRowNum(_dbContext, ownerId, null);
 
-            if (currentDeviceCount + 1 > deviceCountInPricingPlan)
+            if ((currentDeviceCount + 1 > deviceCountInPricingPlan) && !isVIP)
             {
                 var pricingPlans = ConvertHelper.EnumToList(typeof(PRICING_PLAN));
                 string reason = "";

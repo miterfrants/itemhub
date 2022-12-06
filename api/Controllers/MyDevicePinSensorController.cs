@@ -58,11 +58,11 @@ namespace Homo.IotApi
         [HttpPost]
         [FilterRequestFactory]
         [Route("{pin}")]
-        public async Task<dynamic> create([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.CreateSensorLog dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public async Task<dynamic> create([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.CreateSensorLog dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload, bool isVIP)
         {
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
-            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
+            await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
             return new
             {
                 status = CUSTOM_RESPONSE.OK

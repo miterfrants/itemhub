@@ -67,6 +67,7 @@ namespace Homo.AuthApi
 
             // pass extraPayload to controller function
             context.ActionArguments["extraPayload"] = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.JwtExtraPayload>(payload.FindFirstValue("extra"));
+            context.ActionArguments["isVIP"] = payload.IsInRole("VIP");
         }
     }
 }

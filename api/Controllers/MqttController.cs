@@ -154,8 +154,13 @@ namespace Homo.IotApi
                 return Task.CompletedTask;
             }
 
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, client.OwnerId);
+            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
+            bool isVIP = roles.Any(x => x == "VIP");
+
             eventArgs.SessionItems.Add("userId", client.OwnerId);
             eventArgs.SessionItems.Add("deviceId", client.DeviceId.GetValueOrDefault());
+            eventArgs.SessionItems.Add("isVIP", isVIP);
             iotDbContext.Dispose();
             dbContext.Dispose();
             return Task.CompletedTask;
@@ -170,6 +175,8 @@ namespace Homo.IotApi
             {
                 long deviceId = -1;
                 long ownerId = -1;
+                bool isVIP = false;
+
                 var clients = await _mqttHostedServer.GetClientsAsync();
                 var client = clients.Where(x => x.Id == args.ClientId).FirstOrDefault();
                 if (client == null)
@@ -178,6 +185,7 @@ namespace Homo.IotApi
                 }
                 long.TryParse(client.Session.Items["userId"].ToString(), out ownerId);
                 long.TryParse(client.Session.Items["deviceId"].ToString(), out deviceId);
+                bool.TryParse(client.Session.Items["isVIP"].ToString(), out isVIP);
 
                 if (deviceId == -1 || ownerId == -1)
                 {
@@ -199,7 +207,7 @@ namespace Homo.IotApi
                     string pin = raw[0];
                     var payload = System.Text.Encoding.Default.GetString(args.ApplicationMessage.Payload);
                     var dto = Newtonsoft.Json.JsonConvert.DeserializeObject<DTOs.CreateSensorLog>(payload);
-                    await DeviceSensorHelper.Create(dbContext, iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers);
+                    await DeviceSensorHelper.Create(dbContext, iotDbContext, ownerId, deviceId, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
                 }
                 else if (isDeviceState)
                 {
