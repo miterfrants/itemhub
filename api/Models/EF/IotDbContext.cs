@@ -36,6 +36,7 @@ namespace Homo.IotApi
         public virtual DbSet<FirmwareBundleLog> FirmwareBundleLog { get; set; }
         public virtual DbSet<Microcontroller> Microcontroller { get; set; }
         public virtual DbSet<DashboardMonitor> DashboardMonitor { get; set; }
+        public virtual DbSet<Log> Log { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -139,6 +140,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Mode });
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
+                entity.Property(p => p.Value).HasDefaultValueSql("0");
                 entity.HasOne(p => p.Device).WithMany().HasForeignKey(p => p.DeviceId);
             });
 
@@ -177,6 +179,12 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Mode });
                 entity.HasIndex(p => new { p.OwnerId });
                 entity.HasIndex(p => new { p.Sort });
+            });
+
+            modelBuilder.Entity<Log>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeviceId });
             });
 
             OnModelCreatingPartial(modelBuilder);

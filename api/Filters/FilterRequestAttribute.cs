@@ -4,15 +4,21 @@ using Microsoft.EntityFrameworkCore;
 using Homo.Core.Constants;
 using System.Linq;
 using Homo.AuthApi;
+using System.Collections.Generic;
+using System.Net;
+using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace Homo.IotApi
 {
     public class FilterRequestAttribute : ActionFilterAttribute
     {
         private string _dbc;
-        public FilterRequestAttribute(string dbc)
+        private string _jwtKey;
+        public FilterRequestAttribute(string dbc, string jwtKey)
         {
             _dbc = dbc;
+            _jwtKey = jwtKey;
         }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -57,8 +63,13 @@ namespace Homo.IotApi
                 pricingPlan = (PRICING_PLAN)checkData.Subscription.PricingPlan;
             }
 
+            string token = context.HttpContext.Request.Headers["Authorization"];
+            token = token.Substring("Bearer ".Length).Trim();
+            ClaimsPrincipal payload = JWTHelper.GetPayload(_jwtKey, token);
+            bool isVIP = payload.IsInRole("VIP");
+
             int requestFrequency = (int)SubscriptionHelper.GetFrequency(pricingPlan);
-            if (checkData != null && checkData.DevicePinSensor != null && checkData.DevicePinSensor.CreatedAt.AddSeconds(requestFrequency) >= DateTime.Now)
+            if ((checkData != null && checkData.DevicePinSensor != null && checkData.DevicePinSensor.CreatedAt.AddSeconds(requestFrequency) >= DateTime.Now) && !isVIP)
             {
                 dbContext.User.Where(x => x.Id == checkData.DevicePinSensor.OwnerId).UpdateFromQuery(x => new User()
                 {

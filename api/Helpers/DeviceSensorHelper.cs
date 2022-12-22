@@ -15,7 +15,8 @@ namespace Homo.IotApi
             long deviceId, string pin, DTOs.CreateSensorLog dto, CommonLocalizer commonLocalizer,
             string mailTemplatePath, string websiteUrl, string systemEmail, string adminEmail, string smsUsername, string smsPassword,
             string smsClientUrl, string sendGridApiKey,
-            List<MqttPublisher> localMqttPublishers
+            List<MqttPublisher> localMqttPublishers, bool isVIP
+
             )
         {
             DevicePin devicePin = DevicePinDataservice.GetOneByDeviceIdAndPin(iotDbContext, ownerId, deviceId, null, pin);
@@ -28,6 +29,7 @@ namespace Homo.IotApi
             SensorLogDataservice.Create(iotDbContext, ownerId, deviceId, pin, dto);
             List<Trigger> triggers = TriggerDataservice.GetAll(iotDbContext, ownerId, deviceId, pin);
             List<Trigger> beTriggeredList = new List<Trigger>();
+
             for (int i = 0; i < triggers.Count(); i++)
             {
                 Trigger trigger = triggers[i];
@@ -74,7 +76,7 @@ namespace Homo.IotApi
                     int daysInMonth = System.DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
                     DateTime endOfMonth = startOfMonth.AddDays(daysInMonth - 1).AddHours(23).AddMinutes(59).AddSeconds(59);
                     int usage = TriggerLogDataservice.GetCountOfNotificationInPeriod(iotDbContext, startOfMonth, endOfMonth, ownerId, TRIGGER_TYPE.NOTIFICATION);
-                    if (usage >= rateLimit)
+                    if ((usage >= rateLimit) && !isVIP)
                     {
                         UserDataservice.SetIsOverSubscriptionPlan(dbContext, ownerId);
                         continue;
