@@ -33,14 +33,19 @@ namespace Homo.IotApi
         public static List<DTOs.DevicePinSummary> GetAllSummary(IotDbContext dbContext, long ownerId, List<long> deviceIds, DEVICE_MODE? mode, string pin)
         {
             return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, mode, pin)
-                .Select(x => new DTOs.DevicePinSummary()
+                .Select(x =>
                 {
-                    Id = x.Pin.Id,
-                    Pin = x.Pin.Pin,
-                    Value = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.Value :
-                        x.LastLog != null ? x.LastLog.Value : null,
-                })
-                .ToList();
+                    var value = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.Value.ToString("N0") :
+                        x.LastLog != null ? x.LastLog.Value.ToString() : null;
+                    int finalValue = -1;
+                    Int32.TryParse(value, out finalValue);
+                    return new DTOs.DevicePinSummary()
+                    {
+                        Id = x.Pin.Id,
+                        Pin = x.Pin.Pin,
+                        Value = finalValue == -1 ? 0 : finalValue
+                    };
+                }).ToList();
         }
 
         public static DevicePin Create(IotDbContext dbContext, long ownerId, long deviceId, DTOs.DevicePin dto)
