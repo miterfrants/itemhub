@@ -8,6 +8,31 @@ import { TwoFactorAuthController } from '../controllers/two-factor-auth.controll
 import { ForgetPasswordController } from '../controllers/forget-password.js';
 import { ResetPasswordController } from '../controllers/reset-password.js';
 import { ResetPasswordFinishController } from '../controllers/reset-password-finish.js';
+import { APP_CONFIG } from '../config.js';
+const gTag = {
+    dependency: {
+        url: `https://www.googletagmanager.com/gtag/js?id=${APP_CONFIG.GA_PROPERTY_ID}`,
+        checkVariable: 'dataLayer',
+        defer: true,
+        async: true
+    },
+    prepareData: {
+        key: 'gtag',
+        func: () => {
+            window.dataLayer = window.dataLayer || [];
+            if (!window.gtag) {
+                function gtag () {
+                    window.dataLayer.push(arguments);
+                }
+                gtag('js', new Date());
+                gtag('config', APP_CONFIG.GA_PROPERTY_ID);
+                window.gtag = gtag;
+            }
+
+            return window.gtag;
+        }
+    }
+};
 
 export const AuthRoutingRule = {
     path: '/auth/',
@@ -39,6 +64,8 @@ export const AuthRoutingRule = {
         controller: VerifyEmailController,
         html: '/template/verify-email.html'
     }, {
+        dependency: [gTag.dependency],
+        prepareData: [gTag.prepareData],
         path: 'sign-up/?verifyPhoneToken',
         skipSitemap: true,
         controller: SignUpController,

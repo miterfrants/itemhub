@@ -59,6 +59,7 @@ namespace Homo.AuthApi
             _authByCookie = common.AuthByCookie;
             _PKCS1PublicKeyPath = common.Pkcs1PublicKeyPath;
             _phoneHashSalt = secrets.PhoneHashSalt;
+            _refreshJwtKey = secrets.RefreshJwtKey;
         }
 
         [SwaggerOperation(
