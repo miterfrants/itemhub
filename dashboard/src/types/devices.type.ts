@@ -24,3 +24,8 @@ export interface PinItem {
     createdAt?: string;
     device?: DeviceItem;
 }
+
+export interface DeviceLastActivityLog {
+    deviceId: number;
+    createdAt: string;
+}
