@@ -17,6 +17,24 @@ namespace Homo.IotApi
             ).Count();
         }
 
+        public static int GetRowNum(IotDbContext dbContext, long ownerId, long deviceId)
+        {
+            return dbContext.DeviceActivityLog.Where(x =>
+                x.DeletedAt == null
+                && x.DeviceId == deviceId
+                && x.OwnerId == ownerId
+            ).Count();
+        }
+
+        public static List<DeviceActivityLog> GetList(IotDbContext dbContext, long ownerId, long deviceId, int page, int limit)
+        {
+            return dbContext.DeviceActivityLog.Where(x =>
+                x.DeletedAt == null
+                && x.DeviceId == deviceId
+                && x.OwnerId == ownerId
+            ).OrderBy(x => x.CreatedAt).Take(limit).Skip((page - 1) * limit).ToList();
+        }
+
         public static List<long> GetTooLongWithoutActivityDeviceIds(IotDbContext dbContext, int seconds) // 這個有效能低落的風險
         {
             return dbContext.Device
