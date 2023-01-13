@@ -30,6 +30,7 @@ import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dial
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { useGetDeviceLastActivityLogApi } from '@/hooks/apis/device-last-activity-logs.hook';
 import { selectDeviceLastActivityLogs } from '@/redux/reducers/device-activity-logs.reducer';
+import { DeviceItem } from '@/types/devices.type';
 
 const DeviceView = () => {
     const query = useQuery();
@@ -128,13 +129,11 @@ const DeviceView = () => {
         setIsFirmwarePrepare(false);
     }, [responseOfBundle, errorOfBundle]);
 
-    useEffect(() => {
-        console.log(deviceLastActivityLogs);
-    }, [deviceLastActivityLogs]);
+    useEffect(() => {}, [deviceLastActivityLogs]);
 
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
-            (item: any) => item.id === id
+            (item: DeviceItem) => item.id === id
         );
         if (!shouldBeDeleteDevice) {
             return;
