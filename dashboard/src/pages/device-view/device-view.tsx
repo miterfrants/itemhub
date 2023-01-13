@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import moment from 'moment';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
@@ -27,6 +28,9 @@ import OnlineStatusTag from '@/components/online-status-tag/online-status-tag';
 import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
+import { useGetDeviceLastActivityLogApi } from '@/hooks/apis/device-last-activity-logs.hook';
+import { selectDeviceLastActivityLogs } from '@/redux/reducers/device-activity-logs.reducer';
+import { DeviceItem } from '@/types/devices.type';
 
 const DeviceView = () => {
     const query = useQuery();
@@ -38,6 +42,7 @@ const DeviceView = () => {
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
+    const deviceLastActivityLogs = useAppSelector(selectDeviceLastActivityLogs);
     const { protocols } = useAppSelector(selectUniversal);
     const dispatch = useDispatch();
     const { search } = useLocation();
@@ -53,6 +58,14 @@ const DeviceView = () => {
         limit,
         name: deviceName,
     });
+
+    const { isGetingDeviceLastActivityLogs, getDeviceLastActivityLogsApi } =
+        useGetDeviceLastActivityLogApi({
+            deviceIds:
+                devicesState && devicesState.devices
+                    ? devicesState?.devices?.map((item) => item.id)
+                    : [],
+        });
 
     const { fetchApi: deleteMultipleApi, data: responseOfDelete } =
         useDeleteDevicesApi([shouldBeDeleteId]);
@@ -81,6 +94,7 @@ const DeviceView = () => {
     useEffect(() => {
         if (devices && devices.length > 0) {
             hasDevicesRef.current = true;
+            getDeviceLastActivityLogsApi();
         }
     }, [devices]);
 
@@ -115,9 +129,11 @@ const DeviceView = () => {
         setIsFirmwarePrepare(false);
     }, [responseOfBundle, errorOfBundle]);
 
+    useEffect(() => {}, [deviceLastActivityLogs]);
+
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
-            (item) => item.id === id
+            (item: DeviceItem) => item.id === id
         );
         if (!shouldBeDeleteDevice) {
             return;
@@ -219,13 +235,7 @@ const DeviceView = () => {
                                 </div>
                                 <div className="devices-list">
                                     {devices.map(
-                                        ({
-                                            id,
-                                            name,
-                                            createdAt,
-                                            online,
-                                            protocol,
-                                        }) => {
+                                        ({ id, name, online, protocol }) => {
                                             const targetProtocol =
                                                 protocols.find(
                                                     (item) =>
@@ -235,7 +245,23 @@ const DeviceView = () => {
                                                 <div
                                                     className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
                                                     key={id}
-                                                    title={`建立時間: ${createdAt}`}
+                                                    title={`最後上線時間: ${
+                                                        deviceLastActivityLogs?.find(
+                                                            (log) =>
+                                                                log.deviceId ===
+                                                                id
+                                                        )
+                                                            ? moment(
+                                                                  deviceLastActivityLogs?.find(
+                                                                      (log) =>
+                                                                          log.deviceId ===
+                                                                          id
+                                                                  )?.createdAt
+                                                              ).format(
+                                                                  'YYYY-MM-DD HH:mm:ss'
+                                                              )
+                                                            : '無資料'
+                                                    }`}
                                                 >
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         裝置名稱
