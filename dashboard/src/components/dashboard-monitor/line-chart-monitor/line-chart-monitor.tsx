@@ -2,7 +2,7 @@ import Spinner from '@/components/spinner/spinner';
 import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import debounce from 'lodash.debounce';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Area,
     AreaChart,
@@ -72,13 +72,13 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             pin: pin,
         });
 
-    const startPooling = () => {
+    const startPooling = useCallback(() => {
         if (!isLiveData) {
             return;
         }
         getLastSensorLogs();
         timer.current = setTimeout(startPooling, 5000);
-    };
+    }, [isLiveData, getLastSensorLogs]);
 
     useEffect(() => {
         getSensorLogs();
@@ -145,7 +145,7 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         } else {
             clearTimeout(timer.current);
         }
-    }, [isLiveData]);
+    }, [isLiveData, startPooling]);
 
     return (
         <div
