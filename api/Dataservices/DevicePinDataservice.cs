@@ -77,6 +77,10 @@ namespace Homo.IotApi
                     var prop = record.GetType().GetProperty(propOfDTO.Name);
                     prop.SetValue(record, value);
                 }
+                if (record.Value == null)
+                {
+                    record.Value = 1;
+                }
                 record.CreatedAt = DateTime.Now;
                 record.OwnerId = ownerId;
                 record.DeviceId = deviceId;
