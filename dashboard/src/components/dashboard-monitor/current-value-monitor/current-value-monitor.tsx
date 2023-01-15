@@ -83,7 +83,7 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
                         <div>
                             <Toggle value={isLiveData ? 1 : 0} />
                         </div>
-                        <div>{isLiveData ? 'live' : 'static'}</div>
+                        <div>及時監控: {isLiveData ? 'on' : 'off'}</div>
                     </div>
                     <div>
                         <h2 className="d-none d-lg-block mb-0 text-center px-45 my-3">
