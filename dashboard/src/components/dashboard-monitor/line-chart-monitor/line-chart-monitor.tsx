@@ -173,7 +173,7 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 <div>
                                     <Toggle value={isLiveData ? 1 : 0} />
                                 </div>
-                                <div>{isLiveData ? 'live' : 'static'}</div>
+                                <div>及時監控: {isLiveData ? 'on' : 'off'}</div>
                             </div>
                             <h3 className="mb-0 w-100 text-center px-45 my-3">
                                 {devicePin?.device?.name} - {devicePin?.name}
