@@ -19,7 +19,7 @@ export const useGetDeviceLastActivityLogApi = ({
     const dispatchRefreshDeviceLastActivityLogs = useCallback(
         (data: GetDeviceLastActivityLogsResponseData) => {
             if (data) {
-                dispatch(deviceLastActivityLogsActions.refresh(data));
+                dispatch(deviceLastActivityLogsActions.refresh(data.logs));
             }
         },
         [dispatch]
