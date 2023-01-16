@@ -16,7 +16,7 @@ export const END_POINT = {
     DEVICE_PINS: 'my/devices/:id/pins',
     DEVICE_SWITCH_PIN: 'my/devices/:id/switches/:pin',
     DEVICE_PIN: 'my/devices/:id/pins/:pin',
-    DEVICE_LAST_ACTIVITY_LOGS: 'my/last-device-activity-logs',
+    DEVICE_LAST_ACTIVITY_LOGS: 'my/last-device-activity-log',
     DEVICE_BUNDLE_FIRMWARE: 'my/devices/:id/bundle-firmware',
     SENSOR_LOGS: 'my/devices/:id/sensors/:pin',
     OAUTH_CLIENTS: 'my/oauth-clients',
