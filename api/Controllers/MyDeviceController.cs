@@ -53,7 +53,7 @@ namespace Homo.IotApi
                     x.Online,
                     x.OwnerId,
                     x.Protocol,
-                    LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault().CreatedAt
+                    LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault()?.CreatedAt
                 }),
                 rowNum = DeviceDataservice.GetRowNum(_dbContext, ownerId, name)
             };
