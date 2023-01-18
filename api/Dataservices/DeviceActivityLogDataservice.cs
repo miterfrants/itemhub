@@ -26,7 +26,7 @@ namespace Homo.IotApi
             ).Count();
         }
 
-        public static List<DeviceActivityLog> GetLastActivityLogs(IotDbContext dbContext, long ownerId, List<long> deviceIds)
+        public static List<DeviceActivityLog> GetLast(IotDbContext dbContext, long ownerId, List<long> deviceIds)
         {
             return dbContext.DeviceActivityLog.Where(x =>
                 x.DeletedAt == null
@@ -35,8 +35,6 @@ namespace Homo.IotApi
             ).OrderBy(x => x.DeviceId)
             .ThenByDescending(x => x.CreatedAt)
             .ThenBy(x => x.Id)
-            .Take(deviceIds.Count)
-            .ToList()
             .GroupBy(x => x.DeviceId)
             .Select(x => x.First())
             .ToList();

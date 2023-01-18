@@ -167,13 +167,13 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                             }`}
                         >
                             <div
-                                className="position-absolute cursor-point px-4 d-flex flex-column align-items-start"
+                                className="position-absolute cursor-point px-4 d-flex flex-row align-items-center"
                                 onClick={() => setIsLiveData(!isLiveData)}
                             >
-                                <div>
+                                <div className="me-2">
                                     <Toggle value={isLiveData ? 1 : 0} />
                                 </div>
-                                <div>及時監控: {isLiveData ? 'on' : 'off'}</div>
+                                <div>{isLiveData ? 'real-time' : 'static'}</div>
                             </div>
                             <h3 className="mb-0 w-100 text-center px-45 my-3">
                                 {devicePin?.device?.name} - {devicePin?.name}

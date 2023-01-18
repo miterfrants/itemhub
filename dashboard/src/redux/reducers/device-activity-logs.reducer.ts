@@ -2,49 +2,28 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
 import { DeviceLastActivityLog } from '@/types/devices.type';
 
-type DeviceLastActivityLogsState = DeviceLastActivityLog[] | null;
-
-const initialState: DeviceLastActivityLogsState = [];
+const initialState: DeviceLastActivityLog[] = [];
 
 export const deviceLastActivityLogsSlice = createSlice({
-    name: 'devicesLastActivityLogs',
+    name: 'deviceLastActivityLogs',
     initialState: initialState,
     reducers: {
         refresh: (
-            state,
-            action: PayloadAction<DeviceLastActivityLogsState>
+            state: DeviceLastActivityLog[],
+            action: PayloadAction<DeviceLastActivityLog>
         ) => {
-            const items = action.payload || [];
-            const oldItems: DeviceLastActivityLog[] = (
-                state ? [...state] : []
-            ) as DeviceLastActivityLog[];
-
-            // update exists items
-            const updatedOldItems = oldItems.map(
-                (oldItem: DeviceLastActivityLog) => {
-                    const existsInPayload = items?.find(
-                        (item) =>
-                            item.deviceId === oldItem.deviceId &&
-                            oldItem.deviceId &&
-                            item.deviceId
-                    );
-
-                    if (existsInPayload) {
-                        return { ...oldItem, ...existsInPayload };
-                    } else {
-                        return oldItem;
-                    }
-                }
+            const list = state;
+            const newOne = action.payload;
+            const target = list.find(
+                (item: DeviceLastActivityLog) =>
+                    item.deviceId === newOne.deviceId
             );
-
-            // filter exists items
-            const newItemsExcludedExists = items?.filter((item) => {
-                return !updatedOldItems
-                    .map((oldItem) => oldItem.deviceId)
-                    .includes(item.deviceId);
-            });
-
-            return [...updatedOldItems, ...newItemsExcludedExists];
+            if (target) {
+                target.createdAt = newOne.createdAt;
+            } else {
+                list.push(newOne);
+            }
+            return [...list];
         },
     },
 });

@@ -5,6 +5,7 @@ using Homo.Api;
 using Homo.Core.Constants;
 using Homo.AuthApi;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Linq;
 
 namespace Homo.IotApi
 {
@@ -36,9 +37,24 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             List<Device> records = DeviceDataservice.GetList(_dbContext, ownerId, page, limit, name);
+            List<DeviceActivityLog> lastLogs = DeviceActivityLogDataservice.GetLast(_dbContext, ownerId, records.Select(x => x.Id).ToList<long>());
             return new
             {
-                devices = records,
+                devices = records.Select(x =>
+                new
+                {
+                    x.CreatedAt,
+                    x.DeletedAt,
+                    x.EditedAt,
+                    x.Id,
+                    x.Info,
+                    x.Microcontroller,
+                    x.Name,
+                    x.Online,
+                    x.OwnerId,
+                    x.Protocol,
+                    LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault()?.CreatedAt
+                }),
                 rowNum = DeviceDataservice.GetRowNum(_dbContext, ownerId, name)
             };
         }

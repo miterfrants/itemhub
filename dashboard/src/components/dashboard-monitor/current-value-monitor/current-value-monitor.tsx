@@ -4,6 +4,7 @@ import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import { PinItem } from '@/types/devices.type';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import './current-value-monitor.scss';
 
 const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
@@ -69,7 +70,7 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
         }
     }, [isLoading]);
     return (
-        <div className="current-value-monitor">
+        <div className="current-value-monitor p-3 w-100">
             {isLoading && !isLoaded ? (
                 <div className="">
                     <Spinner />
@@ -77,34 +78,23 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <>
                     <div
-                        className="position-absolute cursor-point px-4 d-flex flex-column align-items-start top-0 start-0 py-4"
+                        className="position-absolute cursor-point d-flex flex-row align-items-center top-0 start-0 mt-3 ms-3"
                         onClick={() => setIsLiveData(!isLiveData)}
                     >
-                        <div>
+                        <div className="me-2">
                             <Toggle value={isLiveData ? 1 : 0} />
                         </div>
-                        <div>及時監控: {isLiveData ? 'on' : 'off'}</div>
+                        <div>{isLiveData ? 'real-time' : 'static'}</div>
                     </div>
-                    <div>
-                        <h2 className="d-none d-lg-block mb-0 text-center px-45 my-3">
-                            {currentValue?.toFixed(4) || '暫無資料'}
-                        </h2>
-                        <h3 className="d-none d-md-block d-lg-none mb-0 text-center px-45 my-3">
+                    <div className="d-flex align-items-center flex-column mt-4">
+                        <h3 className="mb-0 text-center">
                             {currentValue?.toFixed(4) || '暫無資料'}
                         </h3>
-                        <div className="d-block d-md-none mb-0 text-center px-45 my-3">
-                            {currentValue?.toFixed(4) || '暫無資料'}
-                        </div>
-                        <div className="d-flex justify-content-center mt-4">
-                            <h3 className="d-none d-md-block px-45 my-3">
+                        <div className="d-flex justify-content-center mt-2">
+                            <h3 className="mb-0 device-name">
                                 {devicePin?.device?.name} -{' '}
                                 {devicePin?.name || devicePin?.pin}
                             </h3>
-
-                            <div className="d-block d-md-none px-45 my-3">
-                                {devicePin?.device?.name} -{' '}
-                                {devicePin?.name || devicePin?.pin}
-                            </div>
                         </div>
                     </div>
                 </>

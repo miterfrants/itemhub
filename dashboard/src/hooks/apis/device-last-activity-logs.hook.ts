@@ -6,20 +6,16 @@ import { API_URL, END_POINT, HTTP_METHOD } from '@/constants/api';
 import { DeviceLastActivityLog } from '@/types/devices.type';
 import { deviceLastActivityLogsActions } from '@/redux/reducers/device-activity-logs.reducer';
 
-interface GetDeviceLastActivityLogsResponseData {
-    logs: DeviceLastActivityLog[];
-}
-
 export const useGetDeviceLastActivityLogApi = ({
-    deviceIds,
+    deviceId,
 }: {
-    deviceIds: number[];
+    deviceId: number;
 }) => {
     const dispatch = useAppDispatch();
-    const dispatchRefreshDeviceLastActivityLogs = useCallback(
-        (data: GetDeviceLastActivityLogsResponseData) => {
+    const dispatchRefreshDeviceLastActivityLog = useCallback(
+        (data: DeviceLastActivityLog) => {
             if (data) {
-                dispatch(deviceLastActivityLogsActions.refresh(data.logs));
+                dispatch(deviceLastActivityLogsActions.refresh(data));
             }
         },
         [dispatch]
@@ -27,21 +23,20 @@ export const useGetDeviceLastActivityLogApi = ({
     const apiPath = ApiHelpers.AppendQueryStrings({
         basicPath: `${API_URL}${END_POINT.DEVICE_LAST_ACTIVITY_LOGS}`,
         queryStrings: {
-            deviceIds: deviceIds.join(','),
+            deviceId: deviceId,
         },
     });
 
-    const { isLoading, error, fetchApi } =
-        useFetchApi<GetDeviceLastActivityLogsResponseData>({
-            apiPath,
-            method: HTTP_METHOD.GET,
-            initialData: null,
-            callbackFunc: dispatchRefreshDeviceLastActivityLogs,
-        });
+    const { isLoading, error, fetchApi } = useFetchApi<DeviceLastActivityLog>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchRefreshDeviceLastActivityLog,
+    });
 
     return {
-        isGetingDeviceLastActivityLogs: isLoading,
-        getDeviceLastActivityLogsError: error,
-        getDeviceLastActivityLogsApi: fetchApi,
+        isGetingDeviceLastActivityLog: isLoading,
+        getDeviceLastActivityLogError: error,
+        getDeviceLastActivityLogApi: fetchApi,
     };
 };
