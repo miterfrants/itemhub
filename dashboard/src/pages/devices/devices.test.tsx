@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import DeviceView from './device-view';
+import Devices from './devices';
 
 describe('<Devices />', () => {
     test('it should mount', () => {
-        render(<DeviceView />);
+        render(<Devices />);
 
         const devices = screen.getByTestId('devices');
 
