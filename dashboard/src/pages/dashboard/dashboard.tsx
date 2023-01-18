@@ -77,7 +77,7 @@ const Dashboard = () => {
                             } position-relative`}
                         >
                             <div
-                                className={`monitor-item d-flex align-items-center justify-content-center p-4 ${
+                                className={`monitor-item d-flex align-items-center justify-content-center ${
                                     item.row === 1 && item.column === 3
                                         ? 'one-third'
                                         : (item.row === 1 &&

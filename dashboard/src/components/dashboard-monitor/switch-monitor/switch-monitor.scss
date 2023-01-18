@@ -1,5 +1,15 @@
 .switch-monitor {
     .toggle-button {
         transform: scale(3);
+        transform-origin: top;
+    }
+    .toggle-button-container {
+        height: 60px;
+    }
+    .device-name {
+        display: -webkit-box !important;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 }
