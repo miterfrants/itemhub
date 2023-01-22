@@ -32,6 +32,7 @@ namespace Homo.AuthApi
         private readonly string _lineClientSecret;
         private readonly string _adminEmail;
         private readonly string _staticPath;
+        private readonly string _testingEmail;
         public AuthVerifyEmailController(DBContext dbContext, IOptions<AppSettings> appSettings, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, Homo.Api.CommonLocalizer commonLocalizer)
         {
             Secrets secrets = (Secrets)appSettings.Value.Secrets;
@@ -51,6 +52,7 @@ namespace Homo.AuthApi
             _lineClientSecret = secrets.LineClientSecret;
             _adminEmail = common.AdminEmail;
             _staticPath = common.StaticPath;
+            _testingEmail = secrets.TestingEmail;
         }
 
         [SwaggerOperation(
@@ -85,7 +87,7 @@ namespace Homo.AuthApi
                         });
             }
 
-            string code = CryptographicHelper.GetSpecificLengthRandomString(6, true, true);
+            string code = dto.Email == _testingEmail ? "000000" : CryptographicHelper.GetSpecificLengthRandomString(6, true, true);
             VerifyCodeDataservice.Create(_dbContext, new DTOs.VerifyCode()
             {
                 Email = dto.Email,
@@ -93,6 +95,11 @@ namespace Homo.AuthApi
                 Expiration = DateTime.Now.AddSeconds(3 * 60),
                 Ip = ip
             });
+
+            if (dto.Email == "miterfrants+robot@gmail.com")
+            {
+                return new { status = CUSTOM_RESPONSE.OK };
+            }
 
             MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.VERIFY_EMAIL, _staticPath);
             template = MailTemplateHelper.ReplaceVariable(template, new

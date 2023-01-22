@@ -27,6 +27,8 @@ namespace Homo.IotApi
         public string DashboardJwtKey { get; set; }
         public string MqttUsername { get; set; }
         public string MqttPassword { get; set; }
+        public string TestingEmail { get; set; }
+        public string TestingPhone { get; set; }
 
     }
 
