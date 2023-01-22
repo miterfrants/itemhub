@@ -10,7 +10,7 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0.5
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 RUN echo "Asia/Taipei" > /etc/timezone
 ENV TZ Asia/Taipei
 
