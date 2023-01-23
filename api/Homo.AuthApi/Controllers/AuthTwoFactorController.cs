@@ -26,6 +26,7 @@ namespace Homo.AuthApi
         private readonly string _adminEmail;
         private readonly string _staticPath;
         private readonly string _refreshJwtKey;
+        private readonly string _testingEmail;
 
         public AuthTwoFactorController(
             DBContext dbContext
@@ -43,6 +44,7 @@ namespace Homo.AuthApi
             _adminEmail = appSettings.Value.Common.AdminEmail;
             _staticPath = appSettings.Value.Common.StaticPath;
             _refreshJwtKey = appSettings.Value.Secrets.RefreshJwtKey;
+            _testingEmail = appSettings.Value.Secrets.TestingEmail;
         }
 
         [SwaggerOperation(
@@ -61,7 +63,7 @@ namespace Homo.AuthApi
                 throw new CustomException(ERROR_CODE.USER_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
             }
 
-            string verifyCode = CryptographicHelper.GetSpecificLengthRandomString(6, false, true);
+            string verifyCode = user.Email == _testingEmail ? "000000" : CryptographicHelper.GetSpecificLengthRandomString(6, false, true);
             VerifyCodeDataservice.Create(_dbContext, new DTOs.VerifyCode()
             {
                 Code = verifyCode,
@@ -69,6 +71,11 @@ namespace Homo.AuthApi
                 IsTwoFactorAuth = true,
                 Expiration = System.DateTime.Now.AddMinutes(5)
             });
+
+            if (user.Email == _testingEmail)
+            {
+                return new { status = CUSTOM_RESPONSE.OK };
+            }
 
             MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.TWO_FACTOR_AUTH, _staticPath);
             template = MailTemplateHelper.ReplaceVariable(template, new
