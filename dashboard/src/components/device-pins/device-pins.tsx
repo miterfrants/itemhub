@@ -285,8 +285,10 @@ const DevicePins = ({
                                 if (event.key === 'Escape') {
                                     closeEditPinName();
                                 }
-
-                                if (event.key === 'Enter') {
+                                if (
+                                    !event.nativeEvent.isComposing &&
+                                    event.key === 'Enter'
+                                ) {
                                     updatePinName();
                                 }
                             }}
