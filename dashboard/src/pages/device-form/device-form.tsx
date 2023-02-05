@@ -56,6 +56,7 @@ const DeviceForm = () => {
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
     const devicePinsRef = useRef<PinItem[]>([]);
+    let mcuOptions = [];
     const { microcontrollers, protocols } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
@@ -396,6 +397,18 @@ const DeviceForm = () => {
             )?.value;
             setProtocol(protocolValue || 0);
         }
+
+        const microcontrollerWithoutCustom = microcontrollers.filter((item) => {
+            return item.key !== 'CUSTOM';
+        });
+        const microcontrollerWithCustom = microcontrollers.find((item) => {
+            return item.key === 'CUSTOM';
+        });
+
+        mcuOptions = [
+            ...microcontrollerWithoutCustom,
+            ...[microcontrollerWithCustom],
+        ];
 
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
