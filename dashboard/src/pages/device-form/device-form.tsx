@@ -399,10 +399,10 @@ const DeviceForm = () => {
         }
 
         const microcontrollerWithoutCustom = microcontrollers.filter((item) => {
-            return item.key !== 'CUSTOM';
+            return item.key !== MCU_TYPE.CUSTOM;
         });
         const microcontrollerWithCustom = microcontrollers.find((item) => {
-            return item.key === 'CUSTOM';
+            return item.key === MCU_TYPE.CUSTOM;
         });
 
         mcuOptions = [
@@ -566,7 +566,7 @@ const DeviceForm = () => {
                                             value={id}
                                             selected={id === microcontrollerId}
                                         >
-                                            {key === 'CUSTOM'
+                                            {key === MCU_TYPE.CUSTOM
                                                 ? '自定義'
                                                 : key
                                                       .replaceAll('_', ' ')
@@ -581,6 +581,75 @@ const DeviceForm = () => {
                                 </div>
                             )}
                         </div>
+                        <div className="mb-4">
+                            <label>通訊方式</label>
+                            {selectedMicrocontroller?.supportedProtocols
+                                .length === 1 ? (
+                                <div>
+                                    目前僅支援
+                                    {
+                                        selectedMicrocontroller
+                                            ?.supportedProtocols[0]
+                                    }
+                                </div>
+                            ) : (
+                                <div>
+                                    <select
+                                        className="form-select mt-2"
+                                        onChange={(e) => {
+                                            if (!e.target.value) {
+                                                return;
+                                            }
+                                            const validResult =
+                                                ValidationHelpers.Require(
+                                                    Number(e.target.value)
+                                                );
+                                            setIsValidData((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    selectedProtocol:
+                                                        validResult,
+                                                };
+                                            });
+                                            setProtocol(Number(e.target.value));
+                                        }}
+                                    >
+                                        <option>請選擇通訊方式</option>
+                                        {protocols.map(
+                                            ({ value, key, label }) => {
+                                                return (
+                                                    <option
+                                                        key={key}
+                                                        value={value}
+                                                        selected={
+                                                            value ===
+                                                            device?.protocol
+                                                        }
+                                                    >
+                                                        {label}
+                                                    </option>
+                                                );
+                                            }
+                                        )}
+                                    </select>
+                                    {!isValidData.selectedProtocol && (
+                                        <div className="text-danger fs-5">
+                                            通訊方式為必填欄位
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {selectedMicrocontroller &&
+                            selectedMicrocontroller.memo &&
+                            selectedMicrocontroller.memo.length > 0 && (
+                                <div className="mcu-memo text-warn mt-3 mb-4 d-flex align-items-top">
+                                    <div className="mt-1 me-2 bg-warn text-white rounded-circle align-items-center text-center fw-bold flex-shrink-0">
+                                        !
+                                    </div>
+                                    <div>{selectedMicrocontroller?.memo}</div>
+                                </div>
+                            )}
                         {!isCreateMode &&
                             selectedMicrocontroller?.key ===
                                 MCU_TYPE.CUSTOM && (
@@ -683,81 +752,10 @@ const DeviceForm = () => {
                                     </div>
                                 </div>
                             )}
-
-                        <div className="mb-4">
-                            <label>通訊方式</label>
-                            {selectedMicrocontroller?.supportedProtocols
-                                .length === 1 ? (
-                                <div>
-                                    目前僅支援
-                                    {
-                                        selectedMicrocontroller
-                                            ?.supportedProtocols[0]
-                                    }
-                                </div>
-                            ) : (
-                                <div>
-                                    <select
-                                        className="form-select mt-2"
-                                        onChange={(e) => {
-                                            if (!e.target.value) {
-                                                return;
-                                            }
-                                            const validResult =
-                                                ValidationHelpers.Require(
-                                                    Number(e.target.value)
-                                                );
-                                            setIsValidData((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    selectedProtocol:
-                                                        validResult,
-                                                };
-                                            });
-                                            setProtocol(Number(e.target.value));
-                                        }}
-                                    >
-                                        <option>請選擇通訊方式</option>
-                                        {protocols.map(
-                                            ({ value, key, label }) => {
-                                                return (
-                                                    <option
-                                                        key={key}
-                                                        value={value}
-                                                        selected={
-                                                            value ===
-                                                            device?.protocol
-                                                        }
-                                                    >
-                                                        {label}
-                                                    </option>
-                                                );
-                                            }
-                                        )}
-                                    </select>
-                                    {!isValidData.selectedProtocol && (
-                                        <div className="text-danger fs-5">
-                                            通訊方式為必填欄位
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {selectedMicrocontroller &&
-                            selectedMicrocontroller.memo &&
-                            selectedMicrocontroller.memo.length > 0 && (
-                                <div className="mcu-memo text-warn mt-3 mb-4 d-flex align-items-top">
-                                    <div className="mt-1 me-2 bg-warn text-white rounded-circle align-items-center text-center fw-bold flex-shrink-0">
-                                        !
-                                    </div>
-                                    <div>{selectedMicrocontroller?.memo}</div>
-                                </div>
-                            )}
                         {!isCreateMode &&
                             selectedMicrocontroller &&
                             (selectedMicrocontroller.pins.length > 0 ||
-                                (customPins && customPins.length > 0)) && (
+                                customPins) && (
                                 <div>
                                     <DevicePins
                                         deviceId={id}
