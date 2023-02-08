@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230130163338_AddPipelineConnector")]
+    partial class AddPipelineConnector
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -483,9 +485,6 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CurrentPipelineItemIds")
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
@@ -578,6 +577,9 @@ namespace IotApi.Migrations
                     b.Property<int>("ItemType")
                         .HasColumnType("int");
 
+                    b.Property<string>("NextIds")
+                        .HasColumnType("longtext");
+
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
 
@@ -589,6 +591,7 @@ namespace IotApi.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasMaxLength(24)
                         .HasColumnType("varchar(24)");
 
