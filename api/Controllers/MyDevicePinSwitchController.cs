@@ -38,7 +38,7 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return DevicePinDataservice.GetAllSummary(_dbContext, extraPayload.Id, new List<long>() { id }, DEVICE_MODE.SWITCH, null);
+            return DevicePinDataservice.GetAllSummary(_dbContext, extraPayload.Id, new List<long>() { id }, PIN_TYPE.SWITCH, null);
         }
 
 

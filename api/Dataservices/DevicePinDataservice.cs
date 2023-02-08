@@ -7,13 +7,13 @@ namespace Homo.IotApi
 {
     public class DevicePinDataservice
     {
-        public static List<DTOs.DevicePin> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds, DEVICE_MODE? mode, string pin)
+        public static List<DTOs.DevicePin> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
         {
             return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, mode, pin)
                 .Select(x => new DTOs.DevicePin()
                 {
                     Id = x.Pin.Id,
-                    CreatedAt = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.CreatedAt :
+                    CreatedAt = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.CreatedAt :
                         x.LastLog != null ? x.LastLog.CreatedAt : null,
                     EditedAt = x.Pin.EditedAt,
                     OwnerId = x.Pin.OwnerId,
@@ -22,7 +22,7 @@ namespace Homo.IotApi
                     PinNumber = x.Pin.PinNumber,
                     Mode = x.Pin.Mode,
                     Name = x.Pin.Name,
-                    Value = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.Value :
+                    Value = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.Value :
                         x.LastLog != null ? x.LastLog.Value : null,
                     DeviceId = x.Pin.DeviceId,
                     Device = x.Pin.Device,
@@ -30,12 +30,12 @@ namespace Homo.IotApi
                 .ToList();
         }
 
-        public static List<DTOs.DevicePinSummary> GetAllSummary(IotDbContext dbContext, long ownerId, List<long> deviceIds, DEVICE_MODE? mode, string pin)
+        public static List<DTOs.DevicePinSummary> GetAllSummary(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
         {
             return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, mode, pin)
                 .Select(x =>
                 {
-                    var value = x.Pin.Mode == DEVICE_MODE.SWITCH ? x.Pin.Value.ToString("N0") :
+                    var value = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.Value.ToString("N0") :
                         x.LastLog != null ? x.LastLog.Value.ToString() : null;
                     int finalValue = -1;
                     Int32.TryParse(value, out finalValue);
@@ -110,7 +110,7 @@ namespace Homo.IotApi
             });
         }
 
-        public static DevicePin GetOne(IotDbContext dbContext, long ownerId, long deviceId, DEVICE_MODE? mode, string pin)
+        public static DevicePin GetOne(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? mode, string pin)
         {
             return dbContext.DevicePin
                 .Include(x => x.Device)
@@ -124,7 +124,7 @@ namespace Homo.IotApi
         }
 
         // temp 
-        public static DevicePin GetOneByDeviceIdAndPin(IotDbContext dbContext, long ownerId, long deviceId, DEVICE_MODE? mode, string pin)
+        public static DevicePin GetOneByDeviceIdAndPin(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? mode, string pin)
         {
             return dbContext.DevicePin
                 .Include(x => x.Device)
@@ -169,7 +169,7 @@ namespace Homo.IotApi
                 x.DeviceId == deviceId
                 && x.OwnerId == ownerId
                 && x.Pin == pin
-                && x.Mode == DEVICE_MODE.SWITCH
+                && x.Mode == PIN_TYPE.SWITCH
             ).UpdateFromQuery(x => new DevicePin()
             {
                 Value = value,
@@ -178,7 +178,7 @@ namespace Homo.IotApi
         }
 
 
-        private static IEnumerable<dynamic> _GetQueryableDevicePins(IotDbContext dbContext, long? id, long ownerId, List<long> deviceIds, DEVICE_MODE? mode, string pin)
+        private static IEnumerable<dynamic> _GetQueryableDevicePins(IotDbContext dbContext, long? id, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
         {
             return dbContext.DevicePin.Where(x =>
                 x.DeletedAt == null

@@ -77,7 +77,7 @@ namespace Homo.IotApi
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             OauthClient client = OauthClientDataservice.GetOneByClientId(iotDbContext, eventArgs.UserName);
-            List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, DEVICE_MODE.SWITCH, null);
+            List<DTOs.DevicePin> devicePins = DevicePinDataservice.GetAll(iotDbContext, client.OwnerId, new List<long> { client.DeviceId.GetValueOrDefault() }, PIN_TYPE.SWITCH, null);
 
             _localMqttPublishers.ForEach(publisher =>
             {

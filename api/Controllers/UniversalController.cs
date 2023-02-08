@@ -137,7 +137,7 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getDeviceMode()
         {
-            return ConvertHelper.EnumToList(typeof(DEVICE_MODE));
+            return ConvertHelper.EnumToList(typeof(PIN_TYPE));
         }
 
 
