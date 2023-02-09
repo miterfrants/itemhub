@@ -11,6 +11,7 @@ export interface DeviceItem {
     zoneId: null | number;
     microcontroller: number;
     protocol: number;
+    lastActivityLogCreatedAt: Date;
 }
 
 export interface PinItem {
@@ -23,4 +24,9 @@ export interface PinItem {
     name: string | null;
     createdAt?: string;
     device?: DeviceItem;
+}
+
+export interface DeviceLastActivityLog {
+    deviceId: number;
+    createdAt: string;
 }

@@ -1,9 +1,8 @@
 import Spinner from '@/components/spinner/spinner';
-
 import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import debounce from 'lodash.debounce';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Area,
     AreaChart,
@@ -16,12 +15,15 @@ import {
 
 import { PinItem } from '@/types/devices.type';
 import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
+import Toggle from '@/components/toggle/toggle';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
+    const [isLiveData, setIsLiveData] = useState<boolean>(false);
+    const timer: any = useRef(null);
 
     const [lineChartMargin, setLineChartMargin] = useState<Margins | undefined>(
         [50, 50, 0, 50]
@@ -53,6 +55,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         limit: 200,
     });
 
+    const { data: responseOfLastSensorLogs, fetchApi: getLastSensorLogs } =
+        useGetSensorLogsApi({
+            deviceId: deviceId,
+            pin: pin,
+            page: 1,
+            limit: 1,
+        });
+
     const elementContainerRef = useRef<HTMLDivElement>(null);
     const [chartWidth, setChartWidth] = useState(0);
     const [chartHeight, setChartHeight] = useState(0);
@@ -63,14 +73,25 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             pin: pin,
         });
 
+    const startPooling = useCallback(() => {
+        if (!isLiveData) {
+            return;
+        }
+        getLastSensorLogs();
+        timer.current = setTimeout(startPooling, 5000);
+    }, [isLiveData, getLastSensorLogs]);
+
     useEffect(() => {
         getSensorLogs();
         getDevicePin();
+
         resizeHandler.current();
         const resizeHanlder = resizeHandler.current;
         window.addEventListener('resize', resizeHanlder);
-        return () => window.removeEventListener('resize', resizeHanlder);
-
+        return () => {
+            clearTimeout(timer.current);
+            window.removeEventListener('resize', resizeHanlder);
+        };
         // eslint-disable-next-line
     }, []);
 
@@ -83,10 +104,34 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                 return {
                     key: new Date(item.createdAt),
                     data: item.value,
+                    id: item.id,
                 };
             })
         );
     }, [responseOfSensorLogs]);
+
+    useEffect(() => {
+        if (
+            !responseOfLastSensorLogs ||
+            responseOfLastSensorLogs.length === 0
+        ) {
+            return;
+        }
+        const newLog = responseOfLastSensorLogs[0];
+        const targetLog = lineChartData.find((item) => item.id === newLog.id);
+        if (targetLog) {
+            return;
+        }
+        setLineChartData([
+            {
+                key: new Date(newLog.createdAt),
+                data: newLog.value,
+                id: newLog.id,
+            },
+            ...lineChartData,
+        ]);
+        // eslint-disable-next-line
+    }, [responseOfLastSensorLogs]);
 
     useEffect(() => {
         if (!responseOfGetDevicePin) {
@@ -94,6 +139,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         }
         setDevicePin(responseOfGetDevicePin as PinItem);
     }, [responseOfGetDevicePin]);
+
+    useEffect(() => {
+        if (isLiveData) {
+            startPooling();
+        } else {
+            clearTimeout(timer.current);
+        }
+    }, [isLiveData, startPooling]);
 
     return (
         <div
@@ -120,7 +173,16 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 lineChartData.length > 0 ? '' : 'd-none'
                             }`}
                         >
-                            <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
+                            <div
+                                className="position-absolute cursor-point px-4 d-flex flex-row align-items-center"
+                                onClick={() => setIsLiveData(!isLiveData)}
+                            >
+                                <div className="me-2">
+                                    <Toggle value={isLiveData ? 1 : 0} />
+                                </div>
+                                <div>{isLiveData ? 'real-time' : 'static'}</div>
+                            </div>
+                            <h3 className="mb-0 w-100 text-center px-45 my-3">
                                 <DeviceOnlineStatus deviceId={deviceId} />
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>

@@ -52,7 +52,11 @@ export class TwoFactorAuthController extends RoutingController {
                     return;
                 }
             } else if (jwtLifeHours >= 12) {
-                location.href = APP_CONFIG.DASHBOARD_URL;
+                if (APP_CONFIG.ENV === 'dev') {
+                    location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${dashboardToken}`;
+                } else {
+                    location.href = APP_CONFIG.DASHBOARD_URL;
+                }
             }
         }
 

@@ -3,7 +3,7 @@ import './index.scss';
 import App from './app';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/dashboard/dashboard';
-import DeviceView from './pages/device-view/device-view';
+import Devices from './pages/devices/devices';
 import Device from './pages/device/device';
 import DeviceForm from './pages/device-form/device-form';
 import NotFound from './pages/not-found/not-found';
@@ -27,7 +27,7 @@ ReactDOM.render(
             >
                 <Route path="/" element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="dashboard/devices" element={<DeviceView />} />
+                <Route path="dashboard/devices" element={<Devices />} />
                 <Route path="dashboard/devices/:id" element={<Device />} />
                 <Route
                     path="dashboard/devices/:id/:pin"

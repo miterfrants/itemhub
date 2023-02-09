@@ -1,11 +1,11 @@
 /* eslint-disable */
-import DeviceView from './device-view';
+import Devices from './devices';
 
 export default {
     title: 'Devices',
 };
 
-export const Default = () => <DeviceView />;
+export const Default = () => <Devices />;
 
 Default.story = {
     name: 'default',

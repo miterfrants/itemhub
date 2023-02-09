@@ -10,11 +10,13 @@ import toasterReducer from './reducers/toaster.reducer';
 import oauthClientRedirectUrisReducer from './reducers/oauth-client-redirect-uris.reducer';
 import monitorConfigDialogReducer from './reducers/monitor-config-dialog.reducer';
 import dashboardMonitorReducer from './reducers/dashboard-monitor.reducer';
+import deviceLastActivityReducer from './reducers/device-activity-logs.reducer';
 
 const store = configureStore({
     reducer: {
         universal: universalReducer,
         devices: devicesReducer,
+        deviceLastActivityLogs: deviceLastActivityReducer,
         oauthClients: oauthClientsReducer,
         triggers: triggersReducer,
         pins: pinsReducer,

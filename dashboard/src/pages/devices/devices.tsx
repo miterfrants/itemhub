@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import moment from 'moment';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
@@ -27,8 +28,9 @@ import OnlineStatusTag from '@/components/online-status-tag/online-status-tag';
 import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
+import { DeviceItem } from '@/types/devices.type';
 
-const DeviceView = () => {
+const Devices = () => {
     const query = useQuery();
     const limit = Number(query.get('limit') || 10);
     const [page, setPage] = useState(1);
@@ -79,12 +81,6 @@ const DeviceView = () => {
     }, [query.get('deviceName')]);
 
     useEffect(() => {
-        if (devices && devices.length > 0) {
-            hasDevicesRef.current = true;
-        }
-    }, [devices]);
-
-    useEffect(() => {
         getDevicesApi();
         // eslint-disable-next-line
     }, [query, page, refreshFlag]);
@@ -115,9 +111,15 @@ const DeviceView = () => {
         setIsFirmwarePrepare(false);
     }, [responseOfBundle, errorOfBundle]);
 
+    useEffect(() => {
+        if (devices && devices.length > 0) {
+            hasDevicesRef.current = true;
+        }
+    }, [devices]);
+
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
-            (item) => item.id === id
+            (item: DeviceItem) => item.id === id
         );
         if (!shouldBeDeleteDevice) {
             return;
@@ -222,9 +224,9 @@ const DeviceView = () => {
                                         ({
                                             id,
                                             name,
-                                            createdAt,
                                             online,
                                             protocol,
+                                            lastActivityLogCreatedAt,
                                         }) => {
                                             const targetProtocol =
                                                 protocols.find(
@@ -235,7 +237,11 @@ const DeviceView = () => {
                                                 <div
                                                     className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
                                                     key={id}
-                                                    title={`建立時間: ${createdAt}`}
+                                                    title={`最後上線時間: ${moment(
+                                                        lastActivityLogCreatedAt
+                                                    ).format(
+                                                        'YYYY-MM-DD HH:mm:ss'
+                                                    )}`}
                                                 >
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         裝置名稱
@@ -390,4 +396,4 @@ const DeviceView = () => {
     );
 };
 
-export default DeviceView;
+export default Devices;

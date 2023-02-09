@@ -30,6 +30,7 @@ namespace Homo.AuthApi
         private readonly string _verifyPhoneJwtKey;
         private readonly string _phoneHashSalt;
         private readonly CommonLocalizer _commonLocalizer;
+        private readonly string _testingPhone;
 
         public AuthVerifyPhoneController(DBContext dbContext, IOptions<AppSettings> appSettings, CommonLocalizer localizer)
         {
@@ -44,6 +45,8 @@ namespace Homo.AuthApi
             _pkcs1PublicKeyPath = common.Pkcs1PublicKeyPath;
             _commonLocalizer = localizer;
             _phoneHashSalt = secrets.PhoneHashSalt;
+            _testingPhone = secrets.TestingPhone;
+
         }
 
         [SwaggerOperation(
@@ -75,7 +78,8 @@ namespace Homo.AuthApi
                 throw new CustomException(ERROR_CODE.TOO_MANY_TIMES_TO_SEND_PHONE, HttpStatusCode.Forbidden);
             }
 
-            string code = CryptographicHelper.GetSpecificLengthRandomString(6, false, true);
+            string code = dto.Phone == _testingPhone ? "000000" : CryptographicHelper.GetSpecificLengthRandomString(6, false, true);
+
             VerifyCodeDataservice.Create(_dbContext, new DTOs.VerifyCode()
             {
                 Phone = dto.Phone,
@@ -83,6 +87,12 @@ namespace Homo.AuthApi
                 Expiration = DateTime.Now.AddSeconds(3 * 60),
                 Ip = NetworkHelper.GetIpFromRequest(Request)
             });
+
+
+            if (dto.Phone == _testingPhone)
+            {
+                return new { status = CUSTOM_RESPONSE.OK };
+            }
 
             string message = _commonLocalizer.Get("sms template", null, new Dictionary<string, string>() { { "code", code } });
             await SmsHelper.Send(SmsProvider.Every8D, _smsUsername, _smsPassword, _smsClientUrl, dto.Phone, message);

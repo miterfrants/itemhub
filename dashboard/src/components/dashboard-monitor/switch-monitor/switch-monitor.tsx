@@ -54,7 +54,7 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
 
     return (
         <div
-            className="switch-monitor"
+            className="switch-monitor w-100 p-3"
             onClick={() => {
                 setValue(value === 1 ? 0 : 1);
             }}
@@ -65,13 +65,15 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
                 </div>
             ) : (
                 <div>
-                    <Toggle value={value} />
-                    <div className="d-flex justify-content-center mt-5">
-                        <h3 className="d-flex align-items-center">
+                    <div className="toggle-button-container mt-45">
+                        <Toggle value={value} />
+                    </div>
+                    <div className="d-flex justify-content-center device-name text-center">
+                        <span className="d-none d-md-inline">
                             <DeviceOnlineStatus deviceId={deviceId} />
-                            {devicePin?.device?.name} -{' '}
-                            {devicePin?.name || devicePin?.pin}
-                        </h3>
+                            {devicePin?.device?.name} -
+                        </span>{' '}
+                        {devicePin?.name || devicePin?.pin}
                     </div>
                 </div>
             )}
