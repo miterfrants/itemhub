@@ -1,4 +1,3 @@
-import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
 import Spinner from '@/components/spinner/spinner';
 import Toggle from '@/components/toggle/toggle';
 import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
@@ -92,8 +91,14 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
                             {currentValue?.toFixed(4) || '暫無資料'}
                         </h3>
                         <div className="d-flex justify-content-center mt-2">
-                            <h3 className="mb-0 device-name">
-                                <DeviceOnlineStatus deviceId={deviceId} />
+                            <h3 className="mb-0 device-name position-relative ps-2">
+                                <div
+                                    className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                        devicePin?.device?.online
+                                            ? 'dot-green'
+                                            : 'dot-grey'
+                                    }`}
+                                />
                                 {devicePin?.device?.name} -{' '}
                                 {devicePin?.name || devicePin?.pin}
                             </h3>

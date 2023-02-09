@@ -19,6 +19,13 @@
     }
 }
 
+.dot {
+    display: inline-block;
+    width: $tag-dot-wh;
+    height: $tag-dot-wh;
+    margin-right: 0.25rem;
+}
+
 @each $color, $value in $tag-colors {
     .tag-#{$color} {
         color: $value;
@@ -27,5 +34,9 @@
         &:before {
             background: $value;
         }
+    }
+
+    .dot-#{$color} {
+        background: $value;
     }
 }

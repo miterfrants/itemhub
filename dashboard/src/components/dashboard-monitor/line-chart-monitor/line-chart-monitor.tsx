@@ -14,7 +14,6 @@ import {
 } from 'reaviz';
 
 import { PinItem } from '@/types/devices.type';
-import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
 import Toggle from '@/components/toggle/toggle';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
@@ -163,7 +162,13 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                         <div>
                             <h2 className="mb-0 px-45 my-3">暫無資料</h2>
                             <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
-                                <DeviceOnlineStatus deviceId={deviceId} />
+                                <div
+                                    className={`dot rounded-circle flex-shirk-0 ${
+                                        devicePin?.device?.online
+                                            ? 'dot-green'
+                                            : 'dot-grey'
+                                    }`}
+                                />
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                         </div>
@@ -182,8 +187,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 </div>
                                 <div>{isLiveData ? 'real-time' : 'static'}</div>
                             </div>
-                            <h3 className="mb-0 w-100 text-center px-45 my-3">
-                                <DeviceOnlineStatus deviceId={deviceId} />
+                            <h3 className="mb-0 w-100 text-center px-45 my-3 position-relative">
+                                <div
+                                    className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                        devicePin?.device?.online
+                                            ? 'dot-green'
+                                            : 'dot-grey'
+                                    }`}
+                                />
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>
