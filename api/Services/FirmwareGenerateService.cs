@@ -66,7 +66,7 @@ namespace Homo.IotApi
             {
                 string pinString = item.Pin;
                 string pinValue = item.PinNumber;
-                pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinValue).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.Mode.ToString()));
+                pins.Add(pinTemplate.Replace("{PIN_NUMBER}", pinValue).Replace("{PIN_STRING}", pinString).Replace("{PIN_MODE}", item.PinType.ToString()));
             });
 
             string inoTemplate = System.IO.File.ReadAllText(sourceInoPath);

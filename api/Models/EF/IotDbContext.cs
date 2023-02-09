@@ -136,7 +136,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Value });
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.OwnerId });
-                entity.HasIndex(p => new { p.Mode });
+                entity.HasIndex(p => new { p.PinType });
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.Property(p => p.Value).HasDefaultValueSql("0");
