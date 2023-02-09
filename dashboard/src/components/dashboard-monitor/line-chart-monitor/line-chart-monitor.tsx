@@ -15,6 +15,7 @@ import {
 } from 'reaviz';
 
 import { PinItem } from '@/types/devices.type';
+import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
 
 const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
@@ -106,14 +107,21 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <div className="d-flex align-items-center h-100 justify-content-center">
                     {lineChartData.length <= 0 ? (
-                        <h2 className="mb-0 px-45 my-3">暫無資料</h2>
+                        <div>
+                            <h2 className="mb-0 px-45 my-3">暫無資料</h2>
+                            <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
+                                <DeviceOnlineStatus deviceId={deviceId} />
+                                {devicePin?.device?.name} - {devicePin?.name}
+                            </h3>
+                        </div>
                     ) : (
                         <div
                             className={`${
                                 lineChartData.length > 0 ? '' : 'd-none'
                             }`}
                         >
-                            <h3 className="mb-0 w-100 text-center px-45 my-3">
+                            <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
+                                <DeviceOnlineStatus deviceId={deviceId} />
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>

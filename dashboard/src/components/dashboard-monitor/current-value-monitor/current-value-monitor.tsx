@@ -1,3 +1,4 @@
+import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
 import Spinner from '@/components/spinner/spinner';
 import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
@@ -50,7 +51,8 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
                         {currentValue?.toFixed(4) || '暫無資料'}
                     </h2>
                     <div className="d-flex justify-content-center mt-4">
-                        <h3 className="px-45 my-3">
+                        <h3 className="px-4 my-3 d-flex align-items-center">
+                            <DeviceOnlineStatus deviceId={deviceId} />
                             {devicePin?.device?.name} -{' '}
                             {devicePin?.name || devicePin?.pin}
                         </h3>

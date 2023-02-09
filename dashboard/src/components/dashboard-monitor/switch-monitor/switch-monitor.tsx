@@ -6,6 +6,7 @@ import {
 import { useEffect, useState } from 'react';
 import { PinItem } from '@/types/devices.type';
 import Spinner from '@/components/spinner/spinner';
+import DeviceOnlineStatus from '@/components/device-online-status/device-online-status';
 
 const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
     const { deviceId, pin } = props;
@@ -66,7 +67,8 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
                 <div>
                     <Toggle value={value} />
                     <div className="d-flex justify-content-center mt-5">
-                        <h3>
+                        <h3 className="d-flex align-items-center">
+                            <DeviceOnlineStatus deviceId={deviceId} />
                             {devicePin?.device?.name} -{' '}
                             {devicePin?.name || devicePin?.pin}
                         </h3>
