@@ -26,10 +26,10 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpGet]
-        public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> getAll([FromRoute] long id, [FromQuery] PIN_TYPE? pinType, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            return DevicePinDataservice.GetAll(_dbContext, ownerId, new List<long>() { id }, null, null);
+            return DevicePinDataservice.GetAll(_dbContext, ownerId, new List<long>() { id }, pinType, null);
         }
 
         [SwaggerOperation(

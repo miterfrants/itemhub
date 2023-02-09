@@ -52,13 +52,13 @@ namespace Homo.IotApi
                     {
                         Name = new DeviceName() { Name = x.Name ?? $"{x.Device.Name} - {x.Pin}" },
                         Id = id,
-                        Traits = x.Mode == DEVICE_MODE.SWITCH ? new List<string>() { "action.devices.traits.OnOff" } :
-                            x.Mode == DEVICE_MODE.SENSOR ? new List<string>() { "action.devices.traits.SensorState" } : new List<string>() { "action.devices.traits.OnOff" },
-                        Type = x.Mode == DEVICE_MODE.SENSOR ? "action.devices.types.SENSOR" :
-                            x.Mode == DEVICE_MODE.SWITCH &&
+                        Traits = x.PinType == PIN_TYPE.SWITCH ? new List<string>() { "action.devices.traits.OnOff" } :
+                            x.PinType == PIN_TYPE.SENSOR ? new List<string>() { "action.devices.traits.SensorState" } : new List<string>() { "action.devices.traits.OnOff" },
+                        Type = x.PinType == PIN_TYPE.SENSOR ? "action.devices.types.SENSOR" :
+                            x.PinType == PIN_TYPE.SWITCH &&
                             (x.Name.Contains("燈") || x.Name.ToLower().Contains("light")) ? "action.devices.types.LIGHT" : "action.devices.types.SWITCH",
                         WillReportState = true,
-                        Attributes = x.Mode == DEVICE_MODE.SENSOR ? new
+                        Attributes = x.PinType == PIN_TYPE.SENSOR ? new
                         {
                             SensorStateSupported = new List<GoogleSensorStateSupported>() {
                                 new GoogleSensorStateSupported() {

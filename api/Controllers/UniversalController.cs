@@ -133,11 +133,11 @@ namespace Homo.IotApi
             Summary = "PIN 模式",
             Description = ""
         )]
-        [Route("device-mode")]
+        [Route("pin-types")]
         [HttpGet]
-        public ActionResult<dynamic> getDeviceMode()
+        public ActionResult<dynamic> getPinTypes()
         {
-            return ConvertHelper.EnumToList(typeof(DEVICE_MODE));
+            return ConvertHelper.EnumToList(typeof(PIN_TYPE));
         }
 
 
