@@ -17,7 +17,7 @@ namespace Homo.IotApi
         [MaxLength(5)]
         public string PinNumber { get; set; }
         [Required]
-        public PIN_TYPE Mode { get; set; }
+        public PIN_TYPE PinType { get; set; }
         public string Name { get; set; }
         public decimal? Value { get; set; }
         [Required]

@@ -7,22 +7,22 @@ namespace Homo.IotApi
 {
     public class DevicePinDataservice
     {
-        public static List<DTOs.DevicePin> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
+        public static List<DTOs.DevicePin> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? pinType, string pin)
         {
-            return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, mode, pin)
+            return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, pinType, pin)
                 .Select(x => new DTOs.DevicePin()
                 {
                     Id = x.Pin.Id,
-                    CreatedAt = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.CreatedAt :
+                    CreatedAt = x.Pin.PinType == PIN_TYPE.SWITCH ? x.Pin.CreatedAt :
                         x.LastLog != null ? x.LastLog.CreatedAt : null,
                     EditedAt = x.Pin.EditedAt,
                     OwnerId = x.Pin.OwnerId,
                     DeletedAt = x.Pin.DeletedAt,
                     Pin = x.Pin.Pin,
                     PinNumber = x.Pin.PinNumber,
-                    Mode = x.Pin.Mode,
+                    PinType = x.Pin.PinType,
                     Name = x.Pin.Name,
-                    Value = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.Value :
+                    Value = x.Pin.PinType == PIN_TYPE.SWITCH ? x.Pin.Value :
                         x.LastLog != null ? x.LastLog.Value : null,
                     DeviceId = x.Pin.DeviceId,
                     Device = x.Pin.Device,
@@ -30,12 +30,12 @@ namespace Homo.IotApi
                 .ToList();
         }
 
-        public static List<DTOs.DevicePinSummary> GetAllSummary(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
+        public static List<DTOs.DevicePinSummary> GetAllSummary(IotDbContext dbContext, long ownerId, List<long> deviceIds, PIN_TYPE? pinType, string pin)
         {
-            return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, mode, pin)
+            return _GetQueryableDevicePins(dbContext, null, ownerId, deviceIds, pinType, pin)
                 .Select(x =>
                 {
-                    var value = x.Pin.Mode == PIN_TYPE.SWITCH ? x.Pin.Value.ToString("N0") :
+                    var value = x.Pin.PinType == PIN_TYPE.SWITCH ? x.Pin.Value.ToString("N0") :
                         x.LastLog != null ? x.LastLog.Value.ToString() : null;
                     int finalValue = -1;
                     Int32.TryParse(value, out finalValue);
@@ -103,14 +103,14 @@ namespace Homo.IotApi
                 {
                     Name = item.Name,
                     Value = item.Value,
-                    Mode = item.Mode,
+                    PinType = item.PinType,
                     EditedBy = ownerId,
                     EditedAt = DateTime.Now
                 });
             });
         }
 
-        public static DevicePin GetOne(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? mode, string pin)
+        public static DevicePin GetOne(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? pinType, string pin)
         {
             return dbContext.DevicePin
                 .Include(x => x.Device)
@@ -118,13 +118,13 @@ namespace Homo.IotApi
                     x.DeletedAt == null
                     && x.DeviceId == deviceId
                     && x.OwnerId == ownerId // 前三項東西都要傳避免有人忘了做檢查
-                    && (mode == null || x.Mode == mode)
+                    && (pinType == null || x.PinType == pinType)
                     && (pin == null || x.Pin == pin)
                 ).FirstOrDefault();
         }
 
         // temp 
-        public static DevicePin GetOneByDeviceIdAndPin(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? mode, string pin)
+        public static DevicePin GetOneByDeviceIdAndPin(IotDbContext dbContext, long ownerId, long deviceId, PIN_TYPE? pinType, string pin)
         {
             return dbContext.DevicePin
                 .Include(x => x.Device)
@@ -132,7 +132,7 @@ namespace Homo.IotApi
                     x.DeletedAt == null
                     && x.DeviceId == deviceId
                     && x.OwnerId == ownerId // 前三項東西都要傳避免有人忘了做檢查
-                    && (mode == null || x.Mode == mode)
+                    && (pinType == null || x.PinType == pinType)
                     && (pin == null || x.Pin == pin)
                 ).FirstOrDefault();
         }
@@ -169,7 +169,7 @@ namespace Homo.IotApi
                 x.DeviceId == deviceId
                 && x.OwnerId == ownerId
                 && x.Pin == pin
-                && x.Mode == PIN_TYPE.SWITCH
+                && x.PinType == PIN_TYPE.SWITCH
             ).UpdateFromQuery(x => new DevicePin()
             {
                 Value = value,
@@ -178,14 +178,14 @@ namespace Homo.IotApi
         }
 
 
-        private static IEnumerable<dynamic> _GetQueryableDevicePins(IotDbContext dbContext, long? id, long ownerId, List<long> deviceIds, PIN_TYPE? mode, string pin)
+        private static IEnumerable<dynamic> _GetQueryableDevicePins(IotDbContext dbContext, long? id, long ownerId, List<long> deviceIds, PIN_TYPE? pinType, string pin)
         {
             return dbContext.DevicePin.Where(x =>
                 x.DeletedAt == null
                 && (id == null || x.Id == id)
                 && (deviceIds == null || deviceIds.Contains(x.DeviceId))
                 && x.OwnerId == ownerId
-                && (mode == null || x.Mode == mode)
+                && (pinType == null || x.PinType == pinType)
                 && (pin == null || x.Pin == pin)
             )
             .Join(dbContext.Device, pin => pin.DeviceId, device => device.Id, (pin, device) => new DevicePin()
@@ -197,7 +197,7 @@ namespace Homo.IotApi
                 DeletedAt = pin.DeletedAt,
                 Pin = pin.Pin,
                 PinNumber = pin.PinNumber,
-                Mode = pin.Mode,
+                PinType = pin.PinType,
                 Name = pin.Name,
                 Value = pin.Value,
                 DeviceId = pin.DeviceId,
