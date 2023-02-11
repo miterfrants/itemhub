@@ -55,18 +55,19 @@ namespace Homo.IotApi
             return record;
         }
 
-        public static void BatchDelete(IotDbContext dbContext, long ownerId, long pipelineId, List<long> ids)
+        public static void BatchDelete(IotDbContext dbContext, long ownerId, long editedBy, long pipelineId, List<long> ids)
         {
             foreach (long id in ids)
             {
                 PipelineItem record = new PipelineItem { Id = id, OwnerId = ownerId };
                 dbContext.Attach<PipelineItem>(record);
                 record.DeletedAt = DateTime.Now;
+                record.EditedBy = editedBy;
             }
             dbContext.SaveChanges();
         }
 
-        public static void Update(IotDbContext dbContext, long ownerId, long pipelineId, long id, DTOs.PipelineItem dto)
+        public static void Update(IotDbContext dbContext, long ownerId, long editedBy, long pipelineId, long id, DTOs.PipelineItem dto)
         {
             PipelineItem record = dbContext.PipelineItem.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             foreach (var propOfDTO in dto.GetType().GetProperties())
@@ -76,13 +77,15 @@ namespace Homo.IotApi
                 prop.SetValue(record, value);
             }
             record.EditedAt = DateTime.Now;
+            record.EditedBy = editedBy;
             dbContext.SaveChanges();
         }
 
-        public static void Delete(IotDbContext dbContext, long ownerId, long pipelineId, long id)
+        public static void Delete(IotDbContext dbContext, long ownerId, long editedBy, long pipelineId, long id)
         {
             PipelineItem record = dbContext.PipelineItem.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             record.DeletedAt = DateTime.Now;
+            record.EditedBy = editedBy;
             dbContext.SaveChanges();
         }
     }

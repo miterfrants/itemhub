@@ -103,7 +103,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> update([FromRoute] int id, [FromBody] DTOs.Pipeline dto, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            PipelineDataservice.Update(_dbContext, ownerId, id, dto);
+            PipelineDataservice.Update(_dbContext, ownerId, ownerId, id, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -117,7 +117,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> delete([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            PipelineDataservice.Delete(_dbContext, ownerId, id);
+            PipelineDataservice.Delete(_dbContext, ownerId, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

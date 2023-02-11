@@ -68,7 +68,7 @@ namespace Homo.IotApi
             dbContext.SaveChanges();
         }
 
-        public static void Update(IotDbContext dbContext, long ownerId, long id, DTOs.Pipeline dto)
+        public static void Update(IotDbContext dbContext, long ownerId, long editedBy, long id, DTOs.Pipeline dto)
         {
             Pipeline record = dbContext.Pipeline.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             foreach (var propOfDTO in dto.GetType().GetProperties())
@@ -78,13 +78,15 @@ namespace Homo.IotApi
                 prop.SetValue(record, value);
             }
             record.EditedAt = DateTime.Now;
+            record.EditedBy = editedBy;
             dbContext.SaveChanges();
         }
 
-        public static void Delete(IotDbContext dbContext, long ownerId, long id)
+        public static void Delete(IotDbContext dbContext, long ownerId, long editedBy, long id)
         {
             Pipeline record = dbContext.Pipeline.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
             record.DeletedAt = DateTime.Now;
+            record.EditedBy = editedBy;
             dbContext.SaveChanges();
         }
     }

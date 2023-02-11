@@ -66,7 +66,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> batchDelete([FromRoute] long pipelineId, [FromBody] List<long> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            PipelineItemDataservice.BatchDelete(_dbContext, ownerId, pipelineId, ids);
+            PipelineItemDataservice.BatchDelete(_dbContext, ownerId, ownerId, pipelineId, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -98,7 +98,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> update([FromRoute] long pipelineId, [FromRoute] long id, [FromBody] DTOs.PipelineItem dto, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            PipelineItemDataservice.Update(_dbContext, ownerId, pipelineId, id, dto);
+            PipelineItemDataservice.Update(_dbContext, ownerId, ownerId, pipelineId, id, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -112,7 +112,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> delete([FromRoute] long pipelineId, [FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            PipelineItemDataservice.Delete(_dbContext, ownerId, pipelineId, id);
+            PipelineItemDataservice.Delete(_dbContext, ownerId, ownerId, pipelineId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
