@@ -1,11 +1,7 @@
-using System;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-using Homo.AuthApi;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace Homo.IotApi
 {
@@ -37,6 +33,9 @@ namespace Homo.IotApi
         public virtual DbSet<Microcontroller> Microcontroller { get; set; }
         public virtual DbSet<DashboardMonitor> DashboardMonitor { get; set; }
         public virtual DbSet<Log> Log { get; set; }
+        public virtual DbSet<Pipeline> Pipeline { get; set; }
+        public virtual DbSet<PipelineItem> PipelineItem { get; set; }
+        public virtual DbSet<PipelineConnector> PipelineConnector { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -185,6 +184,37 @@ namespace Homo.IotApi
             {
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeviceId });
+            });
+
+            modelBuilder.Entity<Pipeline>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.Property(p => p.CurrentPipelineItemIds).HasConversion(
+                    data => JsonConvert.SerializeObject(data),
+                    raw => JsonConvert.DeserializeObject<List<long>>(raw)
+                );
+            });
+
+            modelBuilder.Entity<PipelineItem>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.PipelineId });
+                entity.Property(p => p.Point).HasConversion(
+                    data => JsonConvert.SerializeObject(data),
+                    raw => JsonConvert.DeserializeObject<Point>(raw)
+                );
+            });
+
+            modelBuilder.Entity<PipelineConnector>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.PipelineId });
             });
 
             OnModelCreatingPartial(modelBuilder);

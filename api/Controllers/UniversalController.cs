@@ -177,5 +177,41 @@ namespace Homo.IotApi
         {
             return ConvertHelper.EnumToList(typeof(FIRMWARE_PROTOCOL));
         }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Pipeline Item Types",
+            Description = ""
+        )]
+        [Route("pipeline-item-types")]
+        [HttpGet]
+        public ActionResult<dynamic> getPipelineItmTypes()
+        {
+            return ConvertHelper.EnumToList(typeof(PIPELINE_ITEM_TYPE));
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Pipeline Notification Types",
+            Description = ""
+        )]
+        [Route("pipeline-notification-types")]
+        [HttpGet]
+        public ActionResult<dynamic> getNotificationTypes()
+        {
+            return ConvertHelper.EnumToList(typeof(PIPELINE_NOTIFICATION_TYPE));
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "常數" },
+            Summary = "Pipeline Device Static Methods",
+            Description = ""
+        )]
+        [Route("pipeline-device-static-methods")]
+        [HttpGet]
+        public ActionResult<dynamic> getPipelineDeviceStaticMethods()
+        {
+            return ConvertHelper.EnumToList(typeof(PIPELINE_DEVICE_STATIC_METHODS));
+        }
     }
 }

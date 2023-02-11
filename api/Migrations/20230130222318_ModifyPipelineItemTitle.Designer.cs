@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230130222318_ModifyPipelineItemTitle")]
+    partial class ModifyPipelineItemTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,6 +193,9 @@ namespace IotApi.Migrations
                     b.Property<long?>("EditedBy")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("Mode")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("varchar(255)");
 
@@ -206,9 +211,6 @@ namespace IotApi.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int>("PinType")
-                        .HasColumnType("int");
-
                     b.Property<decimal?>("Value")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(65,30)")
@@ -222,11 +224,11 @@ namespace IotApi.Migrations
 
                     b.HasIndex("DeviceId");
 
+                    b.HasIndex("Mode");
+
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("PinType");
 
                     b.HasIndex("Value");
 
@@ -483,9 +485,6 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CurrentPipelineItemIds")
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
@@ -577,6 +576,9 @@ namespace IotApi.Migrations
 
                     b.Property<int>("ItemType")
                         .HasColumnType("int");
+
+                    b.Property<string>("NextIds")
+                        .HasColumnType("longtext");
 
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
