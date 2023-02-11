@@ -22,12 +22,14 @@ namespace Homo.IotApi
         private readonly List<MqttPublisher> _localMqttPublishers;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
+        private readonly string _dbConnectionString;
         public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers)
         {
             _dbContext = dbContext;
             _localMqttPublishers = localMqttPublishers;
             _mqttUsername = appSettings.Value.Secrets.MqttUsername;
             _mqttPassword = appSettings.Value.Secrets.MqttPassword;
+            _dbConnectionString = appSettings.Value.Secrets.DBConnectionString;
         }
 
         [SwaggerOperation(
@@ -54,6 +56,8 @@ namespace Homo.IotApi
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_dbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
+            long ownerId = extraPayload.Id;
+            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
