@@ -159,7 +159,19 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             ) : (
                 <div className="d-flex align-items-center h-100 justify-content-center">
                     {lineChartData.length <= 0 ? (
-                        <h2 className="mb-0 px-45 my-3">暫無資料</h2>
+                        <div>
+                            <h2 className="mb-0 px-45 my-3">暫無資料</h2>
+                            <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
+                                <div
+                                    className={`dot rounded-circle flex-shirk-0 ${
+                                        devicePin?.device?.online
+                                            ? 'dot-green'
+                                            : 'dot-grey'
+                                    }`}
+                                />
+                                {devicePin?.device?.name} - {devicePin?.name}
+                            </h3>
+                        </div>
                     ) : (
                         <div
                             className={`${
@@ -175,7 +187,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 </div>
                                 <div>{isLiveData ? 'real-time' : 'static'}</div>
                             </div>
-                            <h3 className="mb-0 w-100 text-center px-45 my-3">
+                            <h3 className="mb-0 w-100 text-center px-45 my-3 position-relative">
+                                <div
+                                    className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                        devicePin?.device?.online
+                                            ? 'dot-green'
+                                            : 'dot-grey'
+                                    }`}
+                                />
                                 {devicePin?.device?.name} - {devicePin?.name}
                             </h3>
                             <div>

@@ -32,11 +32,11 @@ namespace Homo.IotApi
                 x.DeletedAt == null
                 && deviceIds.Contains(x.DeviceId)
                 && x.OwnerId == ownerId
-            ).OrderBy(x => x.DeviceId)
-            .ThenByDescending(x => x.CreatedAt)
-            .ThenBy(x => x.Id)
+            )
             .GroupBy(x => x.DeviceId)
-            .Select(x => x.First())
+            .Select(x => x.OrderBy(x => x.DeviceId)
+                        .OrderByDescending(x => x.CreatedAt)
+                        .FirstOrDefault())
             .ToList();
         }
 
