@@ -1,6 +1,6 @@
 import Spinner from '@/components/spinner/spinner';
 import Toggle from '@/components/toggle/toggle';
-import { useGetDevicePinApi } from '@/hooks/apis/device.pin.hook';
+import { useGetDevicePinApi } from '@/hooks/apis/device-pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import { PinItem } from '@/types/devices.type';
 import { useEffect, useRef, useState, useCallback } from 'react';

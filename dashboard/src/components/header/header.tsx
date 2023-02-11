@@ -110,6 +110,17 @@ const Header = () => {
                             <div className="mx-3">oAuthClient</div>
                         </span>
                     </Link>
+
+                    <Link
+                        to="/dashboard/pipelines"
+                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                    >
+                        <img src={shieldIcon} />
+                        <span className="text-block text-nowrap overflow-hidden">
+                            <div className="mx-3">Pipeline</div>
+                        </span>
+                    </Link>
+
                     <a
                         href={`${import.meta.env.VITE_WEBSITE_URL}/swagger/`}
                         target="_blank"

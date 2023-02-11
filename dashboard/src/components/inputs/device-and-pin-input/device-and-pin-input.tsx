@@ -1,96 +1,110 @@
-import { useState, useEffect, useRef } from 'react';
-import { DeviceItem, PinItem } from '@/types/devices.type';
+import { useState, useEffect } from 'react';
 import AutocompletedSearch from '@/components/inputs/autocompleted-search/autocompleted-search';
+import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
+import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
+import { KeyValuePair } from '@/types/common.type';
+import { useAppSelector } from '@/hooks/redux.hook';
+import { selectDevices } from '@/redux/reducers/devices.reducer';
+import { DeviceItem } from '@/types/devices.type';
 
 const DeviceAndPinInputs = ({
-    allDevices,
     isDeviceNameError,
-    initialDeviceName = '',
+    defaultDeviceId = 0,
     deviceNameLabel,
     isPinError,
+    pinType,
     pinLabel,
-    pinValue,
-    pinOptions,
+    defaultPinValue,
     updatePin,
     updateDeviceId,
     isDisabled,
 }: {
-    allDevices: DeviceItem[];
     isDeviceNameError: boolean;
-    initialDeviceName?: string;
+    defaultDeviceId: number;
     deviceNameLabel: string;
     isPinError: boolean;
+    pinType?: number | undefined;
     pinLabel: string;
-    pinValue: string;
-    pinOptions: PinItem[] | null;
+    defaultPinValue: string;
     updatePin: (pin: string) => void;
     updateDeviceId: (id: number) => void;
     isDisabled: boolean;
 }) => {
-    const hasManualUpdate = useRef(false);
-    const [deviceName, setDeviceName] = useState(initialDeviceName);
-
-    const currentDeviceId =
-        allDevices.filter(({ name }) => deviceName === name)[0]?.id || 0;
+    const { getAllDevicesApi } = useGetAllDevicesApi();
+    const allDevices: DeviceItem[] = useAppSelector(selectDevices).devices;
+    const [deviceId, setDeviceId] = useState(defaultDeviceId);
+    const { devicePins, getDevicePinsApi } = useGetDevicePinsApi({
+        id: deviceId,
+        pinType,
+    });
 
     useEffect(() => {
-        if (hasManualUpdate.current) {
-            updateDeviceId(currentDeviceId);
-        }
+        getAllDevicesApi();
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        getDevicePinsApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentDeviceId]);
+    }, [allDevices, deviceId]);
 
     useEffect(() => {
-        setDeviceName(initialDeviceName);
-    }, [initialDeviceName]);
+        setDeviceId(defaultDeviceId);
+    }, [defaultDeviceId]);
 
-    return (
+    return allDevices.length > 0 ? (
         <div className="d-flex flex-column flex-md-row w-100 mb-3">
             <div className="form-group w-100 pe-md-3 mb-3 mb-md-0">
                 <label className="mb-1">{deviceNameLabel}</label>
-                <AutocompletedSearch
-                    datalistId={deviceNameLabel}
-                    placeholder="請輸入裝置名稱搜尋"
-                    value={deviceName}
-                    isDisabled={isDisabled}
-                    isError={isDeviceNameError}
-                    errorMessage="請輸入裝置名稱"
-                    updateCurrentValue={(newValue) => {
-                        setDeviceName(newValue);
-                        if (!hasManualUpdate.current) {
-                            hasManualUpdate.current = true;
-                        }
-                    }}
-                    allSuggestions={allDevices.map(({ name }) => name)}
-                />
+                {allDevices.length > 0 && (
+                    <AutocompletedSearch
+                        datalistId={deviceNameLabel}
+                        placeholder="請輸入裝置名稱搜尋"
+                        defaultValue={deviceId}
+                        isDisabled={isDisabled}
+                        isError={isDeviceNameError}
+                        errorMessage="請輸入裝置名稱"
+                        onValueChanged={(
+                            newValue: number | string | undefined
+                        ) => {
+                            setDeviceId(Number(newValue));
+                            updateDeviceId(Number(newValue));
+                        }}
+                        allSuggestions={(allDevices || []).map(
+                            ({ name, id }) =>
+                                ({
+                                    key: name,
+                                    value: id,
+                                } as KeyValuePair)
+                        )}
+                    />
+                )}
             </div>
             <div className="form-group w-100 ps-md-3">
                 <label className="mb-1">
-                    {pinLabel} {pinValue}
+                    {pinLabel} {defaultPinValue}
                 </label>
                 <select
                     className={`form-select ${isPinError && 'border-danger'}`}
-                    value={pinValue}
+                    value={defaultPinValue}
                     disabled={isDisabled}
                     onChange={(e) => {
                         const newSourcePin = e.target.value;
                         updatePin(newSourcePin);
                     }}
                 >
-                    {pinOptions === null ? (
+                    {devicePins === null ? (
                         <option key="not-yet-fetch-pins" value="" />
-                    ) : pinOptions.length === 0 ? (
+                    ) : devicePins.length === 0 ? (
                         <option key="no-pins-data" value="">
                             此裝置目前無 Pins，請重新選擇裝置
                         </option>
                     ) : (
                         <>
-                            {pinValue === '' && (
-                                <option key="not-yet-choose-pins" value="">
-                                    請選擇 PIN
-                                </option>
-                            )}
-                            {pinOptions.map(({ name, pin }, index) => {
+                            <option key="not-yet-choose-pins" value="">
+                                請選擇 PIN
+                            </option>
+                            {devicePins.map(({ name, pin }, index) => {
                                 return (
                                     <option
                                         key={`${name}-${index}`}
@@ -108,6 +122,8 @@ const DeviceAndPinInputs = ({
                 )}
             </div>
         </div>
+    ) : (
+        <div>目前沒有裝置</div>
     );
 };
 

@@ -8,9 +8,14 @@ export const END_POINT = {
     DEVICE_MODE: 'universal/device-mode',
     DASHBOARD_MONITOR_MODE: 'universal/dashboard-monitor-mode',
     PROTOCOLS: 'universal/protocols',
+    PIPELINE_ITEM_TYPES: 'universal/pipeline-item-types',
+    PIPELINE_NOTIFICATION_TYPES: 'universal/pipeline-notification-types',
+    PIPELINE_DEVICE_STATIC_METHODS: 'universal/pipeline-device-static-methods',
     SIGN_WITH_EMAIL: 'auth/sign-in-with-email',
     IS_SIGNED: 'auth/is-sign-in',
     All_DEVICES: 'my/devices/all',
+    PIPELINES: 'my/pipelines',
+    PIPELINE: 'my/pipelines/:id',
     DEVICES: 'my/devices',
     DEVICE: 'my/devices/:id',
     DEVICE_PINS: 'my/devices/:id/pins',
@@ -27,6 +32,10 @@ export const END_POINT = {
     TRIGGER: 'my/triggers/:id',
     FIRMWARE: 'firmware/:bundleId',
     DASHBOARD_MONITORS: 'my/dashboard-monitors',
+    PIPELINE_ITEMS: 'my/pipelines/:pipelineId/items',
+    PIPELINE_ITEM: 'my/pipelines/:pipelineId/items/:id',
+    PIPELINE_CONNECTORS: 'my/pipelines/:pipelineId/connectors',
+    PIPELINE_CONNECTOR: 'my/pipelines/:pipelineId/connectors/:id',
 };
 
 export const HTTP_METHOD = {

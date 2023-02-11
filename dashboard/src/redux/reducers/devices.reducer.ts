@@ -3,12 +3,12 @@ import { RootState } from '@/redux/store';
 import { DeviceItem } from '@/types/devices.type';
 
 type DeviceState = {
-    devices: DeviceItem[] | null;
+    devices: DeviceItem[];
     rowNum: number;
 };
 
 const initialState: DeviceState = {
-    devices: null,
+    devices: [],
     rowNum: 0,
 };
 

@@ -45,3 +45,9 @@ export interface Protocols {
     value: number;
     label: string;
 }
+
+export interface UniversalOption {
+    key: string;
+    value: number;
+    label: string;
+}

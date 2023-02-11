@@ -13,6 +13,8 @@ import OauthClients from './pages/oauth-clients/oauth-clients';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import OauthClient from './pages/oauth-client/oauth-client';
+import Pipelines from './pages/pipelines/pipelines';
+import Pipeline from './pages/pipeline/pipeline';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -60,7 +62,14 @@ ReactDOM.render(
                     path="dashboard/oauth-clients/:id"
                     element={<OauthClient />}
                 />
+
                 <Route path="dashboard/404" element={<NotFound />} />
+                <Route path="dashboard/pipelines" element={<Pipelines />} />
+                <Route
+                    path="dashboard/pipelines/create"
+                    element={<Pipeline />}
+                />
+                <Route path="dashboard/pipelines/:id" element={<Pipeline />} />
             </Route>
         </Routes>
     </BrowserRouter>,

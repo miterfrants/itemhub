@@ -1,0 +1,8 @@
+.pipeline {
+    .flow-canvas {
+        height: 75vh;
+        .connectable {
+            transform: translate(-50%, 0) scale(3);
+        }
+    }
+}

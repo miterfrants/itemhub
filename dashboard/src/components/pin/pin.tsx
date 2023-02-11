@@ -1,7 +1,7 @@
 import {
     useUpdateDevicePinNameApi,
     useUpdateDeviceSwitchPinApi,
-} from '@/hooks/apis/device.pin.hook';
+} from '@/hooks/apis/device-pin.hook';
 import { useEffect, useState, useRef } from 'react';
 import { useDebounce } from '@/hooks/debounce.hook';
 import { PinItem } from '@/types/devices.type';
@@ -39,7 +39,11 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
                 isNameChangedRef.current = false;
             },
         });
-    const debounceUpdatePinName = useDebounce(updateDevicePinNameApi, 800);
+    const debounceUpdatePinName = useDebounce(
+        updateDevicePinNameApi,
+        800,
+        null
+    );
 
     const toggleSwitch = () => {
         setValue(value === 1 ? 0 : 1);
