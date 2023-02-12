@@ -68,9 +68,9 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
                         <Toggle value={value} />
                     </div>
                     <div className="d-flex justify-content-center device-name text-center">
-                        <span className="d-none d-md-inline position-relative ps-2">
+                        <span className="d-none d-md-inline ps-2">
                             <div
-                                className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                className={`align-middle dot rounded-circle ${
                                     devicePin?.device?.online
                                         ? 'dot-green'
                                         : 'dot-grey'
