@@ -30,6 +30,7 @@ namespace Homo.IotApi
         private readonly List<MqttPublisher> _localMqttPublishers;
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
+        private readonly string _dbConnectionString;
         public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, List<MqttPublisher> localMqttPublishers)
         {
             var secrets = optionAppSettings.Value.Secrets;
@@ -48,6 +49,7 @@ namespace Homo.IotApi
             _localMqttPublishers = localMqttPublishers;
             _mqttUsername = secrets.MqttUsername;
             _mqttPassword = secrets.MqttPassword;
+            _dbConnectionString = secrets.DBConnectionString;
         }
 
         [SwaggerOperation(
@@ -63,6 +65,8 @@ namespace Homo.IotApi
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
+            long ownerId = extraPayload.Id;
+            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id);
             return new
             {
                 status = CUSTOM_RESPONSE.OK
