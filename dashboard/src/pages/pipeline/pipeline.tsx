@@ -57,6 +57,8 @@ const Pipeline = () => {
     const [pipeline, setPipeline] = useState<PipelineType | null>(null);
     const [shouldBeUpdatePipeline, setShouldBeUpdatePipeline] =
         useState<PipelineType | null>(null);
+    const [shouldBeCreatePipelineTitle, setShouldBeCreatePipelineTitle] =
+        useState<string>('');
     const { fetchApi: getPipelineItems } = useGetAllPipelineItems(id || 0);
     const { fetchApi: getPipelineItemTypes } = useGetPipelineItemTypes();
     const { fetchApi: getPipelineConnectors } = useGetAllPipelineConnectors(
@@ -78,7 +80,7 @@ const Pipeline = () => {
         isLoading: isCreating,
         fetchApi: create,
         data: respOfCreate,
-    } = useCreatePipelineApi(pipeline?.title || '');
+    } = useCreatePipelineApi(shouldBeCreatePipelineTitle);
 
     const {
         isLoading: isUpdating,
@@ -93,7 +95,7 @@ const Pipeline = () => {
     }, 800);
 
     const validate = (_pipeline: PipelineType | null) => {
-        if (!_pipeline) {
+        if (!_pipeline && !isCreateMode) {
             return false;
         }
         const newValidation: ValidationInterface = {
@@ -121,7 +123,6 @@ const Pipeline = () => {
             newValidation.title.isInvalid = false;
             newValidation.title.errorMessage = [];
         }
-
         setValidation(newValidation);
         return result;
     };
@@ -216,13 +217,29 @@ const Pipeline = () => {
                             id="title"
                             placeholder="輸入名稱"
                             defaultValue={pipeline?.title}
+                            onBlur={(e) => {
+                                const value = e.target.value;
+                                if (isCreateMode) {
+                                    setShouldBeCreatePipelineTitle(value);
+                                } else {
+                                    debounceChangePipeline({
+                                        ...shouldBeUpdatePipeline,
+                                        title: value,
+                                        id: pipeline?.id || 0,
+                                    });
+                                }
+                            }}
                             onChange={(e) => {
                                 const value = e.target.value;
-                                debounceChangePipeline({
-                                    ...shouldBeUpdatePipeline,
-                                    title: value,
-                                    id: pipeline?.id || 0,
-                                });
+                                if (isCreateMode) {
+                                    setShouldBeCreatePipelineTitle(value);
+                                } else {
+                                    debounceChangePipeline({
+                                        ...shouldBeUpdatePipeline,
+                                        title: value,
+                                        id: pipeline?.id || 0,
+                                    });
+                                }
                             }}
                         />
                         {validation.title.isInvalid && (
@@ -248,7 +265,7 @@ const Pipeline = () => {
                                 type="button"
                                 className="btn btn-primary mt-3"
                                 onClick={() => {
-                                    validate(pipeline) && create();
+                                    create();
                                 }}
                                 disabled={isCreating}
                             >

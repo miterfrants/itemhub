@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PageTitle from '@/components/page-title/page-title';
 import pencilIcon from '@/assets/images/pencil.svg';
 import trashIcon from '@/assets/images/trash.svg';
@@ -28,6 +28,7 @@ const Pipelines = () => {
     const limit = Number(query.get('limit') || 10);
     const [page, setPage] = useState(Number(query.get('page')) || 1);
     const [searchTitle, setSearchTitle] = useState(query.get('title') || '');
+    const navigate = useNavigate();
     const [refreshFlag, setRefreshFlag] = useState(false);
     const state: PipelineState = useAppSelector(selectPipelines);
     const [pipelines, setPipelines] = useState(state.pipelines || []);
@@ -99,6 +100,10 @@ const Pipelines = () => {
                 title="Pipeline 列表"
                 primaryButtonWording="新增 Pipeline"
                 secondaryButtonWording="重新整理"
+                primaryButtonVisible
+                primaryButtonCallback={() => {
+                    navigate('create');
+                }}
             />
             <div className="card">
                 {!isGetting && !pipelines ? (

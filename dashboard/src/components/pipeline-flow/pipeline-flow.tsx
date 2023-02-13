@@ -118,6 +118,12 @@ export const PipelineFlow = ({
     const [nodes, setNodes, onNodesChange] = useNodesState(
         pipelineItems.map(pipelineItemToNode)
     );
+
+    useEffect(() => {
+        setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
+    }, [pipelineItems]);
+
     const [edges, setEdges, onEdgesChange] = useEdgesState(
         pipelineConnectors.map(pipelineConnectorToEdge)
     );
