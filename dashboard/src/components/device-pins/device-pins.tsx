@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
-import { DEVICE_MODE } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/device-mode';
 import ReactTooltip from 'react-tooltip';
 import { Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
@@ -97,7 +97,7 @@ const DevicePins = ({
 
     useEffect(() => {
         const switchMode = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SWITCH;
+            return item.key === PIN_TYPES.SWITCH;
         })[0]?.value;
 
         if (switchMode !== undefined) {
@@ -105,7 +105,7 @@ const DevicePins = ({
         }
 
         const sensorMode = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SENSOR;
+            return item.key === PIN_TYPES.SENSOR;
         })[0]?.value;
 
         if (sensorMode !== undefined) {

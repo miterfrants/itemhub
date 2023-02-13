@@ -1,4 +1,4 @@
-import { DEVICE_MODE } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/device-mode';
 import { useCreateDashboardMonitorApi } from '@/hooks/apis/dashboard-monitor.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
@@ -107,7 +107,7 @@ const MonitorConfigDialog = () => {
 
         // eslint-disable-next-line
         const sensorValue = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SENSOR;
+            return item.key === PIN_TYPES.SENSOR;
         })[0]?.value;
 
         setSensorValue(sensorValue);
@@ -194,7 +194,7 @@ const MonitorConfigDialog = () => {
 
     const valid = () => {
         const sensorModeValue = deviceModes.find(
-            (item) => item.key === DEVICE_MODE.SENSOR
+            (item) => item.key === PIN_TYPES.SENSOR
         )?.value;
 
         if (pin === null) {

@@ -129,7 +129,7 @@ export const useGetDeviceModesApi = () => {
         [dispatch]
     );
 
-    const apiPath = `${API_URL}${END_POINT.DEVICE_MODE}`;
+    const apiPath = `${API_URL}${END_POINT.PIN_TYPES}`;
 
     const { isLoading, error, fetchApi } = useFetchApi<DeviceMode[]>({
         apiPath,

@@ -5,7 +5,7 @@ export const END_POINT = {
     TRIGGER_TYPES: 'universal/trigger-types',
     TRIGGER_NOTIFICATION_PERIODS: 'universal/trigger-notification-periods',
     MICROCONTROLLER: 'universal/microcontroller',
-    DEVICE_MODE: 'universal/device-mode',
+    PIN_TYPES: 'universal/pin-types',
     DASHBOARD_MONITOR_MODE: 'universal/dashboard-monitor-mode',
     PROTOCOLS: 'universal/protocols',
     PIPELINE_ITEM_TYPES: 'universal/pipeline-item-types',
