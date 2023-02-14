@@ -20,7 +20,7 @@
         "react-dom": "^17.0.2",
         "react-redux": "^7.2.6",
         "react-tooltip": "^4.2.21",
-        "reaviz": "github:miterfrants/reaviz-for-npm"
+        "reaviz": "^14.0.2"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.16.1",
