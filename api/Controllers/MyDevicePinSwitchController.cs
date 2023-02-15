@@ -57,7 +57,6 @@ namespace Homo.IotApi
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
