@@ -42,9 +42,8 @@ const Pipelines = () => {
         }
     );
 
-    const { data: responseOfDelete } = useDeletePipelinesApi([
-        shouldBeDeleteId,
-    ]);
+    const { data: responseOfDelete, fetchApi: deletePipeline } =
+        useDeletePipelinesApi([shouldBeDeleteId]);
 
     useEffect(() => {
         document.title = 'ItemHub - Pipeline 列表';
@@ -67,6 +66,14 @@ const Pipelines = () => {
         setPipelines(state.pipelines || []);
         setRowNum(state.rowNum || 0);
     }, [state]);
+
+    useEffect(() => {
+        if (!shouldBeDeleteId) {
+            return;
+        }
+        deletePipeline();
+        // eslint-disable-next-line
+    }, [shouldBeDeleteId]);
 
     const deleteOne = (id: number | undefined) => {
         if (!id) {
