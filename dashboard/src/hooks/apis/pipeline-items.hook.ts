@@ -106,7 +106,6 @@ export const useUpdatePipelineItem = (payload: PipelineItemType) => {
     apiPath = apiPath.replace(':pipelineId', payload.pipelineId.toString());
     apiPath = apiPath.replace(':id', (payload.id || '').toString());
     const dispatch = useAppDispatch();
-    console.log('useUpdatePipelineItem');
     const dispatchCallback = useCallback(
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {

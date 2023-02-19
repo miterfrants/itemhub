@@ -59,7 +59,6 @@ export const pipelineItemsSlice = createSlice({
             } else {
                 newPipelineItems.push(newItem);
             }
-            console.log(JSON.stringify(newPipelineItems));
             return newPipelineItems;
         },
         deleteMultiple: (

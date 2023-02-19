@@ -51,7 +51,7 @@ export const PipelineFlow = ({
         oldOne: PipelineItemType | undefined
     ): boolean => {
         if (newOne && !oldOne) {
-            return true;
+            return false;
         }
         if (!newOne || !oldOne) {
             return false;
@@ -304,17 +304,6 @@ export const PipelineFlow = ({
 
     const debounceChangeNodes = useDebounce(
         (changeNodes: PipelineItemType[]) => {
-            console.log(
-                changeNodes.filter((newOne: PipelineItemType) => {
-                    return compareItem(
-                        newOne,
-                        pipelineItems.find(
-                            (oldOne: PipelineItemType) =>
-                                Number(oldOne.id) === Number(newOne.id)
-                        )
-                    );
-                })
-            );
             setShouldBeUpdateNodes(
                 changeNodes.filter((newOne: PipelineItemType) => {
                     return compareItem(
@@ -391,7 +380,6 @@ export const PipelineFlow = ({
                                 },
                             } as PipelineItemType)
                     );
-                console.log('changeNodes', changeNodes);
                 debounceChangeNodes(changeNodes);
             }}
             onEdgesChange={onEdgesChange}
