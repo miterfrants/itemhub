@@ -248,7 +248,8 @@ const Pipeline = () => {
                             </div>
                         )}
                         <div className="flow-canvas mt-4">
-                            {pipelineItems &&
+                            {!isCreateMode &&
+                                pipelineItems &&
                                 pipelineConnectors &&
                                 pipelineItemTypes.length > 0 && (
                                     <PipelineFlowProvider

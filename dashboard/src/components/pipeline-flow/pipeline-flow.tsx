@@ -334,7 +334,7 @@ export const PipelineFlow = ({
         useUpdatePipelineItem(
             shouldBeUpdateNode ||
                 ({
-                    pipelineId: id,
+                    pipelineId: id || 0,
                     id: 0,
                 } as PipelineItemType)
         );

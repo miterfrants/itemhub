@@ -44,11 +44,20 @@ export const useGetAllPipelineItems = (pipelineId: number) => {
 export const useCreatePipelineItem = (payload: PipelineItemType) => {
     let apiPath = `${API_URL}${END_POINT.PIPELINE_ITEMS}`;
     apiPath = apiPath.replace(':pipelineId', payload.pipelineId.toString());
+    const dispatch = useAppDispatch();
+    const dispatchCreatePipelineItem = useCallback(
+        (data: PipelineItemType) => {
+            dispatch(pipelineItemsActions.updatePipelineItem(data));
+        },
+        // eslint-disable-next-line
+        [dispatch]
+    );
     const { isLoading, data, error, fetchApi } = useFetchApi<PipelineItemType>({
         apiPath,
         method: HTTP_METHOD.POST,
         payload,
         initialData: null,
+        callbackFunc: dispatchCreatePipelineItem,
     });
 
     return {
@@ -97,6 +106,7 @@ export const useUpdatePipelineItem = (payload: PipelineItemType) => {
     apiPath = apiPath.replace(':pipelineId', payload.pipelineId.toString());
     apiPath = apiPath.replace(':id', (payload.id || '').toString());
     const dispatch = useAppDispatch();
+    console.log('useUpdatePipelineItem');
     const dispatchCallback = useCallback(
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {

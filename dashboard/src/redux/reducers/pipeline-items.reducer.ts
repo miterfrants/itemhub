@@ -41,27 +41,25 @@ export const pipelineItemsSlice = createSlice({
         },
         updatePipelineItem: (
             state,
-            action: PayloadAction<Partial<PipelineItemType>>
+            action: PayloadAction<PipelineItemType>
         ) => {
             const pipelineItems = state;
             const newItem = action.payload;
 
-            if (pipelineItems === null) {
-                throw new Error(
-                    'Can not updatePin when pipelineItems is null.'
-                );
-            }
-
-            const newPipelineItems = [...pipelineItems];
+            const newPipelineItems = [...(pipelineItems || [])];
 
             const targetIndex = newPipelineItems.findIndex(
                 (item) => item.id === newItem.id
             );
-            newPipelineItems[targetIndex] = {
-                ...newPipelineItems[targetIndex],
-                ...newItem,
-            };
-
+            if (targetIndex >= 0) {
+                newPipelineItems[targetIndex] = {
+                    ...newPipelineItems[targetIndex],
+                    ...newItem,
+                };
+            } else {
+                newPipelineItems.push(newItem);
+            }
+            console.log(JSON.stringify(newPipelineItems));
             return newPipelineItems;
         },
         deleteMultiple: (
