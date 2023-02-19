@@ -16,11 +16,11 @@
         "jwt-decode": "^3.1.2",
         "lodash.debounce": "^4.0.8",
         "moment": "^2.29.2",
-        "react": "^17.0.2",
-        "react-dom": "^17.0.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "react-redux": "^7.2.6",
         "react-tooltip": "^4.2.21",
-        "reaviz": "github:miterfrants/reaviz-for-npm"
+        "reaviz": "^14.0.2"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.16.1",
