@@ -32,5 +32,7 @@
     "notificationContent": "your device reach threshould",
     "checkout": "Checkout",
     "mailSubjectSurvey": "Itemhub - Survey",
-    "mailContentSurvey": ""
+    "mailContentSurvey": "",
+    "offlineNotificationSubject": "{deviceName} Offline Notification",
+    "offlineNotificationContent": "{deviceName} 目前裝置狀態為下線 下線時間: {now}"
 }

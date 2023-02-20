@@ -20,5 +20,7 @@ namespace Homo.IotApi
         public bool Online { get; set; }
         public long? Microcontroller { get; set; }
         public FIRMWARE_PROTOCOL Protocol { get; set; }
+        public bool IsOfflineNotification { get; set; }
+        public string OfflineNotificationTarget { get; set; }
     }
 }

@@ -18,12 +18,24 @@ namespace Homo.IotApi
         private readonly string _dbConnectionString;
         private readonly Homo.Api.CommonLocalizer _commonLocalizer;
         private readonly string _adminEmail;
+        private readonly string _mailTemplatePath;
+        private readonly string _smsUsername;
+        private readonly string _smsPassword;
+        private readonly string _smsClientUrl;
+        private readonly string _systemEmail;
+        private readonly string _sendGridApiKey;
         public MyDeviceController(IotDbContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer)
         {
             _dbContext = dbContext;
             _dbConnectionString = appSettings.Value.Secrets.DBConnectionString;
             _commonLocalizer = commonLocalizer;
             _adminEmail = appSettings.Value.Common.AdminEmail;
+            _mailTemplatePath = appSettings.Value.Common.StaticPath;
+            _smsUsername = appSettings.Value.Secrets.SmsUsername;
+            _smsPassword = appSettings.Value.Secrets.SmsPassword;
+            _smsClientUrl = appSettings.Value.Common.SmsClientUrl;
+            _systemEmail = appSettings.Value.Common.SystemEmail;
+            _sendGridApiKey = appSettings.Value.Secrets.SendGridApiKey;
 
         }
 
@@ -179,7 +191,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> online([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id);
+            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
