@@ -35,9 +35,9 @@ namespace Homo.IotApi
                 DbContextOptionsBuilder<DBContext> builder = new DbContextOptionsBuilder<DBContext>();
                 var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
                 iotDbContextBuilder.UseMySql(dbc, serverVersion);
+                builder.UseMySql(dbc, serverVersion);
                 IotDbContext newDbContext = new IotDbContext(iotDbContextBuilder.Options);
                 DBContext dbContext = new DBContext(builder.Options);
-
                 // 15 秒內 device activity log 沒查到資料就當作下線
                 int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(newDbContext, ownerId, deviceId);
                 if (count > 0)
@@ -47,6 +47,7 @@ namespace Homo.IotApi
                 DeviceDataservice.Switch(newDbContext, ownerId, deviceId, false);
                 // offline notification
                 User deviceOwner = UserDataservice.GetOne(dbContext, ownerId, false);
+
                 if (!deviceOwner.IsSubscription.GetValueOrDefault())
                 {
                     return;
@@ -85,7 +86,7 @@ namespace Homo.IotApi
                     }
                     else if (isPhone)
                     {
-                        var subject = commonLocalizer.Get("offlineNotificationSubject", null, new Dictionary<string, string> {
+                        var content = commonLocalizer.Get("offlineNotificationContent", null, new Dictionary<string, string> {
                             {
                                 "deviceName",
                                 device.Name
@@ -94,11 +95,12 @@ namespace Homo.IotApi
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                             }
                         });
-                        var content = commonLocalizer.Get("offlineNotificationContent");
-                        SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsClientUrl, target, $"{subject} {content}");
+                        SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsClientUrl, target, $"{content}");
                     }
                 });
             }, tokenSource.Token);
+
+
 
             if (tokenSourceCollections.ContainsKey(deviceId))
             {

@@ -1,7 +1,7 @@
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+
+
 
 namespace Homo.AuthApi
 {
@@ -9,12 +9,12 @@ namespace Homo.AuthApi
     {
         public static bool IsEmail(string email)
         {
-
-            return false;
+            var emailAddressAttribute = new EmailAddressAttribute();
+            return emailAddressAttribute.IsValid(email);
         }
         public static bool IsTaiwanMobilePhoneNumber(string phone)
         {
-            return false;
+            return Regex.IsMatch(phone, @"09[0-9]{8}");
         }
     }
 
