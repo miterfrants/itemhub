@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useGetDevicePinsApi } from '@/hooks/apis/device.pin.hook';
+import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
 import Pin from '@/components/pin/pin';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';

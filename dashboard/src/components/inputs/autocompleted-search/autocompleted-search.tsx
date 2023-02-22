@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import debounce from 'lodash.debounce';
+import { KeyValuePair } from '@/types/common.type';
 
 const AutocompletedSearch = ({
     isDisabled = false,
@@ -8,8 +9,8 @@ const AutocompletedSearch = ({
     datalistId,
     placeholder,
     allSuggestions,
-    value,
-    updateCurrentValue,
+    defaultValue,
+    onValueChanged,
     onEnterKeyUp,
     onClickOption,
 }: {
@@ -18,21 +19,26 @@ const AutocompletedSearch = ({
     errorMessage?: string;
     datalistId: string;
     placeholder: string;
-    allSuggestions: string[];
-    value: string;
-    updateCurrentValue: (newValue: string) => void;
+    allSuggestions: KeyValuePair[];
+    defaultValue: string | number | undefined;
+    onValueChanged: (newValue: string | number | undefined) => void;
     onEnterKeyUp?: (newValue?: string) => void;
     onClickOption?: (newValue?: string) => void;
 }) => {
     const [filteredSuggestions, setFilteredSuggestions] =
-        useState<string[]>(allSuggestions);
+        useState<KeyValuePair[]>(allSuggestions);
 
     const inputRef = useRef<HTMLInputElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const isTriggerOnClickOption = useRef(false);
     const [isTriggerOnEnterKeyUp, setIsTriggerOnEnterKeyUp] = useState(false);
-    const [inputValue, setInputValue] = useState(value);
+    const defaultItem = allSuggestions.find((item) => {
+        return item.value === defaultValue;
+    });
+    const [inputValue, setInputValue] = useState(
+        defaultItem ? defaultItem.key : null
+    );
 
     useEffect(() => {
         if (isTriggerOnClickOption.current && onClickOption) {
@@ -52,11 +58,18 @@ const AutocompletedSearch = ({
         setFilteredSuggestions(allSuggestions);
     }, [allSuggestions]);
 
+    useEffect(() => {
+        const defaultItem = allSuggestions.find((item) => {
+            return item.value === defaultValue;
+        });
+        setInputValue(defaultItem ? defaultItem.key : '');
+    }, [defaultValue, allSuggestions]);
+
     const handleChangeValue = ({
         currentValue,
         nativeEvent,
     }: {
-        currentValue: string;
+        currentValue: string | number | undefined;
         nativeEvent: InputEvent;
     }) => {
         const isClickOption = !('inputType' in nativeEvent);
@@ -64,12 +77,12 @@ const AutocompletedSearch = ({
             isTriggerOnClickOption.current = true;
         }
 
-        updateCurrentValue(inputRef.current?.value || '');
+        onValueChanged(currentValue || '');
         const newFilteredOptions = allSuggestions.filter((suggestion) => {
             return (
-                suggestion
+                suggestion.key
                     .toLowerCase()
-                    .indexOf(currentValue.toString().toLowerCase()) > -1
+                    .indexOf((currentValue || '').toString().toLowerCase()) > -1
             );
         });
         setFilteredSuggestions(newFilteredOptions);
@@ -90,12 +103,24 @@ const AutocompletedSearch = ({
                 placeholder={placeholder}
                 ref={inputRef}
                 disabled={isDisabled}
-                value={inputValue}
+                defaultValue={inputValue || ''}
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
                     const nativeEvent = e.nativeEvent as InputEvent;
+                    const selectedDeviceName = e.currentTarget.value;
+                    const selectedDatasetItem =
+                        e.currentTarget.parentElement?.querySelector(
+                            `datalist>option[value="${selectedDeviceName}"]`
+                        );
+
+                    const rawId: string | undefined = selectedDatasetItem
+                        ? (selectedDatasetItem as HTMLElement).dataset['id']
+                        : '';
+
+                    const id = rawId ? Number(rawId) : '';
+
                     handleChangeValueWithDebounce({
-                        currentValue: inputRef.current?.value || '',
+                        currentValue: id,
                         nativeEvent,
                     });
                     setInputValue(e.target.value);
@@ -104,8 +129,12 @@ const AutocompletedSearch = ({
             <datalist id={datalistId}>
                 {filteredSuggestions.map((suggestion, index) => {
                     return (
-                        <option key={`${suggestion}-${index}`}>
-                            {suggestion}
+                        <option
+                            value={suggestion.key}
+                            data-id={suggestion.value}
+                            key={`${suggestion.key}-${index}`}
+                        >
+                            {suggestion.key}
                         </option>
                     );
                 })}

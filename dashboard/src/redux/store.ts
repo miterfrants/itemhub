@@ -11,6 +11,9 @@ import oauthClientRedirectUrisReducer from './reducers/oauth-client-redirect-uri
 import monitorConfigDialogReducer from './reducers/monitor-config-dialog.reducer';
 import dashboardMonitorReducer from './reducers/dashboard-monitor.reducer';
 import deviceLastActivityReducer from './reducers/device-activity-logs.reducer';
+import pipelinesReducer from './reducers/pipelines.reducer';
+import pipelineItemsReducer from './reducers/pipeline-items.reducer';
+import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
 
 const store = configureStore({
     reducer: {
@@ -26,6 +29,9 @@ const store = configureStore({
         oauthClientRedirectUris: oauthClientRedirectUrisReducer,
         monitorConfigDialog: monitorConfigDialogReducer,
         dashboardMonitors: dashboardMonitorReducer,
+        pipelines: pipelinesReducer,
+        pipelineItems: pipelineItemsReducer,
+        pipelineConnectors: pipelineConnectorsReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

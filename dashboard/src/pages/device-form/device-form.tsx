@@ -10,7 +10,7 @@ import {
     useDeletePinsApi,
     useGetDevicePinsApi,
     useUpdatePinsApi,
-} from '@/hooks/apis/device.pin.hook';
+} from '@/hooks/apis/device-pin.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
