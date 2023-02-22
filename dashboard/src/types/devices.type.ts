@@ -12,6 +12,8 @@ export interface DeviceItem {
     microcontroller: number;
     protocol: number;
     lastActivityLogCreatedAt: Date;
+    isOfflineNotification: boolean;
+    offlineNotificationTarget: string;
 }
 
 export interface PinItem {

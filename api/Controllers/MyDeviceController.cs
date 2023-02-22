@@ -65,6 +65,8 @@ namespace Homo.IotApi
                     x.Online,
                     x.OwnerId,
                     x.Protocol,
+                    x.OfflineNotificationTarget,
+                    x.IsOfflineNotification,
                     LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault()?.CreatedAt
                 }),
                 rowNum = DeviceDataservice.GetRowNum(_dbContext, ownerId, name)

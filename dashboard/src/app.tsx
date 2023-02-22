@@ -19,6 +19,7 @@ import Dialog from './components/dialog/dialog';
 import Toaster from './components/toaster/toaster';
 import jwt_decode from 'jwt-decode';
 import MonitorConfigDialog from './components/monitor-config-dialog/monitor-config-dialog';
+import OfflineNotificationDialog from './components/offline-notification-dialog/offline-notification-dialog';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -73,6 +74,7 @@ const App = () => {
             </div>
             <Dialog />
             <MonitorConfigDialog />
+            <OfflineNotificationDialog />
             <Toaster />
         </div>
     ) : (

@@ -11,6 +11,7 @@ import oauthClientRedirectUrisReducer from './reducers/oauth-client-redirect-uri
 import monitorConfigDialogReducer from './reducers/monitor-config-dialog.reducer';
 import dashboardMonitorReducer from './reducers/dashboard-monitor.reducer';
 import deviceLastActivityReducer from './reducers/device-activity-logs.reducer';
+import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
 
 const store = configureStore({
     reducer: {
@@ -25,6 +26,7 @@ const store = configureStore({
         toasters: toasterReducer,
         oauthClientRedirectUris: oauthClientRedirectUrisReducer,
         monitorConfigDialog: monitorConfigDialogReducer,
+        offlineNotificationDialog: offlineNotificationDialogReducer,
         dashboardMonitors: dashboardMonitorReducer,
     },
     middleware: (getDefaultMiddlware) => {

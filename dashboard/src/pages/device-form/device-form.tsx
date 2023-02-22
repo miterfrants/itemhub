@@ -264,7 +264,7 @@ const DeviceForm = () => {
                 )[0]?.id,
                 deviceId: Number(id),
                 pin: target.pin,
-                mode: target.mode,
+                pinType: target.pinType,
                 name: target.name,
                 value: target.value,
                 pinNumber: target.pinNumber,
