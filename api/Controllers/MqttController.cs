@@ -34,6 +34,7 @@ namespace Homo.IotApi
         private readonly string _smsUsername;
         private readonly string _smsPassword;
         private readonly string _smsClientUrl;
+        private readonly string _mailTemplatePath;
         private readonly MySqlServerVersion _mysqlVersion;
 
         public MqttController(IOptions<AppSettings> optionAppSettings, MQTTnet.AspNetCore.MqttHostedServer mqttHostedServer, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublisher)
@@ -60,6 +61,7 @@ namespace Homo.IotApi
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
             _dbc = secrets.DBConnectionString;
+            _mailTemplatePath = common.StaticPath;
         }
 
         public Task OnClientConnected(ClientConnectedEventArgs eventArgs)
@@ -211,7 +213,7 @@ namespace Homo.IotApi
                 }
                 else if (isDeviceState)
                 {
-                    DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId);
+                    DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
                 }
                 iotDbContext.Dispose();
                 dbContext.Dispose();

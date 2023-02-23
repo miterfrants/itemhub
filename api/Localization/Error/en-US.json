@@ -29,5 +29,6 @@
   "TRIGGER_DEST_DEVICE_TARGET_STATE_REQUIRED": "Trigger dest device target state required",
   "TRIGGER_DEST_PIN_REQUIRED": "Trigger dest pin required",
   "TRIGGER_NOTIFICATION_NEEDS_CONTACT_INFORMATION": "Trigger email required",
-  "TRIGGER_NOTIFICATION_OVER_USING": "over-using trigger notification"
+  "TRIGGER_NOTIFICATION_OVER_USING": "over-using trigger notification",
+  "OFFLINE_NOTIFICATION_USAGE_LIMIT": "下線通知需訂閱方案才可以使用"
 }

@@ -91,9 +91,9 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
                             {currentValue?.toFixed(4) || '暫無資料'}
                         </h3>
                         <div className="d-flex justify-content-center mt-2">
-                            <h3 className="mb-0 device-name position-relative ps-2">
+                            <h3 className="mb-0 device-name ps-2">
                                 <div
-                                    className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                    className={`align-middle dot rounded-circle ${
                                         devicePin?.device?.online
                                             ? 'dot-green'
                                             : 'dot-grey'

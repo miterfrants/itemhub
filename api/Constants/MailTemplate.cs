@@ -31,5 +31,7 @@ namespace Homo.AuthApi
 
         [Description("邀請使用")]
         INVITE = 9,
+        [Description("下線通知")]
+        OFFLINE_NOTIFICATION = 10,
     }
 }

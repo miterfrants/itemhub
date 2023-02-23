@@ -24,5 +24,6 @@ namespace Homo.IotApi
         public static string TRIGGER_NOTIFICATION_OVER_USING = "TRIGGER_NOTIFICATION_OVER_USING";
         public static string PIPELINE_CONNECTOR_EXISTS = "PIPELINE_CONNECTOR_EXISTS";
         public static string PIPELINE_INFINITY_LOOP = "PIPELINE_INFINITY_LOOP";
+        public static string OFFLINE_NOTIFICATION_USAGE_LIMIT = "OFFLINE_NOTIFICATION_USAGE_LIMIT";
     }
 }

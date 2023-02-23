@@ -21,6 +21,8 @@ import { RESPONSE_STATUS } from '@/constants/api';
 import compassIcon from '@/assets/images/compass.svg';
 import stopIcon from '@/assets/images/stop.svg';
 import displayIcon from '@/assets/images/display.svg';
+import warnIcon from '@/assets/images/warning.svg';
+import colorWarnIcon from '@/assets/images/color-warning.svg';
 import { useDispatch } from 'react-redux';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
 import ReactTooltip from 'react-tooltip';
@@ -29,6 +31,9 @@ import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem } from '@/types/devices.type';
+import { offlineNotificationDialogActions } from '@/redux/reducers/offline-notification-dialog.reducer';
+// import jwt_decode from 'jwt-decode';
+// import { CookieHelpers } from '@/helpers/cookie.helper';
 
 const Devices = () => {
     const query = useQuery();
@@ -48,6 +53,10 @@ const Devices = () => {
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
     const isFilter = !query.keys().next().done;
+    // const jwtPayload = jwt_decode<{ roles: string[] }>(
+    //     CookieHelpers.GetCookie({ name: 'dashboardToken' }) || ''
+    // );
+    // const isVIP = jwtPayload.roles.includes('VIP');
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
@@ -162,6 +171,15 @@ const Devices = () => {
         );
     };
 
+    const popupOfflineNotification = (id: number) => {
+        dispatch(
+            offlineNotificationDialogActions.open({
+                callback: () => {},
+                deviceId: id,
+            })
+        );
+    };
+
     return (
         <div className="devices" data-testid="devices">
             <PageTitle
@@ -227,6 +245,7 @@ const Devices = () => {
                                             online,
                                             protocol,
                                             lastActivityLogCreatedAt,
+                                            isOfflineNotification,
                                         }) => {
                                             const targetProtocol =
                                                 protocols.find(
@@ -279,7 +298,7 @@ const Devices = () => {
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         操作
                                                     </div>
-                                                    <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
+                                                    <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap align-content-start">
                                                         <Link
                                                             className="me-4 mb-3"
                                                             to={`/dashboard/devices/${id}${search}`}
@@ -366,6 +385,26 @@ const Devices = () => {
                                                                 className="icon"
                                                                 src={
                                                                     displayIcon
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        <div
+                                                            className="me-4 mb-3"
+                                                            role="button"
+                                                            onClick={() => {
+                                                                popupOfflineNotification(
+                                                                    id
+                                                                );
+                                                            }}
+                                                            data-tip="斷線通知"
+                                                        >
+                                                            <img
+                                                                className="icon"
+                                                                src={
+                                                                    isOfflineNotification
+                                                                        ? colorWarnIcon
+                                                                        : warnIcon
                                                                 }
                                                             />
                                                         </div>

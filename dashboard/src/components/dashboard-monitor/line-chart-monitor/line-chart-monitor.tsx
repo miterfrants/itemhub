@@ -187,9 +187,9 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
                                 </div>
                                 <div>{isLiveData ? 'real-time' : 'static'}</div>
                             </div>
-                            <h3 className="mb-0 w-100 text-center px-45 my-3 position-relative">
+                            <h3 className="w-100 text-center px-45 mt-4 mb-3">
                                 <div
-                                    className={`position-absolute top-50 start-0 dot rounded-circle ${
+                                    className={`align-middle dot rounded-circle ${
                                         devicePin?.device?.online
                                             ? 'dot-green'
                                             : 'dot-grey'

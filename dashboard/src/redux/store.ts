@@ -14,6 +14,7 @@ import deviceLastActivityReducer from './reducers/device-activity-logs.reducer';
 import pipelinesReducer from './reducers/pipelines.reducer';
 import pipelineItemsReducer from './reducers/pipeline-items.reducer';
 import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
+import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
 
 const store = configureStore({
     reducer: {
@@ -28,6 +29,7 @@ const store = configureStore({
         toasters: toasterReducer,
         oauthClientRedirectUris: oauthClientRedirectUrisReducer,
         monitorConfigDialog: monitorConfigDialogReducer,
+        offlineNotificationDialog: offlineNotificationDialogReducer,
         dashboardMonitors: dashboardMonitorReducer,
         pipelines: pipelinesReducer,
         pipelineItems: pipelineItemsReducer,
