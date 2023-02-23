@@ -74,9 +74,14 @@ namespace Homo.IotApi
                 }
 
                 DateTime? whenToSendNextTime = null;
+                int lastIndex = user.SendOverPlanNotificationCount + 1;
+                if (lastIndex > frequency.Count - 1)
+                {
+                    lastIndex = frequency.Count - 1;
+                }
                 if (user.SendOverPlanNotificationAt != null)
                 {
-                    whenToSendNextTime = user.SendOverPlanNotificationAt.GetValueOrDefault().AddDays(7 * (int)frequency[user.SendOverPlanNotificationCount + 1].Value);
+                    whenToSendNextTime = user.SendOverPlanNotificationAt.GetValueOrDefault().AddDays(7 * (int)frequency[lastIndex].Value);
                 }
 
                 bool shouldBeSent = false;
