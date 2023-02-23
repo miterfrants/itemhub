@@ -47,6 +47,14 @@ namespace Homo.AuthApi
             }
             dbContext.SaveChanges();
         }
+
+        public static bool IsVIP(DBContext dbContext, long userId)
+        {
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, userId);
+            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
+            bool isVIP = roles.Any(x => x == "VIP");
+            return isVIP;
+        }
     }
 
     public class ViewRelationOfGroupAndUser

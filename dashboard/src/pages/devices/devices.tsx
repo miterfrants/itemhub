@@ -32,6 +32,8 @@ import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dial
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem } from '@/types/devices.type';
 import { offlineNotificationDialogActions } from '@/redux/reducers/offline-notification-dialog.reducer';
+// import jwt_decode from 'jwt-decode';
+// import { CookieHelpers } from '@/helpers/cookie.helper';
 
 const Devices = () => {
     const query = useQuery();
@@ -51,6 +53,10 @@ const Devices = () => {
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
     const isFilter = !query.keys().next().done;
+    // const jwtPayload = jwt_decode<{ roles: string[] }>(
+    //     CookieHelpers.GetCookie({ name: 'dashboardToken' }) || ''
+    // );
+    // const isVIP = jwtPayload.roles.includes('VIP');
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({

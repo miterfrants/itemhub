@@ -46,9 +46,9 @@ namespace Homo.IotApi
                 }
                 DeviceDataservice.Switch(newDbContext, ownerId, deviceId, false);
                 // offline notification
-                User deviceOwner = UserDataservice.GetOne(dbContext, ownerId, false);
 
-                if (!deviceOwner.IsSubscription.GetValueOrDefault())
+                Subscription subscription = SubscriptionDataservice.GetCurrnetOne(newDbContext, ownerId);
+                if (subscription == null && !RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId))
                 {
                     return;
                 }

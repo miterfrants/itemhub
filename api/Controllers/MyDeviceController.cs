@@ -14,7 +14,8 @@ namespace Homo.IotApi
     [Validate]
     public class MyDeviceController : ControllerBase
     {
-        private readonly IotDbContext _dbContext;
+        private readonly IotDbContext _iotDbContext;
+        private readonly DBContext _dbContext;
         private readonly string _dbConnectionString;
         private readonly Homo.Api.CommonLocalizer _commonLocalizer;
         private readonly string _adminEmail;
@@ -24,9 +25,11 @@ namespace Homo.IotApi
         private readonly string _smsClientUrl;
         private readonly string _systemEmail;
         private readonly string _sendGridApiKey;
-        public MyDeviceController(IotDbContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer)
+        public MyDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer)
         {
+            _iotDbContext = iotDbContext;
             _dbContext = dbContext;
+
             _dbConnectionString = appSettings.Value.Secrets.DBConnectionString;
             _commonLocalizer = commonLocalizer;
             _adminEmail = appSettings.Value.Common.AdminEmail;
@@ -48,8 +51,8 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getList([FromQuery] int limit, [FromQuery] int page, [FromQuery] string name, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            List<Device> records = DeviceDataservice.GetList(_dbContext, ownerId, page, limit, name);
-            List<DeviceActivityLog> lastLogs = DeviceActivityLogDataservice.GetLast(_dbContext, ownerId, records.Select(x => x.Id).ToList<long>());
+            List<Device> records = DeviceDataservice.GetList(_iotDbContext, ownerId, page, limit, name);
+            List<DeviceActivityLog> lastLogs = DeviceActivityLogDataservice.GetLast(_iotDbContext, ownerId, records.Select(x => x.Id).ToList<long>());
             return new
             {
                 devices = records.Select(x =>
@@ -69,7 +72,7 @@ namespace Homo.IotApi
                     x.IsOfflineNotification,
                     LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault()?.CreatedAt
                 }),
-                rowNum = DeviceDataservice.GetRowNum(_dbContext, ownerId, name)
+                rowNum = DeviceDataservice.GetRowNum(_iotDbContext, ownerId, name)
             };
         }
 
@@ -83,7 +86,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getAll(Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            return DeviceDataservice.GetAll(_dbContext, ownerId);
+            return DeviceDataservice.GetAll(_iotDbContext, ownerId);
         }
 
         [SwaggerOperation(
@@ -95,10 +98,10 @@ namespace Homo.IotApi
         public ActionResult<dynamic> create([FromBody] DTOs.DevicePayload dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload, bool isVIP)
         {
             long ownerId = extraPayload.Id;
-            Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_dbContext, ownerId);
+            Subscription subscription = SubscriptionDataservice.GetCurrnetOne(_iotDbContext, ownerId);
             int subscriptionLevel = subscription == null ? -1 : subscription.PricingPlan;
             decimal deviceCountInPricingPlan = subscriptionLevel == -1 ? 2 : SubscriptionHelper.GetDeviceCount((PRICING_PLAN)subscription.PricingPlan);
-            decimal currentDeviceCount = DeviceDataservice.GetRowNum(_dbContext, ownerId, null);
+            decimal currentDeviceCount = DeviceDataservice.GetRowNum(_iotDbContext, ownerId, null);
 
             if ((currentDeviceCount + 1 > deviceCountInPricingPlan) && !isVIP)
             {
@@ -119,7 +122,7 @@ namespace Homo.IotApi
                 }});
             }
 
-            Device rewRecord = DeviceDataservice.Create(_dbContext, ownerId, dto);
+            Device rewRecord = DeviceDataservice.Create(_iotDbContext, ownerId, dto);
             return rewRecord;
         }
 
@@ -133,7 +136,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> batchDelete([FromBody] List<long> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceDataservice.BatchDelete(_dbContext, ownerId, ids);
+            DeviceDataservice.BatchDelete(_iotDbContext, ownerId, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -147,7 +150,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getOne([FromRoute] int id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            Device record = DeviceDataservice.GetOne(_dbContext, ownerId, id);
+            Device record = DeviceDataservice.GetOne(_iotDbContext, ownerId, id);
             if (record == null)
             {
                 throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
@@ -165,7 +168,16 @@ namespace Homo.IotApi
         public ActionResult<dynamic> update([FromRoute] int id, [FromBody] DTOs.DevicePayload dto, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceDataservice.Update(_dbContext, ownerId, id, dto);
+            bool isVIP = RelationOfGroupAndUserDataservice.IsVIP(_dbContext, ownerId);
+            var subscrioption = SubscriptionDataservice.GetCurrnetOne(_iotDbContext, ownerId);
+            if (
+                dto.IsOfflineNotification == true && dto.OfflineNotificationTarget.Length > 0
+                && !isVIP && subscrioption == null
+            )
+            {
+                throw new CustomException(ERROR_CODE.OFFLINE_NOTIFICATION_USAGE_LIMIT);
+            }
+            DeviceDataservice.Update(_iotDbContext, ownerId, id, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -179,7 +191,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> delete([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceDataservice.Delete(_dbContext, ownerId, id);
+            DeviceDataservice.Delete(_iotDbContext, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -193,7 +205,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> online([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_dbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
