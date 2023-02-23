@@ -152,25 +152,25 @@ const OfflineNotificationDialog = () => {
                     並且不能超過五個通知對象
                 </div>
                 <div className="row">
-                    <div className="col-12 px-0 d-flex justify-content-center">
+                    <div className="d-flex align-items-center justify-content-end mt-3">
                         <button
-                            className="btn btn-lg rounded-pill mt-3 py-3 border-1 border-grey-300 mx-0"
-                            onClick={() => {
-                                submit();
-                            }}
-                            disabled={!isValidedForm || isUpdating}
-                        >
-                            新增
-                        </button>
-
-                        <button
-                            className="btn btn-lg rounded-pill mt-3 py-3 border-1 border-grey-300 mx-0 ms-3"
+                            className="btn btn-warn me-3"
                             onClick={() => {
                                 cancel();
                             }}
                             disabled={isUpdating}
                         >
                             取消通知
+                        </button>
+
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                                submit();
+                            }}
+                            disabled={!isValidedForm || isUpdating}
+                        >
+                            新增通知
                         </button>
                     </div>
                 </div>

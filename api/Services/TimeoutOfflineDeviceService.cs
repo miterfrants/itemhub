@@ -81,7 +81,7 @@ namespace Homo.IotApi
                                     device.Name
                                 }
                             }),
-                            Content = template.Content.Replace("deviceName", device.Name).Replace("now", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                            Content = template.Content.Replace("{{deviceName}}", device.Name).Replace("{{now}}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
                         }, systemEmail, target, sendGridApiKey);
                     }
                     else if (isPhone)
