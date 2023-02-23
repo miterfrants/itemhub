@@ -144,7 +144,7 @@ const OfflineNotificationDialog = () => {
                             });
                             valid(event);
                         }}
-                        value={device?.offlineNotificationTarget}
+                        value={device?.offlineNotificationTarget || ''}
                     />
                 </label>
                 <div className={`text-danger ${isValidedForm ? 'd-none' : ''}`}>
