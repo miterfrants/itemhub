@@ -47,7 +47,6 @@ namespace Homo.AuthApi
         public string City { get; set; }
         [MaxLength(10)]
         public string Zip { get; set; }
-        public bool? IsSubscription { get; set; }
         public DateTime? Birthday { get; set; }
         [MaxLength(32)]
         public string FbSubDeletionConfirmCode { get; set; }
