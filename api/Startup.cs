@@ -151,7 +151,6 @@ namespace Homo.IotApi
                 && _env.EnvironmentName.ToLower() != "development"
                 && _env.EnvironmentName.ToLower() != "migration")
             {
-                System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("aaaaaaaa", Newtonsoft.Json.Formatting.Indented)}");
                 StartupOfflineService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
             }
 

@@ -59,6 +59,11 @@ namespace Homo.AuthApi
             {
                 filePath = $"{staticPath}/email/invite.html";
             }
+            else if (key == MAIL_TEMPLATE.OFFLINE_NOTIFICATION)
+            {
+                filePath = $"{staticPath}/email/offline-notification.html";
+                subject = "offlineNotificationSubject";
+            }
 
             string content = File.ReadAllText(filePath);
             return new MailTemplate()

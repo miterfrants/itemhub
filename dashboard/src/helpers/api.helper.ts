@@ -179,13 +179,6 @@ export const ApiHelpers = {
             !(JSON.parse(fetchOption.body) instanceof FormData)
         ) {
             const newBody = JSON.parse(fetchOption.body);
-            for (const key in newBody) {
-                if (newBody[key] === true) {
-                    newBody[key] = 1;
-                } else if (newBody[key] === false) {
-                    newBody[key] = 0;
-                }
-            }
             fetchOption.body = JSON.stringify(newBody);
         }
 
