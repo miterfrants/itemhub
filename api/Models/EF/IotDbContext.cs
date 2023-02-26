@@ -36,6 +36,7 @@ namespace Homo.IotApi
         public virtual DbSet<Pipeline> Pipeline { get; set; }
         public virtual DbSet<PipelineItem> PipelineItem { get; set; }
         public virtual DbSet<PipelineConnector> PipelineConnector { get; set; }
+        public virtual DbSet<PipelineExecuteLog> PipelineExecuteLog { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -191,10 +192,6 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.OwnerId });
-                entity.Property(p => p.CurrentPipelineItemIds).HasConversion(
-                    data => JsonConvert.SerializeObject(data),
-                    raw => JsonConvert.DeserializeObject<List<long>>(raw)
-                );
             });
 
             modelBuilder.Entity<PipelineItem>(entity =>
@@ -215,6 +212,16 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.OwnerId });
                 entity.HasIndex(p => new { p.PipelineId });
+            });
+
+            modelBuilder.Entity<PipelineExecuteLog>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.PipelineId });
+                entity.Property(p => p.IsCompleted).HasDefaultValueSql("0");
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValue(System.DateTime.Now);
             });
 
             OnModelCreatingPartial(modelBuilder);
