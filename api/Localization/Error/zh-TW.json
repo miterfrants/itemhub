@@ -39,5 +39,6 @@
   "TRIGGER_DEST_PIN_REQUIRED": "觸發 - 目標 PIN 為必填欄位",
   "TRIGGER_NOTIFICATION_NEEDS_CONTACT_INFORMATION": "觸發 - Email 和 電話請選一填寫",
   "TRIGGER_NOTIFICATION_OVER_USING": "觸發通知超過訂閱方案的使用量",
-  "OFFLINE_NOTIFICATION_USAGE_LIMIT": "下線通知需訂閱方案才可以使用"
+  "OFFLINE_NOTIFICATION_USAGE_LIMIT": "下線通知需訂閱方案才可以使用",
+  "UNALLOW_PIPELINE_HEAD_TYPE": "不允許 Pipeline 開頭為以下類型: 通知, 開關, 延遲, 網路"
 }

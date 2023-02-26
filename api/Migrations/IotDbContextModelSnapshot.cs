@@ -489,9 +489,6 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("CurrentPipelineItemIds")
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
@@ -500,6 +497,18 @@ namespace IotApi.Migrations
 
                     b.Property<long?>("EditedBy")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("FirstPieplineItemType")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("FirstPipelineItemDeviceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FirstPipelineItemPin")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsRun")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
@@ -561,6 +570,48 @@ namespace IotApi.Migrations
                     b.HasIndex("PipelineId");
 
                     b.ToTable("PipelineConnector");
+                });
+
+            modelBuilder.Entity("Homo.IotApi.PipelineExecuteLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasDefaultValue(new DateTime(2023, 2, 27, 0, 6, 44, 561, DateTimeKind.Local).AddTicks(8540));
+
+                    b.Property<long?>("CurrentPipelineId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsCompleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValueSql("0");
+
+                    b.Property<string>("Log")
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("PipelineId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("PipelineId");
+
+                    b.ToTable("PipelineExecuteLog");
                 });
 
             modelBuilder.Entity("Homo.IotApi.PipelineItem", b =>
