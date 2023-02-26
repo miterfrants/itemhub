@@ -15,6 +15,9 @@ namespace Homo.IotApi
         [Required]
         [MaxLength(24)]
         public string Title { get; set; }
-        public List<long> CurrentPipelineItemIds { get; set; }
+        public bool IsRun { get; set; }
+        public PIPELINE_ITEM_TYPE FirstPieplineItemType { get; set; }
+        public long? FirstPipelineItemDeviceId { get; set; }
+        public string FirstPipelineItemPin { get; set; }
     }
 }
