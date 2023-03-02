@@ -7,6 +7,7 @@ export interface PipelineType {
     createdAt?: string;
     editedAt?: null | string;
     deletedAt?: null | string;
+    isRun: boolean;
 }
 
 export interface PipelineItemType {

@@ -82,11 +82,7 @@ const Pipeline = () => {
         data: respOfCreate,
     } = useCreatePipelineApi(shouldBeCreatePipelineTitle);
 
-    const {
-        isLoading: isUpdating,
-        fetchApi: update,
-        data: respOfUpdate,
-    } = useUpdatePipelineApi({
+    const { fetchApi: update, data: respOfUpdate } = useUpdatePipelineApi({
         editedData: (shouldBeUpdatePipeline || {}) as Partial<PipelineType>,
     });
 
@@ -253,6 +249,7 @@ const Pipeline = () => {
                                 pipelineConnectors &&
                                 pipelineItemTypes.length > 0 && (
                                     <PipelineFlowProvider
+                                        pipeline={pipeline}
                                         pipelineItems={pipelineItems}
                                         pipelineConnectors={pipelineConnectors}
                                         pipelineItemTypes={pipelineItemTypes}
