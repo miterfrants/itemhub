@@ -14,7 +14,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
         deviceId,
         pin,
         createdAt,
-        mode,
+        pinType: pinType,
         value: valueFromPorps,
         name: nameFromProps,
     } = pinItem;
@@ -22,7 +22,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const [name, setName] = useState('');
     const [isInitialized, setIsInitialized] = useState(false);
     const isNameChangedRef = useRef(false);
-    const isSwitch = mode === 1;
+    const isSwitch = pinType === 1;
 
     const { updateDeviceSwitchPinApi } = useUpdateDeviceSwitchPinApi({
         deviceId,
@@ -39,11 +39,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
                 isNameChangedRef.current = false;
             },
         });
-    const debounceUpdatePinName = useDebounce(
-        updateDevicePinNameApi,
-        800,
-        null
-    );
+    const debounceUpdatePinName = useDebounce(updateDevicePinNameApi, 800);
 
     const toggleSwitch = () => {
         setValue(value === 1 ? 0 : 1);
@@ -52,7 +48,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const updateLocalPinName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
         isNameChangedRef.current = true;
-        debounceUpdatePinName();
+        debounceUpdatePinName(null);
     };
 
     useEffect(() => {

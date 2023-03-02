@@ -83,7 +83,7 @@ const DevicePins = ({
             deviceId: deviceId,
             pin: pinData.pin || '',
             pinNumber: pinData.pinNumber || '',
-            mode: pinData.mode,
+            pinType: pinData.pinType,
             name: pinNameInputRef.current?.value || '',
             value: null,
         };
@@ -167,7 +167,7 @@ const DevicePins = ({
                                 <div className="text-center pin-selector">
                                     {selectedPinList?.filter((pins) => {
                                         return pins.pin === pin.name;
-                                    })[0]?.mode === switchMode ? (
+                                    })[0]?.pinType === switchMode ? (
                                         <div>開關</div>
                                     ) : (
                                         <div>感應器</div>
@@ -197,7 +197,7 @@ const DevicePins = ({
                                                 deviceId: deviceId,
                                                 pin: pin.name,
                                                 pinNumber: pin.pinNumber,
-                                                mode: switchMode,
+                                                pinType: switchMode,
                                                 name: pin.name,
                                                 value: 0,
                                             };
@@ -214,7 +214,7 @@ const DevicePins = ({
                                                 deviceId: deviceId,
                                                 pin: pin.name,
                                                 pinNumber: pin.pinNumber,
-                                                mode: sensorMode,
+                                                pinType: sensorMode,
                                                 name: pin.name,
                                                 value: null,
                                             };
