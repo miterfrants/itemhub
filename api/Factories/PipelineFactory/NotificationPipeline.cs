@@ -57,9 +57,9 @@ namespace Homo.IotApi
                 throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_MESSAGE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
-            if (payload.Message.Length > 100)
+            if (payload.Message.Length > 50)
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_MESSAGE_MAX_LENGTH_100, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_MESSAGE_MAX_LENGTH_50, System.Net.HttpStatusCode.BadRequest);
             }
             return payload;
         }
