@@ -150,14 +150,14 @@ namespace Homo.IotApi
 
         [HttpPost]
         [Route("{id}/toggle")]
-        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload)
+        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto)
         {
             long ownerId = extraPayload.Id;
             var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
 
-            if (pipeline.IsRun)
+            if (!dto.IsRun)
             {
-                pipeline.IsRun = false;
+                pipeline.IsRun = dto.IsRun;
                 _dbContext.SaveChanges();
                 return new { status = CUSTOM_RESPONSE.OK };
             }
@@ -165,8 +165,6 @@ namespace Homo.IotApi
             // validate pipeline
             if (!pipeline.IsRun)
             {
-                pipeline.IsRun = true;
-                _dbContext.SaveChanges();
                 // run pipeline head is schedule
                 var pipelineItems = PipelineItemDataservice.GetAll(_dbContext, ownerId, id, null);
                 var pipelineConnectors = PipelineConnectorDataservice.GetAll(_dbContext, ownerId, id, null);
@@ -175,6 +173,8 @@ namespace Homo.IotApi
                 {
                     PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc);
                 }
+                pipeline.IsRun = dto.IsRun;
+                _dbContext.SaveChanges();
             }
             return new { status = CUSTOM_RESPONSE.OK };
 

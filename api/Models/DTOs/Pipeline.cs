@@ -10,6 +10,10 @@ namespace Homo.IotApi
             [Required]
             [MaxLength(24)]
             public string Title { get; set; }
+        }
+
+        public partial class PipelineIsRun : DTOs
+        {
             public bool IsRun { get; set; }
         }
     }
