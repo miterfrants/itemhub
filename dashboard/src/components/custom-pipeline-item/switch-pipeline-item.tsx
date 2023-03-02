@@ -116,14 +116,11 @@ const SwitchPipelineItem = ({
                                     : undefined,
                         });
                     }}
+                    value={state?.status}
                 >
                     <option />
-                    <option value="1" selected={state?.status === 1}>
-                        開
-                    </option>
-                    <option value="0" selected={state?.status === 0}>
-                        關
-                    </option>
+                    <option value="1">開</option>
+                    <option value="0">關</option>
                 </select>
             </label>
             {validation.status.invalid && (

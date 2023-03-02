@@ -172,6 +172,7 @@ const NotificationPipelineItem = ({
                                 : null
                         );
                     }}
+                    value={state?.notificationType}
                 >
                     <option value="">請選擇通知模式</option>
                     {pipelineNotificationTypes.map((item: UniversalOption) => {

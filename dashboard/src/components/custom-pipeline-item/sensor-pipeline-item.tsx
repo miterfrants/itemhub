@@ -210,18 +210,13 @@ const SensorPipelineItem = ({
                                         : undefined,
                             });
                         }}
+                        value={state?.staticMethod}
                     >
                         <option />
                         {pipelineDeviceStaticMethods.map(
                             (item: UniversalOption) => {
                                 return (
-                                    <option
-                                        key={item.key}
-                                        value={item.value}
-                                        selected={
-                                            item.value === state?.staticMethod
-                                        }
-                                    >
+                                    <option key={item.key} value={item.value}>
                                         {item.label}
                                     </option>
                                 );
@@ -257,6 +252,7 @@ const SensorPipelineItem = ({
                                         : undefined,
                             });
                         }}
+                        value={state?.operator}
                     >
                         <option />
                         {triggerOperators.map((operator: UniversalOption) => {
@@ -264,9 +260,6 @@ const SensorPipelineItem = ({
                                 <option
                                     key={operator.key}
                                     value={operator.value}
-                                    selected={
-                                        state?.operator === operator.value
-                                    }
                                 >
                                     {operator.label}
                                 </option>
