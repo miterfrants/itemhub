@@ -32,6 +32,7 @@ import { useGetAllPipelineConnectors } from '../../hooks/apis/pipeline-connector
 import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
 import { PipelineFlowProvider } from '@/components/pipeline-flow/pipeline-flow';
 import { useDebounce } from '@/hooks/debounce.hook';
+import { useBeforeUnload } from '@/hooks/before-unload.hook';
 
 interface ValidationInterface {
     title: { isInvalid: boolean; errorMessage: string[] };
@@ -55,6 +56,7 @@ const Pipeline = () => {
             ? pipelineConnectorPool.filter((item) => item.pipelineId === id)
             : null;
     const [pipeline, setPipeline] = useState<PipelineType | null>(null);
+    const [isDirtyForm, setIsDirtyForm] = useState<boolean>(false);
     const [shouldBeUpdatePipeline, setShouldBeUpdatePipeline] =
         useState<PipelineType | null>(null);
     const [shouldBeCreatePipelineTitle, setShouldBeCreatePipelineTitle] =
@@ -126,6 +128,10 @@ const Pipeline = () => {
     const back = () => {
         navigate(`/dashboard/pipelines${location.search}`);
     };
+    useBeforeUnload({
+        when: isDirtyForm,
+        message: '資料還未儲存確定要離開頁面?',
+    });
 
     useEffect(() => {
         const pipeline =
@@ -178,6 +184,10 @@ const Pipeline = () => {
     }, [respOfCreate]);
 
     useEffect(() => {
+        if (!respOfUpdate) {
+            return;
+        }
+        setIsDirtyForm(false);
         if (respOfUpdate && respOfUpdate.status === RESPONSE_STATUS.OK) {
             dispatch(
                 toasterActions.pushOne({
@@ -203,7 +213,7 @@ const Pipeline = () => {
                 <div className="card">
                     <div className="mb-4">
                         <label className="form-label" htmlFor="title">
-                            名稱
+                            名稱 {isDirtyForm ? 'true' : 'false'}
                         </label>
                         <input
                             className={`form-control ${
@@ -218,6 +228,10 @@ const Pipeline = () => {
                                 if (isCreateMode) {
                                     setShouldBeCreatePipelineTitle(value);
                                 } else {
+                                    if (value === pipeline?.title) {
+                                        return;
+                                    }
+                                    setIsDirtyForm(true);
                                     debounceChangePipeline({
                                         ...shouldBeUpdatePipeline,
                                         title: value,
@@ -230,6 +244,10 @@ const Pipeline = () => {
                                 if (isCreateMode) {
                                     setShouldBeCreatePipelineTitle(value);
                                 } else {
+                                    if (value === pipeline?.title) {
+                                        return;
+                                    }
+                                    setIsDirtyForm(true);
                                     debounceChangePipeline({
                                         ...shouldBeUpdatePipeline,
                                         title: value,
