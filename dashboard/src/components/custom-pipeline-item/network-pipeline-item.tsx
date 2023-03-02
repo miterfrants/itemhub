@@ -105,7 +105,7 @@ const NetworkPipelineItem = ({
             <label className="mt-3 d-block">
                 <div>Request Method:</div>
                 <select
-                    className="form-control"
+                    className="form-control form-select"
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,
@@ -151,7 +151,7 @@ const NetworkPipelineItem = ({
             <label className="mt-3 d-block">
                 <div>Content Type:</div>
                 <select
-                    className="form-control"
+                    className="form-control form-select"
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,

@@ -154,7 +154,7 @@ const SensorPipelineItem = ({
                         <span className="input-group-text">筆</span>
                     </div>
                     <select
-                        className="form-control"
+                        className="form-control form-select"
                         onChange={(
                             event: React.ChangeEvent<HTMLSelectElement>
                         ) => {
@@ -187,7 +187,7 @@ const SensorPipelineItem = ({
                 <div>條件:</div>
                 <div className="input-group">
                     <select
-                        className="form-control input-group-prepend"
+                        className="form-control form-select input-group-prepend"
                         onChange={(
                             event: React.ChangeEvent<HTMLSelectElement>
                         ) => {

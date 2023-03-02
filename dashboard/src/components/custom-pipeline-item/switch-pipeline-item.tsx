@@ -78,7 +78,7 @@ const SwitchPipelineItem = ({
             <label className="mt-3 d-block">
                 <div>控制:</div>
                 <select
-                    className="form-control"
+                    className="form-control form-select"
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,
