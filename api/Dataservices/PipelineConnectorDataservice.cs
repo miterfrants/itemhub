@@ -69,6 +69,25 @@ namespace Homo.IotApi
             dbContext.SaveChanges();
         }
 
+        public static void BatchDeleteByItemIds(IotDbContext dbContext, long ownerId, long editedBy, long pipelineId, List<long> pipelineItemIds)
+        {
+            foreach (long id in pipelineItemIds)
+            {
+                dbContext.PipelineConnector
+                    .Where(x =>
+                        (pipelineItemIds.Contains(x.SourcePipelineItemId) || pipelineItemIds.Contains(x.DestPipelineItemId))
+                        && x.OwnerId == ownerId
+                        && x.PipelineId == pipelineId
+                    )
+                    .UpdateFromQuery(x => new PipelineConnector()
+                    {
+                        DeletedAt = System.DateTime.Now,
+                        EditedBy = editedBy
+                    });
+            }
+            dbContext.SaveChanges();
+        }
+
         public static void Update(IotDbContext dbContext, long ownerId, long editedBy, long pipelineId, long id, DTOs.PipelineConnector dto)
         {
             PipelineConnector record = dbContext.PipelineConnector.Where(x => x.Id == id && x.OwnerId == ownerId).FirstOrDefault();
