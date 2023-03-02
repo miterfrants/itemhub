@@ -66,6 +66,52 @@ namespace Homo.IotApi
                 .ToList<SensorLog>();
         }
 
+        public static decimal? GetAggregateValue(IotDbContext dbContext, long? ownerId, long deviceId, string pin, PIPELINE_DEVICE_STATIC_METHODS aggregateType, int page = 1, int limit = 50)
+        {
+            var query = dbContext.SensorLog
+                .Where(x =>
+                    x.DeletedAt == null &&
+                    (x.OwnerId == ownerId) &&
+                    (deviceId == x.DeviceId) &&
+                    (x.Pin == pin)
+                )
+                .OrderByDescending(x => x.CreatedAt)
+                .Skip((page - 1) * limit)
+                .Take(limit);
+            if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MAX)
+            {
+                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Max(x => x.Value)).FirstOrDefault();
+            }
+            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MIN)
+            {
+                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Min(x => x.Value)).FirstOrDefault();
+            }
+            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.AVG)
+            {
+                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Average(x => x.Value)).FirstOrDefault();
+            }
+            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.SUM)
+            {
+                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Sum(x => x.Value)).FirstOrDefault();
+            }
+            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MID)
+            {
+                var result = query.Select(x => x.Value).ToList().OrderBy(x => x).ToList();
+                return result[result.Count / 2];
+            }
+            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.STD)
+            {
+                var data = query.Select(x => (decimal)x.Value).ToList();
+                var avg = data.Average();
+                decimal sumOfSquaresOfDifferences = data.Select(val => (val - avg) * (val - avg)).Sum();
+                decimal sd = (decimal)Math.Sqrt((double)(sumOfSquaresOfDifferences / data.Count));
+                return sd;
+            }
+            return null;
+
+        }
+
+
         public static SensorLog Create(IotDbContext dbContext, long ownerId, long deviceId, string pin, DTOs.CreateSensorLog dto)
         {
             SensorLog record = new SensorLog();

@@ -20,9 +20,8 @@ export const devicesSlice = createSlice({
             return action.payload;
         },
         refreshOne: (state, action: PayloadAction<DeviceItem>) => {
-            const list = state.devices;
+            const list = [...state.devices];
             const newOne = action.payload;
-
             if (list === null) {
                 return {
                     ...state,
@@ -33,9 +32,14 @@ export const devicesSlice = createSlice({
             const targetIndex = list.findIndex(
                 (oldOne) => oldOne.id === newOne.id
             );
-            list[targetIndex] = {
-                ...newOne,
-            };
+
+            if (targetIndex === -1) {
+                list.push(newOne);
+            } else {
+                list[targetIndex] = {
+                    ...newOne,
+                };
+            }
 
             return {
                 ...state,

@@ -178,7 +178,7 @@ const MonitorConfigDialog = () => {
             (item) => item.pin === event.target.value
         );
         if (targetPin) {
-            setPinMode(targetPin.mode);
+            setPinMode(targetPin.pinType);
         }
         setDashboardMonitorMode(null);
     };

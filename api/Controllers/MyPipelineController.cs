@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Homo.Api;
 using Homo.Core.Constants;
-using Homo.AuthApi;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq;
 
 namespace Homo.IotApi
 {
@@ -17,11 +15,34 @@ namespace Homo.IotApi
         private readonly IotDbContext _dbContext;
         private readonly Homo.Api.CommonLocalizer _commonLocalizer;
         private readonly string _adminEmail;
-        public MyPipelineController(IotDbContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> appSettings)
+        private readonly List<MqttPublisher> _localMqttPublishers;
+        private readonly string _mqttUsername;
+        private readonly string _mqttPassword;
+        private readonly string _smsUsername;
+        private readonly string _smsPassword;
+        private readonly string _smsClientUrl;
+        private readonly string _sendGridApiKey;
+        private readonly string _systemEmail;
+        private readonly string _staticPath;
+        private readonly string _dbc;
+        public MyPipelineController(IotDbContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers)
         {
             _dbContext = dbContext;
             _commonLocalizer = commonLocalizer;
-            _adminEmail = appSettings.Value.Common.AdminEmail;
+
+            _localMqttPublishers = localMqttPublishers;
+            var secrets = appSettings.Value.Secrets;
+            var common = appSettings.Value.Common;
+            _mqttUsername = secrets.MqttUsername;
+            _mqttPassword = secrets.MqttPassword;
+            _adminEmail = common.AdminEmail;
+            _smsUsername = secrets.SmsUsername;
+            _smsPassword = secrets.SmsPassword;
+            _smsClientUrl = common.SmsClientUrl;
+            _sendGridApiKey = secrets.SendGridApiKey;
+            _systemEmail = common.SystemEmail;
+            _staticPath = common.StaticPath;
+            _dbc = secrets.DBConnectionString;
         }
 
         [SwaggerOperation(
@@ -119,6 +140,44 @@ namespace Homo.IotApi
             long ownerId = extraPayload.Id;
             PipelineDataservice.Delete(_dbContext, ownerId, ownerId, id);
             return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "Pipeline" },
+            Summary = "Pipeline - 啟用或關閉",
+            Description = ""
+        )]
+
+        [HttpPost]
+        [Route("{id}/toggle")]
+        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
+
+            if (pipeline.IsRun)
+            {
+                pipeline.IsRun = false;
+                _dbContext.SaveChanges();
+                return new { status = CUSTOM_RESPONSE.OK };
+            }
+
+            // validate pipeline
+            if (!pipeline.IsRun)
+            {
+                pipeline.IsRun = true;
+                _dbContext.SaveChanges();
+                // run pipeline head is schedule
+                var pipelineItems = PipelineItemDataservice.GetAll(_dbContext, ownerId, id, null);
+                var pipelineConnectors = PipelineConnectorDataservice.GetAll(_dbContext, ownerId, id, null);
+                var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                if (pipelineHead.ItemType == PIPELINE_ITEM_TYPE.SCHEDULE)
+                {
+                    PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc);
+                }
+            }
+            return new { status = CUSTOM_RESPONSE.OK };
+
         }
     }
 }
