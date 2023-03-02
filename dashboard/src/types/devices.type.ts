@@ -22,7 +22,7 @@ export interface PinItem {
     pinNumber: string;
     deviceId: number;
     value: number | null;
-    mode: number;
+    pinType: number;
     name: string | null;
     createdAt?: string;
     device?: DeviceItem;
