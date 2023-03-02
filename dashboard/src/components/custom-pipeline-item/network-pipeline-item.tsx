@@ -151,9 +151,7 @@ const NetworkPipelineItem = ({
                     value={state?.method}
                 >
                     <option />
-                    <option value="GET" selected={state?.method === 'GET'}>
-                        GET
-                    </option>
+                    <option value="GET">GET</option>
                     <option value="POST">POST</option>
                     <option value="PATCH">PATCH</option>
                     <option value="PUT">PUT</option>
@@ -281,12 +279,12 @@ const NetworkPipelineItem = ({
                                     setState({
                                         ...state,
                                         value: isNaN(numberTypeValue)
-                                            ? numberTypeValue
-                                            : event.currentTarget.value,
+                                            ? event.currentTarget.value
+                                            : numberTypeValue,
                                     });
                                 }}
                                 className="form-control"
-                                defaultValue={state?.value}
+                                value={state?.value}
                             />
                         </label>
                     </>
