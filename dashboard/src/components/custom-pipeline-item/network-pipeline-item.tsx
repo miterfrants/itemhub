@@ -113,6 +113,7 @@ const NetworkPipelineItem = ({
                         });
                     }}
                 >
+                    <option />
                     <option selected={state?.method === 'GET'} value="GET">
                         GET
                     </option>
@@ -159,6 +160,7 @@ const NetworkPipelineItem = ({
                         });
                     }}
                 >
+                    <option />
                     <option value="application/json">application/json</option>
                     <option value="multipart/form-data">
                         multipart/form-data
@@ -172,64 +174,86 @@ const NetworkPipelineItem = ({
                 </select>
             </label>
 
-            <label className="mt-3 d-block">
-                <div>擷取回應的欄位</div>
-                <input
-                    type="text"
-                    className="form-control"
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setState({
-                            ...state,
-                            responseBodyProperty: event.currentTarget.value,
-                        });
-                    }}
-                />
-            </label>
+            {state?.contentType !== 'application/json' && (
+                <div className="mt-3">
+                    如果 Content Type 非 application/json 會直接判斷 Http Status
+                    200 跳到下一步
+                </div>
+            )}
 
-            <label className="mt-3 d-block">
-                <div>擷取回應欄位資料</div>
-                <select
-                    className="form-control input-group-prepend"
-                    onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
-                        setState({
-                            ...state,
-                            operator: Number(event.currentTarget.value),
-                        });
-                    }}
-                >
-                    {triggerOperators.map((operator: UniversalOption) => {
-                        return (
-                            <option
-                                key={operator.key}
-                                value={operator.value}
-                                selected={state?.operator === operator.value}
-                            >
-                                {operator.label}
-                            </option>
-                        );
-                    })}
-                </select>
-            </label>
+            {state?.contentType === 'application/json' && (
+                <>
+                    <label className="mt-3 d-block">
+                        <div>擷取回應的欄位</div>
+                        <input
+                            type="text"
+                            className="form-control"
+                            onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                setState({
+                                    ...state,
+                                    responseBodyProperty:
+                                        event.currentTarget.value,
+                                });
+                            }}
+                        />
+                    </label>
 
-            <label className="mt-3 d-block">
-                <div>擷取回應資料等於:</div>
-                <textarea
-                    onChange={(
-                        event: React.ChangeEvent<HTMLTextAreaElement>
-                    ) => {
-                        const numberTypeValue = Number(
-                            event.currentTarget.value
-                        );
-                        setState({
-                            ...state,
-                            value: isNaN(numberTypeValue)
-                                ? numberTypeValue
-                                : event.currentTarget.value,
-                        });
-                    }}
-                    className="form-control"
-                />
-            </label>
+                    <label className="mt-3 d-block">
+                        <div>擷取回應欄位資料</div>
+                        <select
+                            className="form-control form-select input-group-prepend"
+                            onChange={(
+                                event: React.ChangeEvent<HTMLSelectElement>
+                            ) => {
+                                setState({
+                                    ...state,
+                                    operator: Number(event.currentTarget.value),
+                                });
+                            }}
+                        >
+                            <option />
+                            {triggerOperators.map(
+                                (operator: UniversalOption) => {
+                                    return (
+                                        <option
+                                            key={operator.key}
+                                            value={operator.value}
+                                            selected={
+                                                state?.operator ===
+                                                operator.value
+                                            }
+                                        >
+                                            {operator.label}
+                                        </option>
+                                    );
+                                }
+                            )}
+                        </select>
+                    </label>
+
+                    <label className="mt-3 d-block">
+                        <div>擷取回應資料等於:</div>
+                        <textarea
+                            onChange={(
+                                event: React.ChangeEvent<HTMLTextAreaElement>
+                            ) => {
+                                const numberTypeValue = Number(
+                                    event.currentTarget.value
+                                );
+                                setState({
+                                    ...state,
+                                    value: isNaN(numberTypeValue)
+                                        ? numberTypeValue
+                                        : event.currentTarget.value,
+                                });
+                            }}
+                            className="form-control"
+                        />
+                    </label>
+                </>
+            )}
         </div>
     );
 };

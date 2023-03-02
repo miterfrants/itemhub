@@ -86,6 +86,7 @@ const CheckSwitchPipelineItem = ({
                         });
                     }}
                 >
+                    <option />
                     <option value="1" selected={state?.status === 1}>
                         開
                     </option>

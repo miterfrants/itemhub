@@ -197,6 +197,7 @@ const SensorPipelineItem = ({
                             });
                         }}
                     >
+                        <option />
                         {triggerOperators.map((operator: UniversalOption) => {
                             return (
                                 <option
