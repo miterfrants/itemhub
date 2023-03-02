@@ -90,15 +90,12 @@ const CustomPipelineItem = ({
                             );
                         }
                     }}
+                    defaultValue={data.itemType}
                 >
                     <option value="">請選擇類型</option>
                     {pipelineItemTypes.map((item: UniversalOption) => {
                         return (
-                            <option
-                                key={item.value}
-                                value={item.value}
-                                selected={item.value === data.itemType}
-                            >
+                            <option key={item.value} value={item.value}>
                                 {item.label}
                             </option>
                         );

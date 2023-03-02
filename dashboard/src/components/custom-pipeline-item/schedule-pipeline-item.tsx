@@ -20,13 +20,7 @@ const SchedulePipelineItem = ({
     const [invalid, setInvalid] = useState(false);
 
     useEffect(() => {
-        if (pipelineItem.value === state) {
-            return;
-        }
-        if (!state) {
-            return;
-        }
-        if (!validate(state)) {
+        if (!state || !validate(state) || pipelineItem.value === state) {
             return;
         }
         onChangedCallback(state);

@@ -33,7 +33,35 @@ const SwitchPipelineItem = ({
     const [state, setState] = useState<PipelineSwitch | null>(null);
 
     const validate = (state: PipelineSwitch) => {
-        return true;
+        let result = true;
+        const newValidation = { ...validation };
+        if (!state.deviceId) {
+            result = false;
+            newValidation.deviceId.errorMessage = '裝置為必選欄位';
+            newValidation.deviceId.invalid = true;
+        } else {
+            newValidation.deviceId.errorMessage = '';
+            newValidation.deviceId.invalid = false;
+        }
+        if (!state.pin) {
+            result = false;
+            newValidation.pin.errorMessage = '裝置 PIN 為必選欄位';
+            newValidation.pin.invalid = true;
+        } else {
+            newValidation.pin.errorMessage = '';
+            newValidation.pin.invalid = false;
+        }
+        if (state.status === undefined) {
+            result = false;
+            newValidation.status.errorMessage = '控制為必選欄位';
+            newValidation.status.invalid = true;
+        } else {
+            newValidation.status.errorMessage = '';
+            newValidation.status.invalid = false;
+        }
+
+        setValidation(newValidation);
+        return result;
     };
 
     useEffect(() => {
@@ -46,8 +74,8 @@ const SwitchPipelineItem = ({
     useEffect(() => {
         if (
             !state ||
-            pipelineItem.value === JSON.stringify(state) ||
-            !validate(state)
+            !validate(state) ||
+            pipelineItem.value === JSON.stringify(state)
         ) {
             return;
         }
@@ -82,7 +110,10 @@ const SwitchPipelineItem = ({
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,
-                            status: Number(event.currentTarget.value || 1),
+                            status:
+                                event.currentTarget.value !== ''
+                                    ? Number(event.currentTarget.value || 1)
+                                    : undefined,
                         });
                     }}
                 >
@@ -95,6 +126,11 @@ const SwitchPipelineItem = ({
                     </option>
                 </select>
             </label>
+            {validation.status.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.status.errorMessage}
+                </div>
+            )}
         </div>
     );
 };

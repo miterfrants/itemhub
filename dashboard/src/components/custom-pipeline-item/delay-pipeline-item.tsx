@@ -9,18 +9,26 @@ const DelayPipelineItem = ({
     onChangedCallback: (value: string) => void;
 }) => {
     const { value } = pipelineItem;
-    const [state, setState] = useState(value || '');
-    const validate = (state: string) => {
+    const [state, setState] = useState(value || undefined);
+    const [validated, setValidated] = useState(true);
+    const validate = (state: string | undefined) => {
+        const delayMinutes = Number(state);
+        if (
+            !delayMinutes ||
+            delayMinutes <= 0 ||
+            state !== Math.round(delayMinutes).toString()
+        ) {
+            setValidated(false);
+            return false;
+        }
+        setValidated(true);
         return true;
     };
     useEffect(() => {
-        if (pipelineItem.value === state) {
+        if (!validate(state) || pipelineItem.value === state) {
             return;
         }
         if (!state) {
-            return;
-        }
-        if (!validate(state)) {
             return;
         }
         onChangedCallback(state);
@@ -40,12 +48,11 @@ const DelayPipelineItem = ({
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             event.stopPropagation();
-                            setState(event.currentTarget.value);
-                        }}
-                        onKeyDown={(
-                            event: React.KeyboardEvent<HTMLInputElement>
-                        ) => {
-                            event.stopPropagation();
+                            setState(
+                                event.currentTarget.value === ''
+                                    ? undefined
+                                    : event.currentTarget.value
+                            );
                         }}
                     />
                     <div className="input-group-append">
@@ -53,6 +60,11 @@ const DelayPipelineItem = ({
                     </div>
                 </div>
             </label>
+            {!validated && (
+                <div className="text-danger mt-15 fs-5">
+                    延遲分鐘必須為大於零的整數
+                </div>
+            )}
         </div>
     );
 };

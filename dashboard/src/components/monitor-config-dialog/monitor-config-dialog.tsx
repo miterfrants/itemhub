@@ -33,7 +33,7 @@ const MonitorConfigDialog = () => {
     const [pinMode, setPinMode] = useState<number | null>(null);
     const [pin, setPin] = useState<string | null>(null);
     const [dashboardMonitorMode, setDashboardMonitorMode] = useState<
-        number | null
+        number | null | string
     >(defaultSwitchModeValue);
     const [devicePins, setDevicePins] = useState<PinItem[]>([]);
     const [sensorValue, setSensorValue] = useState<number | null>(null);
@@ -261,27 +261,13 @@ const MonitorConfigDialog = () => {
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectMonitorMode(e);
                             }}
+                            value={dashboardMonitorMode || ''}
                         >
-                            <option selected={dashboardMonitorMode === null}>
-                                請選擇監控類型
-                            </option>
-                            <option
-                                selected={
-                                    dashboardMonitorMode ===
-                                    currentValueModeValue
-                                }
-                                value={currentValueModeValue}
-                            >
+                            <option>請選擇監控類型</option>
+                            <option value={currentValueModeValue}>
                                 當前數值
                             </option>
-                            <option
-                                selected={
-                                    dashboardMonitorMode === lineChartModeValue
-                                }
-                                value={lineChartModeValue}
-                            >
-                                折線圖
-                            </option>
+                            <option value={lineChartModeValue}>折線圖</option>
                         </select>
                     </div>
                 </div>

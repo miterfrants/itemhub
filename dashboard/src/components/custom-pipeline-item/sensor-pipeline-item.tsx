@@ -41,25 +41,74 @@ const SensorPipelineItem = ({
             invalid: false,
         },
         lastRows: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         staticMethod: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         operator: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         threshold: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
     });
 
     const validate = (state: PipelineSensor) => {
-        return true;
+        let result = true;
+        const newValidation = { ...validation };
+        if (!state.deviceId) {
+            result = false;
+            newValidation.deviceId.errorMessage = '裝置為必選欄位';
+            newValidation.deviceId.invalid = true;
+        } else {
+            newValidation.deviceId.errorMessage = '';
+            newValidation.deviceId.invalid = false;
+        }
+        if (!state.pin) {
+            result = false;
+            newValidation.pin.errorMessage = '裝置 PIN 為必選欄位';
+            newValidation.pin.invalid = true;
+        } else {
+            newValidation.pin.errorMessage = '';
+            newValidation.pin.invalid = false;
+        }
+        if (!state.lastRows) {
+            result = false;
+            newValidation.lastRows.errorMessage = '最後 n 筆資料為必填欄位';
+            newValidation.lastRows.invalid = true;
+        } else if (state.lastRows <= 0) {
+            result = false;
+            newValidation.lastRows.errorMessage = '最後 n 筆資料不能小於零';
+            newValidation.lastRows.invalid = true;
+        } else {
+            newValidation.lastRows.errorMessage = '';
+            newValidation.lastRows.invalid = false;
+        }
+
+        if (state.staticMethod === undefined) {
+            result = false;
+            newValidation.staticMethod.errorMessage = '統計方式為必填欄位';
+            newValidation.staticMethod.invalid = true;
+        } else {
+            newValidation.staticMethod.errorMessage = '';
+            newValidation.staticMethod.invalid = false;
+        }
+
+        if (state.operator === undefined) {
+            result = false;
+            newValidation.operator.errorMessage = '條件比較欄位為必填欄位';
+            newValidation.operator.invalid = true;
+        } else {
+            newValidation.operator.errorMessage = '';
+            newValidation.operator.invalid = false;
+        }
+        setValidation(newValidation);
+        return result;
     };
 
     useEffect(() => {
@@ -88,8 +137,8 @@ const SensorPipelineItem = ({
     useEffect(() => {
         if (
             !state ||
-            pipelineItem.value === JSON.stringify(state) ||
-            !validate(state)
+            !validate(state) ||
+            pipelineItem.value === JSON.stringify(state)
         ) {
             return;
         }
@@ -133,20 +182,15 @@ const SensorPipelineItem = ({
                         defaultValue={state?.lastRows}
                         className="form-control"
                         type="number"
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                lastRows: Number(event.currentTarget.value),
-                            });
-                        }}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,
-                                lastRows: Number(event.currentTarget.value),
+                                lastRows:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
                     />
@@ -160,7 +204,10 @@ const SensorPipelineItem = ({
                         ) => {
                             setState({
                                 ...state,
-                                staticMethod: Number(event.currentTarget.value),
+                                staticMethod:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
                     >
@@ -183,6 +230,17 @@ const SensorPipelineItem = ({
                     </select>
                 </div>
             </label>
+            {validation.lastRows.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.lastRows.errorMessage}
+                </div>
+            )}
+
+            {validation.staticMethod.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.staticMethod.errorMessage}
+                </div>
+            )}
             <label className="mt-3 d-block">
                 <div>條件:</div>
                 <div className="input-group">
@@ -193,7 +251,10 @@ const SensorPipelineItem = ({
                         ) => {
                             setState({
                                 ...state,
-                                operator: Number(event.currentTarget.value),
+                                operator:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
                     >
@@ -217,25 +278,31 @@ const SensorPipelineItem = ({
                         type="number"
                         placeholder="感測器數值"
                         defaultValue={state?.threshold}
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                threshold: Number(event.currentTarget.value),
-                            });
-                        }}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,
-                                threshold: Number(event.currentTarget.value),
+                                threshold:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
                     />
                 </div>
             </label>
+            {validation.operator.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.operator.errorMessage}
+                </div>
+            )}
+
+            {validation.threshold.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.threshold.errorMessage}
+                </div>
+            )}
         </div>
     );
 };
