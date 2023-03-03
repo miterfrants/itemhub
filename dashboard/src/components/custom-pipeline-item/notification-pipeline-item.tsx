@@ -24,7 +24,12 @@ const NotificationPipelineItem = ({
     const { fetchApi: getPipelineNotificationTypes } =
         useGetPipelineNotificationTypes();
     const { pipelineNotificationTypes } = useAppSelector(selectUniversal);
-
+    const emailTypeValue = pipelineNotificationTypes.find(
+        (item) => item.key === PIPELINE_NOTIFICATION_TYPE.EMAIL
+    )?.value;
+    const smsTypeValue = pipelineNotificationTypes.find(
+        (item) => item.key === PIPELINE_NOTIFICATION_TYPE.SMS
+    )?.value;
     const [validation, setValidation] = useState({
         notificationType: {
             errorMessage: '',
@@ -61,12 +66,6 @@ const NotificationPipelineItem = ({
             newValidation.notificationType.invalid = false;
         }
 
-        const emailTypeValue = pipelineNotificationTypes.find(
-            (item) => item.key === PIPELINE_NOTIFICATION_TYPE.EMAIL
-        )?.value;
-        const smsTypeValue = pipelineNotificationTypes.find(
-            (item) => item.key === PIPELINE_NOTIFICATION_TYPE.SMS
-        )?.value;
         if (
             state.notificationType !== undefined &&
             Number(state.notificationType) === emailTypeValue &&
@@ -189,7 +188,7 @@ const NotificationPipelineItem = ({
                     {validation.notificationType.errorMessage}
                 </div>
             )}
-            {notificationTypeKey === PIPELINE_NOTIFICATION_TYPE.EMAIL && (
+            {state?.notificationType === emailTypeValue && (
                 <div>
                     <label className="mt-3 d-block email">
                         <div>對象:</div>
@@ -206,6 +205,7 @@ const NotificationPipelineItem = ({
                                     phone: undefined,
                                 });
                             }}
+                            value={state?.email}
                         />
                     </label>
                     {validation.email.invalid && (
@@ -216,7 +216,7 @@ const NotificationPipelineItem = ({
                 </div>
             )}
 
-            {notificationTypeKey === PIPELINE_NOTIFICATION_TYPE.SMS && (
+            {state?.notificationType === smsTypeValue && (
                 <div>
                     <label className="mt-3 d-block sms">
                         <div>對象:</div>
@@ -233,6 +233,7 @@ const NotificationPipelineItem = ({
                                     email: undefined,
                                 });
                             }}
+                            value={state?.phone}
                         />
                     </label>
                     {validation.phone.invalid && (
