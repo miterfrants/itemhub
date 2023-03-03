@@ -16,6 +16,11 @@ namespace Homo.IotApi
             {
                 throw new CustomException(ERROR_CODE.PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD, System.Net.HttpStatusCode.BadRequest);
             }
+            // pipeline 不允許沒有頭
+            if (sourceItems.Count == 0)
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD, System.Net.HttpStatusCode.BadRequest);
+            }
             return sourceItems[0];
         }
 

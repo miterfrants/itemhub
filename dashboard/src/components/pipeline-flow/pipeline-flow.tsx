@@ -378,6 +378,9 @@ export const PipelineFlow = ({
             edges={edges}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
+            nodesDraggable={!pipeline.isRun}
+            nodesConnectable={!pipeline.isRun}
+            elementsSelectable={!pipeline.isRun}
             onNodesChange={(changes) => {
                 onNodesChange(changes);
             }}
