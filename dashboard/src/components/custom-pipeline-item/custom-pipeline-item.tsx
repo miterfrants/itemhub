@@ -35,10 +35,6 @@ const CustomPipelineItem = ({
         // eslint-disable-next-line
     }, [pipelineItemTypes]);
 
-    useEffect(() => {
-        setPipelineItemData(data);
-    }, [data]);
-
     return (
         <div className="custom-pipeline-item px-3 py-5">
             <svg
