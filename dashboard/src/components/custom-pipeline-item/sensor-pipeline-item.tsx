@@ -158,6 +158,7 @@ const SensorPipelineItem = ({
                     defaultPinValue={state?.pin || ''}
                     defaultDeviceId={state?.deviceId || 0}
                     isDisabled={false}
+                    sensorOnly
                     updatePin={(newPin) => {
                         setState({
                             ...state,

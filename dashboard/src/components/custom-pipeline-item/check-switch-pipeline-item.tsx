@@ -95,6 +95,7 @@ const CheckSwitchPipelineItem = ({
                     defaultPinValue={state?.pin || ''}
                     defaultDeviceId={state?.deviceId || 0}
                     isDisabled={false}
+                    switchOnly
                     updatePin={(newPin) => {
                         setState({ ...state, pin: newPin });
                     }}

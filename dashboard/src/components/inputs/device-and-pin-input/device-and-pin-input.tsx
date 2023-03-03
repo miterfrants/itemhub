@@ -6,6 +6,8 @@ import { KeyValuePair } from '@/types/common.type';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { DeviceItem } from '@/types/devices.type';
+import { PIN_TYPES } from '@/constants/device-mode';
+import { selectUniversal } from '@/redux/reducers/universal.reducer';
 
 const DeviceAndPinInputs = ({
     isDeviceNameError,
@@ -18,6 +20,8 @@ const DeviceAndPinInputs = ({
     updatePin,
     updateDeviceId,
     isDisabled,
+    sensorOnly,
+    switchOnly,
 }: {
     isDeviceNameError: boolean;
     defaultDeviceId: number;
@@ -29,9 +33,18 @@ const DeviceAndPinInputs = ({
     updatePin: (pin: string) => void;
     updateDeviceId: (id: number) => void;
     isDisabled: boolean;
+    sensorOnly?: boolean;
+    switchOnly?: boolean;
 }) => {
     const { getAllDevicesApi } = useGetAllDevicesApi();
     const allDevices: DeviceItem[] = useAppSelector(selectDevices).devices;
+    const { deviceModes } = useAppSelector(selectUniversal);
+    const sensorPinType = deviceModes.find(
+        (item) => item.key === PIN_TYPES.SENSOR
+    );
+    const switchPinType = deviceModes.find(
+        (item) => item.key === PIN_TYPES.SWITCH
+    );
     const [deviceId, setDeviceId] = useState(defaultDeviceId);
     const { devicePins, getDevicePinsApi } = useGetDevicePinsApi({
         id: deviceId,
@@ -104,16 +117,27 @@ const DeviceAndPinInputs = ({
                             <option key="not-yet-choose-pins" value="">
                                 請選擇 PIN
                             </option>
-                            {devicePins.map(({ name, pin }, index) => {
-                                return (
-                                    <option
-                                        key={`${name}-${index}`}
-                                        value={pin}
-                                    >
-                                        {name || 'PIN'}
-                                    </option>
-                                );
-                            })}
+                            {devicePins
+                                .filter(
+                                    (item) =>
+                                        (sensorOnly &&
+                                            item.pinType ===
+                                                sensorPinType?.value) ||
+                                        (switchOnly &&
+                                            item.pinType ===
+                                                switchPinType?.value) ||
+                                        (!sensorOnly && !switchOnly)
+                                )
+                                .map(({ name, pin }, index) => {
+                                    return (
+                                        <option
+                                            key={`${name}-${index}`}
+                                            value={pin}
+                                        >
+                                            {name || 'PIN'}
+                                        </option>
+                                    );
+                                })}
                         </>
                     )}
                 </select>
