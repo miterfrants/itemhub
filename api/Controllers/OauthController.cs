@@ -34,7 +34,7 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpGet]
-        public ActionResult<dynamic> getCode([FromQuery(Name = "redirect_uri")] string redirectUri, [FromQuery] string state, [FromQuery(Name = "response_type")] string responseType, [FromQuery(Name = "client_id")] string clientId)
+        public void getCode([FromQuery(Name = "redirect_uri")] string redirectUri, [FromQuery] string state, [FromQuery(Name = "response_type")] string responseType, [FromQuery(Name = "client_id")] string clientId)
         {
             if (responseType != "code")
             {
@@ -54,8 +54,6 @@ namespace Homo.IotApi
             string randomCode = CryptographicHelper.GetSpecificLengthRandomString(20, true, false);
             OauthCodeDataservice.Create(_iotDbContext, new DTOs.OauthCode() { Code = randomCode, ExpiredAt = System.DateTime.Now.AddSeconds(60), ClientId = clientId });
             Response.Redirect($"{redirectUri}?code={randomCode}&state={state}");
-            Response.StatusCode = (int)System.Net.HttpStatusCode.Redirect;
-            return new { code = randomCode };
         }
 
         [SwaggerOperation(
