@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import PageTitle from '@/components/page-title/page-title';
 import pencilIcon from '@/assets/images/pencil.svg';
+import playIcon from '@/assets/images/play.svg';
+import pauseIcon from '@/assets/images/pause.svg';
 import trashIcon from '@/assets/images/trash.svg';
 import Pagination from '@/components/pagination/pagination';
 import ReactTooltip from 'react-tooltip';
@@ -8,6 +10,7 @@ import Spinner from '@/components/spinner/spinner';
 import {
     useDeletePipelinesApi,
     useGetPipelinesApi,
+    useRunOrStopPipelineApi,
 } from '@/hooks/apis/pipelines.hook';
 import { useQuery } from '@/hooks/query.hook';
 import { useEffect, useState } from 'react';
@@ -34,6 +37,9 @@ const Pipelines = () => {
     const [pipelines, setPipelines] = useState(state.pipelines || []);
     const [rowNum, setRowNum] = useState(state.rowNum || 0);
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
+    const [shouldBeTogglePipeline, setShouldBeTogglePipeline] = useState<
+        PipelineType | undefined
+    >(undefined);
     const { isLoading: isGetting, fetchApi: getPipelines } = useGetPipelinesApi(
         {
             page,
@@ -44,6 +50,12 @@ const Pipelines = () => {
 
     const { data: responseOfDelete, fetchApi: deletePipeline } =
         useDeletePipelinesApi([shouldBeDeleteId]);
+
+    // toggle pipeline
+    const { fetchApi: togglePipeline } = useRunOrStopPipelineApi({
+        isRun: shouldBeTogglePipeline ? !shouldBeTogglePipeline.isRun : false,
+        id: shouldBeTogglePipeline ? shouldBeTogglePipeline.id : 0,
+    });
 
     useEffect(() => {
         document.title = 'ItemHub - Pipeline 列表';
@@ -74,6 +86,14 @@ const Pipelines = () => {
         deletePipeline();
         // eslint-disable-next-line
     }, [shouldBeDeleteId]);
+
+    useEffect(() => {
+        if (!shouldBeTogglePipeline) {
+            return;
+        }
+        togglePipeline();
+        // eslint-disable-next-line
+    }, [shouldBeTogglePipeline]);
 
     const deleteOne = (id: number | undefined) => {
         if (!id) {
@@ -124,11 +144,12 @@ const Pipelines = () => {
                         ) : (
                             <div className="mt-3 mt-lg-45">
                                 <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
-                                    <div className="col-10">名稱</div>
+                                    <div className="col-8">名稱</div>
+                                    <div className="col-2">狀態</div>
                                     <div className="col-2">操作</div>
                                 </div>
                                 <div className="pipeline-list">
-                                    {pipelines.map(({ id, title }) => {
+                                    {pipelines.map(({ id, title, isRun }) => {
                                         return (
                                             <div
                                                 className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
@@ -137,15 +158,47 @@ const Pipelines = () => {
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     名稱
                                                 </div>
-                                                <div className="col-10 col-lg-10 p-3 p-lg-0">
+                                                <div className="col-10 col-lg-8 p-3 p-lg-0">
                                                     <div className="fw-bold lh-base mb-2 mb-lg-0">
                                                         {title}
                                                     </div>
                                                 </div>
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                    狀態
+                                                </div>
+                                                <div className="col-10 col-lg-2 p-3 p-lg-0">
+                                                    {isRun ? '執行中' : '暫停'}
+                                                </div>
+                                                <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     操作
                                                 </div>
                                                 <div className="col-10 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
+                                                    <div
+                                                        className="me-4 mb-3"
+                                                        data-tip={
+                                                            isRun
+                                                                ? '暫停'
+                                                                : '執行'
+                                                        }
+                                                        onClick={() => {
+                                                            setShouldBeTogglePipeline(
+                                                                pipelines.find(
+                                                                    (item) =>
+                                                                        item.id ===
+                                                                        id
+                                                                )
+                                                            );
+                                                        }}
+                                                    >
+                                                        <img
+                                                            className="icon"
+                                                            src={
+                                                                isRun
+                                                                    ? pauseIcon
+                                                                    : playIcon
+                                                            }
+                                                        />
+                                                    </div>
                                                     <Link
                                                         className="me-4 mb-3"
                                                         to={`/dashboard/pipelines/${id}?title=${searchTitle}`}
