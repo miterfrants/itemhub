@@ -213,7 +213,7 @@ const Pipeline = () => {
                 <div className="card">
                     <div className="mb-4">
                         <label className="form-label" htmlFor="title">
-                            名稱 {isDirtyForm ? 'true' : 'false'}
+                            名稱
                         </label>
                         <input
                             className={`form-control ${
