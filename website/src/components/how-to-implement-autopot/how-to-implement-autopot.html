@@ -140,7 +140,7 @@
                             新增裝置
                         </li>
                         <li>
-                            將 D2 PIN 腳設定為開關, A0 PIN 腳設定微感測器, 下載程式碼
+                            將 D2 PIN 腳設定為開關, A0 PIN 腳設定微感測器, 下載 Sample Code
                             <img class="w-100 mt-1"
                                 src="/assets/images/how/implement-autopot/how-to-implement-autopot-setup-device.png" />
                         </li>
@@ -176,11 +176,11 @@
                         </li>
 
                         <li>
-                            找到以下的程式碼區塊
+                            找到以下的 Sample Code 區塊
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 int value = digitalRead(pins[i].pin);</pre>
 
-                            改寫成以下程式碼，讀取土壤濕度感測器的類比訊號
+                            改寫成以下 Sample Code ，讀取土壤濕度感測器的類比訊號
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 int value = analogRead(pins[i].pin);</pre>
                         </li>

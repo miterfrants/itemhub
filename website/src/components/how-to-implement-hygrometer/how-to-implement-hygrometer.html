@@ -159,7 +159,7 @@
                             新增裝置
                         </li>
                         <li>
-                            將 IO00 PIN 腳設定為感應器, 下載程式碼
+                            將 IO00 PIN 腳設定為感應器, 下載 Sample Code
                             <img class="w-100 mt-1"
                                 src="/assets/images/how/implement-hygrometer/how-to-implement-hygrometer-setup-device.png" />
                         </li>
@@ -208,13 +208,13 @@ DHT dht(DHTPIN, DHTTYPE); // 建立 dht 物件可以在 setup 和 loop 都呼叫
                             初始化
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 setup() {
-    dht.begin(); // 於 setup 塞入這段程式碼初始化
+    dht.begin(); // 於 setup 塞入這段 Sample Code 初始化
     ........
 }</pre>
                         </li>
 
                         <li>
-                            找到以下的程式碼區塊
+                            找到以下的 Sample Code 區塊
                             <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
 int value = digitalRead(pins[i].pin);
 std::string valueString = std::to_string(value);</pre>
