@@ -74,6 +74,7 @@ namespace Homo.IotApi
                                 if (!System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
                                 {
                                     result = JsonConvert.DeserializeObject<dynamic>(result)[payload.ResponseBodyProperty];
+
                                     if (payload.Operator == TRIGGER_OPERATOR.E && result == payload.Value)
                                     {
                                         return true;

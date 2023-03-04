@@ -205,7 +205,7 @@ const NotificationPipelineItem = ({
                                     phone: undefined,
                                 });
                             }}
-                            value={state?.email}
+                            defaultValue={state?.email}
                         />
                     </label>
                     {validation.email.invalid && (
@@ -233,7 +233,7 @@ const NotificationPipelineItem = ({
                                     email: undefined,
                                 });
                             }}
-                            value={state?.phone}
+                            defaultValue={state?.phone}
                         />
                     </label>
                     {validation.phone.invalid && (
@@ -255,9 +255,8 @@ const NotificationPipelineItem = ({
                             message: event.currentTarget.value,
                         });
                     }}
-                >
-                    {state?.message}
-                </textarea>
+                    defaultValue={state?.message}
+                />
             </label>
             {validation.message.invalid && (
                 <div className="text-danger mt-15 fs-5">

@@ -77,12 +77,14 @@ namespace Homo.IotApi
             string sendGridApiKey,
             string mailTemplatePath,
             string systemEmail,
-            string dbc
+            string dbc,
+            bool isForceRun = false
             )
         {
             var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId);
-            if (!pipeline.IsRun)
+            if (!pipeline.IsRun && isForceRun == false)
             {
+                System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("exit run", Newtonsoft.Json.Formatting.Indented)}");
                 return;
             }
 
