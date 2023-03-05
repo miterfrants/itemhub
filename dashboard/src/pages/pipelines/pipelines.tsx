@@ -175,6 +175,7 @@ const Pipelines = () => {
                                                 <div className="col-10 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
                                                     <div
                                                         className="me-4 mb-3"
+                                                        role="button"
                                                         data-tip={
                                                             isRun
                                                                 ? '暫停'

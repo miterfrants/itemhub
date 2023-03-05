@@ -610,7 +610,7 @@ const DeviceForm = () => {
                                             });
                                             setProtocol(Number(e.target.value));
                                         }}
-                                        value={device?.protocol || 0}
+                                        defaultValue={device?.protocol || 0}
                                     >
                                         <option>請選擇通訊方式</option>
                                         {protocols.map(

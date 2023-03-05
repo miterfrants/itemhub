@@ -155,7 +155,7 @@ const NetworkPipelineItem = ({
                     <option value="POST">POST</option>
                     <option value="PATCH">PATCH</option>
                     <option value="PUT">PUT</option>
-                    <option value="POST">POST</option>
+                    <option value="DELETE">DELETE</option>
                 </select>
             </label>
             {validation.method.invalid && (
