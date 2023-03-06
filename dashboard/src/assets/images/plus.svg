@@ -3,7 +3,9 @@
 <g transform="matrix(0.46 0 0 0.46 20.5 20.5)"  >
 <circle style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: none; fill-rule: nonzero; opacity: 0.45;" vector-effect="non-scaling-stroke"  cx="0" cy="0" r="40" />
 </g>
-<g transform="translate(29,13) scale(0.15) rotate(90)">
-  <path opacity="0.45" d="M39.973720558371 10.703539282395a11 11 0 0 1 19.052558883258 0l38.447441116742 66.59292143521a11 11 0 0 1 -9.5262794416288 16.5l-76.894882233485 0a11 11 0 0 1 -9.5262794416288 -16.5"></path>
+<g opacity="0.45" >
+<rect x="19" y="10" width="2" height="20" />
+<rect x="10" y="19" width="20" height="2" />
 </g>
+
 </svg>
