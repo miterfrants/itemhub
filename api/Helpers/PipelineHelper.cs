@@ -89,7 +89,6 @@ namespace Homo.IotApi
             var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId);
             if (!pipeline.IsRun && isForceRun == false)
             {
-                System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject("exit run", Newtonsoft.Json.Formatting.Indented)}");
                 return;
             }
 

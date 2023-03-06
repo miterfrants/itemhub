@@ -28,6 +28,7 @@ export interface PipelineItemType {
         itemType: number
     ) => void;
     itemTypeKey?: string;
+    isRun?: boolean; // for style
 }
 
 export interface PipelineConnectorType {

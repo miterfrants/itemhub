@@ -172,6 +172,7 @@ const NotificationPipelineItem = ({
                         );
                     }}
                     value={state?.notificationType}
+                    disabled={pipelineItem?.isRun}
                 >
                     <option value="">請選擇通知模式</option>
                     {pipelineNotificationTypes.map((item: UniversalOption) => {
@@ -206,6 +207,7 @@ const NotificationPipelineItem = ({
                                 });
                             }}
                             defaultValue={state?.email}
+                            disabled={pipelineItem?.isRun}
                         />
                     </label>
                     {validation.email.invalid && (
@@ -234,6 +236,7 @@ const NotificationPipelineItem = ({
                                 });
                             }}
                             defaultValue={state?.phone}
+                            disabled={pipelineItem?.isRun}
                         />
                     </label>
                     {validation.phone.invalid && (
@@ -256,6 +259,7 @@ const NotificationPipelineItem = ({
                         });
                     }}
                     defaultValue={state?.message}
+                    disabled={pipelineItem?.isRun}
                 />
             </label>
             {validation.message.invalid && (

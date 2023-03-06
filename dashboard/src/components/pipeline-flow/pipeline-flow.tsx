@@ -115,6 +115,7 @@ export const PipelineFlow = ({
                     debounceChangeNodes(changeNodes);
                 },
                 itemTypeKey: targetType ? targetType.key : null,
+                isRun: pipeline?.isRun,
             },
         };
     };
@@ -401,6 +402,16 @@ export const PipelineFlow = ({
         shouldBeUpdateNodes,
         setDirtyForm,
     ]);
+
+    useEffect(() => {
+        if (
+            pipelineItems.length === 0 ||
+            pipeline?.isRun === pipelineItems[0]?.isRun
+        ) {
+            return;
+        }
+        setNodes(pipelineItems.map(pipelineItemToNode));
+    }, [pipeline]);
 
     return (
         <ReactFlow

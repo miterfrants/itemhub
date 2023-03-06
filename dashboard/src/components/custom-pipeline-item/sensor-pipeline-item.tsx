@@ -157,7 +157,7 @@ const SensorPipelineItem = ({
                     pinLabel="裝置 Pin"
                     defaultPinValue={state?.pin || ''}
                     defaultDeviceId={state?.deviceId || 0}
-                    isDisabled={false}
+                    isDisabled={pipelineItem?.isRun || false}
                     sensorOnly
                     updatePin={(newPin) => {
                         setState({
@@ -194,6 +194,7 @@ const SensorPipelineItem = ({
                                         : undefined,
                             });
                         }}
+                        disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
                         <span className="input-group-text">筆</span>
@@ -212,6 +213,7 @@ const SensorPipelineItem = ({
                             });
                         }}
                         value={state?.staticMethod}
+                        disabled={pipelineItem?.isRun}
                     >
                         <option />
                         {pipelineDeviceStaticMethods.map(
@@ -254,6 +256,7 @@ const SensorPipelineItem = ({
                             });
                         }}
                         value={state?.operator}
+                        disabled={pipelineItem?.isRun}
                     >
                         <option />
                         {triggerOperators.map((operator: UniversalOption) => {
@@ -283,6 +286,7 @@ const SensorPipelineItem = ({
                                         : undefined,
                             });
                         }}
+                        disabled={pipelineItem?.isRun}
                     />
                 </div>
             </label>

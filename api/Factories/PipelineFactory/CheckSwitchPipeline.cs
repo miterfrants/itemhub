@@ -1,12 +1,15 @@
+using System;
 using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 using Homo.Core.Constants;
+using Microsoft.EntityFrameworkCore;
+
 namespace Homo.IotApi
 {
     public class CheckSwitchPipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public CheckSwitchPipeline(IotDbContext dbContext, long ownerId, string rawData)
+        public CheckSwitchPipeline(string DBConnectionString, long ownerId, string rawData)
         {
             CheckSwitchPipeline.ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(previous =>
@@ -16,6 +19,10 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
+                                DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                var dbContext = new IotDbContext(dbContextBuilder.Options);
                                 var payload = CheckSwitchPipeline.ValidateAndGetPayload(rawData);
                                 var pin = DevicePinDataservice.GetOne(dbContext, ownerId, payload.DeviceId.GetValueOrDefault(), PIN_TYPE.SWITCH, payload.Pin);
                                 if (pin.Value == payload.Status)

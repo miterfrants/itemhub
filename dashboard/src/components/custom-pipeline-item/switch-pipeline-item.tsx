@@ -94,7 +94,7 @@ const SwitchPipelineItem = ({
                     pinLabel="裝置 Pin"
                     defaultPinValue={state?.pin || ''}
                     defaultDeviceId={state?.deviceId || 0}
-                    isDisabled={false}
+                    isDisabled={pipelineItem?.isRun || false}
                     switchOnly
                     updatePin={(newPin) => {
                         setState({ ...state, pin: newPin });
@@ -118,6 +118,7 @@ const SwitchPipelineItem = ({
                         });
                     }}
                     value={state?.status}
+                    disabled={pipelineItem?.isRun}
                 >
                     <option />
                     <option value="1">開</option>

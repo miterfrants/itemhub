@@ -54,6 +54,7 @@ const DelayPipelineItem = ({
                                     : event.currentTarget.value
                             );
                         }}
+                        disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
                         <span className="input-group-text">分鐘</span>

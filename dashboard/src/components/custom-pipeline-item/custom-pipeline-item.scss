@@ -3,4 +3,7 @@
     background-color: white;
     border-radius: 40px;
     min-width: 250px;
+    &.runing {
+        background-color: $grey-100;
+    }
 }

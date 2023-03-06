@@ -28,7 +28,7 @@ namespace Homo.IotApi
         {
             if (pipelineItemType == PIPELINE_ITEM_TYPE.CHECK_SWITCH)
             {
-                return new CheckSwitchPipeline(dbContext, ownerId, rawData);
+                return new CheckSwitchPipeline(DBConnectionString, ownerId, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.DELAY)
             {
@@ -49,11 +49,11 @@ namespace Homo.IotApi
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SENSOR)
             {
-                return new SensorPipeline(dbContext, ownerId, rawData);
+                return new SensorPipeline(DBConnectionString, ownerId, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SWITCH)
             {
-                return new SwitchPipeline(dbContext, ownerId, rawData, localMqttPublishers, mqttUsername, mqttPassword);
+                return new SwitchPipeline(DBConnectionString, ownerId, rawData, localMqttPublishers, mqttUsername, mqttPassword);
             }
             else
             {

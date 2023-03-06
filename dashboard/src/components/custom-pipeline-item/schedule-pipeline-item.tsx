@@ -32,6 +32,7 @@ const SchedulePipelineItem = ({
                 <div>Cron Expressions:</div>
                 <input
                     className="form-control"
+                    disabled={pipelineItem?.isRun}
                     type="text"
                     placeholder="Cron Expressions"
                     defaultValue={state}

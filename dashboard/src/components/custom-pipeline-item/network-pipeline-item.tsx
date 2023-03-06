@@ -128,6 +128,7 @@ const NetworkPipelineItem = ({
                         });
                     }}
                     defaultValue={state?.url}
+                    disabled={pipelineItem?.isRun}
                 />
             </label>
             {validation.url.invalid && (
@@ -149,6 +150,7 @@ const NetworkPipelineItem = ({
                         });
                     }}
                     value={state?.method}
+                    disabled={pipelineItem?.isRun}
                 >
                     <option />
                     <option value="GET">GET</option>
@@ -168,6 +170,7 @@ const NetworkPipelineItem = ({
                 <div>Request Payload:</div>
                 <textarea
                     className="form-control"
+                    disabled={pipelineItem?.isRun}
                     onKeyUp={(
                         event: React.KeyboardEvent<HTMLTextAreaElement>
                     ) => {
@@ -190,6 +193,7 @@ const NetworkPipelineItem = ({
                             contentType: event.currentTarget.value,
                         });
                     }}
+                    disabled={pipelineItem?.isRun}
                     value={state?.contentType}
                 >
                     <option />
@@ -229,6 +233,7 @@ const NetworkPipelineItem = ({
                             });
                         }}
                         defaultValue={state?.responseBodyProperty}
+                        disabled={pipelineItem?.isRun}
                     />
                 </label>
             )}
@@ -250,6 +255,7 @@ const NetworkPipelineItem = ({
                                     });
                                 }}
                                 value={state?.operator}
+                                disabled={pipelineItem?.isRun}
                             >
                                 <option />
                                 {triggerOperators.map(
@@ -284,7 +290,8 @@ const NetworkPipelineItem = ({
                                     });
                                 }}
                                 className="form-control"
-                                value={state?.value}
+                                defaultValue={state?.value}
+                                disabled={pipelineItem?.isRun}
                             />
                         </label>
                     </>
