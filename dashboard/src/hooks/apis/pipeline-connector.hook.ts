@@ -49,7 +49,9 @@ export const useCreatePipelineConnector = (payload: PipelineConnectorType) => {
     const dispatch = useAppDispatch();
     const dispatchAppendConnector = useCallback(
         (data: PipelineConnectorType) => {
-            dispatch(pipelineConnectorsActions.updatePipelineConnector(data));
+            dispatch(
+                pipelineConnectorsActions.updatePipelineConnectors([data])
+            );
         },
         // eslint-disable-next-line
         [payload.pipelineId, dispatch]

@@ -33,6 +33,7 @@ import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
 import { PipelineFlowProvider } from '@/components/pipeline-flow/pipeline-flow';
 import { useDebounce } from '@/hooks/debounce.hook';
 import { useBeforeUnload } from '@/hooks/before-unload.hook';
+import usePrompt from '@/hooks/block.hook';
 
 interface ValidationInterface {
     title: { isInvalid: boolean; errorMessage: string[] };
@@ -128,10 +129,13 @@ const Pipeline = () => {
     const back = () => {
         navigate(`/dashboard/pipelines${location.search}`);
     };
+
     useBeforeUnload({
         when: isDirtyForm,
         message: '資料還未儲存確定要離開頁面?',
     });
+
+    usePrompt('資料還未儲存確定要離開頁面?', isDirtyForm);
 
     useEffect(() => {
         const pipeline =
@@ -271,6 +275,9 @@ const Pipeline = () => {
                                         pipelineItems={pipelineItems}
                                         pipelineConnectors={pipelineConnectors}
                                         pipelineItemTypes={pipelineItemTypes}
+                                        setDirtyForm={(isDirty: boolean) => {
+                                            setIsDirtyForm(isDirty);
+                                        }}
                                     />
                                 )}
                         </div>

@@ -49,11 +49,13 @@ export const PipelineFlow = ({
     pipelineItems,
     pipelineConnectors,
     pipelineItemTypes,
+    setDirtyForm,
 }: {
     pipeline: PipelineType;
     pipelineItems: PipelineItemType[];
     pipelineConnectors: PipelineConnectorType[];
     pipelineItemTypes: UniversalOption[];
+    setDirtyForm: (dirty: boolean) => void;
 }) => {
     const reactFlowInstance = useReactFlow();
     const compareItem = (
@@ -308,7 +310,7 @@ export const PipelineFlow = ({
                 (item) => item.id !== shouldBeDeleteConnector?.id
             )
         );
-        setShouldBeCreateConnector(null);
+        setShouldBeDeleteConnector(null);
         // eslint-disable-next-line
     }, [respOfDeleteConnector]);
 
@@ -369,11 +371,49 @@ export const PipelineFlow = ({
             return;
         }
         const newShouldBeUpdateNodes = shouldBeUpdateNodes?.filter(
-            (node) => node.id !== shouldBeUpdateNode?.id?.toString()
+            (node) => node.id !== shouldBeUpdateNode?.id
         );
+
+        setShouldBeUpdateNode(null);
         setShouldBeUpdateNodes(newShouldBeUpdateNodes || []);
         // eslint-disable-next-line
     }, [respOfUpdatePipelineItem]);
+
+    // dirty form
+
+    useEffect(() => {
+        let isDirty = false;
+        console.log('shouldBeCreateConnector', shouldBeCreateConnector);
+        console.log('shouldBeDeleteConnector', shouldBeDeleteConnector);
+        console.log('shouldBeCreateConnector', shouldBeCreateConnector);
+        console.log('shouldBeCreatePipelineItem', shouldBeCreatePipelineItem);
+        console.log('shouldBeDeleteId', shouldBeDeleteId);
+        console.log('shouldBeDeleteIds', shouldBeDeleteIds);
+        console.log('shouldBeUpdateNode', shouldBeUpdateNode);
+        console.log('shouldBeUpdateNodes', shouldBeUpdateNodes);
+        if (
+            shouldBeDeleteConnector ||
+            shouldBeCreateConnector ||
+            shouldBeCreatePipelineItem ||
+            shouldBeDeleteId ||
+            (shouldBeDeleteIds && shouldBeDeleteIds.length > 0) ||
+            shouldBeUpdateNode ||
+            (shouldBeUpdateNodes && shouldBeUpdateNodes?.length > 0)
+        ) {
+            isDirty = true;
+        }
+        console.log('isDirty', isDirty);
+        setDirtyForm(isDirty);
+    }, [
+        shouldBeDeleteConnector,
+        shouldBeCreateConnector,
+        shouldBeCreatePipelineItem,
+        shouldBeDeleteId,
+        shouldBeDeleteIds,
+        shouldBeUpdateNode,
+        shouldBeUpdateNodes,
+        setDirtyForm,
+    ]);
 
     return (
         <ReactFlow

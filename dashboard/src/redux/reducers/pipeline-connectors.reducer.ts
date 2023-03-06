@@ -10,7 +10,7 @@ export const pipelineConnectorsSlice = createSlice({
             state,
             action: PayloadAction<PipelineConnectorType[]>
         ) => {
-            const pipelineConnectors = action.payload;
+            const pipelineConnectors = [...action.payload];
             const oldItems: PipelineConnectorType[] = (
                 state ? [...state] : []
             ) as PipelineConnectorType[];
@@ -40,31 +40,6 @@ export const pipelineConnectorsSlice = createSlice({
                 });
 
             return [...updatedOldItems, ...newPipelineConnectorsExcludedExists];
-        },
-        updatePipelineConnector: (
-            state,
-            action: PayloadAction<Partial<PipelineConnectorType>>
-        ) => {
-            const pipelineConnectors = state;
-            const newItem = action.payload;
-
-            if (pipelineConnectors === null) {
-                throw new Error(
-                    'Can not updatePin when pipelineConnectors is null.'
-                );
-            }
-
-            const newPipelineConnectors = [...pipelineConnectors];
-
-            const targetIndex = newPipelineConnectors.findIndex(
-                (item) => item.id === newItem.id
-            );
-            newPipelineConnectors[targetIndex] = {
-                ...newPipelineConnectors[targetIndex],
-                ...newItem,
-            };
-
-            return newPipelineConnectors;
         },
         deleteMultiple: (
             state,
