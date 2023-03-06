@@ -60,6 +60,11 @@ namespace Homo.IotApi
             {
                 throw new CustomException(ERROR_CODE.INVALID_PIPELINE_ITEM_TYPE_IN_MID, System.Net.HttpStatusCode.BadRequest);
             }
+
+            if (pipelineItems.Where(x => x.ItemType == PIPELINE_ITEM_TYPE.SCHEDULE && endIds.Contains(x.Id)).Count() > 0)
+            {
+                throw new CustomException(ERROR_CODE.INVALID_PIPELINE_ITEM_TYPE_SCHEDULE_IN_END, System.Net.HttpStatusCode.BadRequest);
+            }
         }
 
         public static void Execute(

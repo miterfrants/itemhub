@@ -383,14 +383,6 @@ export const PipelineFlow = ({
 
     useEffect(() => {
         let isDirty = false;
-        console.log('shouldBeCreateConnector', shouldBeCreateConnector);
-        console.log('shouldBeDeleteConnector', shouldBeDeleteConnector);
-        console.log('shouldBeCreateConnector', shouldBeCreateConnector);
-        console.log('shouldBeCreatePipelineItem', shouldBeCreatePipelineItem);
-        console.log('shouldBeDeleteId', shouldBeDeleteId);
-        console.log('shouldBeDeleteIds', shouldBeDeleteIds);
-        console.log('shouldBeUpdateNode', shouldBeUpdateNode);
-        console.log('shouldBeUpdateNodes', shouldBeUpdateNodes);
         if (
             shouldBeDeleteConnector ||
             shouldBeCreateConnector ||
@@ -402,7 +394,6 @@ export const PipelineFlow = ({
         ) {
             isDirty = true;
         }
-        console.log('isDirty', isDirty);
         setDirtyForm(isDirty);
     }, [
         shouldBeDeleteConnector,
