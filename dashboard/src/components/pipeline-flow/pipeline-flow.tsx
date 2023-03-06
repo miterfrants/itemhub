@@ -415,6 +415,7 @@ export const PipelineFlow = ({
                 onNodesChange(changes);
             }}
             onNodeDragStop={(event: React.MouseEvent, dropNode: Node) => {
+                setDirtyForm(true);
                 const changeNodes = reactFlowInstance
                     .getNodes()
                     .filter((node) => node.id === dropNode.id)
@@ -432,6 +433,7 @@ export const PipelineFlow = ({
             }}
             onEdgesChange={onEdgesChange}
             onConnect={(params) => {
+                setDirtyForm(true);
                 setShouldBeCreateConnector({
                     pipelineId: id || 0,
                     sourcePipelineItemId: Number(params.source),
@@ -439,6 +441,7 @@ export const PipelineFlow = ({
                 });
             }}
             onEdgesDelete={(params) => {
+                setDirtyForm(true);
                 setShouldBeDeleteConnectors(
                     params.map((param) => ({
                         pipelineId: id || 0,
@@ -447,6 +450,7 @@ export const PipelineFlow = ({
                 );
             }}
             onNodesDelete={(params) => {
+                setDirtyForm(true);
                 setShouldBeDeleteIds(params.map((param) => Number(param.id)));
             }}
         >
