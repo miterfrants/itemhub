@@ -36,36 +36,36 @@ namespace Homo.IotApi
         {
             if (System.String.IsNullOrEmpty(rawData))
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             var payload = JsonConvert.DeserializeObject<SensorPipelinePayload>(rawData);
             if (payload.DeviceId == null)
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_DEVICE_ID_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_DEVICE_ID_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             if (System.String.IsNullOrEmpty(payload.Pin))
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_PIN_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PIN_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.LastRows == null)
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_LAST_ROWS_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_LAST_ROWS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.StaticMethod == null)
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_STATIC_METHOD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_STATIC_METHOD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.Operator == null)
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_OPERATOR_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_OPERATOR_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.Threshold == null)
             {
-                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_PAYLOAD_THRESHOLD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SENSOR_PIPELINE_INVALID_THRESHOLD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             return payload;

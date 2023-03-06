@@ -196,7 +196,7 @@ namespace Homo.IotApi
 
                 if (pipelineItems.Count > 10)
                 {
-                    throw new CustomException(ERROR_CODE.PIPELINE_ITEMS_BIGGER_THAN_TEN, System.Net.HttpStatusCode.BadRequest);
+                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN, System.Net.HttpStatusCode.BadRequest);
                 }
 
                 PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, true, pipelineHead.ItemType, deviceId, devicePin);

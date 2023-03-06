@@ -39,31 +39,31 @@ namespace Homo.IotApi
         {
             if (System.String.IsNullOrEmpty(rawData))
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             var payload = JsonConvert.DeserializeObject<NotificationPipelinePayload>(rawData);
             if (payload.NotificationType == null)
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_NOTIFICATION_TYPE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_NOTIFICATION_TYPE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.EMAIL && System.String.IsNullOrEmpty(payload.Email))
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_EMAIL_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_EMAIL_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.SMS && System.String.IsNullOrEmpty(payload.Phone))
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_PHONE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PHONE_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (System.String.IsNullOrEmpty(payload.Message))
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_MESSAGE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_MESSAGE_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.Message.Length > 50)
             {
-                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_PAYLOAD_MESSAGE_MAX_LENGTH_50, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NOTIFICATION_PIPELINE_INVALID_MESSAGE_TOO_LONG_50, System.Net.HttpStatusCode.BadRequest);
             }
             return payload;
         }

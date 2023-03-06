@@ -30,21 +30,21 @@ namespace Homo.IotApi
         {
             if (System.String.IsNullOrEmpty(rawData))
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             var payload = JsonConvert.DeserializeObject<SwitchPipelinePayload>(rawData);
             if (payload.DeviceId == null)
             {
-                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_DEVICE_ID_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_DEVICE_ID_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             if (System.String.IsNullOrEmpty(payload.Pin))
             {
-                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_PIN_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_PIN_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.Status == null)
             {
-                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_PIN_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_STATUS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             return payload;
         }

@@ -19,7 +19,7 @@ namespace Homo.IotApi
             // pipeline 不允許沒有頭
             if (sourceItems.Count == 0)
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_COULD_NOT_ALLOW_WITHOUT_HEAD, System.Net.HttpStatusCode.BadRequest);
             }
             return sourceItems[0];
         }
@@ -43,7 +43,7 @@ namespace Homo.IotApi
                 || head.ItemType == PIPELINE_ITEM_TYPE.NETWORK
             )
             {
-                throw new CustomException(ERROR_CODE.UNALLOW_PIPELINE_HEAD_TYPE, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_HEAD_TYPE, System.Net.HttpStatusCode.BadRequest);
             }
 
             // NOTIFICATION, SWITCH, SCHEDULE 不能出現在中間
@@ -58,12 +58,12 @@ namespace Homo.IotApi
 
             if (notInEnds.Count() > 0)
             {
-                throw new CustomException(ERROR_CODE.INVALID_PIPELINE_ITEM_TYPE_IN_MID, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_ITEM_TYPE_IN_MID, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (pipelineItems.Where(x => x.ItemType == PIPELINE_ITEM_TYPE.SCHEDULE && endIds.Contains(x.Id)).Count() > 0)
             {
-                throw new CustomException(ERROR_CODE.INVALID_PIPELINE_ITEM_TYPE_SCHEDULE_IN_END, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_SCHEDULE_IN_END, System.Net.HttpStatusCode.BadRequest);
             }
         }
 

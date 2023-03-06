@@ -26,13 +26,13 @@ namespace Homo.IotApi
         {
             if (System.String.IsNullOrEmpty(rawData))
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             int minutes = 0;
             bool isValid = System.Int32.TryParse(rawData, out minutes);
             if (!isValid)
             {
-                throw new CustomException(ERROR_CODE.SWITCH_PIPELINE_INVALID_PAYLOAD_DEVICE_ID_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.DELAY_PIPELINE_INVALID, System.Net.HttpStatusCode.BadRequest);
             }
             return minutes;
         }

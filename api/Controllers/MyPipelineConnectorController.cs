@@ -48,12 +48,12 @@ namespace Homo.IotApi
             bool pipelineConnectorExists = PipelineConnectorDataservice.GetRowNums(_dbContext, ownerId, pipelineId, dto.DestPipelineItemId, dto.SourcePipelineItemId) >= 1;
             if (pipelineConnectorExists)
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_INFINITY_LOOP, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_INFINITY_LOOP, System.Net.HttpStatusCode.BadRequest);
             }
             pipelineConnectorExists = PipelineConnectorDataservice.GetRowNums(_dbContext, ownerId, pipelineId, dto.SourcePipelineItemId, dto.DestPipelineItemId) >= 1;
             if (pipelineConnectorExists)
             {
-                throw new CustomException(ERROR_CODE.PIPELINE_CONNECTOR_EXISTS, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_CONNECTOR_EXISTS, System.Net.HttpStatusCode.BadRequest);
             }
             PipelineConnector rewRecord = PipelineConnectorDataservice.Create(_dbContext, ownerId, dto);
             return rewRecord;

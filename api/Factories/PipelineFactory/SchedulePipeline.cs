@@ -79,14 +79,14 @@ namespace Homo.IotApi
         {
             if (System.String.IsNullOrEmpty(cronExpression))
             {
-                throw new CustomException(ERROR_CODE.SCHEDULE_PIPELINE_INVALID_PAYLOAD_VALUE_IS_REQUIRED);
+                throw new CustomException(ERROR_CODE.SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED);
             }
 
             var next = CronExpression.Parse(cronExpression).GetNextOccurrence(System.DateTimeOffset.Now, System.TimeZoneInfo.Local);
             if (next == null || !next.HasValue)
             {
                 // todo: change exception 
-                throw new CustomException(ERROR_CODE.SCHEDULE_PIPELINE_INVALID_PAYLOAD_VALUE_IS_REQUIRED);
+                throw new CustomException(ERROR_CODE.SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED);
             }
 
             return next;
