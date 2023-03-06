@@ -147,7 +147,7 @@ const Device = () => {
         dispatch(
             dialogActions.open({
                 message: `下載後舊有裝置將無法使用，請確認是否下載？`,
-                title: '下載 Sample Code ',
+                title: '下載範例程式碼',
                 type: DialogTypeEnum.CONFIRM,
                 callback: bundleFirmware,
             })
@@ -177,7 +177,7 @@ const Device = () => {
                 primaryButtonCallback={jumpToEditPage}
                 secondaryButtonIcon={downloadIcon}
                 secondaryButtonVisible
-                secondaryButtonWording="下載 Sample Code "
+                secondaryButtonWording="下載範例程式碼"
                 secondaryButtonCallback={bundleDevice}
                 thirdlyButtonIcon={trashIcon}
                 thirdlyButtonVisible

@@ -153,7 +153,7 @@ const Devices = () => {
         dispatch(
             dialogActions.open({
                 message: `下載後舊有裝置將無法使用，請確認是否下載？`,
-                title: '下載 Sample Code ',
+                title: '下載範例程式碼',
                 type: DialogTypeEnum.CONFIRM,
                 callback: () => {
                     setShouldBeBundledId(id);
@@ -322,7 +322,7 @@ const Devices = () => {
                                                                     id
                                                                 );
                                                             }}
-                                                            data-tip="下載 Sample Code "
+                                                            data-tip="下載範例程式碼"
                                                         >
                                                             {isFirmwarePrepare &&
                                                             shouldBeBundledId ===
