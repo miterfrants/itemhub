@@ -28,6 +28,10 @@ namespace Homo.IotApi
 
         public static SwitchPipelinePayload ValidateAndGetPayload(string rawData)
         {
+            if (System.String.IsNullOrEmpty(rawData))
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
             var payload = JsonConvert.DeserializeObject<SwitchPipelinePayload>(rawData);
             if (payload.DeviceId == null)
             {

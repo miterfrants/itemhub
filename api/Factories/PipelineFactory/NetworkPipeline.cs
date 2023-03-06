@@ -105,6 +105,10 @@ namespace Homo.IotApi
         }
         public static NetworkPipelinePayload ValidateAndGetPayload(string rawData)
         {
+            if (System.String.IsNullOrEmpty(rawData))
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
             var payload = JsonConvert.DeserializeObject<NetworkPipelinePayload>(rawData);
             if (System.String.IsNullOrEmpty(payload.Url))
             {

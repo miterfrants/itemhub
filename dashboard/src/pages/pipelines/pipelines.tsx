@@ -52,7 +52,11 @@ const Pipelines = () => {
         useDeletePipelinesApi([shouldBeDeleteId]);
 
     // toggle pipeline
-    const { fetchApi: togglePipeline } = useRunOrStopPipelineApi({
+    const {
+        fetchApi: togglePipeline,
+        error: errorOfToggle,
+        data: respOfToggle,
+    } = useRunOrStopPipelineApi({
         isRun: shouldBeTogglePipeline ? !shouldBeTogglePipeline.isRun : false,
         id: shouldBeTogglePipeline ? shouldBeTogglePipeline.id : 0,
     });
@@ -66,6 +70,20 @@ const Pipelines = () => {
         getPipelines();
         // eslint-disable-next-line
     }, [query, page, refreshFlag]);
+
+    useEffect(() => {
+        if (!respOfToggle) {
+            return;
+        }
+        setShouldBeTogglePipeline(undefined);
+    }, [respOfToggle]);
+
+    useEffect(() => {
+        if (!errorOfToggle) {
+            return;
+        }
+        setShouldBeTogglePipeline(undefined);
+    }, [errorOfToggle]);
 
     useEffect(() => {
         if (responseOfDelete?.status === RESPONSE_STATUS.OK) {

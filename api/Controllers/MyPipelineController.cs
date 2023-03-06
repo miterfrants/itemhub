@@ -207,7 +207,7 @@ namespace Homo.IotApi
                     {
                         PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
                     }
-                    catch (System.Exception ex)
+                    catch (CustomException ex)
                     {
                         PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, false, pipelineHead.ItemType, deviceId, devicePin);
                         throw ex;

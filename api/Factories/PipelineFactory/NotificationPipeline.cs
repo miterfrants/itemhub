@@ -37,6 +37,10 @@ namespace Homo.IotApi
 
         public static NotificationPipelinePayload ValidateAndGetPayload(string rawData)
         {
+            if (System.String.IsNullOrEmpty(rawData))
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
             var payload = JsonConvert.DeserializeObject<NotificationPipelinePayload>(rawData);
             if (payload.NotificationType == null)
             {

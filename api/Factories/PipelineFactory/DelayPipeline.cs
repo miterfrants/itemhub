@@ -24,6 +24,10 @@ namespace Homo.IotApi
 
         public static int ValidateAndGetPayload(string rawData)
         {
+            if (System.String.IsNullOrEmpty(rawData))
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_PAYLOAD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
             int minutes = 0;
             bool isValid = System.Int32.TryParse(rawData, out minutes);
             if (!isValid)
