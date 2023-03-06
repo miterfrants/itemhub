@@ -18,6 +18,6 @@ export const menuSlice = createSlice({
 
 export const menuActions = menuSlice.actions;
 
-export const selectMenu = (state: RootState) => state;
+export const selectMenu = (state: RootState) => state.menu;
 
 export default menuSlice.reducer;

@@ -13,7 +13,7 @@ import lineUs from '@/assets/images/icon-line.png';
 import { useState, useEffect } from 'react';
 
 const Header = () => {
-    const isOpen = useAppSelector(selectMenu).menu.isOpen;
+    const isOpen = useAppSelector(selectMenu).isOpen;
     const dispatch = useAppDispatch();
     const [menuBlockClassName, setMenuBlockClassName] = useState('d-none');
     const location = useLocation();

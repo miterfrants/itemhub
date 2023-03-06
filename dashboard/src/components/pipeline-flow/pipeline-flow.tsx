@@ -19,7 +19,7 @@ import {
     PipelineType,
 } from '@/types/pipeline.type';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     useCreatePipelineItem,
     useDeletePipelineItem,
@@ -127,14 +127,10 @@ export const PipelineFlow = ({
             animated: true,
         } as any;
     };
+
     const [nodes, setNodes, onNodesChange] = useNodesState(
         pipelineItems.map(pipelineItemToNode)
     );
-
-    useEffect(() => {
-        setNodes(pipelineItems.map(pipelineItemToNode));
-        // eslint-disable-next-line
-    }, [pipelineItems]);
 
     const [edges, setEdges, onEdgesChange] = useEdgesState(
         pipelineConnectors.map(pipelineConnectorToEdge)

@@ -7,7 +7,10 @@ import {
     useGetPipelineApi,
 } from '@/hooks/apis/pipelines.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
-import { selectPipelines } from '@/redux/reducers/pipelines.reducer';
+import {
+    pipelinesActions,
+    selectPipelines,
+} from '@/redux/reducers/pipelines.reducer';
 import {
     PipelineConnectorType,
     PipelineItemType,
