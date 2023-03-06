@@ -7,10 +7,7 @@ import {
     useGetPipelineApi,
 } from '@/hooks/apis/pipelines.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
-import {
-    pipelinesActions,
-    selectPipelines,
-} from '@/redux/reducers/pipelines.reducer';
+import { selectPipelines } from '@/redux/reducers/pipelines.reducer';
 import {
     PipelineConnectorType,
     PipelineItemType,
@@ -281,6 +278,7 @@ const Pipeline = () => {
                                         setDirtyForm={(isDirty: boolean) => {
                                             setIsDirtyForm(isDirty);
                                         }}
+                                        isDirty={isDirtyForm}
                                     />
                                 )}
                         </div>

@@ -19,7 +19,7 @@ import {
     PipelineType,
 } from '@/types/pipeline.type';
 import { useParams } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     useCreatePipelineItem,
     useDeletePipelineItem,
@@ -36,6 +36,9 @@ import plusIcon from '/src/assets/images/plus.svg';
 import playIcon from '@/assets/images/play.svg';
 import pauseIcon from '@/assets/images/pause.svg';
 
+import disabledPlusIcon from '/src/assets/images/plus-disabled.svg';
+import disabledPlayIcon from '@/assets/images/play-disabled.svg';
+
 const nodeTypes = {
     custom: CustomPipelineItem,
 };
@@ -50,12 +53,14 @@ export const PipelineFlow = ({
     pipelineConnectors,
     pipelineItemTypes,
     setDirtyForm,
+    isDirty,
 }: {
     pipeline: PipelineType;
     pipelineItems: PipelineItemType[];
     pipelineConnectors: PipelineConnectorType[];
     pipelineItemTypes: UniversalOption[];
     setDirtyForm: (dirty: boolean) => void;
+    isDirty: boolean;
 }) => {
     const reactFlowInstance = useReactFlow();
     const compareItem = (
@@ -404,17 +409,16 @@ export const PipelineFlow = ({
     ]);
 
     useEffect(() => {
-        if (
-            pipelineItems.length === 0 ||
-            pipeline?.isRun === pipelineItems[0]?.isRun
-        ) {
+        if (nodes.length === 0 || pipeline?.isRun === nodes[0]?.data.isRun) {
             return;
         }
         setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
     }, [pipeline]);
 
     return (
         <ReactFlow
+            className="pipeline-flow"
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
@@ -469,6 +473,9 @@ export const PipelineFlow = ({
                 <div className="d-flex">
                     <div
                         onClick={() => {
+                            if (isDirty) {
+                                return;
+                            }
                             const nodes = reactFlowInstance.getNodes();
                             const lastNode = nodes[nodes.length - 1];
                             setShouldBeCreatePipelineItem({
@@ -487,19 +494,29 @@ export const PipelineFlow = ({
                             });
                         }}
                         role="button"
-                        className="d-flex align-items-center"
+                        className={`d-flex align-items-center ${
+                            isDirty ? 'cursor-na' : ''
+                        }`}
                         style={{
                             width: '40px',
                             height: '40px',
                         }}
                     >
-                        <img className="icon" src={plusIcon} />
+                        <img
+                            className="icon"
+                            src={isDirty ? disabledPlusIcon : plusIcon}
+                        />
                     </div>
                     <div
                         onClick={() => {
+                            if (isDirty) {
+                                return;
+                            }
                             togglePipeline();
                         }}
-                        className="d-flex align-items-center rounded ms-2"
+                        className={`d-flex align-items-center rounded ms-2 ${
+                            isDirty ? 'cursor-na' : ''
+                        }`}
                         style={{
                             width: '40px',
                             height: '40px',
@@ -508,7 +525,13 @@ export const PipelineFlow = ({
                     >
                         <img
                             className="icon"
-                            src={pipeline?.isRun ? pauseIcon : playIcon}
+                            src={
+                                isDirty
+                                    ? disabledPlayIcon
+                                    : pipeline?.isRun
+                                    ? pauseIcon
+                                    : playIcon
+                            }
                         />
                     </div>
                 </div>
