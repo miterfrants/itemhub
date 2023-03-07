@@ -48,6 +48,7 @@
   "PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN": "Pipeline 元件超過 10 個",
   "PIPELINE_INVALID_ITEM_TYPE_IN_MID": "通知, 開關, 排程這三種類型不允許出現在中間",
   "PIPELINE_INVALID_TYPE_SCHEDULE_IN_END": "排程不允許出現在結尾",
+  "PIPELINE_INVALID_TYPE_OFFLINE_IN_END": "裝置下線不允許出現在結尾",
   "PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD": "Pipeline 不允許多個起始元件",
   "PIPELINE_COULD_NOT_ALLOW_WITHOUT_HEAD": "Pipeline 不允許沒有起始元件",
   "NOT_ALLOW_PIPELINE_TYPE": "不允許的 Pipeline 類型",
