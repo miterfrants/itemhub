@@ -78,37 +78,45 @@ namespace Homo.IotApi
                 .OrderByDescending(x => x.CreatedAt)
                 .Skip((page - 1) * limit)
                 .Take(limit);
-            if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MAX)
+            decimal? result = null;
+            try
             {
-                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Max(x => x.Value)).FirstOrDefault();
+                if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MAX)
+                {
+                    result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Max(x => x.Value)).FirstOrDefault();
+                }
+                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MIN)
+                {
+                    result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Min(x => x.Value)).FirstOrDefault();
+                }
+                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.AVG)
+                {
+                    result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Average(x => x.Value)).FirstOrDefault();
+                }
+                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.SUM)
+                {
+                    result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Sum(x => x.Value)).FirstOrDefault();
+                }
+                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MID)
+                {
+                    var tempResult = query.Select(x => x.Value).ToList().OrderBy(x => x).ToList();
+                    result = tempResult[tempResult.Count / 2];
+                }
+                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.STD)
+                {
+                    var data = query.Select(x => (decimal)x.Value).ToList();
+                    var avg = data.Average();
+                    decimal sumOfSquaresOfDifferences = data.Select(val => (val - avg) * (val - avg)).Sum();
+                    decimal sd = (decimal)Math.Sqrt((double)(sumOfSquaresOfDifferences / data.Count));
+                    result = sd;
+                }
             }
-            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MIN)
+            catch (System.Exception ex)
             {
-                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Min(x => x.Value)).FirstOrDefault();
+                System.Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(ex, Newtonsoft.Json.Formatting.Indented)}");
+                return null;
             }
-            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.AVG)
-            {
-                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Average(x => x.Value)).FirstOrDefault();
-            }
-            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.SUM)
-            {
-                return query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Sum(x => x.Value)).FirstOrDefault();
-            }
-            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MID)
-            {
-                var result = query.Select(x => x.Value).ToList().OrderBy(x => x).ToList();
-                return result[result.Count / 2];
-            }
-            else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.STD)
-            {
-                var data = query.Select(x => (decimal)x.Value).ToList();
-                var avg = data.Average();
-                decimal sumOfSquaresOfDifferences = data.Select(val => (val - avg) * (val - avg)).Sum();
-                decimal sd = (decimal)Math.Sqrt((double)(sumOfSquaresOfDifferences / data.Count));
-                return sd;
-            }
-            return null;
-
+            return result;
         }
 
 

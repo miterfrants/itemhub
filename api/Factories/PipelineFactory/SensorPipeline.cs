@@ -15,27 +15,39 @@ namespace Homo.IotApi
             ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(previous =>
                             {
+                                System.Console.WriteLine($"sensor:{Newtonsoft.Json.JsonConvert.SerializeObject(rawData, Newtonsoft.Json.Formatting.Indented)}");
                                 if (!previous)
                                 {
                                     return false;
                                 }
-                                var payload = ValidateAndGetPayload(rawData);
-                                DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
-                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
-                                dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
-                                var dbContext = new IotDbContext(dbContextBuilder.Options);
-                                decimal? categorizedValue = categorizedValue = SensorLogDataservice.GetAggregateValue(dbContext, ownerId, payload.DeviceId.GetValueOrDefault(), payload.Pin, payload.StaticMethod.GetValueOrDefault(), 1, payload.LastRows.GetValueOrDefault()).Value;
-                                if (
-                                    payload.Operator == TRIGGER_OPERATOR.B && categorizedValue > payload.Threshold
-                                    || payload.Operator == TRIGGER_OPERATOR.BE && categorizedValue >= payload.Threshold
-                                    || payload.Operator == TRIGGER_OPERATOR.E && categorizedValue == payload.Threshold
-                                    || payload.Operator == TRIGGER_OPERATOR.L && categorizedValue < payload.Threshold
-                                    || payload.Operator == TRIGGER_OPERATOR.LE && categorizedValue <= payload.Threshold
-                                )
+                                try
                                 {
-                                    return true;
+                                    var payload = ValidateAndGetPayload(rawData);
+                                    DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                    var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                    dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                    var dbContext = new IotDbContext(dbContextBuilder.Options);
+                                    decimal? categorizedValue = SensorLogDataservice.GetAggregateValue(dbContext, ownerId, payload.DeviceId.GetValueOrDefault(), payload.Pin, payload.StaticMethod.GetValueOrDefault(), 1, payload.LastRows.GetValueOrDefault());
+                                    if (
+                                        categorizedValue != null && (
+                                        payload.Operator == TRIGGER_OPERATOR.B && categorizedValue > payload.Threshold
+                                        || payload.Operator == TRIGGER_OPERATOR.BE && categorizedValue >= payload.Threshold
+                                        || payload.Operator == TRIGGER_OPERATOR.E && categorizedValue == payload.Threshold
+                                        || payload.Operator == TRIGGER_OPERATOR.L && categorizedValue < payload.Threshold
+                                        || payload.Operator == TRIGGER_OPERATOR.LE && categorizedValue <= payload.Threshold
+                                        )
+                                    )
+                                    {
+                                        return true;
+                                    }
+                                    return false;
                                 }
-                                return false;
+                                catch (System.Exception ex)
+                                {
+                                    System.Console.WriteLine($"Error When Sensor Pipeline:{Newtonsoft.Json.JsonConvert.SerializeObject(ex, Newtonsoft.Json.Formatting.Indented)}");
+                                    throw;
+                                }
+
                             });
         }
 
