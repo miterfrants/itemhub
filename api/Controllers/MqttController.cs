@@ -213,7 +213,7 @@ namespace Homo.IotApi
                 }
                 else if (isDeviceState)
                 {
-                    DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+                    DeviceStateHelper.Create(iotDbContext, _dbc, ownerId, deviceId, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers);
                 }
                 iotDbContext.Dispose();
                 dbContext.Dispose();
