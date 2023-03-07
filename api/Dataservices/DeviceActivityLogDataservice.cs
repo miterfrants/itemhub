@@ -6,9 +6,9 @@ namespace Homo.IotApi
 {
     public class DeviceActivityLogDataservice
     {
-        public static int GetRowNumThis15Seconds(IotDbContext dbContext, long ownerId, long deviceId)
+        public static int GetRowNumThis60Seconds(IotDbContext dbContext, long ownerId, long deviceId)
         {
-            var determinOnlinLastDate = DateTime.Now.AddSeconds(-16);
+            var determinOnlinLastDate = DateTime.Now.AddSeconds(-60);
             return dbContext.DeviceActivityLog.Where(x =>
                 x.DeletedAt == null
                 && x.DeviceId == deviceId
