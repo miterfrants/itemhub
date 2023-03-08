@@ -40,7 +40,7 @@ const DelayPipelineItem = ({
                 <div>Delay 時間:</div>
                 <div className="input-group">
                     <input
-                        className="form-control"
+                        className="form-control nodrag"
                         type="number"
                         placeholder=""
                         defaultValue={state}
