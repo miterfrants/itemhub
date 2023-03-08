@@ -19,7 +19,7 @@ import {
     PipelineType,
 } from '@/types/pipeline.type';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     useCreatePipelineItem,
     useDeletePipelineItem,
@@ -115,6 +115,10 @@ export const PipelineFlow = ({
                                     ...item.data,
                                     value: newValue,
                                     itemType: newItemType,
+                                    itemTypeKey: pipelineItemTypes.find(
+                                        (itemType) =>
+                                            itemType.value === newItemType
+                                    )?.key,
                                 } as PipelineItemType)
                         );
                     debounceChangeNodes(changeNodes);
@@ -186,6 +190,11 @@ export const PipelineFlow = ({
         }
         // eslint-disable-next-line
     }, [respOfDeletePipelineItem]);
+
+    useEffect(() => {
+        setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
+    }, [pipelineItems]);
 
     // toggle pipeline
     const { fetchApi: togglePipeline } = useRunOrStopPipelineApi({
@@ -544,9 +553,13 @@ export const PipelineFlow = ({
 };
 
 export const PipelineFlowProvider = (props: any) => {
-    return (
-        <ReactFlowProvider>
-            <PipelineFlow {...props} />
-        </ReactFlowProvider>
+    return useMemo(
+        () => (
+            <ReactFlowProvider>
+                <PipelineFlow {...props} />
+            </ReactFlowProvider>
+        ),
+        // eslint-disable-next-line
+        []
     );
 };

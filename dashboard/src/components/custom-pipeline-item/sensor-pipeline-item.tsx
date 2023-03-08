@@ -145,7 +145,7 @@ const SensorPipelineItem = ({
         onChangedCallback(JSON.stringify(state));
         // eslint-disable-next-line
     }, [state]);
-
+    console.log('sensor-pipeline-item: rerender');
     return (
         <div className="sensor-pipeline-item">
             <label className="mt-3 d-block">
@@ -182,7 +182,6 @@ const SensorPipelineItem = ({
                     <input
                         defaultValue={state?.lastRows}
                         className="form-control"
-                        type="number"
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
