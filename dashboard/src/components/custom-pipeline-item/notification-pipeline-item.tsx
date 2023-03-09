@@ -260,6 +260,8 @@ const NotificationPipelineItem = ({
                     }}
                     defaultValue={state?.message}
                     disabled={pipelineItem?.isRun}
+                    rows={5}
+                    maxLength={50}
                 />
             </label>
             {validation.message.invalid && (
