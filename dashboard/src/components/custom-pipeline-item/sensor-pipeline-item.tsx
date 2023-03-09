@@ -274,7 +274,7 @@ const SensorPipelineItem = ({
                         className="form-control nodrag"
                         type="number"
                         placeholder="感測器數值"
-                        // defaultValue={state?.threshold}
+                        defaultValue={state?.threshold}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
