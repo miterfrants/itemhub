@@ -25,10 +25,10 @@ const DelayPipelineItem = ({
         return true;
     };
     useEffect(() => {
-        if (!validate(state) || pipelineItem.value === state) {
+        if (!state) {
             return;
         }
-        if (!state) {
+        if (!validate(state) || pipelineItem.value === state) {
             return;
         }
         onChangedCallback(state);
