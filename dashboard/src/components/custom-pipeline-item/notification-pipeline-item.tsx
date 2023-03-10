@@ -247,7 +247,7 @@ const NotificationPipelineItem = ({
                 </div>
             )}
             <label className="mt-3 d-block">
-                <div>訊息:</div>
+                <div>訊息(限50字內): </div>
                 <textarea
                     className="form-control"
                     onKeyUp={(
