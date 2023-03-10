@@ -92,14 +92,14 @@ const NotificationPipelineItem = ({
             !state.phone
         ) {
             result = false;
-            newValidation.phone.errorMessage = 'phone 為必填欄位';
+            newValidation.phone.errorMessage = '手機為必填欄位';
             newValidation.phone.invalid = true;
         } else if (
             Number(state.notificationType) === smsTypeValue &&
             !ValidationHelpers.isPhone(state?.phone || '')
         ) {
             result = false;
-            newValidation.phone.errorMessage = 'phone 格式錯誤';
+            newValidation.phone.errorMessage = '手機格式錯誤';
             newValidation.phone.invalid = true;
         } else {
             newValidation.phone.errorMessage = '';
