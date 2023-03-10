@@ -107,6 +107,12 @@ const SensorPipelineItem = ({
             newValidation.operator.errorMessage = '';
             newValidation.operator.invalid = false;
         }
+
+        if (state.threshold === undefined) {
+            result = false;
+            newValidation.threshold.errorMessage = '';
+            newValidation.threshold.invalid = false;
+        }
         setValidation(newValidation);
         return result;
     };
