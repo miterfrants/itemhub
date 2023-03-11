@@ -218,10 +218,6 @@ export const PipelineFlow = ({
         id: pipeline ? pipeline.id : 0,
     });
 
-    useEffect(() => {
-        console.log(pipeline.isRun);
-    }, [pipeline]);
-
     // create pipeline item
     const [shouldBeCreatePipelineItem, setShouldBeCreatePipelineItem] =
         useState<null | PipelineItemType>(null);
@@ -552,7 +548,7 @@ export const PipelineFlow = ({
                     >
                         <img
                             className="icon"
-                            src={pipeline.isRun ? disabledPlusIcon : plusIcon}
+                            src={pipeline?.isRun ? disabledPlusIcon : plusIcon}
                         />
                     </div>
                     <div
