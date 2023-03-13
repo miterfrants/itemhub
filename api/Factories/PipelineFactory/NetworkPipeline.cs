@@ -74,6 +74,7 @@ namespace Homo.IotApi
                                 if (!System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
                                 {
                                     result = JsonConvert.DeserializeObject<dynamic>(result)[payload.ResponseBodyProperty];
+
                                     if (payload.Operator == TRIGGER_OPERATOR.E && result == payload.Value)
                                     {
                                         return true;
@@ -104,33 +105,37 @@ namespace Homo.IotApi
         }
         public static NetworkPipelinePayload ValidateAndGetPayload(string rawData)
         {
+            if (System.String.IsNullOrEmpty(rawData))
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
             var payload = JsonConvert.DeserializeObject<NetworkPipelinePayload>(rawData);
             if (System.String.IsNullOrEmpty(payload.Url))
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_URL_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_URL_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             if (System.String.IsNullOrEmpty(payload.Method))
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_METHOD_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_METHOD_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
             if (System.String.IsNullOrEmpty(payload.ContentType))
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_CONTENT_TYPE_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_CONTENT_TYPE_REQUIRED, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.ContentType != "application/json" && payload.ResponseStatus == null)
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_PAYLOAD_RESPONSE_STATUS_IS_REQUIRED_IN_OTHER_CONTENT_TYPE, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_RESPONSE_STATUS_REQUIRED_IN_OTHER_CONTENT_TYPE, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.ContentType == "application/json" && !System.String.IsNullOrEmpty(payload.ResponseBodyProperty) && payload.Operator == null)
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_PAYLOAD_OPERATOR_IS_REQUIRED_IN_EXTRACT_RESPONSE_BODY, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_OPERATOR_REQUIRED_IN_EXTRACT_RESPONSE_BODY, System.Net.HttpStatusCode.BadRequest);
             }
 
             if (payload.ContentType == "application/json" && !System.String.IsNullOrEmpty(payload.ResponseBodyProperty) && System.String.IsNullOrEmpty(payload.Value))
             {
-                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_PAYLOAD_VALUE_IS_REQUIRED_IN_EXTRACT_RESPONSE_BODY, System.Net.HttpStatusCode.BadRequest);
+                throw new CustomException(ERROR_CODE.NETWORK_PIPELINE_INVALID_VALUE_REQUIRED_IN_EXTRACT_RESPONSE_BODY, System.Net.HttpStatusCode.BadRequest);
             }
 
             return payload;

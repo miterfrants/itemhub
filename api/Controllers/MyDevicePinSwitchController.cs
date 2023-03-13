@@ -68,7 +68,7 @@ namespace Homo.IotApi
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
             // run pipeline head is switch
-            var pipelines = PipelineDataservice.GetAll(_dbContext, ownerId, PIPELINE_ITEM_TYPE.CHECK_SWITCH, id, pin);
+            var pipelines = PipelineDataservice.GetAll(_dbContext, ownerId, PIPELINE_ITEM_TYPE.CHECK_SWITCH, id, pin, true);
             var pipelineInvalidError = new Dictionary<long, CustomException>();
             pipelines.ForEach(pipeline =>
             {

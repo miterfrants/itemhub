@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PipelineItemType } from '@/types/pipeline.type';
+import { isValidCron } from 'cron-validator';
 
 const SchedulePipelineItem = ({
     pipelineItem,
@@ -11,17 +12,15 @@ const SchedulePipelineItem = ({
     const { value } = pipelineItem;
     const [state, setState] = useState(value || '');
     const validate = (state: string) => {
-        return true;
+        const validated = isValidCron(state);
+        setInvalid(!validated);
+        return validated;
     };
 
+    const [invalid, setInvalid] = useState(false);
+
     useEffect(() => {
-        if (pipelineItem.value === state) {
-            return;
-        }
-        if (!state) {
-            return;
-        }
-        if (!validate(state)) {
+        if (!state || !validate(state) || pipelineItem.value === state) {
             return;
         }
         onChangedCallback(state);
@@ -33,6 +32,7 @@ const SchedulePipelineItem = ({
                 <div>Cron Expressions:</div>
                 <input
                     className="form-control"
+                    disabled={pipelineItem?.isRun}
                     type="text"
                     placeholder="Cron Expressions"
                     defaultValue={state}
@@ -47,6 +47,12 @@ const SchedulePipelineItem = ({
                     }}
                 />
             </label>
+            {invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    Cron Exprssions 錯誤
+                </div>
+            )}
+
             <div className="mt-3">
                 <a
                     href="https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm#:~:text=A%20cron%20expression%20is%20a,allowed%20characters%20for%20that%20field."

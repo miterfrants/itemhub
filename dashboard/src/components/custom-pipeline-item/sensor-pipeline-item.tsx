@@ -41,25 +41,83 @@ const SensorPipelineItem = ({
             invalid: false,
         },
         lastRows: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         staticMethod: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         operator: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
         threshold: {
-            errrorMessage: '',
+            errorMessage: '',
             invalid: false,
         },
     });
 
     const validate = (state: PipelineSensor) => {
-        return true;
+        let result = true;
+        const newValidation = { ...validation };
+        if (!state.deviceId) {
+            result = false;
+            newValidation.deviceId.errorMessage = '裝置為必選欄位';
+            newValidation.deviceId.invalid = true;
+        } else {
+            newValidation.deviceId.errorMessage = '';
+            newValidation.deviceId.invalid = false;
+        }
+        if (!state.pin) {
+            result = false;
+            newValidation.pin.errorMessage = '裝置 PIN 為必選欄位';
+            newValidation.pin.invalid = true;
+        } else {
+            newValidation.pin.errorMessage = '';
+            newValidation.pin.invalid = false;
+        }
+        if (!state.lastRows) {
+            result = false;
+            newValidation.lastRows.errorMessage = '最後 n 筆資料為必填欄位';
+            newValidation.lastRows.invalid = true;
+        } else if (state.lastRows <= 0) {
+            result = false;
+            newValidation.lastRows.errorMessage = '最後 n 筆資料不能小於零';
+            newValidation.lastRows.invalid = true;
+        } else {
+            newValidation.lastRows.errorMessage = '';
+            newValidation.lastRows.invalid = false;
+        }
+
+        if (state.staticMethod === undefined) {
+            result = false;
+            newValidation.staticMethod.errorMessage = '統計方式為必填欄位';
+            newValidation.staticMethod.invalid = true;
+        } else {
+            newValidation.staticMethod.errorMessage = '';
+            newValidation.staticMethod.invalid = false;
+        }
+
+        if (state.operator === undefined) {
+            result = false;
+            newValidation.operator.errorMessage = '條件比較欄位為必填欄位';
+            newValidation.operator.invalid = true;
+        } else {
+            newValidation.operator.errorMessage = '';
+            newValidation.operator.invalid = false;
+        }
+
+        if (state.threshold === undefined) {
+            result = false;
+            newValidation.threshold.errorMessage = '感測器數值欄位為必填欄位';
+            newValidation.threshold.invalid = true;
+        } else {
+            newValidation.threshold.errorMessage = '';
+            newValidation.threshold.invalid = false;
+        }
+        setValidation(newValidation);
+        return result;
     };
 
     useEffect(() => {
@@ -88,8 +146,8 @@ const SensorPipelineItem = ({
     useEffect(() => {
         if (
             !state ||
-            pipelineItem.value === JSON.stringify(state) ||
-            !validate(state)
+            !validate(state) ||
+            pipelineItem.value === JSON.stringify(state)
         ) {
             return;
         }
@@ -108,7 +166,8 @@ const SensorPipelineItem = ({
                     pinLabel="裝置 Pin"
                     defaultPinValue={state?.pin || ''}
                     defaultDeviceId={state?.deviceId || 0}
-                    isDisabled={false}
+                    isDisabled={pipelineItem?.isRun || false}
+                    sensorOnly
                     updatePin={(newPin) => {
                         setState({
                             ...state,
@@ -119,6 +178,7 @@ const SensorPipelineItem = ({
                         setState({
                             ...state,
                             deviceId: newDeviceId,
+                            pin: undefined,
                         });
                     }}
                 />
@@ -131,50 +191,56 @@ const SensorPipelineItem = ({
                     </div>
                     <input
                         defaultValue={state?.lastRows}
-                        className="form-control"
                         type="number"
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                lastRows: Number(event.currentTarget.value),
-                            });
-                        }}
+                        className="form-control nodrag"
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,
-                                lastRows: Number(event.currentTarget.value),
+                                lastRows:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                lastRows:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
+                        disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
                         <span className="input-group-text">筆</span>
                     </div>
                     <select
-                        className="form-control"
+                        className="form-control form-select"
                         onChange={(
                             event: React.ChangeEvent<HTMLSelectElement>
                         ) => {
                             setState({
                                 ...state,
-                                staticMethod: Number(event.currentTarget.value),
+                                staticMethod:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
+                        value={state?.staticMethod}
+                        disabled={pipelineItem?.isRun}
                     >
                         <option />
                         {pipelineDeviceStaticMethods.map(
                             (item: UniversalOption) => {
                                 return (
-                                    <option
-                                        key={item.key}
-                                        value={item.value}
-                                        selected={
-                                            item.value === state?.staticMethod
-                                        }
-                                    >
+                                    <option key={item.key} value={item.value}>
                                         {item.label}
                                     </option>
                                 );
@@ -183,28 +249,42 @@ const SensorPipelineItem = ({
                     </select>
                 </div>
             </label>
+            {validation.lastRows.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.lastRows.errorMessage}
+                </div>
+            )}
+
+            {validation.staticMethod.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.staticMethod.errorMessage}
+                </div>
+            )}
             <label className="mt-3 d-block">
                 <div>條件:</div>
                 <div className="input-group">
                     <select
-                        className="form-control input-group-prepend"
+                        className="form-control form-select input-group-prepend"
                         onChange={(
                             event: React.ChangeEvent<HTMLSelectElement>
                         ) => {
                             setState({
                                 ...state,
-                                operator: Number(event.currentTarget.value),
+                                operator:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
+                        value={state?.operator}
+                        disabled={pipelineItem?.isRun}
                     >
+                        <option />
                         {triggerOperators.map((operator: UniversalOption) => {
                             return (
                                 <option
                                     key={operator.key}
                                     value={operator.value}
-                                    selected={
-                                        state?.operator === operator.value
-                                    }
                                 >
                                     {operator.label}
                                 </option>
@@ -212,29 +292,47 @@ const SensorPipelineItem = ({
                         })}
                     </select>
                     <input
-                        className="form-control"
+                        className="form-control nodrag"
                         type="number"
                         placeholder="感測器數值"
                         defaultValue={state?.threshold}
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                threshold: Number(event.currentTarget.value),
-                            });
-                        }}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,
-                                threshold: Number(event.currentTarget.value),
+                                threshold:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
                             });
                         }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                threshold:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
+                        disabled={pipelineItem?.isRun}
                     />
                 </div>
             </label>
+            {validation.operator.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.operator.errorMessage}
+                </div>
+            )}
+
+            {validation.threshold.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.threshold.errorMessage}
+                </div>
+            )}
         </div>
     );
 };

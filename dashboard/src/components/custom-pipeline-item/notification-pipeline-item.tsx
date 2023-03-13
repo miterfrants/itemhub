@@ -1,4 +1,5 @@
 import { PIPELINE_NOTIFICATION_TYPE } from '@/constants/pipeline-notification-type';
+import { ValidationHelpers } from '@/helpers/validation.helper';
 import { useGetPipelineNotificationTypes } from '@/hooks/apis/universal.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
@@ -10,6 +11,7 @@ interface PipelineNotification {
     notificationType?: number;
     email?: string;
     phone?: string;
+    message?: string;
 }
 
 const NotificationPipelineItem = ({
@@ -22,7 +24,12 @@ const NotificationPipelineItem = ({
     const { fetchApi: getPipelineNotificationTypes } =
         useGetPipelineNotificationTypes();
     const { pipelineNotificationTypes } = useAppSelector(selectUniversal);
-
+    const emailTypeValue = pipelineNotificationTypes.find(
+        (item) => item.key === PIPELINE_NOTIFICATION_TYPE.EMAIL
+    )?.value;
+    const smsTypeValue = pipelineNotificationTypes.find(
+        (item) => item.key === PIPELINE_NOTIFICATION_TYPE.SMS
+    )?.value;
     const [validation, setValidation] = useState({
         notificationType: {
             errorMessage: '',
@@ -36,6 +43,10 @@ const NotificationPipelineItem = ({
             errorMessage: '',
             invalid: false,
         },
+        message: {
+            errorMessage: '',
+            invalid: false,
+        },
     });
 
     const [notificationTypeKey, setNotificationTypeKey] = useState<
@@ -44,7 +55,67 @@ const NotificationPipelineItem = ({
     const [state, setState] = useState<PipelineNotification | null>(null);
 
     const validate = (state: PipelineNotification) => {
-        return true;
+        let result = true;
+        const newValidation = { ...validation };
+        if (state.notificationType === undefined) {
+            result = false;
+            newValidation.notificationType.errorMessage = '通知類型為必選欄位';
+            newValidation.notificationType.invalid = true;
+        } else {
+            newValidation.notificationType.errorMessage = '';
+            newValidation.notificationType.invalid = false;
+        }
+
+        if (
+            state.notificationType !== undefined &&
+            Number(state.notificationType) === emailTypeValue &&
+            !state.email
+        ) {
+            result = false;
+            newValidation.email.errorMessage = 'email 為必填欄位';
+            newValidation.email.invalid = true;
+        } else if (
+            Number(state.notificationType) === emailTypeValue &&
+            !ValidationHelpers.isEmail(state?.email || '')
+        ) {
+            result = false;
+            newValidation.email.errorMessage = 'email 格式錯誤';
+            newValidation.email.invalid = true;
+        } else {
+            newValidation.email.errorMessage = '';
+            newValidation.email.invalid = false;
+        }
+
+        if (
+            state.notificationType !== undefined &&
+            Number(state.notificationType) === smsTypeValue &&
+            !state.phone
+        ) {
+            result = false;
+            newValidation.phone.errorMessage = '手機為必填欄位';
+            newValidation.phone.invalid = true;
+        } else if (
+            Number(state.notificationType) === smsTypeValue &&
+            !ValidationHelpers.isPhone(state?.phone || '')
+        ) {
+            result = false;
+            newValidation.phone.errorMessage = '手機格式錯誤';
+            newValidation.phone.invalid = true;
+        } else {
+            newValidation.phone.errorMessage = '';
+            newValidation.phone.invalid = false;
+        }
+        if (!state.message) {
+            result = false;
+            newValidation.message.errorMessage = '訊息為必選欄位';
+            newValidation.message.invalid = true;
+        } else {
+            newValidation.message.errorMessage = '';
+            newValidation.message.invalid = false;
+        }
+
+        setValidation(newValidation);
+        return result;
     };
 
     useEffect(() => {
@@ -65,8 +136,8 @@ const NotificationPipelineItem = ({
     useEffect(() => {
         if (
             !state ||
-            pipelineItem.value === JSON.stringify(state) ||
-            !validate(state)
+            !validate(state) ||
+            pipelineItem.value === JSON.stringify(state)
         ) {
             return;
         }
@@ -83,7 +154,10 @@ const NotificationPipelineItem = ({
                     onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,
-                            notificationType: Number(event.currentTarget.value),
+                            notificationType:
+                                event.currentTarget.value !== ''
+                                    ? Number(event.currentTarget.value)
+                                    : undefined,
                         });
                         const targetNotificationType =
                             pipelineNotificationTypes.find(
@@ -97,6 +171,8 @@ const NotificationPipelineItem = ({
                                 : null
                         );
                     }}
+                    value={state?.notificationType}
+                    disabled={pipelineItem?.isRun}
                 >
                     <option value="">請選擇通知模式</option>
                     {pipelineNotificationTypes.map((item: UniversalOption) => {
@@ -108,44 +184,90 @@ const NotificationPipelineItem = ({
                     })}
                 </select>
             </label>
-            {notificationTypeKey === PIPELINE_NOTIFICATION_TYPE.EMAIL && (
-                <label className="mt-3 d-block email">
-                    <div>對象:</div>
-                    <input
-                        className="form-control"
-                        type="email"
-                        placeholder="email"
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                email: event.currentTarget.value,
-                                phone: undefined,
-                            });
-                        }}
-                    />
-                </label>
+            {validation.notificationType.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.notificationType.errorMessage}
+                </div>
+            )}
+            {state?.notificationType === emailTypeValue && (
+                <div>
+                    <label className="mt-3 d-block email">
+                        <div>對象:</div>
+                        <input
+                            className="form-control"
+                            type="email"
+                            placeholder="email"
+                            onKeyUp={(
+                                event: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                                setState({
+                                    ...state,
+                                    email: event.currentTarget.value,
+                                    phone: undefined,
+                                });
+                            }}
+                            defaultValue={state?.email}
+                            disabled={pipelineItem?.isRun}
+                        />
+                    </label>
+                    {validation.email.invalid && (
+                        <div className="text-danger mt-15 fs-5">
+                            {validation.email.errorMessage}
+                        </div>
+                    )}
+                </div>
             )}
 
-            {notificationTypeKey === PIPELINE_NOTIFICATION_TYPE.SMS && (
-                <label className="mt-3 d-block email">
-                    <div>對象:</div>
-                    <input
-                        className="form-control"
-                        type="phone"
-                        placeholder="手機"
-                        onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                            setState({
-                                ...state,
-                                phone: event.currentTarget.value,
-                                email: undefined,
-                            });
-                        }}
-                    />
-                </label>
+            {state?.notificationType === smsTypeValue && (
+                <div>
+                    <label className="mt-3 d-block sms">
+                        <div>對象:</div>
+                        <input
+                            className="form-control"
+                            type="phone"
+                            placeholder="手機"
+                            onKeyUp={(
+                                event: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                                setState({
+                                    ...state,
+                                    phone: event.currentTarget.value,
+                                    email: undefined,
+                                });
+                            }}
+                            defaultValue={state?.phone}
+                            disabled={pipelineItem?.isRun}
+                        />
+                    </label>
+                    {validation.phone.invalid && (
+                        <div className="text-danger mt-15 fs-5">
+                            {validation.phone.errorMessage}
+                        </div>
+                    )}
+                </div>
+            )}
+            <label className="mt-3 d-block">
+                <div>訊息(限50字內): </div>
+                <textarea
+                    className="form-control"
+                    onKeyUp={(
+                        event: React.KeyboardEvent<HTMLTextAreaElement>
+                    ) => {
+                        setState({
+                            ...state,
+                            message: event.currentTarget.value,
+                        });
+                    }}
+                    defaultValue={state?.message}
+                    disabled={pipelineItem?.isRun}
+                    rows={5}
+                    maxLength={50}
+                />
+            </label>
+            {validation.message.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.message.errorMessage}
+                </div>
             )}
         </div>
     );

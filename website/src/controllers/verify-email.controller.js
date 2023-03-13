@@ -5,6 +5,7 @@ import { ERROR_KEYS, OAUTH_PROVIDER, OAUTH_TYPE, RESPONSE_STATUS, THIRD_PARTY_KE
 import { AuthDataService } from '../dataservices/auth.dataservice.js';
 import { Toaster } from '../util/toaster.js';
 import { PopupHelper } from '../util/popup.helper.js';
+import { Validate } from '../util/validate.js';
 
 export class VerifyEmailController extends RoutingController {
     constructor (elHTML, parentController, args, context) {
@@ -41,8 +42,7 @@ export class VerifyEmailController extends RoutingController {
 
         const elEmail = this.elHTML.querySelector('[data-field="email"]');
         const email = elEmail.value;
-        const emailPattern = /^[a-zA-Z0-9+._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        const isValid = emailPattern.test(email);
+        const isValid = Validate.Email(email);
         if (isValid) {
             elBtnSendVerifyEmail.removeAttribute('disabled');
             this.pageVariable.emailInvalidMessage = '';

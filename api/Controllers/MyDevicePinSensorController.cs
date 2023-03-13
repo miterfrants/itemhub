@@ -67,7 +67,7 @@ namespace Homo.IotApi
             long ownerId = extraPayload.Id;
             DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
             // run pipeline head is sensor
-            var pipelines = PipelineDataservice.GetAll(_iotDbContext, ownerId, PIPELINE_ITEM_TYPE.SENSOR, id, pin);
+            var pipelines = PipelineDataservice.GetAll(_iotDbContext, ownerId, PIPELINE_ITEM_TYPE.SENSOR, id, pin, true);
             var pipelineInvalidError = new Dictionary<long, CustomException>();
             pipelines.ForEach(pipeline =>
             {

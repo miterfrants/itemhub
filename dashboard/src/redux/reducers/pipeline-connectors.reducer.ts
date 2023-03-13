@@ -10,7 +10,7 @@ export const pipelineConnectorsSlice = createSlice({
             state,
             action: PayloadAction<PipelineConnectorType[]>
         ) => {
-            const pipelineConnectors = action.payload;
+            const pipelineConnectors = [...action.payload];
             const oldItems: PipelineConnectorType[] = (
                 state ? [...state] : []
             ) as PipelineConnectorType[];
@@ -41,35 +41,7 @@ export const pipelineConnectorsSlice = createSlice({
 
             return [...updatedOldItems, ...newPipelineConnectorsExcludedExists];
         },
-        updatePipelineConnector: (
-            state,
-            action: PayloadAction<Partial<PipelineConnectorType>>
-        ) => {
-            const pipelineConnectors = state;
-            const newItem = action.payload;
-
-            if (pipelineConnectors === null) {
-                throw new Error(
-                    'Can not updatePin when pipelineConnectors is null.'
-                );
-            }
-
-            const newPipelineConnectors = [...pipelineConnectors];
-
-            const targetIndex = newPipelineConnectors.findIndex(
-                (item) => item.id === newItem.id
-            );
-            newPipelineConnectors[targetIndex] = {
-                ...newPipelineConnectors[targetIndex],
-                ...newItem,
-            };
-
-            return newPipelineConnectors;
-        },
-        deleteMultiple: (
-            state,
-            action: PayloadAction<{ pipelineItemIds: number[] }>
-        ) => {
+        deleteMultiple: (state, action: PayloadAction<{ ids: number[] }>) => {
             const deletePayload = action.payload;
 
             if (state === null) {
@@ -79,10 +51,7 @@ export const pipelineConnectorsSlice = createSlice({
             }
 
             const newList = state.filter(
-                (item) =>
-                    deletePayload.pipelineItemIds.indexOf(
-                        Number(item.id || 0)
-                    ) === -1
+                (item) => deletePayload.ids.indexOf(Number(item.id || 0)) === -1
             );
             return newList;
         },

@@ -13,9 +13,13 @@ import ReactFlow, {
 import CustomPipelineItem from '@/components/custom-pipeline-item/custom-pipeline-item';
 import CustomEdge from '@/components/custom-react-flow-edge/custom-react-flow-edge';
 import { UniversalOption } from '@/types/universal.type';
-import { PipelineConnectorType, PipelineItemType } from '@/types/pipeline.type';
+import {
+    PipelineConnectorType,
+    PipelineItemType,
+    PipelineType,
+} from '@/types/pipeline.type';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     useCreatePipelineItem,
     useDeletePipelineItem,
@@ -27,6 +31,13 @@ import {
     useDeletePipelineConnector,
 } from '@/hooks/apis/pipeline-connector.hook';
 import { useDebounce } from '@/hooks/debounce.hook';
+import { useRunOrStopPipelineApi } from '@/hooks/apis/pipelines.hook';
+import plusIcon from '/src/assets/images/plus.svg';
+import playIcon from '@/assets/images/play.svg';
+import pauseIcon from '@/assets/images/pause.svg';
+
+import disabledPlusIcon from '/src/assets/images/plus-disabled.svg';
+import disabledPlayIcon from '@/assets/images/play-disabled.svg';
 
 const nodeTypes = {
     custom: CustomPipelineItem,
@@ -37,13 +48,19 @@ const edgeTypes = {
 };
 
 export const PipelineFlow = ({
+    pipeline,
     pipelineItems,
     pipelineConnectors,
     pipelineItemTypes,
+    setDirtyForm,
+    isDirty,
 }: {
+    pipeline: PipelineType;
     pipelineItems: PipelineItemType[];
     pipelineConnectors: PipelineConnectorType[];
     pipelineItemTypes: UniversalOption[];
+    setDirtyForm: (dirty: boolean) => void;
+    isDirty: boolean;
 }) => {
     const reactFlowInstance = useReactFlow();
     const compareItem = (
@@ -51,7 +68,7 @@ export const PipelineFlow = ({
         oldOne: PipelineItemType | undefined
     ): boolean => {
         if (newOne && !oldOne) {
-            return false;
+            return true;
         }
         if (!newOne || !oldOne) {
             return false;
@@ -89,20 +106,45 @@ export const PipelineFlow = ({
                     newValue: string,
                     newItemType: number
                 ) => {
-                    const changeNodes = reactFlowInstance
-                        .getNodes()
-                        .filter((node) => node.id === nodeId)
-                        .map(
-                            (item: any) =>
-                                ({
-                                    ...item.data,
-                                    value: newValue,
-                                    itemType: newItemType,
-                                } as PipelineItemType)
-                        );
-                    debounceChangeNodes(changeNodes);
+                    const newNodes = reactFlowInstance.getNodes();
+                    console.log('newNodes:', JSON.stringify(newNodes));
+                    console.log(nodeId);
+
+                    const shouldBeChangeNode = newNodes.find(
+                        (node) => node.id.toString() === nodeId
+                    );
+
+                    if (!shouldBeChangeNode) {
+                        console.log('testing');
+                        return;
+                    }
+
+                    // update local node
+                    shouldBeChangeNode.data = {
+                        ...shouldBeChangeNode.data,
+                        value: newValue,
+                        itemType: newItemType,
+                        itemTypeKey: pipelineItemTypes.find(
+                            (itemType) => itemType.value === newItemType
+                        )?.key,
+                    };
+
+                    reactFlowInstance.setNodes(newNodes);
+
+                    // update api
+                    debounceChangeNodes([
+                        {
+                            ...shouldBeChangeNode.data,
+                            value: newValue,
+                            itemType: newItemType,
+                            itemTypeKey: pipelineItemTypes.find(
+                                (itemType) => itemType.value === newItemType
+                            )?.key,
+                        },
+                    ] as PipelineItemType[]);
                 },
                 itemTypeKey: targetType ? targetType.key : null,
+                isRun: pipeline?.isRun,
             },
         };
     };
@@ -115,14 +157,10 @@ export const PipelineFlow = ({
             animated: true,
         } as any;
     };
-    const [nodes, setNodes, onNodesChange] = useNodesState(
+
+    const [nodes, setNodes, onNodesChange] = useNodesState<any>(
         pipelineItems.map(pipelineItemToNode)
     );
-
-    useEffect(() => {
-        setNodes(pipelineItems.map(pipelineItemToNode));
-        // eslint-disable-next-line
-    }, [pipelineItems]);
 
     const [edges, setEdges, onEdgesChange] = useEdgesState(
         pipelineConnectors.map(pipelineConnectorToEdge)
@@ -137,6 +175,7 @@ export const PipelineFlow = ({
     const [shouldBeDeleteIds, setShouldBeDeleteIds] = useState<null | number[]>(
         null
     );
+
     const { fetchApi: deletePipelineItem, data: respOfDeletePipelineItem } =
         useDeletePipelineItem({
             pipelineId: id || 0,
@@ -172,6 +211,12 @@ export const PipelineFlow = ({
         }
         // eslint-disable-next-line
     }, [respOfDeletePipelineItem]);
+
+    // toggle pipeline
+    const { fetchApi: togglePipeline } = useRunOrStopPipelineApi({
+        isRun: pipeline ? !pipeline.isRun : false,
+        id: pipeline ? pipeline.id : 0,
+    });
 
     // create pipeline item
     const [shouldBeCreatePipelineItem, setShouldBeCreatePipelineItem] =
@@ -236,10 +281,12 @@ export const PipelineFlow = ({
           }[]
         | null
     >(null);
+
     const [shouldBeDeleteConnector, setShouldBeDeleteConnector] = useState<{
         pipelineId: number;
         id: number;
     } | null>(null);
+
     const { fetchApi: deletePipelineConnector, data: respOfDeleteConnector } =
         useDeletePipelineConnector(
             shouldBeDeleteConnector
@@ -290,7 +337,7 @@ export const PipelineFlow = ({
                 (item) => item.id !== shouldBeDeleteConnector?.id
             )
         );
-        setShouldBeCreateConnector(null);
+        setShouldBeDeleteConnector(null);
         // eslint-disable-next-line
     }, [respOfDeleteConnector]);
 
@@ -306,6 +353,14 @@ export const PipelineFlow = ({
         (changeNodes: PipelineItemType[]) => {
             setShouldBeUpdateNodes(
                 changeNodes.filter((newOne: PipelineItemType) => {
+                    console.log('newOne', newOne);
+                    console.log(
+                        'oldOne',
+                        pipelineItems.find(
+                            (oldOne: PipelineItemType) =>
+                                Number(oldOne.id) === Number(newOne.id)
+                        )
+                    );
                     return compareItem(
                         newOne,
                         pipelineItems.find(
@@ -351,22 +406,64 @@ export const PipelineFlow = ({
             return;
         }
         const newShouldBeUpdateNodes = shouldBeUpdateNodes?.filter(
-            (node) => node.id !== shouldBeUpdateNode?.id?.toString()
+            (node) => node.id !== shouldBeUpdateNode?.id
         );
+
+        setShouldBeUpdateNode(null);
         setShouldBeUpdateNodes(newShouldBeUpdateNodes || []);
         // eslint-disable-next-line
     }, [respOfUpdatePipelineItem]);
 
+    // dirty form
+    useEffect(() => {
+        let isDirty = false;
+        if (
+            shouldBeDeleteConnector ||
+            shouldBeCreateConnector ||
+            shouldBeCreatePipelineItem ||
+            shouldBeDeleteId ||
+            (shouldBeDeleteIds && shouldBeDeleteIds.length > 0) ||
+            shouldBeUpdateNode ||
+            (shouldBeUpdateNodes && shouldBeUpdateNodes?.length > 0)
+        ) {
+            isDirty = true;
+        }
+        setDirtyForm(isDirty);
+    }, [
+        shouldBeDeleteConnector,
+        shouldBeCreateConnector,
+        shouldBeCreatePipelineItem,
+        shouldBeDeleteId,
+        shouldBeDeleteIds,
+        shouldBeUpdateNode,
+        shouldBeUpdateNodes,
+        setDirtyForm,
+    ]);
+
+    useEffect(() => {
+        if (nodes.length === 0 || pipeline?.isRun === nodes[0]?.data.isRun) {
+            return;
+        }
+        setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
+    }, [pipeline]);
+
     return (
         <ReactFlow
+            className="pipeline-flow"
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
+            nodesDraggable={!pipeline?.isRun}
+            nodesConnectable={!pipeline?.isRun}
+            elementsSelectable={!pipeline?.isRun}
             onNodesChange={(changes) => {
                 onNodesChange(changes);
             }}
             onNodeDragStop={(event: React.MouseEvent, dropNode: Node) => {
+                setDirtyForm(true);
+
                 const changeNodes = reactFlowInstance
                     .getNodes()
                     .filter((node) => node.id === dropNode.id)
@@ -380,10 +477,22 @@ export const PipelineFlow = ({
                                 },
                             } as PipelineItemType)
                     );
-                debounceChangeNodes(changeNodes);
+
+                setShouldBeUpdateNodes(
+                    changeNodes.filter((newOne: PipelineItemType) => {
+                        return compareItem(
+                            newOne,
+                            pipelineItems.find(
+                                (oldOne: PipelineItemType) =>
+                                    Number(oldOne.id) === Number(newOne.id)
+                            )
+                        );
+                    })
+                );
             }}
             onEdgesChange={onEdgesChange}
             onConnect={(params) => {
+                setDirtyForm(true);
                 setShouldBeCreateConnector({
                     pipelineId: id || 0,
                     sourcePipelineItemId: Number(params.source),
@@ -391,6 +500,7 @@ export const PipelineFlow = ({
                 });
             }}
             onEdgesDelete={(params) => {
+                setDirtyForm(true);
                 setShouldBeDeleteConnectors(
                     params.map((param) => ({
                         pipelineId: id || 0,
@@ -399,39 +509,76 @@ export const PipelineFlow = ({
                 );
             }}
             onNodesDelete={(params) => {
+                setDirtyForm(true);
                 setShouldBeDeleteIds(params.map((param) => Number(param.id)));
             }}
         >
-            <Panel position="top-center">
-                <button
-                    onClick={() => {
-                        const nodes = reactFlowInstance.getNodes();
-                        const lastNode = nodes[nodes.length - 1];
-                        setShouldBeCreatePipelineItem({
-                            pipelineId: Number(id || 0),
-                            point: {
-                                x: lastNode
-                                    ? Math.round(lastNode.position.x)
-                                    : 100,
-                                y: lastNode
-                                    ? Math.round(
-                                          lastNode.position.y +
-                                              (lastNode.height || 0)
-                                      ) + 50
-                                    : 100,
-                            } as XYPosition,
-                        });
-                    }}
-                    className="border border-gray d-flex align-items-center rounded"
-                    style={{
-                        width: '32px',
-                        height: '32px',
-                    }}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                        <path d="M32 18.133H18.133V32h-4.266V18.133H0v-4.266h13.867V0h4.266v13.867H32z" />
-                    </svg>
-                </button>
+            <Panel position="top-left">
+                <div className="d-flex">
+                    <div
+                        onClick={() => {
+                            if (isDirty) {
+                                return;
+                            }
+                            const nodes = reactFlowInstance.getNodes();
+                            const lastNode = nodes[nodes.length - 1];
+                            setShouldBeCreatePipelineItem({
+                                pipelineId: Number(id || 0),
+                                point: {
+                                    x: lastNode
+                                        ? Math.round(lastNode.position.x)
+                                        : 100,
+                                    y: lastNode
+                                        ? Math.round(
+                                              lastNode.position.y +
+                                                  (lastNode.height || 0)
+                                          ) + 50
+                                        : 100,
+                                } as XYPosition,
+                            });
+                        }}
+                        role="button"
+                        className={`d-flex align-items-center ${
+                            isDirty ? 'cursor-na' : ''
+                        }`}
+                        style={{
+                            width: '40px',
+                            height: '40px',
+                        }}
+                    >
+                        <img
+                            className="icon"
+                            src={pipeline?.isRun ? disabledPlusIcon : plusIcon}
+                        />
+                    </div>
+                    <div
+                        onClick={() => {
+                            if (isDirty) {
+                                return;
+                            }
+                            togglePipeline();
+                        }}
+                        className={`d-flex align-items-center rounded ms-2 ${
+                            isDirty ? 'cursor-na' : ''
+                        }`}
+                        style={{
+                            width: '40px',
+                            height: '40px',
+                        }}
+                        role="button"
+                    >
+                        <img
+                            className="icon"
+                            src={
+                                isDirty
+                                    ? disabledPlayIcon
+                                    : pipeline?.isRun
+                                    ? pauseIcon
+                                    : playIcon
+                            }
+                        />
+                    </div>
+                </div>
             </Panel>
             <MiniMap />
             <Controls />

@@ -113,6 +113,7 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             PipelineItemDataservice.Delete(_dbContext, ownerId, ownerId, pipelineId, id);
+            PipelineConnectorDataservice.BatchDeleteByItemIds(_dbContext, ownerId, ownerId, pipelineId, new List<long>() { id });
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

@@ -40,7 +40,11 @@ const CustomPipelineItem = ({
     }, [data]);
 
     return (
-        <div className="custom-pipeline-item px-3 py-5">
+        <div
+            className={`custom-pipeline-item px-3 py-5 ${
+                pipelineItemData.isRun ? 'runing' : ''
+            }`}
+        >
             <svg
                 height="30px"
                 width="30px"
@@ -90,15 +94,13 @@ const CustomPipelineItem = ({
                             );
                         }
                     }}
+                    disabled={data.isRun}
+                    defaultValue={data.itemType}
                 >
                     <option value="">請選擇類型</option>
                     {pipelineItemTypes.map((item: UniversalOption) => {
                         return (
-                            <option
-                                key={item.value}
-                                value={item.value}
-                                selected={item.value === data.itemType}
-                            >
+                            <option key={item.value} value={item.value}>
                                 {item.label}
                             </option>
                         );

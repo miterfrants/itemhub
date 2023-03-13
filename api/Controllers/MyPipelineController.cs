@@ -150,31 +150,70 @@ namespace Homo.IotApi
 
         [HttpPost]
         [Route("{id}/toggle")]
-        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload)
+        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto)
         {
             long ownerId = extraPayload.Id;
             var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
-
-            if (pipeline.IsRun)
+            if (!dto.IsRun)
             {
-                pipeline.IsRun = false;
-                _dbContext.SaveChanges();
+                PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, false, pipeline.FirstPieplineItemType, pipeline.FirstPipelineItemDeviceId, pipeline.FirstPipelineItemPin);
                 return new { status = CUSTOM_RESPONSE.OK };
             }
 
             // validate pipeline
             if (!pipeline.IsRun)
             {
-                pipeline.IsRun = true;
-                _dbContext.SaveChanges();
                 // run pipeline head is schedule
                 var pipelineItems = PipelineItemDataservice.GetAll(_dbContext, ownerId, id, null);
                 var pipelineConnectors = PipelineConnectorDataservice.GetAll(_dbContext, ownerId, id, null);
                 var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                long? deviceId = null;
+                string devicePin = null;
+                if (
+                    pipelineHead.ItemType == PIPELINE_ITEM_TYPE.SENSOR
+                )
+                {
+                    var sensorPipelinePayload = SensorPipeline.ValidateAndGetPayload(pipelineHead.Value);
+                    deviceId = sensorPipelinePayload.DeviceId;
+                    devicePin = sensorPipelinePayload.Pin;
+                }
+                if (
+                    pipelineHead.ItemType == PIPELINE_ITEM_TYPE.SWITCH
+                )
+                {
+                    var switchPipelinePayload = CheckSwitchPipeline.ValidateAndGetPayload(pipelineHead.Value);
+                    deviceId = switchPipelinePayload.DeviceId;
+                    devicePin = switchPipelinePayload.Pin;
+                }
+                if (
+                    pipelineHead.ItemType == PIPELINE_ITEM_TYPE.CHECK_SWITCH
+                )
+                {
+                    var checkSwitchPipelinePayload = CheckSwitchPipeline.ValidateAndGetPayload(pipelineHead.Value);
+                    deviceId = checkSwitchPipelinePayload.DeviceId;
+                    devicePin = checkSwitchPipelinePayload.Pin;
+                }
+
+                if (pipelineItems.Count > 10)
+                {
+                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN, System.Net.HttpStatusCode.BadRequest);
+                }
+
+                PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, true, pipelineHead.ItemType, deviceId, devicePin);
+
                 if (pipelineHead.ItemType == PIPELINE_ITEM_TYPE.SCHEDULE)
                 {
-                    PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc);
+                    try
+                    {
+                        PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                    }
+                    catch (CustomException ex)
+                    {
+                        PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, false, pipelineHead.ItemType, deviceId, devicePin);
+                        throw ex;
+                    }
                 }
+
             }
             return new { status = CUSTOM_RESPONSE.OK };
 

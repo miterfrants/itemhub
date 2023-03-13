@@ -9,18 +9,26 @@ const DelayPipelineItem = ({
     onChangedCallback: (value: string) => void;
 }) => {
     const { value } = pipelineItem;
-    const [state, setState] = useState(value || '');
-    const validate = (state: string) => {
+    const [state, setState] = useState(value || undefined);
+    const [validated, setValidated] = useState(true);
+    const validate = (state: string | undefined) => {
+        const delayMinutes = Number(state);
+        if (
+            !delayMinutes ||
+            delayMinutes <= 0 ||
+            state !== Math.round(delayMinutes).toString()
+        ) {
+            setValidated(false);
+            return false;
+        }
+        setValidated(true);
         return true;
     };
     useEffect(() => {
-        if (pipelineItem.value === state) {
-            return;
-        }
         if (!state) {
             return;
         }
-        if (!validate(state)) {
+        if (!validate(state) || pipelineItem.value === state) {
             return;
         }
         onChangedCallback(state);
@@ -32,7 +40,7 @@ const DelayPipelineItem = ({
                 <div>Delay 時間:</div>
                 <div className="input-group">
                     <input
-                        className="form-control"
+                        className="form-control nodrag"
                         type="number"
                         placeholder=""
                         defaultValue={state}
@@ -40,19 +48,34 @@ const DelayPipelineItem = ({
                             event: React.KeyboardEvent<HTMLInputElement>
                         ) => {
                             event.stopPropagation();
-                            setState(event.currentTarget.value);
+                            setState(
+                                event.currentTarget.value === ''
+                                    ? undefined
+                                    : event.currentTarget.value
+                            );
                         }}
-                        onKeyDown={(
-                            event: React.KeyboardEvent<HTMLInputElement>
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
                         ) => {
                             event.stopPropagation();
+                            setState(
+                                event.currentTarget.value === ''
+                                    ? undefined
+                                    : event.currentTarget.value
+                            );
                         }}
+                        disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
                         <span className="input-group-text">分鐘</span>
                     </div>
                 </div>
             </label>
+            {!validated && (
+                <div className="text-danger mt-15 fs-5">
+                    延遲分鐘必須為大於零的整數
+                </div>
+            )}
         </div>
     );
 };

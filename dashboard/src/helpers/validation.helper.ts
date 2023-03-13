@@ -107,4 +107,20 @@ export const ValidationHelpers = {
             result.pinName && result.pinNumber && !result.duplicate;
         return result;
     },
+    isEmail: (email: string) => {
+        return email
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+    },
+    isPhone: (phone: string) => {
+        return phone.toLowerCase().match(/^09[0-9]{8}$/);
+    },
+    isValidURL: (string: string) => {
+        const res = string.match(
+            /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9] {8}\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|w {8}ww\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
+        );
+        return res !== null;
+    },
 };

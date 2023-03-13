@@ -583,19 +583,10 @@ const Trigger = () => {
                                             parseInt(e.target.value)
                                         );
                                     }}
+                                    value={currentTargetStateValue || ''}
                                 >
-                                    <option
-                                        value="1"
-                                        selected={currentTargetStateValue === 1}
-                                    >
-                                        開
-                                    </option>
-                                    <option
-                                        value="0"
-                                        selected={currentTargetStateValue === 0}
-                                    >
-                                        關
-                                    </option>
+                                    <option value="1">開</option>
+                                    <option value="0">關</option>
                                 </select>
                             </label>
                         </div>

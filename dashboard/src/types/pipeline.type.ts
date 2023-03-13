@@ -7,6 +7,7 @@ export interface PipelineType {
     createdAt?: string;
     editedAt?: null | string;
     deletedAt?: null | string;
+    isRun: boolean;
 }
 
 export interface PipelineItemType {
@@ -27,6 +28,7 @@ export interface PipelineItemType {
         itemType: number
     ) => void;
     itemTypeKey?: string;
+    isRun?: boolean; // for style
 }
 
 export interface PipelineConnectorType {

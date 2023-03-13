@@ -115,6 +115,36 @@ export const useUpdatePipelineApi = ({
     };
 };
 
+export const useRunOrStopPipelineApi = (editedData: Partial<PipelineType>) => {
+    const dispatch = useAppDispatch();
+    const dispatchCallback = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(pipelinesActions.update({ ...editedData }));
+            }
+        },
+        [editedData, dispatch]
+    );
+
+    let apiPath = `${API_URL}${END_POINT.PIPELINE_RUN_OR_STOP}`;
+    apiPath = apiPath.replace(':id', (editedData?.id || 0).toString());
+
+    const { isLoading, error, fetchApi, data } = useFetchApi<ResponseOK>({
+        apiPath,
+        method: HTTP_METHOD.POST,
+        payload: editedData,
+        initialData: null,
+        callbackFunc: dispatchCallback,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+        data,
+    };
+};
+
 export const useDeletePipelinesApi = (ids: number[]) => {
     const dispatch = useAppDispatch();
     const dispatchDeleteDeivce = useCallback(

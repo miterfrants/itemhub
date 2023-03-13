@@ -16,6 +16,7 @@ export const END_POINT = {
     All_DEVICES: 'my/devices/all',
     PIPELINES: 'my/pipelines',
     PIPELINE: 'my/pipelines/:id',
+    PIPELINE_RUN_OR_STOP: 'my/pipelines/:id/toggle',
     DEVICES: 'my/devices',
     DEVICE: 'my/devices/:id',
     DEVICE_PINS: 'my/devices/:id/pins',

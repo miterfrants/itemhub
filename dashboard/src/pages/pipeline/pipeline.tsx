@@ -32,6 +32,8 @@ import { useGetAllPipelineConnectors } from '../../hooks/apis/pipeline-connector
 import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
 import { PipelineFlowProvider } from '@/components/pipeline-flow/pipeline-flow';
 import { useDebounce } from '@/hooks/debounce.hook';
+import { useBeforeUnload } from '@/hooks/before-unload.hook';
+import usePrompt from '@/hooks/block.hook';
 
 interface ValidationInterface {
     title: { isInvalid: boolean; errorMessage: string[] };
@@ -55,6 +57,7 @@ const Pipeline = () => {
             ? pipelineConnectorPool.filter((item) => item.pipelineId === id)
             : null;
     const [pipeline, setPipeline] = useState<PipelineType | null>(null);
+    const [isDirtyForm, setIsDirtyForm] = useState<boolean>(false);
     const [shouldBeUpdatePipeline, setShouldBeUpdatePipeline] =
         useState<PipelineType | null>(null);
     const [shouldBeCreatePipelineTitle, setShouldBeCreatePipelineTitle] =
@@ -82,11 +85,7 @@ const Pipeline = () => {
         data: respOfCreate,
     } = useCreatePipelineApi(shouldBeCreatePipelineTitle);
 
-    const {
-        isLoading: isUpdating,
-        fetchApi: update,
-        data: respOfUpdate,
-    } = useUpdatePipelineApi({
+    const { fetchApi: update, data: respOfUpdate } = useUpdatePipelineApi({
         editedData: (shouldBeUpdatePipeline || {}) as Partial<PipelineType>,
     });
 
@@ -130,6 +129,13 @@ const Pipeline = () => {
     const back = () => {
         navigate(`/dashboard/pipelines${location.search}`);
     };
+
+    useBeforeUnload({
+        when: isDirtyForm,
+        message: '資料還未儲存確定要離開頁面?',
+    });
+
+    usePrompt('資料還未儲存確定要離開頁面?', isDirtyForm);
 
     useEffect(() => {
         const pipeline =
@@ -182,6 +188,10 @@ const Pipeline = () => {
     }, [respOfCreate]);
 
     useEffect(() => {
+        if (!respOfUpdate) {
+            return;
+        }
+        setIsDirtyForm(false);
         if (respOfUpdate && respOfUpdate.status === RESPONSE_STATUS.OK) {
             dispatch(
                 toasterActions.pushOne({
@@ -222,6 +232,10 @@ const Pipeline = () => {
                                 if (isCreateMode) {
                                     setShouldBeCreatePipelineTitle(value);
                                 } else {
+                                    if (value === pipeline?.title) {
+                                        return;
+                                    }
+                                    setIsDirtyForm(true);
                                     debounceChangePipeline({
                                         ...shouldBeUpdatePipeline,
                                         title: value,
@@ -234,6 +248,10 @@ const Pipeline = () => {
                                 if (isCreateMode) {
                                     setShouldBeCreatePipelineTitle(value);
                                 } else {
+                                    if (value === pipeline?.title) {
+                                        return;
+                                    }
+                                    setIsDirtyForm(true);
                                     debounceChangePipeline({
                                         ...shouldBeUpdatePipeline,
                                         title: value,
@@ -253,9 +271,14 @@ const Pipeline = () => {
                                 pipelineConnectors &&
                                 pipelineItemTypes.length > 0 && (
                                     <PipelineFlowProvider
+                                        pipeline={pipeline}
                                         pipelineItems={pipelineItems}
                                         pipelineConnectors={pipelineConnectors}
                                         pipelineItemTypes={pipelineItemTypes}
+                                        setDirtyForm={(isDirty: boolean) => {
+                                            setIsDirtyForm(isDirty);
+                                        }}
+                                        isDirty={isDirtyForm}
                                     />
                                 )}
                         </div>
