@@ -110,6 +110,9 @@ const SensorPipelineItem = ({
 
         if (state.threshold === undefined) {
             result = false;
+            newValidation.threshold.errorMessage = '感測器數值欄位為必填欄位';
+            newValidation.threshold.invalid = true;
+        } else {
             newValidation.threshold.errorMessage = '';
             newValidation.threshold.invalid = false;
         }
