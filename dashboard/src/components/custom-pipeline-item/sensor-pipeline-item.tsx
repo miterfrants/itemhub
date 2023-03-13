@@ -178,6 +178,7 @@ const SensorPipelineItem = ({
                         setState({
                             ...state,
                             deviceId: newDeviceId,
+                            pin: undefined,
                         });
                     }}
                 />
