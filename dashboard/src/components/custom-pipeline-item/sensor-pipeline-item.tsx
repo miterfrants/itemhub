@@ -203,6 +203,17 @@ const SensorPipelineItem = ({
                                         : undefined,
                             });
                         }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                lastRows:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
                         disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
@@ -286,6 +297,17 @@ const SensorPipelineItem = ({
                         defaultValue={state?.threshold}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                threshold:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,

@@ -54,6 +54,16 @@ const DelayPipelineItem = ({
                                     : event.currentTarget.value
                             );
                         }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                            event.stopPropagation();
+                            setState(
+                                event.currentTarget.value === ''
+                                    ? undefined
+                                    : event.currentTarget.value
+                            );
+                        }}
                         disabled={pipelineItem?.isRun}
                     />
                     <div className="input-group-append">
