@@ -219,7 +219,11 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.PipelineId });
-                entity.Property(p => p.IsCompleted).HasDefaultValueSql("0");
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.IsHead });
+                entity.HasIndex(p => new { p.IsEnd });
+                entity.Property(p => p.IsHead).HasDefaultValueSql("0");
+                entity.Property(p => p.IsEnd).HasDefaultValueSql("0");
                 entity.Property(p => p.CreatedAt)
                     .HasDefaultValue(System.DateTime.Now);
             });
