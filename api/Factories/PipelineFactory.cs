@@ -10,9 +10,13 @@ namespace Homo.IotApi
     {
         public IPipeline getPipeline(
             PIPELINE_ITEM_TYPE pipelineItemType,
-            IotDbContext dbContext,
+            long id,
             long pipelineId,
             long ownerId,
+            string DBConnectionString,
+            bool isHead,
+            bool isEnd,
+            bool isVIP,
             string rawData,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
@@ -22,38 +26,36 @@ namespace Homo.IotApi
             string smsUrl,
             string sendGridApiKey,
             string mailTemplatePath,
-            string systemEmail,
-            string DBConnectionString
+            string systemEmail
         )
         {
             if (pipelineItemType == PIPELINE_ITEM_TYPE.CHECK_SWITCH)
             {
-                return new CheckSwitchPipeline(DBConnectionString, ownerId, rawData);
+                return new CheckSwitchPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.DELAY)
             {
-                return new DelayPipeline(rawData);
-
+                return new DelayPipeline(id, ownerId, pipelineId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.NETWORK)
             {
-                return new NetworkPipeline(rawData);
+                return new NetworkPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.NOTIFICATION)
             {
-                return new NotificationPipeline(rawData, smsUsername, smsPassword, smsUrl, mailTemplatePath, systemEmail, sendGridApiKey);
+                return new NotificationPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, smsUsername, smsPassword, smsUrl, mailTemplatePath, systemEmail, sendGridApiKey);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SCHEDULE)
             {
-                return new SchedulePipeline(rawData, pipelineId, ownerId, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+                return new SchedulePipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SENSOR)
             {
-                return new SensorPipeline(DBConnectionString, ownerId, rawData);
+                return new SensorPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SWITCH)
             {
-                return new SwitchPipeline(DBConnectionString, ownerId, rawData, localMqttPublishers, mqttUsername, mqttPassword);
+                return new SwitchPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, localMqttPublishers, mqttUsername, mqttPassword);
             }
             else
             {

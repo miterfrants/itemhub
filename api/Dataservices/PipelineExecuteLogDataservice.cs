@@ -17,9 +17,20 @@ namespace Homo.IotApi
                 prop.SetValue(record, value);
             }
             record.CreatedAt = DateTime.Now;
+            record.OwnerId = ownerId;
             dbContext.PipelineExecuteLog.Add(record);
             dbContext.SaveChanges();
             return record;
+        }
+
+        public static List<PipelineExecuteLog> GetList(IotDbContext dbContext, long ownerId, long pipelineId, bool? isHead, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.PipelineExecuteLog.Where(x => x.PipelineId == pipelineId
+                && x.OwnerId == ownerId
+                && (isHead == null || x.IsHead == isHead)
+                && (startAt == null || x.CreatedAt >= startAt)
+                && (endAt == null || x.CreatedAt <= endAt)
+            ).ToList();
         }
     }
 }

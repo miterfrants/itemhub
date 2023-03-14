@@ -3,13 +3,14 @@ using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 using Homo.Core.Constants;
 using Microsoft.EntityFrameworkCore;
+using Homo.AuthApi;
 
 namespace Homo.IotApi
 {
     public class CheckSwitchPipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public CheckSwitchPipeline(string DBConnectionString, long ownerId, string rawData)
+        public CheckSwitchPipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData)
         {
             CheckSwitchPipeline.ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(previous =>
@@ -19,17 +20,43 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
-                                DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
-                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
-                                dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
-                                var dbContext = new IotDbContext(dbContextBuilder.Options);
+
                                 var payload = CheckSwitchPipeline.ValidateAndGetPayload(rawData);
-                                var pin = DevicePinDataservice.GetOne(dbContext, ownerId, payload.DeviceId.GetValueOrDefault(), PIN_TYPE.SWITCH, payload.Pin);
-                                if (pin.Value == payload.Status)
+
+                                DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
-                                    return true;
+                                    if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
+                                    {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData,
+                                            Message = "Over Subscription"
+                                        });
+                                        return false;
+                                    }
+
+                                    var pin = DevicePinDataservice.GetOne(iotDbContext, ownerId, payload.DeviceId.GetValueOrDefault(), PIN_TYPE.SWITCH, payload.Pin);
+                                    if (pin.Value == payload.Status)
+                                    {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData
+                                        });
+                                        return true;
+                                    }
+                                    return false;
                                 }
-                                return false;
                             });
         }
 

@@ -11,9 +11,7 @@ namespace Homo.IotApi
     public class SchedulePipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public SchedulePipeline(string rawData,
-            long pipelineId,
-            long ownerId,
+        public SchedulePipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
             string mqttPassword,
@@ -22,8 +20,8 @@ namespace Homo.IotApi
             string smsUrl,
             string sendGridApiKey,
             string mailTemplatePath,
-            string systemEmail,
-            string DBConnectionString)
+            string systemEmail
+            )
         {
             ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(async previous =>
@@ -33,20 +31,51 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
-                                var next = ValidateAndGetPayload(rawData);
-                                var delay = next.Value - DateTimeOffset.Now;
-                                if (delay.TotalMilliseconds <= 0)
-                                {
 
-                                    // 這邊可能會有 Performance Issue 或是記憶體的這個實體消失了導致 cronjob 沒有執行, 所以這邊可能要測一下
-                                    scheduleNextJob(rawData, pipelineId, ownerId, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
-                                    return true;
-                                }
-                                else
+                                var next = ValidateAndGetPayload(rawData);
+                                try
                                 {
-                                    await Task.Delay((int)delay.TotalMilliseconds);
-                                    scheduleNextJob(rawData, pipelineId, ownerId, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
-                                    return true;
+                                    DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                    var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                    IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                    using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
+                                    {
+                                        if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
+                                        {
+                                            PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                            {
+                                                IsHead = isHead,
+                                                IsEnd = isEnd,
+                                                PipelineId = pipelineId,
+                                                ItemId = id,
+                                                Raw = rawData,
+                                                Message = "Over Subscription"
+                                            });
+                                            return false;
+                                        }
+
+                                        var delay = next.Value - DateTimeOffset.Now;
+                                        if (delay.TotalMilliseconds > 0)
+                                        {
+                                            await Task.Delay((int)delay.TotalMilliseconds);
+                                        }
+                                        scheduleNextJob(rawData, pipelineId, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData
+                                        });
+                                        return true;
+                                    }
+                                }
+                                catch (System.Exception ex)
+                                {
+                                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(ex, Newtonsoft.Json.Formatting.Indented)}");
+                                    return false;
                                 }
                             });
         }
@@ -55,6 +84,7 @@ namespace Homo.IotApi
             string rawData,
             long pipelineId,
             long ownerId,
+            bool isVIP,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
             string mqttPassword,
@@ -72,7 +102,7 @@ namespace Homo.IotApi
             var dbContext = new IotDbContext(dbContextBuilder.Options);
             var pipelineItems = PipelineItemDataservice.GetAll(dbContext, ownerId, pipelineId, null);
             var pipelineConnectors = PipelineConnectorDataservice.GetAll(dbContext, ownerId, pipelineId, null);
-            PipelineHelper.Execute(pipelineId, pipelineItems, pipelineConnectors, dbContext, ownerId, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+            PipelineHelper.Execute(pipelineId, pipelineItems, pipelineConnectors, dbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
         }
 
         public static System.DateTimeOffset? ValidateAndGetPayload(string cronExpression)

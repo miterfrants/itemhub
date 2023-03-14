@@ -7,10 +7,11 @@ namespace Homo.IotApi
         public partial class PipelineExecuteLog
         {
             public long PipelineId { get; set; }
-            public long? CurrentPipelineId { get; set; }
-            public bool IsCompleted { get; set; }
-            public string Log { get; set; }
-
+            public long ItemId { get; set; }
+            public string Raw { get; set; }
+            public bool IsHead { get; set; }
+            public bool IsEnd { get; set; }
+            public string Message { get; set; }
         }
 
     }
