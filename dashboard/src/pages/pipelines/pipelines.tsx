@@ -62,7 +62,7 @@ const Pipelines = () => {
     });
 
     useEffect(() => {
-        document.title = 'ItemHub - Pipeline 列表';
+        document.title = 'ItemHub - 自動化觸發流程列表';
         // eslint-disable-next-line
     }, []);
 
@@ -142,8 +142,8 @@ const Pipelines = () => {
     return (
         <div className="devices">
             <PageTitle
-                title="Pipeline 列表"
-                primaryButtonWording="新增 Pipeline"
+                title="自動化觸發流程列表"
+                primaryButtonWording="新增 自動化觸發流程"
                 secondaryButtonWording="重新整理"
                 primaryButtonVisible
                 primaryButtonCallback={() => {

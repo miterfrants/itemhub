@@ -207,9 +207,11 @@ const Pipeline = () => {
     return (
         <div className="pipeline">
             <PageTitle
-                primaryButtonWording="新增 Pipeline"
+                primaryButtonWording="新增 自動化觸發流程"
                 secondaryButtonWording="重新整理"
-                title={isCreateMode ? '新增 Pipeline' : '編輯 Pipeline'}
+                title={
+                    isCreateMode ? '新增 自動化觸發流程' : '編輯 自動化觸發流程'
+                }
             />
             {isGetting && pipeline === null && !isCreateMode ? (
                 <Spinner />
