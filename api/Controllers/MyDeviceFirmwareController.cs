@@ -19,12 +19,14 @@ namespace Homo.IotApi
         readonly string _firmwareTemplatePath;
         readonly string _staticPath;
         readonly string _dbc;
+        readonly string _domain;
         public MyDeviceFirmwareController(IotDbContext dbContext, IOptions<AppSettings> appSettings)
         {
             _dbContext = dbContext;
             _firmwareTemplatePath = appSettings.Value.Common.FirmwareTemplatePath;
             _staticPath = appSettings.Value.Common.StaticPath;
             _dbc = appSettings.Value.Secrets.DBConnectionString;
+            _domain = appSettings.Value.Common.Domain;
         }
 
         [SwaggerOperation(
@@ -68,7 +70,7 @@ namespace Homo.IotApi
             FirmwareBundleLogDataservice.Create(_dbContext, extraPayload.Id, id, randomBundleId, device.Protocol);
 
             // pass client id, client secrets and bundle id to asyn bundle firmware function
-            string bundleName = FirmwareGenerateService.Generate(_dbc, _firmwareTemplatePath, _staticPath, id, extraPayload.Id, randomClientId, clientSecret, randomBundleId, dto.ZipPassword, device.Protocol);
+            string bundleName = FirmwareGenerateService.Generate(_dbc, _firmwareTemplatePath, _staticPath, _domain, id, extraPayload.Id, randomClientId, clientSecret, randomBundleId, dto.ZipPassword, device.Protocol);
 
             Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
             var buffer = System.IO.File.ReadAllBytes($"{_staticPath}/firmware/{bundleName}.zip");
