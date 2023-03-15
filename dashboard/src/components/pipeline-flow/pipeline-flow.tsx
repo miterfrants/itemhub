@@ -19,7 +19,7 @@ import {
     PipelineType,
 } from '@/types/pipeline.type';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
     useCreatePipelineItem,
     useDeletePipelineItem,
@@ -68,7 +68,7 @@ export const PipelineFlow = ({
         oldOne: PipelineItemType | undefined
     ): boolean => {
         if (newOne && !oldOne) {
-            return false;
+            return true;
         }
         if (!newOne || !oldOne) {
             return false;
@@ -106,18 +106,42 @@ export const PipelineFlow = ({
                     newValue: string,
                     newItemType: number
                 ) => {
-                    const changeNodes = reactFlowInstance
-                        .getNodes()
-                        .filter((node) => node.id === nodeId)
-                        .map(
-                            (item: any) =>
-                                ({
-                                    ...item.data,
-                                    value: newValue,
-                                    itemType: newItemType,
-                                } as PipelineItemType)
-                        );
-                    debounceChangeNodes(changeNodes);
+                    const newNodes = reactFlowInstance.getNodes();
+                    console.log('newNodes:', JSON.stringify(newNodes));
+                    console.log(nodeId);
+
+                    const shouldBeChangeNode = newNodes.find(
+                        (node) => node.id.toString() === nodeId
+                    );
+
+                    if (!shouldBeChangeNode) {
+                        console.log('testing');
+                        return;
+                    }
+
+                    // update local node
+                    shouldBeChangeNode.data = {
+                        ...shouldBeChangeNode.data,
+                        value: newValue,
+                        itemType: newItemType,
+                        itemTypeKey: pipelineItemTypes.find(
+                            (itemType) => itemType.value === newItemType
+                        )?.key,
+                    };
+
+                    reactFlowInstance.setNodes(newNodes);
+
+                    // update api
+                    debounceChangeNodes([
+                        {
+                            ...shouldBeChangeNode.data,
+                            value: newValue,
+                            itemType: newItemType,
+                            itemTypeKey: pipelineItemTypes.find(
+                                (itemType) => itemType.value === newItemType
+                            )?.key,
+                        },
+                    ] as PipelineItemType[]);
                 },
                 itemTypeKey: targetType ? targetType.key : null,
                 isRun: pipeline?.isRun,
@@ -134,7 +158,7 @@ export const PipelineFlow = ({
         } as any;
     };
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(
+    const [nodes, setNodes, onNodesChange] = useNodesState<any>(
         pipelineItems.map(pipelineItemToNode)
     );
 
@@ -151,6 +175,7 @@ export const PipelineFlow = ({
     const [shouldBeDeleteIds, setShouldBeDeleteIds] = useState<null | number[]>(
         null
     );
+
     const { fetchApi: deletePipelineItem, data: respOfDeletePipelineItem } =
         useDeletePipelineItem({
             pipelineId: id || 0,
@@ -328,6 +353,14 @@ export const PipelineFlow = ({
         (changeNodes: PipelineItemType[]) => {
             setShouldBeUpdateNodes(
                 changeNodes.filter((newOne: PipelineItemType) => {
+                    console.log('newOne', newOne);
+                    console.log(
+                        'oldOne',
+                        pipelineItems.find(
+                            (oldOne: PipelineItemType) =>
+                                Number(oldOne.id) === Number(newOne.id)
+                        )
+                    );
                     return compareItem(
                         newOne,
                         pipelineItems.find(
@@ -382,7 +415,6 @@ export const PipelineFlow = ({
     }, [respOfUpdatePipelineItem]);
 
     // dirty form
-
     useEffect(() => {
         let isDirty = false;
         if (
@@ -431,6 +463,7 @@ export const PipelineFlow = ({
             }}
             onNodeDragStop={(event: React.MouseEvent, dropNode: Node) => {
                 setDirtyForm(true);
+
                 const changeNodes = reactFlowInstance
                     .getNodes()
                     .filter((node) => node.id === dropNode.id)
@@ -444,7 +477,18 @@ export const PipelineFlow = ({
                                 },
                             } as PipelineItemType)
                     );
-                debounceChangeNodes(changeNodes);
+
+                setShouldBeUpdateNodes(
+                    changeNodes.filter((newOne: PipelineItemType) => {
+                        return compareItem(
+                            newOne,
+                            pipelineItems.find(
+                                (oldOne: PipelineItemType) =>
+                                    Number(oldOne.id) === Number(newOne.id)
+                            )
+                        );
+                    })
+                );
             }}
             onEdgesChange={onEdgesChange}
             onConnect={(params) => {
@@ -504,7 +548,7 @@ export const PipelineFlow = ({
                     >
                         <img
                             className="icon"
-                            src={isDirty ? disabledPlusIcon : plusIcon}
+                            src={pipeline?.isRun ? disabledPlusIcon : plusIcon}
                         />
                     </div>
                     <div

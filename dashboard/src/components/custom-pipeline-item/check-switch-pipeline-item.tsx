@@ -105,7 +105,7 @@ const CheckSwitchPipelineItem = ({
                 />
             </label>
             <label className="mt-3 d-block">
-                <div>控制:</div>
+                <div>狀態:</div>
                 <select
                     className="form-control form-select"
                     onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {

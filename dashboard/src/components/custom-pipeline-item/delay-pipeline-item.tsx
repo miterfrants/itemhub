@@ -25,10 +25,10 @@ const DelayPipelineItem = ({
         return true;
     };
     useEffect(() => {
-        if (!validate(state) || pipelineItem.value === state) {
+        if (!state) {
             return;
         }
-        if (!state) {
+        if (!validate(state) || pipelineItem.value === state) {
             return;
         }
         onChangedCallback(state);
@@ -40,12 +40,22 @@ const DelayPipelineItem = ({
                 <div>Delay 時間:</div>
                 <div className="input-group">
                     <input
-                        className="form-control"
+                        className="form-control nodrag"
                         type="number"
                         placeholder=""
                         defaultValue={state}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
+                        ) => {
+                            event.stopPropagation();
+                            setState(
+                                event.currentTarget.value === ''
+                                    ? undefined
+                                    : event.currentTarget.value
+                            );
+                        }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
                         ) => {
                             event.stopPropagation();
                             setState(

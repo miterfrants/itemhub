@@ -118,7 +118,7 @@ const Header = () => {
                     >
                         <img src={pipelineIcon} />
                         <span className="text-block text-nowrap overflow-hidden">
-                            <div className="mx-3">Pipeline</div>
+                            <div className="mx-3">自動化觸發流程</div>
                         </span>
                     </Link>
 

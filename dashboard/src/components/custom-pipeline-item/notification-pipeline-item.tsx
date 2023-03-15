@@ -92,14 +92,14 @@ const NotificationPipelineItem = ({
             !state.phone
         ) {
             result = false;
-            newValidation.phone.errorMessage = 'phone 為必填欄位';
+            newValidation.phone.errorMessage = '手機為必填欄位';
             newValidation.phone.invalid = true;
         } else if (
             Number(state.notificationType) === smsTypeValue &&
             !ValidationHelpers.isPhone(state?.phone || '')
         ) {
             result = false;
-            newValidation.phone.errorMessage = 'phone 格式錯誤';
+            newValidation.phone.errorMessage = '手機格式錯誤';
             newValidation.phone.invalid = true;
         } else {
             newValidation.phone.errorMessage = '';
@@ -247,7 +247,7 @@ const NotificationPipelineItem = ({
                 </div>
             )}
             <label className="mt-3 d-block">
-                <div>訊息:</div>
+                <div>訊息(限50字內): </div>
                 <textarea
                     className="form-control"
                     onKeyUp={(
@@ -260,6 +260,8 @@ const NotificationPipelineItem = ({
                     }}
                     defaultValue={state?.message}
                     disabled={pipelineItem?.isRun}
+                    rows={5}
+                    maxLength={50}
                 />
             </label>
             {validation.message.invalid && (

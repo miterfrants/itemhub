@@ -107,6 +107,15 @@ const SensorPipelineItem = ({
             newValidation.operator.errorMessage = '';
             newValidation.operator.invalid = false;
         }
+
+        if (state.threshold === undefined) {
+            result = false;
+            newValidation.threshold.errorMessage = '感測器數值欄位為必填欄位';
+            newValidation.threshold.invalid = true;
+        } else {
+            newValidation.threshold.errorMessage = '';
+            newValidation.threshold.invalid = false;
+        }
         setValidation(newValidation);
         return result;
     };
@@ -169,6 +178,7 @@ const SensorPipelineItem = ({
                         setState({
                             ...state,
                             deviceId: newDeviceId,
+                            pin: undefined,
                         });
                     }}
                 />
@@ -181,10 +191,21 @@ const SensorPipelineItem = ({
                     </div>
                     <input
                         defaultValue={state?.lastRows}
-                        className="form-control"
                         type="number"
+                        className="form-control nodrag"
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                lastRows:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,
@@ -271,12 +292,23 @@ const SensorPipelineItem = ({
                         })}
                     </select>
                     <input
-                        className="form-control"
+                        className="form-control nodrag"
                         type="number"
                         placeholder="感測器數值"
                         defaultValue={state?.threshold}
                         onKeyUp={(
                             event: React.KeyboardEvent<HTMLInputElement>
+                        ) => {
+                            setState({
+                                ...state,
+                                threshold:
+                                    event.currentTarget.value !== ''
+                                        ? Number(event.currentTarget.value)
+                                        : undefined,
+                            });
+                        }}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
                         ) => {
                             setState({
                                 ...state,

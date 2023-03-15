@@ -83,8 +83,8 @@ export const useDeletePipelineConnector = (payload: {
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {
                 dispatch(
-                    pipelineItemsActions.deleteMultiple({
-                        pipelineItemIds: [id],
+                    pipelineConnectorsActions.deleteMultiple({
+                        ids: [id],
                     })
                 );
             }

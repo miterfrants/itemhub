@@ -41,10 +41,7 @@ export const pipelineConnectorsSlice = createSlice({
 
             return [...updatedOldItems, ...newPipelineConnectorsExcludedExists];
         },
-        deleteMultiple: (
-            state,
-            action: PayloadAction<{ pipelineItemIds: number[] }>
-        ) => {
+        deleteMultiple: (state, action: PayloadAction<{ ids: number[] }>) => {
             const deletePayload = action.payload;
 
             if (state === null) {
@@ -54,10 +51,7 @@ export const pipelineConnectorsSlice = createSlice({
             }
 
             const newList = state.filter(
-                (item) =>
-                    deletePayload.pipelineItemIds.indexOf(
-                        Number(item.id || 0)
-                    ) === -1
+                (item) => deletePayload.ids.indexOf(Number(item.id || 0)) === -1
             );
             return newList;
         },
