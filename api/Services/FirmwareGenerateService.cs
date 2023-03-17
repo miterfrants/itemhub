@@ -89,9 +89,9 @@ namespace Homo.IotApi
             rootCa = rootCa.Replace("\n", "\\n\" \\\n\"");
             rootCa = rootCa.Substring(0, rootCa.Length - 5);
 
-            string bearsslTrustAnchors = System.IO.File.ReadAllText("secrets/bearssl-ta.h");
 
             certTemplate = certTemplate.Replace("{CA}", rootCa);
+            // string bearsslTrustAnchors = System.IO.File.ReadAllText("secrets/bearssl-ta.h");
             // certTemplate = certTemplate.Replace("{BEARSSL_TA}", bearsslTrustAnchors);
             System.IO.File.WriteAllText(certsPath, certTemplate);
 
