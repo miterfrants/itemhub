@@ -30,6 +30,7 @@ namespace Homo.IotApi
         public string TestingEmail { get; set; }
         public string TestingPhone { get; set; }
 
+
     }
 
     public class Common : Homo.Api.ICommon
@@ -50,5 +51,6 @@ namespace Homo.IotApi
         public string TapPayEndpointByToken { get; set; }
         public string FirmwareTemplatePath { get; set; }
         public string StaticPath { get; set; }
+        public string Domain { get; set; }
     }
 }
