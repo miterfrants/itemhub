@@ -150,7 +150,7 @@ namespace Homo.IotApi
 
         [HttpPost]
         [Route("{id}/toggle")]
-        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto)
+        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto, bool isVIP)
         {
             long ownerId = extraPayload.Id;
             var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
@@ -205,7 +205,7 @@ namespace Homo.IotApi
                 {
                     try
                     {
-                        PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                        PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
                     }
                     catch (CustomException ex)
                     {

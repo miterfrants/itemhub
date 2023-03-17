@@ -66,9 +66,9 @@ namespace Homo.IotApi
             await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
             long ownerId = extraPayload.Id;
             DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+
             // run pipeline head is sensor
             var pipelines = PipelineDataservice.GetAll(_iotDbContext, ownerId, PIPELINE_ITEM_TYPE.SENSOR, id, pin, true);
-            var pipelineInvalidError = new Dictionary<long, CustomException>();
             pipelines.ForEach(pipeline =>
             {
                 var pipelineItems = PipelineItemDataservice.GetAll(_iotDbContext, ownerId, pipeline.Id, null);
@@ -87,35 +87,8 @@ namespace Homo.IotApi
                     // todo: 代表資料不一至要提醒工程師
                     return;
                 }
-
-                try
-                {
-                    PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _iotDbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
-                }
-                catch (System.Exception ex)
-                {
-                    if (ex.GetType() == typeof(Homo.Core.Constants.CustomException))
-                    {
-                        // 預期的錯誤在後面把他塞到 pipeline execute log 裏頭
-                        pipelineInvalidError.Add(pipeline.Id, (Homo.Core.Constants.CustomException)ex);
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
+                PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _iotDbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
             });
-
-            foreach (long pipelineId in pipelineInvalidError.Keys)
-            {
-                PipelineExecuteLogDataservice.Create(_iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
-                {
-                    PipelineId = id,
-                    CurrentPipelineId = null,
-                    IsCompleted = false,
-                    Log = pipelineInvalidError[pipelineId].Message
-                });
-            }
 
             return new
             {

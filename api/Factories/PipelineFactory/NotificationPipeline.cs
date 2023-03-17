@@ -1,14 +1,16 @@
+using System;
 using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 using Homo.Core.Constants;
 using Homo.AuthApi;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
     public class NotificationPipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public NotificationPipeline(string rawData, string smsUsername, string smsPassword, string smsUrl, string mailTemplatePath, string systemEmail, string sendGridApiKey)
+        public NotificationPipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData, string smsUsername, string smsPassword, string smsUrl, string mailTemplatePath, string systemEmail, string sendGridApiKey)
         {
             ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(async previous =>
@@ -18,20 +20,52 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
+
                                 var payload = ValidateAndGetPayload(rawData);
-                                if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.SMS)
+
+                                DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
-                                    await SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsUrl, payload.Phone, payload.Message);
-                                }
-                                else if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.EMAIL)
-                                {
-                                    await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                                    if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
                                     {
-                                        Subject = "ItemHub Pipeline Notification",
-                                        Content = payload.Message
-                                    }, systemEmail, payload.Email, sendGridApiKey);
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData,
+                                            Message = "Over Subscription"
+                                        });
+                                        return false;
+                                    }
+
+
+                                    if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.SMS)
+                                    {
+                                        await SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsUrl, payload.Phone, payload.Message);
+                                    }
+                                    else if (payload.NotificationType == PIPELINE_NOTIFICATION_TYPE.EMAIL)
+                                    {
+                                        await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                                        {
+                                            Subject = "ItemHub Pipeline Notification",
+                                            Content = payload.Message
+                                        }, systemEmail, payload.Email, sendGridApiKey);
+                                    }
+
+                                    PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                    {
+                                        IsHead = isHead,
+                                        IsEnd = isEnd,
+                                        PipelineId = pipelineId,
+                                        ItemId = id,
+                                        Raw = rawData
+                                    });
+                                    return true;
                                 }
-                                return true;
                             });
         }
 
