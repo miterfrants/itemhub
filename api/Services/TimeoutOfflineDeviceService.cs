@@ -38,8 +38,8 @@ namespace Homo.IotApi
                 builder.UseMySql(dbc, serverVersion);
                 IotDbContext newDbContext = new IotDbContext(iotDbContextBuilder.Options);
                 DBContext dbContext = new DBContext(builder.Options);
-                // 15 秒內 device activity log 沒查到資料就當作下線
-                int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(newDbContext, ownerId, deviceId);
+                // 60 秒內 device activity log 沒查到資料就當作下線
+                int count = DeviceActivityLogDataservice.GetRowNumThis60Seconds(newDbContext, ownerId, deviceId);
                 if (count > 0)
                 {
                     return;
