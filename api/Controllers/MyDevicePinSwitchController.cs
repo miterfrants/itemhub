@@ -61,7 +61,7 @@ namespace Homo.IotApi
         )]
         [HttpPatch]
         [Route("{pin}")]
-        public ActionResult<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> update([FromRoute] long id, [FromRoute] string pin, [FromBody] DTOs.DevicePinSwitchValue dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload, bool isVIP)
         {
             var ownerId = extraPayload.Id;
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_dbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
@@ -88,35 +88,8 @@ namespace Homo.IotApi
                     // todo: 代表資料不一至要提醒工程師
                     return;
                 }
-
-                try
-                {
-                    PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _dbContext, ownerId, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
-                }
-                catch (System.Exception ex)
-                {
-                    if (ex.GetType() == typeof(Homo.Core.Constants.CustomException))
-                    {
-                        // 預期的錯誤在後面把他塞到 pipeline execute log 裏頭
-                        pipelineInvalidError.Add(pipeline.Id, (Homo.Core.Constants.CustomException)ex);
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
+                PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
             });
-
-            foreach (long pipelineId in pipelineInvalidError.Keys)
-            {
-                PipelineExecuteLogDataservice.Create(_dbContext, ownerId, new DTOs.PipelineExecuteLog()
-                {
-                    PipelineId = id,
-                    CurrentPipelineId = null,
-                    IsCompleted = false,
-                    Log = pipelineInvalidError[pipelineId].Message
-                });
-            }
 
             return new
             {

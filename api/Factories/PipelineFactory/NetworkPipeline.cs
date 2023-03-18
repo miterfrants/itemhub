@@ -1,14 +1,17 @@
+using System;
 using System.Threading.Tasks.Dataflow;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Homo.Core.Constants;
+using Microsoft.EntityFrameworkCore;
+using Homo.AuthApi;
 
 namespace Homo.IotApi
 {
     public class NetworkPipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public NetworkPipeline(string rawData)
+        public NetworkPipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData)
         {
             ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(async previous =>
@@ -18,89 +21,135 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
+
                                 var payload = ValidateAndGetPayload(rawData);
-                                HttpClient http = new HttpClient();
-                                if (!System.String.IsNullOrEmpty(payload.Cookies))
-                                {
-                                    http.DefaultRequestHeaders.Add("Cookies", payload.Cookies);
-                                }
-                                if (!System.String.IsNullOrEmpty(payload.Cookies))
-                                {
-                                    http.DefaultRequestHeaders.Add("Authorization", payload.Authorization);
-                                }
 
-                                http.DefaultRequestHeaders.Add("User-Agent", "ItemHub");
-                                string postBody = payload.RequestPayload ?? "";
-                                StringContent stringContent = new StringContent(postBody, System.Text.Encoding.UTF8, payload.ContentType);
-                                HttpResponseMessage response = null;
-                                if (payload.Method == "GET")
+                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
-                                    response = await http.GetAsync(payload.Url);
-                                }
-                                else if (payload.Method == "POST")
-                                {
-                                    response = await http.PostAsync(payload.Url, stringContent);
-                                }
-                                else if (payload.Method == "DELETE")
-                                {
-                                    response = await http.DeleteAsync(payload.Url);
-                                }
-                                else if (payload.Method == "PATCH")
-                                {
-                                    response = await http.PatchAsync(payload.Url, stringContent);
-                                }
-                                else if (payload.Method == "PUT")
-                                {
-                                    response = await http.PutAsync(payload.Url, stringContent);
-                                }
-
-                                if (
-                                    (response.StatusCode == System.Net.HttpStatusCode.OK && payload.ContentType != "application/json")
-                                    || (response.StatusCode == System.Net.HttpStatusCode.OK && payload.ContentType == "application/json" && System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
-                                    )
-                                {
-                                    return true;
-                                }
-
-                                string result = "";
-                                if (payload.ContentType == "application/json")
-                                {
-                                    using (var sr = new System.IO.StreamReader(await response.Content.ReadAsStreamAsync(), System.Text.Encoding.UTF8))
+                                    if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
                                     {
-                                        result = sr.ReadToEnd();
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData,
+                                            Message = "Over Subscription"
+                                        });
+                                        return false;
                                     }
-                                }
 
-                                if (!System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
-                                {
-                                    result = JsonConvert.DeserializeObject<dynamic>(result)[payload.ResponseBodyProperty];
-
-                                    if (payload.Operator == TRIGGER_OPERATOR.E && result == payload.Value)
+                                    HttpClient http = new HttpClient();
+                                    if (!System.String.IsNullOrEmpty(payload.Cookies))
                                     {
+                                        http.DefaultRequestHeaders.Add("Cookies", payload.Cookies);
+                                    }
+                                    if (!System.String.IsNullOrEmpty(payload.Cookies))
+                                    {
+                                        http.DefaultRequestHeaders.Add("Authorization", payload.Authorization);
+                                    }
+
+                                    http.DefaultRequestHeaders.Add("User-Agent", "ItemHub");
+                                    string postBody = payload.RequestPayload ?? "";
+                                    StringContent stringContent = new StringContent(postBody, System.Text.Encoding.UTF8, payload.ContentType);
+                                    HttpResponseMessage response = null;
+                                    if (payload.Method == "GET")
+                                    {
+                                        response = await http.GetAsync(payload.Url);
+                                    }
+                                    else if (payload.Method == "POST")
+                                    {
+                                        response = await http.PostAsync(payload.Url, stringContent);
+                                    }
+                                    else if (payload.Method == "DELETE")
+                                    {
+                                        response = await http.DeleteAsync(payload.Url);
+                                    }
+                                    else if (payload.Method == "PATCH")
+                                    {
+                                        response = await http.PatchAsync(payload.Url, stringContent);
+                                    }
+                                    else if (payload.Method == "PUT")
+                                    {
+                                        response = await http.PutAsync(payload.Url, stringContent);
+                                    }
+
+                                    if (
+                                        (response.StatusCode == System.Net.HttpStatusCode.OK && payload.ContentType != "application/json")
+                                        || (response.StatusCode == System.Net.HttpStatusCode.OK && payload.ContentType == "application/json" && System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
+                                        )
+                                    {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData
+                                        });
                                         return true;
                                     }
-                                    else
+
+                                    string result = "";
+                                    if (payload.ContentType == "application/json")
                                     {
-                                        decimal numberResult = 0;
-                                        bool isDecimal = decimal.TryParse(result, out numberResult);
-                                        decimal threshold = 0;
-                                        bool isThresholdDecimal = decimal.TryParse(payload.Value, out threshold);
-                                        if (!isDecimal || !isThresholdDecimal)
+                                        using (var sr = new System.IO.StreamReader(await response.Content.ReadAsStreamAsync(), System.Text.Encoding.UTF8))
                                         {
-                                            return false;
-                                        }
-                                        if (
-                                            (payload.Operator == TRIGGER_OPERATOR.BE && numberResult >= threshold)
-                                        || (payload.Operator == TRIGGER_OPERATOR.B && numberResult > threshold)
-                                        || (payload.Operator == TRIGGER_OPERATOR.LE && numberResult <= threshold)
-                                        || (payload.Operator == TRIGGER_OPERATOR.L && numberResult < threshold)
-                                        )
-                                        {
-                                            return true;
+                                            result = sr.ReadToEnd();
                                         }
                                     }
+
+                                    if (!System.String.IsNullOrEmpty(payload.ResponseBodyProperty))
+                                    {
+                                        result = JsonConvert.DeserializeObject<dynamic>(result)[payload.ResponseBodyProperty];
+
+                                        if (payload.Operator == TRIGGER_OPERATOR.E && result == payload.Value)
+                                        {
+                                            PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                            {
+                                                IsHead = isHead,
+                                                IsEnd = isEnd,
+                                                PipelineId = pipelineId,
+                                                ItemId = id,
+                                                Raw = rawData
+                                            });
+                                            return true;
+                                        }
+                                        else
+                                        {
+                                            decimal numberResult = 0;
+                                            bool isDecimal = decimal.TryParse(result, out numberResult);
+                                            decimal threshold = 0;
+                                            bool isThresholdDecimal = decimal.TryParse(payload.Value, out threshold);
+                                            if (!isDecimal || !isThresholdDecimal)
+                                            {
+                                                return false;
+                                            }
+                                            if (
+                                                (payload.Operator == TRIGGER_OPERATOR.BE && numberResult >= threshold)
+                                            || (payload.Operator == TRIGGER_OPERATOR.B && numberResult > threshold)
+                                            || (payload.Operator == TRIGGER_OPERATOR.LE && numberResult <= threshold)
+                                            || (payload.Operator == TRIGGER_OPERATOR.L && numberResult < threshold)
+                                            )
+                                            {
+                                                PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                                {
+                                                    IsHead = isHead,
+                                                    IsEnd = isEnd,
+                                                    PipelineId = pipelineId,
+                                                    ItemId = id,
+                                                    Raw = rawData
+                                                });
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                    return false;
                                 }
-                                return false;
                             });
         }
         public static NetworkPipelinePayload ValidateAndGetPayload(string rawData)

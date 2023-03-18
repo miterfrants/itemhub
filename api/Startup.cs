@@ -147,11 +147,21 @@ namespace Homo.IotApi
             services.AddDbContext<IotDbContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
             services.AddDbContext<Homo.AuthApi.DBContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
             if (
-                _env.EnvironmentName.ToLower() != "dev"
-                && _env.EnvironmentName.ToLower() != "development"
+                _env.EnvironmentName.ToLower() != "development"
                 && _env.EnvironmentName.ToLower() != "migration")
             {
-                StartupOfflineService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
+                RestorePrevisousStateService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
+                RestorePrevisousStateService.RestartSchedulePipeline(secrets.DBConnectionString,
+                    localMqttPublishers,
+                    appSettings.Secrets.MqttUsername,
+                    appSettings.Secrets.MqttPassword,
+                    appSettings.Secrets.SmsUsername,
+                    appSettings.Secrets.SmsPassword,
+                    appSettings.Common.SmsClientUrl,
+                    appSettings.Secrets.SendGridApiKey,
+                    appSettings.Common.StaticPath,
+                    appSettings.Common.SystemEmail
+                );
             }
 
             services.AddControllers();

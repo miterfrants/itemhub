@@ -83,6 +83,7 @@ namespace Homo.IotApi
             List<PipelineConnector> pipelineConnectors,
             IotDbContext iotDbContext,
             long ownerId,
+            bool isVIP,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
             string mqttPassword,
@@ -104,10 +105,14 @@ namespace Homo.IotApi
 
             PipelineHelper.Validate(pipelineItems, pipelineConnectors);
             Dictionary<long, IPropagatorBlock<bool, bool>> blocks = new Dictionary<long, IPropagatorBlock<bool, bool>>();
+            var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+            var pipelineEnd = PipelineHelper.GetEnds(pipelineHead, pipelineItems, pipelineConnectors);
             var pipelineFactory = new PipelineFactory();
             pipelineItems.ForEach(item =>
             {
-                var block = pipelineFactory.getPipeline(item.ItemType, iotDbContext, pipelineId, ownerId, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc).block;
+                bool isHead = pipelineHead.Id == item.Id;
+                bool isEnd = pipelineEnd.Where(x => x.Id == item.Id).Count() > 0;
+                var block = pipelineFactory.getPipeline(item.ItemType, item.Id, pipelineId, ownerId, dbc, isHead, isEnd, isVIP, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail).block;
                 if (block == null)
                 {
                     throw new CustomException(ERROR_CODE.NOT_ALLOW_PIPELINE_TYPE, System.Net.HttpStatusCode.BadRequest);
@@ -115,7 +120,6 @@ namespace Homo.IotApi
                 blocks.Add(item.Id, block);
             });
 
-            var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
 
             // 整理 pipeline 連線資料,串接 tranform block
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };

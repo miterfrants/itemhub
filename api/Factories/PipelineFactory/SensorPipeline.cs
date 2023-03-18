@@ -10,7 +10,7 @@ namespace Homo.IotApi
     public class SensorPipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public SensorPipeline(string DBConnectionString, long ownerId, string rawData)
+        public SensorPipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData)
         {
             ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(previous =>
@@ -20,14 +20,29 @@ namespace Homo.IotApi
                                 {
                                     return false;
                                 }
-                                try
+
+                                var payload = ValidateAndGetPayload(rawData);
+
+                                DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                                var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+                                IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
+                                using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
-                                    var payload = ValidateAndGetPayload(rawData);
-                                    DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
-                                    var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
-                                    dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
-                                    var dbContext = new IotDbContext(dbContextBuilder.Options);
-                                    decimal? categorizedValue = SensorLogDataservice.GetAggregateValue(dbContext, ownerId, payload.DeviceId.GetValueOrDefault(), payload.Pin, payload.StaticMethod.GetValueOrDefault(), 1, payload.LastRows.GetValueOrDefault());
+                                    if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
+                                    {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData,
+                                            Message = "Over Subscription"
+                                        });
+                                        return false;
+                                    }
+
+                                    decimal? categorizedValue = SensorLogDataservice.GetAggregateValue(iotDbContext, ownerId, payload.DeviceId.GetValueOrDefault(), payload.Pin, payload.StaticMethod.GetValueOrDefault(), 1, payload.LastRows.GetValueOrDefault());
                                     if (
                                         categorizedValue != null && (
                                         payload.Operator == TRIGGER_OPERATOR.B && categorizedValue > payload.Threshold
@@ -38,16 +53,18 @@ namespace Homo.IotApi
                                         )
                                     )
                                     {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData
+                                        });
                                         return true;
                                     }
                                     return false;
                                 }
-                                catch (System.Exception ex)
-                                {
-                                    System.Console.WriteLine($"Error When Sensor Pipeline:{Newtonsoft.Json.JsonConvert.SerializeObject(ex, Newtonsoft.Json.Formatting.Indented)}");
-                                    throw;
-                                }
-
                             });
         }
 
