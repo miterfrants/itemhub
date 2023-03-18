@@ -12,6 +12,11 @@ namespace Homo.IotApi
 
     public class MqttPublisherHelper
     {
+        // API Server 每一台都是一個 Publisher 也是 Broker, 
+        // 所以當它收到 device 送來的 publish message 他會當中繼的 publisher 把他的訊息送到附近的所有 API server(broker)
+        // 這些 broker 再把資料廣播到訂閱的 device 上
+        // 這個 Connect function 是在每一次 device 送 publish message 都確保每一台 api server 之間有建立好 mqtt connection
+
         public static void Connect(string localMqttPublisherEndpointsRaw, List<MqttPublisher> localMqttPublishers, string mqttUsername, string mqttPassword
             )
         {
@@ -76,6 +81,7 @@ namespace Homo.IotApi
                     }
 
                     // 多個 request 過來的時候可能會並行的發生, 所以這邊要再多做一個判斷避免 localMqttPublishers 中間有沒連線的 mqtt client
+
                     if (client.IsConnected && localMqttPublishers.Where(x => x.Id == endpoint.Id).Count() == 0)
                     {
                         System.Console.WriteLine($"testing: {publisher.Id}  {publisher.IP}  {Newtonsoft.Json.JsonConvert.SerializeObject("mqtt connected", Newtonsoft.Json.Formatting.Indented)}");

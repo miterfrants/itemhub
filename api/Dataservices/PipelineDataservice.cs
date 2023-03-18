@@ -7,12 +7,12 @@ namespace Homo.IotApi
 {
     public class PipelineDataservice
     {
-        public static List<Pipeline> GetAll(IotDbContext dbContext, long ownerId, PIPELINE_ITEM_TYPE firstPipelineItemType, long? firstPipelineItemDeviceId, string firstPipelineItemPin, bool? isRun)
+        public static List<Pipeline> GetAll(IotDbContext dbContext, long? ownerId, PIPELINE_ITEM_TYPE firstPipelineItemType, long? firstPipelineItemDeviceId, string firstPipelineItemPin, bool? isRun)
         {
             return dbContext.Pipeline
                 .Where(x =>
                     x.DeletedAt == null
-                    && x.OwnerId == ownerId
+                    && (ownerId == null || x.OwnerId == ownerId)
                     && x.FirstPieplineItemType == firstPipelineItemType
                     && (isRun == null || x.IsRun == isRun)
                     && (firstPipelineItemDeviceId == null || x.FirstPipelineItemDeviceId == firstPipelineItemDeviceId.GetValueOrDefault())
