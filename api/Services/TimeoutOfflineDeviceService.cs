@@ -39,57 +39,59 @@ namespace Homo.IotApi
                 var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
                 iotDbContextBuilder.UseMySql(dbc, serverVersion);
                 builder.UseMySql(dbc, serverVersion);
-                IotDbContext newDbContext = new IotDbContext(iotDbContextBuilder.Options);
-                DBContext dbContext = new DBContext(builder.Options);
-                // 15 秒內 device activity log 沒查到資料就當作下線
-                int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(newDbContext, ownerId, deviceId);
-                if (count > 0)
+                using (IotDbContext newDbContext = new IotDbContext(iotDbContextBuilder.Options))
                 {
-                    return;
-                }
-                DeviceDataservice.Switch(newDbContext, ownerId, deviceId, false);
-                // offline notification
-
-                Subscription subscription = SubscriptionDataservice.GetCurrnetOne(newDbContext, ownerId);
-                if (subscription == null && !RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId))
-                {
-                    return;
-                }
-                Device device = DeviceDataservice.GetOne(newDbContext, ownerId, deviceId);
-                if (!device.IsOfflineNotification)
-                {
-                    return;
-                }
-                List<string> notificationTargets = device.OfflineNotificationTarget.Split(",").ToList();
-                if (notificationTargets.Count > 5)  // 不允許通知超過 5 個人
-                {
-                    return;
-                }
-                notificationTargets.ForEach(target =>
-                {
-                    bool isEmail = ValidationHelpers.IsEmail(target);
-                    bool isPhone = ValidationHelpers.IsTaiwanMobilePhoneNumber(target);
-                    if (!isEmail && !isPhone)
+                    using (DBContext dbContext = new DBContext(builder.Options))
                     {
-                        return;
-                    }
-                    else if (isEmail)
-                    {
-                        MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.OFFLINE_NOTIFICATION, mailTemplatePath);
-                        MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                        // 15 秒內 device activity log 沒查到資料就當作下線
+                        int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(newDbContext, ownerId, deviceId);
+                        if (count > 0)
                         {
-                            Subject = commonLocalizer.Get(template.Subject, null, new Dictionary<string, string> {
+                            return;
+                        }
+                        DeviceDataservice.Switch(newDbContext, ownerId, deviceId, false);
+                        // offline notification
+
+                        Subscription subscription = SubscriptionDataservice.GetCurrnetOne(newDbContext, ownerId);
+                        if (subscription == null && !RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId))
+                        {
+                            return;
+                        }
+                        Device device = DeviceDataservice.GetOne(newDbContext, ownerId, deviceId);
+                        if (!device.IsOfflineNotification)
+                        {
+                            return;
+                        }
+                        List<string> notificationTargets = device.OfflineNotificationTarget.Split(",").ToList();
+                        if (notificationTargets.Count > 5)  // 不允許通知超過 5 個人
+                        {
+                            return;
+                        }
+                        notificationTargets.ForEach(target =>
+                        {
+                            bool isEmail = ValidationHelpers.IsEmail(target);
+                            bool isPhone = ValidationHelpers.IsTaiwanMobilePhoneNumber(target);
+                            if (!isEmail && !isPhone)
+                            {
+                                return;
+                            }
+                            else if (isEmail)
+                            {
+                                MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.OFFLINE_NOTIFICATION, mailTemplatePath);
+                                MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
+                                {
+                                    Subject = commonLocalizer.Get(template.Subject, null, new Dictionary<string, string> {
                                 {
                                     "deviceName",
                                     device.Name
                                 }
-                            }),
-                            Content = template.Content.Replace("{{deviceName}}", device.Name).Replace("{{now}}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
-                        }, systemEmail, target, sendGridApiKey);
-                    }
-                    else if (isPhone)
-                    {
-                        var content = commonLocalizer.Get("offlineNotificationContent", null, new Dictionary<string, string> {
+                                    }),
+                                    Content = template.Content.Replace("{{deviceName}}", device.Name).Replace("{{now}}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                }, systemEmail, target, sendGridApiKey);
+                            }
+                            else if (isPhone)
+                            {
+                                var content = commonLocalizer.Get("offlineNotificationContent", null, new Dictionary<string, string> {
                             {
                                 "deviceName",
                                 device.Name
@@ -97,10 +99,13 @@ namespace Homo.IotApi
                                 "now",
                                 DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                             }
+                                });
+                                SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsClientUrl, target, $"{content}");
+                            }
                         });
-                        SmsHelper.Send(SmsProvider.Every8D, smsUsername, smsPassword, smsClientUrl, target, $"{content}");
                     }
-                });
+                }
+
             }, tokenSource.Token);
 
             if (tokenSourceCollections.ContainsKey(deviceId))
@@ -114,59 +119,41 @@ namespace Homo.IotApi
 
             // run pipeline head is offline
             DbContextOptionsBuilder<IotDbContext> iotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+            DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             iotDbContextBuilder.UseMySql(dbc, serverVersion);
-            IotDbContext iotDbContext = new IotDbContext(iotDbContextBuilder.Options);
-            var offlinePipelines = PipelineDataservice.GetAll(iotDbContext, ownerId, PIPELINE_ITEM_TYPE.OFFLINE, deviceId, null, true);
-            var pipelineInvalidError = new Dictionary<long, CustomException>();
-            offlinePipelines.ForEach(pipeline =>
+            dbContextBuilder.UseMySql(dbc, serverVersion);
+
+            using (IotDbContext iotDbContext = new IotDbContext(iotDbContextBuilder.Options))
             {
-                var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
-                var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
-                var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
-                // double check
-                if (pipelineHead.ItemType != PIPELINE_ITEM_TYPE.SENSOR)
+                using (DBContext dbContext = new DBContext(dbContextBuilder.Options))
                 {
-                    // todo: 代表資料不一至要提醒工程師
-                    return;
-                }
-                var pipelinePayload = JsonConvert.DeserializeObject<SensorPipelinePayload>(pipelineHead.Value);
-                // double check
-                if (pipelinePayload.DeviceId != deviceId)
-                {
-                    // todo: 代表資料不一至要提醒工程師
-                    return;
-                }
-
-
-                try
-                {
-                    PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, ownerId, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
-                }
-                catch (System.Exception ex)
-                {
-                    if (ex.GetType() == typeof(Homo.Core.Constants.CustomException))
+                    var offlinePipelines = PipelineDataservice.GetAll(iotDbContext, ownerId, PIPELINE_ITEM_TYPE.OFFLINE, deviceId, null, true);
+                    var isVIP = RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId);
+                    var pipelineInvalidError = new Dictionary<long, CustomException>();
+                    offlinePipelines.ForEach(pipeline =>
                     {
-                        // 預期的錯誤在後面把他塞到 pipeline execute log 裏頭
-                        pipelineInvalidError.Add(pipeline.Id, (Homo.Core.Constants.CustomException)ex);
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
+                        var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
+                        var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
+                        var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                        // double check
+                        if (pipelineHead.ItemType != PIPELINE_ITEM_TYPE.OFFLINE)
+                        {
+                            // todo: 代表資料不一至要提醒工程師
+                            return;
+                        }
+                        var pipelinePayload = JsonConvert.DeserializeObject<SensorPipelinePayload>(pipelineHead.Value);
+                        // double check
+                        if (pipelinePayload.DeviceId != deviceId)
+                        {
+                            // todo: 代表資料不一至要提醒工程師
+                            return;
+                        }
+                        PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
+                    });
                 }
-            });
-
-            foreach (long pipelineId in pipelineInvalidError.Keys)
-            {
-                PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
-                {
-                    PipelineId = pipelineId,
-                    CurrentPipelineId = null,
-                    IsCompleted = false,
-                    Log = pipelineInvalidError[pipelineId].Message
-                });
             }
         }
+
     }
 }
