@@ -83,17 +83,20 @@ namespace Homo.IotApi
             System.IO.File.WriteAllText(inoPath, inoTemplate);
             System.IO.File.Delete(sourceInoPath);
 
+            if (System.IO.File.Exists(certsPath))
+            {
+                string certTemplate = System.IO.File.ReadAllText(certsPath);
+                string rootCa = System.IO.File.ReadAllText("secrets/mqtt-root-ca.crt");
+                rootCa = rootCa.Replace("\n", "\\n\" \\\n\"");
+                rootCa = rootCa.Substring(0, rootCa.Length - 5);
 
-            string certTemplate = System.IO.File.ReadAllText(certsPath);
-            string rootCa = System.IO.File.ReadAllText("secrets/mqtt-root-ca.crt");
-            rootCa = rootCa.Replace("\n", "\\n\" \\\n\"");
-            rootCa = rootCa.Substring(0, rootCa.Length - 5);
 
+                certTemplate = certTemplate.Replace("{CA}", rootCa);
+                // string bearsslTrustAnchors = System.IO.File.ReadAllText("secrets/bearssl-ta.h");
+                // certTemplate = certTemplate.Replace("{BEARSSL_TA}", bearsslTrustAnchors);
+                System.IO.File.WriteAllText(certsPath, certTemplate);
+            }
 
-            certTemplate = certTemplate.Replace("{CA}", rootCa);
-            // string bearsslTrustAnchors = System.IO.File.ReadAllText("secrets/bearssl-ta.h");
-            // certTemplate = certTemplate.Replace("{BEARSSL_TA}", bearsslTrustAnchors);
-            System.IO.File.WriteAllText(certsPath, certTemplate);
 
             // zip
             var zipFile = new ZipFile();
