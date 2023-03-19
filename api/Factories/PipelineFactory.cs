@@ -9,6 +9,7 @@ namespace Homo.IotApi
     public class PipelineFactory
     {
         public IPipeline getPipeline(
+            string serverId,
             PIPELINE_ITEM_TYPE pipelineItemType,
             long id,
             long pipelineId,
@@ -47,7 +48,7 @@ namespace Homo.IotApi
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SCHEDULE)
             {
-                return new SchedulePipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail);
+                return new SchedulePipeline(serverId, id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.SENSOR)
             {

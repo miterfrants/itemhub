@@ -25,6 +25,7 @@ namespace Homo.IotApi
         private readonly string _systemEmail;
         private readonly string _staticPath;
         private readonly string _dbc;
+        private readonly string _serverId;
         public MyPipelineController(IotDbContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers)
         {
             _dbContext = dbContext;
@@ -43,6 +44,7 @@ namespace Homo.IotApi
             _systemEmail = common.SystemEmail;
             _staticPath = common.StaticPath;
             _dbc = secrets.DBConnectionString;
+            _serverId = common.ServerId;
         }
 
         [SwaggerOperation(
@@ -205,7 +207,7 @@ namespace Homo.IotApi
                 {
                     try
                     {
-                        PipelineHelper.Execute(id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                        PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
                     }
                     catch (CustomException ex)
                     {

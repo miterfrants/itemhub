@@ -30,6 +30,7 @@ namespace Homo.IotApi
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
         private readonly string _dbConnectionString;
+        private readonly string _serverId;
         public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, List<MqttPublisher> localMqttPublishers)
         {
             var secrets = optionAppSettings.Value.Secrets;
@@ -49,6 +50,7 @@ namespace Homo.IotApi
             _mqttUsername = secrets.MqttUsername;
             _mqttPassword = secrets.MqttPassword;
             _dbConnectionString = secrets.DBConnectionString;
+            _serverId = common.ServerId;
         }
 
         [SwaggerOperation(
@@ -87,7 +89,7 @@ namespace Homo.IotApi
                     // todo: 代表資料不一至要提醒工程師
                     return;
                 }
-                PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _iotDbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
+                PipelineHelper.Execute(_serverId, pipeline.Id, pipelineItems, pipelineConnectors, _iotDbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
             });
 
             return new

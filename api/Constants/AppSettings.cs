@@ -50,5 +50,6 @@ namespace Homo.IotApi
         public string TapPayEndpointByToken { get; set; }
         public string FirmwareTemplatePath { get; set; }
         public string StaticPath { get; set; }
+        public string ServerId { get; set; } // setup startup.cs
     }
 }

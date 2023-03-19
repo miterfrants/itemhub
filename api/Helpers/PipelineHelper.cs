@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Homo.Core.Constants;
 
@@ -67,7 +68,8 @@ namespace Homo.IotApi
             }
         }
 
-        public static void Execute(
+        public static async void Execute(
+            string serverId,
             long pipelineId,
             List<PipelineItem> pipelineItems,
             List<PipelineConnector> pipelineConnectors,
@@ -87,8 +89,16 @@ namespace Homo.IotApi
             bool isForceRun = false
             )
         {
-            var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId);
+            var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
+            // schedule pipeline 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
             if (!pipeline.IsRun && isForceRun == false)
+            {
+                return;
+            }
+            PipelineDataservice.Occupy(iotDbContext, pipelineId, serverId);
+            await Task.Delay(5000);
+            pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
+            if (pipeline.LockBy != serverId)
             {
                 return;
             }
@@ -102,7 +112,7 @@ namespace Homo.IotApi
             {
                 bool isHead = pipelineHead.Id == item.Id;
                 bool isEnd = pipelineEnd.Where(x => x.Id == item.Id).Count() > 0;
-                var block = pipelineFactory.getPipeline(item.ItemType, item.Id, pipelineId, ownerId, dbc, isHead, isEnd, isVIP, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail).block;
+                var block = pipelineFactory.getPipeline(serverId, item.ItemType, item.Id, pipelineId, ownerId, dbc, isHead, isEnd, isVIP, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail).block;
                 if (block == null)
                 {
                     throw new CustomException(ERROR_CODE.NOT_ALLOW_PIPELINE_TYPE, System.Net.HttpStatusCode.BadRequest);
@@ -145,7 +155,6 @@ namespace Homo.IotApi
                         broadcastBlock.LinkTo(nextBlock, new DataflowLinkOptions { PropagateCompletion = true });
                     });
                 }
-
             });
 
             // 開始執行

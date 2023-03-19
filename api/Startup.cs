@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Homo.Api;
-using MQTTnet;
+using Homo.Core.Helpers;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using System.Security.Authentication;
@@ -54,8 +54,11 @@ namespace Homo.IotApi
         public void ConfigureServices(IServiceCollection services)
         {
             AppSettings appSettings = new AppSettings();
-            Configuration.GetSection("Config").Bind(appSettings);
-            services.Configure<AppSettings>(Configuration.GetSection("Config"));
+            var configureSection = Configuration.GetSection("Config");
+            configureSection.Bind(appSettings);
+            appSettings.Common.ServerId = CryptographicHelper.GetSpecificLengthRandomString(24, true, false);
+
+            services.Configure<AppSettings>(configureSection);
             services.Configure<Homo.AuthApi.AppSettings>(Configuration.GetSection("Config"));
 
             // setup CROS if config file includ CROS section
@@ -151,7 +154,9 @@ namespace Homo.IotApi
                 && _env.EnvironmentName.ToLower() != "migration")
             {
                 RestorePrevisousStateService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
-                RestorePrevisousStateService.RestartSchedulePipeline(secrets.DBConnectionString,
+                RestorePrevisousStateService.RestartSchedulePipeline(
+                    appSettings.Common.ServerId,
+                    secrets.DBConnectionString,
                     localMqttPublishers,
                     appSettings.Secrets.MqttUsername,
                     appSettings.Secrets.MqttPassword,
