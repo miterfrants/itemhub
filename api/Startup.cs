@@ -12,14 +12,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Homo.Api;
-using MQTTnet;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using System.Security.Authentication;
-using System.Net.Security;
-using System.Linq;
-
-
 
 namespace Homo.IotApi
 {
@@ -82,7 +77,7 @@ namespace Homo.IotApi
             }
 
             CultureInfo currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture;
-            var certificate = new X509Certificate2("secrets/mqtt-server.pfx");
+            var certificate = new X509Certificate2("secrets/mqtt/mqtt.pfx");
 
             MQTTnet.Server.MqttServerOptions options = (new MqttServerOptionsBuilder())
                 .WithEncryptedEndpoint()
