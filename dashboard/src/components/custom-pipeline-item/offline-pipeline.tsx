@@ -79,6 +79,7 @@ const OfflinePipelineItem = ({
                     isError={validation.deviceId.invalid}
                     errorMessage="請輸入裝置名稱"
                     defaultValue={state?.deviceId}
+                    isDisabled={pipelineItem?.isRun || false}
                     onValueChanged={(newValue: number | string | undefined) => {
                         setState({
                             ...state,
