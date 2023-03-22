@@ -39,25 +39,52 @@ namespace Homo.IotApi
                 var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
                 iotDbContextBuilder.UseMySql(dbc, serverVersion);
                 builder.UseMySql(dbc, serverVersion);
-                using (IotDbContext newDbContext = new IotDbContext(iotDbContextBuilder.Options))
+                using (IotDbContext iotDbContext = new IotDbContext(iotDbContextBuilder.Options))
                 {
                     using (DBContext dbContext = new DBContext(builder.Options))
                     {
                         // 15 秒內 device activity log 沒查到資料就當作下線
-                        int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(newDbContext, ownerId, deviceId);
+                        int count = DeviceActivityLogDataservice.GetRowNumThis15Seconds(iotDbContext, ownerId, deviceId);
                         if (count > 0)
                         {
                             return;
                         }
-                        DeviceDataservice.Switch(newDbContext, ownerId, deviceId, false);
+                        DeviceDataservice.Switch(iotDbContext, ownerId, deviceId, false);
+
+                        // offline pipelines
+                        var offlinePipelines = PipelineDataservice.GetAll(iotDbContext, ownerId, PIPELINE_ITEM_TYPE.OFFLINE, deviceId, null, true);
+                        var isVIP = RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId);
+                        var pipelineInvalidError = new Dictionary<long, CustomException>();
+                        offlinePipelines.ForEach(pipeline =>
+                        {
+                            var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
+                            var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
+                            var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                            // double check
+                            if (pipelineHead.ItemType != PIPELINE_ITEM_TYPE.OFFLINE)
+                            {
+                                // todo: 代表資料不一至要提醒工程師
+                                return;
+                            }
+                            var pipelinePayload = JsonConvert.DeserializeObject<SensorPipelinePayload>(pipelineHead.Value);
+                            // double check
+                            if (pipelinePayload.DeviceId != deviceId)
+                            {
+                                // todo: 代表資料不一至要提醒工程師
+                                return;
+                            }
+                            PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
+                        });
+
+
                         // offline notification
 
-                        Subscription subscription = SubscriptionDataservice.GetCurrnetOne(newDbContext, ownerId);
+                        Subscription subscription = SubscriptionDataservice.GetCurrnetOne(iotDbContext, ownerId);
                         if (subscription == null && !RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId))
                         {
                             return;
                         }
-                        Device device = DeviceDataservice.GetOne(newDbContext, ownerId, deviceId);
+                        Device device = DeviceDataservice.GetOne(iotDbContext, ownerId, deviceId);
                         if (!device.IsOfflineNotification)
                         {
                             return;
@@ -115,43 +142,6 @@ namespace Homo.IotApi
             else
             {
                 tokenSourceCollections.Add(deviceId, tokenSource);
-            }
-
-            // run pipeline head is offline
-            DbContextOptionsBuilder<IotDbContext> iotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
-            DbContextOptionsBuilder<DBContext> dbContextBuilder = new DbContextOptionsBuilder<DBContext>();
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
-            iotDbContextBuilder.UseMySql(dbc, serverVersion);
-            dbContextBuilder.UseMySql(dbc, serverVersion);
-
-            using (IotDbContext iotDbContext = new IotDbContext(iotDbContextBuilder.Options))
-            {
-                using (DBContext dbContext = new DBContext(dbContextBuilder.Options))
-                {
-                    var offlinePipelines = PipelineDataservice.GetAll(iotDbContext, ownerId, PIPELINE_ITEM_TYPE.OFFLINE, deviceId, null, true);
-                    var isVIP = RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId);
-                    var pipelineInvalidError = new Dictionary<long, CustomException>();
-                    offlinePipelines.ForEach(pipeline =>
-                    {
-                        var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
-                        var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, ownerId, pipeline.Id, null);
-                        var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
-                        // double check
-                        if (pipelineHead.ItemType != PIPELINE_ITEM_TYPE.OFFLINE)
-                        {
-                            // todo: 代表資料不一至要提醒工程師
-                            return;
-                        }
-                        var pipelinePayload = JsonConvert.DeserializeObject<SensorPipelinePayload>(pipelineHead.Value);
-                        // double check
-                        if (pipelinePayload.DeviceId != deviceId)
-                        {
-                            // todo: 代表資料不一至要提醒工程師
-                            return;
-                        }
-                        PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
-                    });
-                }
             }
         }
 
