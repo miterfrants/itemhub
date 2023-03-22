@@ -10,7 +10,7 @@ namespace Homo.IotApi
     public class OfflinePipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public OfflinePipeline(string DBConnectionString, long ownerId, string rawData, List<MqttPublisher> localMqttPublishers, string mqttUsername, string mqttPassword)
+        public OfflinePipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData, List<MqttPublisher> localMqttPublishers, string mqttUsername, string mqttPassword)
         {
             OfflinePipeline.ValidateAndGetPayload(rawData);
             block = new TransformBlock<bool, bool>(previous =>
@@ -24,13 +24,38 @@ namespace Homo.IotApi
                                 DbContextOptionsBuilder<IotDbContext> dbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
                                 var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
                                 dbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
-                                var dbContext = new IotDbContext(dbContextBuilder.Options);
-                                var device = DeviceDataservice.GetOne(dbContext, ownerId, payload.DeviceId.GetValueOrDefault());
-                                if (device.Online)
+                                using (var iotDbContext = new IotDbContext(dbContextBuilder.Options))
                                 {
-                                    return false;
+                                    if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
+                                    {
+                                        PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                        {
+                                            IsHead = isHead,
+                                            IsEnd = isEnd,
+                                            PipelineId = pipelineId,
+                                            ItemId = id,
+                                            Raw = rawData,
+                                            Message = "Over Subscription"
+                                        });
+                                        return false;
+                                    }
+
+                                    var device = DeviceDataservice.GetOne(iotDbContext, ownerId, payload.DeviceId.GetValueOrDefault());
+                                    if (device.Online)
+                                    {
+                                        return false;
+                                    }
+                                    PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
+                                    {
+                                        IsHead = isHead,
+                                        IsEnd = isEnd,
+                                        PipelineId = pipelineId,
+                                        ItemId = id,
+                                        Raw = rawData
+                                    });
+                                    return true;
                                 }
-                                return true;
+
                             });
         }
         public static OfflinePipelinePayload ValidateAndGetPayload(string rawData)
