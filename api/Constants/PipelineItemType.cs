@@ -17,7 +17,9 @@ namespace Homo.IotApi
         [Description("網路")]
         NETWORK,
         [Description("通知")]
-        NOTIFICATION
+        NOTIFICATION,
+        [Description("裝置下線")]
+        OFFLINE
     }
 
     public enum PIPELINE_NOTIFICATION_TYPE

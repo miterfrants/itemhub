@@ -10,6 +10,7 @@ import CheckSwitchPipelineItem from './check-switch-pipeline-item';
 import DelayPipelineItem from './delay-pipeline-item';
 import NetworkPipelineItem from './network-pipeline-item';
 import NotificationPipelineItem from './notification-pipeline-item';
+import OfflinePipelineItem from './offline-pipeline';
 import SchedulePipelineItem from './schedule-pipeline-item';
 import SensorPipelineItem from './sensor-pipeline-item';
 import SwitchPipelineItem from './switch-pipeline-item';
@@ -196,6 +197,21 @@ const CustomPipelineItem = ({
                 {pipelineItemData.itemTypeKey ===
                     PIPELINE_ITEM_TYPE.CHECK_SWITCH && (
                     <CheckSwitchPipelineItem
+                        onChangedCallback={(value: string) => {
+                            if (pipelineItemData.pipelineItemChangedCallback) {
+                                pipelineItemData.pipelineItemChangedCallback(
+                                    (pipelineItemData?.id || '').toString(),
+                                    value || '',
+                                    pipelineItemData.itemType || 0
+                                );
+                            }
+                        }}
+                        pipelineItem={pipelineItemData}
+                    />
+                )}
+                {pipelineItemData.itemTypeKey ===
+                    PIPELINE_ITEM_TYPE.OFFLINE && (
+                    <OfflinePipelineItem
                         onChangedCallback={(value: string) => {
                             if (pipelineItemData.pipelineItemChangedCallback) {
                                 pipelineItemData.pipelineItemChangedCallback(

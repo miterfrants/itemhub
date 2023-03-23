@@ -51,7 +51,7 @@ namespace Homo.IotApi
                                     {
                                         await MailHelper.Send(MailProvider.SEND_GRID, new MailTemplate()
                                         {
-                                            Subject = "ItemHub Pipeline Notification",
+                                            Subject = "ItemHub 自動化觸發流程通知",
                                             Content = payload.Message
                                         }, systemEmail, payload.Email, sendGridApiKey);
                                     }

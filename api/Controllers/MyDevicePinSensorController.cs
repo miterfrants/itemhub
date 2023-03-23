@@ -65,7 +65,7 @@ namespace Homo.IotApi
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers);
 
             // run pipeline head is sensor
             var pipelines = PipelineDataservice.GetAll(_iotDbContext, ownerId, PIPELINE_ITEM_TYPE.SENSOR, id, pin, true);
