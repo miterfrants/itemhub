@@ -89,7 +89,7 @@ namespace Homo.IotApi
                     // todo: 代表資料不一至要提醒工程師
                     return;
                 }
-                PipelineHelper.Execute(_serverId, pipeline.Id, pipelineItems, pipelineConnectors, _iotDbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
+                PipelineHelper.Execute(_serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
             });
 
             return new

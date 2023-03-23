@@ -207,7 +207,7 @@ namespace Homo.IotApi
                 {
                     try
                     {
-                        PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                        PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
                     }
                     catch (CustomException ex)
                     {
