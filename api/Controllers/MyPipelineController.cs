@@ -195,6 +195,13 @@ namespace Homo.IotApi
                     deviceId = checkSwitchPipelinePayload.DeviceId;
                     devicePin = checkSwitchPipelinePayload.Pin;
                 }
+                if (
+                    pipelineHead.ItemType == PIPELINE_ITEM_TYPE.OFFLINE
+                )
+                {
+                    var offlinePipelinePayload = OfflinePipeline.ValidateAndGetPayload(pipelineHead.Value);
+                    deviceId = offlinePipelinePayload.DeviceId;
+                }
 
                 if (pipelineItems.Count > 10)
                 {

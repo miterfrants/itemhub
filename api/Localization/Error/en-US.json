@@ -40,6 +40,7 @@
   "PIPELINE_INVALID_TYPE_SCHEDULE_IN_END": "Scheduling is not allowed at the end of the pipeline.",
   "PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD": "Pipeline does not allow multiple head items.",
   "PIPELINE_COULD_NOT_ALLOW_WITHOUT_HEAD": "Pipeline must have at least one starting item",
+  "PIPELINE_INVALID_TYPE_OFFLINE_IN_END": "Offline is not allowed at the end of the pipeline.",
   "NOT_ALLOW_PIPELINE_TYPE": "Invalid Pipeline Type",
   "SWITCH_PIPELINE_INVALID_PAYLOAD_DEVICE_ID_REQUIRED": "The device ID is a required field for the switch pipeline",
   "SWITCH_PIPELINE_INVALID_PAYLOAD_PIN_REQUIRED": "Device PIN is required for the switch pipeline",

@@ -41,6 +41,7 @@
   "TRIGGER_NOTIFICATION_OVER_USING": "觸發通知超過訂閱方案的使用量",
   "OFFLINE_NOTIFICATION_USAGE_LIMIT": "下線通知需訂閱方案才可以使用",
   "UNALLOW_PIPELINE_HEAD_TYPE": "不允許自動化觸發流程開頭為以下類型: 通知, 開關, 延遲, 網路",
+  "PIPELINE_INVALID_TYPE_OFFLINE_IN_END": "裝置下線不允許出現在結尾",
   "PIPELINE_INVALID_CONNECTOR_EXISTS": "自動化觸發流程之間的連線已經存在，無法重複連線",
   "PIPELINE_INVALID_INFINITY_LOOP": "自動化觸發流程偵測到無窮迴圈",
   "PIPELINE_INVALID_HEAD_TYPE": "錯誤的自動化觸發流程起始類型",

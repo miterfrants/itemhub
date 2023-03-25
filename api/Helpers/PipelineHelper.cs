@@ -68,6 +68,16 @@ namespace Homo.IotApi
             {
                 throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_SCHEDULE_IN_END, System.Net.HttpStatusCode.BadRequest);
             }
+
+            // OFFLINE 不能出現在結尾
+            var offlineInEnds = pipelineItems.Where(x =>
+                (
+                    x.ItemType == PIPELINE_ITEM_TYPE.OFFLINE
+                ) && endIds.Contains(x.Id) && x.Id != head.Id
+            );
+            if(offlineInEnds.Count()>0) {
+             throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);   
+            }
         }
 
         public static async void Execute(
