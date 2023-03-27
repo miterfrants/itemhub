@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Homo.Core.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
@@ -77,11 +80,11 @@ namespace Homo.IotApi
             }
         }
 
-        public static void Execute(
+        public static async void Execute(
+            string serverId,
             long pipelineId,
             List<PipelineItem> pipelineItems,
             List<PipelineConnector> pipelineConnectors,
-            IotDbContext iotDbContext,
             long ownerId,
             bool isVIP,
             List<MqttPublisher> localMqttPublishers,
@@ -97,71 +100,88 @@ namespace Homo.IotApi
             bool isForceRun = false
             )
         {
-            var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId);
-            if (!pipeline.IsRun && isForceRun == false)
+            await Task.Delay(0);
+            DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
+            var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
+            IotDbContextBuilder.UseMySql(dbc, mysqlVersion);
+            using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
             {
-                return;
+                var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
+                // schedule pipeline 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
+                if (!pipeline.IsRun && isForceRun == false)
+                {
+                    return;
+                }
+                PipelineDataservice.Occupy(iotDbContext, pipelineId, serverId);
+                await Task.Delay(5000);
+
+
+                pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
+                if (pipeline.LockBy != serverId)
+                {
+                    return;
+                }
+
+                PipelineHelper.Validate(pipelineItems, pipelineConnectors);
+                Dictionary<long, IPropagatorBlock<bool, bool>> blocks = new Dictionary<long, IPropagatorBlock<bool, bool>>();
+                var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                var pipelineEnd = PipelineHelper.GetEnds(pipelineHead, pipelineItems, pipelineConnectors);
+                var pipelineFactory = new PipelineFactory();
+                pipelineItems.ForEach(item =>
+                {
+                    bool isHead = pipelineHead.Id == item.Id;
+                    bool isEnd = pipelineEnd.Where(x => x.Id == item.Id).Count() > 0;
+                    var block = pipelineFactory.getPipeline(serverId, item.ItemType, item.Id, pipelineId, ownerId, dbc, isHead, isEnd, isVIP, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail).block;
+                    if (block == null)
+                    {
+                        throw new CustomException(ERROR_CODE.NOT_ALLOW_PIPELINE_TYPE, System.Net.HttpStatusCode.BadRequest);
+                    }
+                    blocks.Add(item.Id, block);
+                });
+
+
+                // 整理 pipeline 連線資料,串接 tranform block
+                var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+                var connectionDictionary = new Dictionary<long, List<long>>();
+                pipelineConnectors.ForEach(connection =>
+                {
+                    if (connectionDictionary.ContainsKey(connection.SourcePipelineItemId))
+                    {
+                        connectionDictionary[connection.SourcePipelineItemId].Add(connection.DestPipelineItemId);
+                    }
+                    else
+                    {
+                        connectionDictionary[connection.SourcePipelineItemId] = new List<long>() { connection.DestPipelineItemId };
+                    }
+                });
+
+                // 串接 transform block 但 .net 不允許 1個 transform block 對應多個 transform block 所以在這邊如果發現目標超過兩個需要
+                // 中繼的 broadcast block
+                connectionDictionary.Keys.ToList().ForEach(sourcePipelineItemId =>
+                {
+                    if (connectionDictionary[sourcePipelineItemId].Count() == 1)
+                    {
+                        var nextBlock = blocks[connectionDictionary[sourcePipelineItemId][0]];
+                        blocks[sourcePipelineItemId].LinkTo(nextBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                    }
+                    else if (connectionDictionary[sourcePipelineItemId].Count() >= 2)
+                    {
+                        var broadcastBlock = new BroadcastBlock<bool>(result => result);
+                        blocks[sourcePipelineItemId].LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                        connectionDictionary[sourcePipelineItemId].ForEach(destPipelineItemId =>
+                        {
+                            var nextBlock = blocks[destPipelineItemId];
+                            broadcastBlock.LinkTo(nextBlock, new DataflowLinkOptions { PropagateCompletion = true });
+                        });
+                    }
+                });
+
+                // 開始執行
+                blocks[pipelineHead.Id].Post(
+                    true
+                );
             }
 
-            PipelineHelper.Validate(pipelineItems, pipelineConnectors);
-            Dictionary<long, IPropagatorBlock<bool, bool>> blocks = new Dictionary<long, IPropagatorBlock<bool, bool>>();
-            var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
-            var pipelineEnd = PipelineHelper.GetEnds(pipelineHead, pipelineItems, pipelineConnectors);
-            var pipelineFactory = new PipelineFactory();
-            pipelineItems.ForEach(item =>
-            {
-                bool isHead = pipelineHead.Id == item.Id;
-                bool isEnd = pipelineEnd.Where(x => x.Id == item.Id).Count() > 0;
-                var block = pipelineFactory.getPipeline(item.ItemType, item.Id, pipelineId, ownerId, dbc, isHead, isEnd, isVIP, item.Value, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail).block;
-                if (block == null)
-                {
-                    throw new CustomException(ERROR_CODE.NOT_ALLOW_PIPELINE_TYPE, System.Net.HttpStatusCode.BadRequest);
-                }
-                blocks.Add(item.Id, block);
-            });
-
-
-            // 整理 pipeline 連線資料,串接 tranform block
-            var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
-            var connectionDictionary = new Dictionary<long, List<long>>();
-            pipelineConnectors.ForEach(connection =>
-            {
-                if (connectionDictionary.ContainsKey(connection.SourcePipelineItemId))
-                {
-                    connectionDictionary[connection.SourcePipelineItemId].Add(connection.DestPipelineItemId);
-                }
-                else
-                {
-                    connectionDictionary[connection.SourcePipelineItemId] = new List<long>() { connection.DestPipelineItemId };
-                }
-            });
-
-            // 串接 transform block 但 .net 不允許 1個 transform block 對應多個 transform block 所以在這邊如果發現目標超過兩個需要
-            // 中繼的 broadcast block
-            connectionDictionary.Keys.ToList().ForEach(sourcePipelineItemId =>
-            {
-                if (connectionDictionary[sourcePipelineItemId].Count() == 1)
-                {
-                    var nextBlock = blocks[connectionDictionary[sourcePipelineItemId][0]];
-                    blocks[sourcePipelineItemId].LinkTo(nextBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                }
-                else if (connectionDictionary[sourcePipelineItemId].Count() >= 2)
-                {
-                    var broadcastBlock = new BroadcastBlock<bool>(result => result);
-                    blocks[sourcePipelineItemId].LinkTo(broadcastBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                    connectionDictionary[sourcePipelineItemId].ForEach(destPipelineItemId =>
-                    {
-                        var nextBlock = blocks[destPipelineItemId];
-                        broadcastBlock.LinkTo(nextBlock, new DataflowLinkOptions { PropagateCompletion = true });
-                    });
-                }
-
-            });
-
-            // 開始執行
-            blocks[pipelineHead.Id].Post(
-                true
-            );
         }
     }
 

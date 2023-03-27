@@ -19,5 +19,6 @@ namespace Homo.IotApi
         public PIPELINE_ITEM_TYPE FirstPieplineItemType { get; set; }
         public long? FirstPipelineItemDeviceId { get; set; }
         public string FirstPipelineItemPin { get; set; }
+        public string LockBy { get; set; }
     }
 }

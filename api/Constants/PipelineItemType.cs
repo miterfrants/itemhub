@@ -18,7 +18,7 @@ namespace Homo.IotApi
         NETWORK,
         [Description("通知")]
         NOTIFICATION,
-        [Description("裝置下線")]
+        [Description("裝置離線")]
         OFFLINE
     }
 

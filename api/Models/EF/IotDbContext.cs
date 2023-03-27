@@ -192,6 +192,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.LockBy });
             });
 
             modelBuilder.Entity<PipelineItem>(entity =>

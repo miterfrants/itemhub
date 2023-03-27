@@ -24,6 +24,7 @@ namespace Homo.IotApi
         private readonly string _sendGridApiKey;
         private readonly string _systemEmail;
         private readonly string _staticPath;
+        private readonly string _serverId;
         public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers)
         {
             _dbContext = dbContext;
@@ -40,6 +41,7 @@ namespace Homo.IotApi
             _sendGridApiKey = secrets.SendGridApiKey;
             _systemEmail = common.SystemEmail;
             _staticPath = common.StaticPath;
+            _serverId = common.ServerId;
         }
 
         [SwaggerOperation(
@@ -88,7 +90,7 @@ namespace Homo.IotApi
                     // todo: 代表資料不一至要提醒工程師
                     return;
                 }
-                PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, _dbContext, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
+                PipelineHelper.Execute(_serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
             });
 
             return new

@@ -11,7 +11,16 @@ namespace Homo.IotApi
     public class SchedulePipeline : IPipeline
     {
         public TransformBlock<bool, bool> block { get; set; }
-        public SchedulePipeline(long id, long pipelineId, long ownerId, string DBConnectionString, bool isHead, bool isEnd, bool isVIP, string rawData,
+        public SchedulePipeline(
+            string serverId,
+            long id,
+            long pipelineId,
+            long ownerId,
+            string DBConnectionString,
+            bool isHead,
+            bool isEnd,
+            bool isVIP,
+            string rawData,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
             string mqttPassword,
@@ -59,7 +68,7 @@ namespace Homo.IotApi
                                         {
                                             await Task.Delay((int)delay.TotalMilliseconds);
                                         }
-                                        scheduleNextJob(rawData, pipelineId, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+                                        scheduleNextJob(serverId, rawData, pipelineId, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
 
                                         PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
                                         {
@@ -81,6 +90,7 @@ namespace Homo.IotApi
         }
 
         public void scheduleNextJob(
+            string serverId,
             string rawData,
             long pipelineId,
             long ownerId,
@@ -102,7 +112,7 @@ namespace Homo.IotApi
             var dbContext = new IotDbContext(dbContextBuilder.Options);
             var pipelineItems = PipelineItemDataservice.GetAll(dbContext, ownerId, pipelineId, null);
             var pipelineConnectors = PipelineConnectorDataservice.GetAll(dbContext, ownerId, pipelineId, null);
-            PipelineHelper.Execute(pipelineId, pipelineItems, pipelineConnectors, dbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+            PipelineHelper.Execute(serverId, pipelineId, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
         }
 
         public static System.DateTimeOffset? ValidateAndGetPayload(string cronExpression)

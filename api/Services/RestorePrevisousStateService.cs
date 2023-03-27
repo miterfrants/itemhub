@@ -25,6 +25,7 @@ namespace Homo.IotApi
         }
 
         public static void RestartSchedulePipeline(
+            string serverId,
             string dbc,
             List<MqttPublisher> localMqttPublishers,
             string mqttUsername,
@@ -54,7 +55,7 @@ namespace Homo.IotApi
                 var isVIP = roles.Contains("VIP");
                 var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, pipeline.OwnerId, pipeline.Id, null);
                 var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, pipeline.OwnerId, pipeline.Id, null);
-                PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, pipeline.OwnerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, staticPath, systemEmail, dbc);
+                PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, pipeline.OwnerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, staticPath, systemEmail, dbc);
             });
         }
     }

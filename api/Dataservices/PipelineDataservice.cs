@@ -45,9 +45,14 @@ namespace Homo.IotApi
                 .Count();
         }
 
-        public static Pipeline GetOne(IotDbContext dbContext, long ownerId, long id)
+        public static Pipeline GetOne(IotDbContext dbContext, long ownerId, long id, bool withoutCache = false)
         {
-            return dbContext.Pipeline.FirstOrDefault(x =>
+            System.Linq.IQueryable<Homo.IotApi.Pipeline> result = dbContext.Pipeline;
+            if (withoutCache)
+            {
+                result = result.AsNoTracking();
+            }
+            return result.FirstOrDefault(x =>
                 x.DeletedAt == null
                 && x.Id == id
                 && x.OwnerId == ownerId
@@ -103,6 +108,14 @@ namespace Homo.IotApi
                 FirstPieplineItemType = firstPipelineItemType,
                 FirstPipelineItemDeviceId = firstPipelineDeviceId,
                 FirstPipelineItemPin = firstPipelinePin,
+            });
+        }
+
+        public static void Occupy(IotDbContext dbContext, long id, string serverId)
+        {
+            dbContext.Pipeline.Where(x => x.Id == id).UpdateFromQuery(x => new Pipeline()
+            {
+                LockBy = serverId,
             });
         }
 
