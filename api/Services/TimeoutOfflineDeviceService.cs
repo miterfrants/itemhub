@@ -14,7 +14,7 @@ namespace Homo.IotApi
     public static class TimeoutOfflineDeviceService
     {
         private static Dictionary<long, CancellationTokenSource> tokenSourceCollections = new Dictionary<long, CancellationTokenSource>();
-        public static void StartAsync(long ownerId, long deviceId, string dbc, CommonLocalizer commonLocalizer,
+        public static void StartAsync(string serverId, long ownerId, long deviceId, string dbc, CommonLocalizer commonLocalizer,
         string mailTemplatePath, string systemEmail, string sendGridApiKey,
         string smsClientUrl, string smsUsername, string smsPassword,
         string mqttUsername, string mqttPassword, List<MqttPublisher> localMqttPublishers
@@ -73,7 +73,7 @@ namespace Homo.IotApi
                                 // todo: 代表資料不一至要提醒工程師
                                 return;
                             }
-                            PipelineHelper.Execute(pipeline.Id, pipelineItems, pipelineConnectors, iotDbContext, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
+                            PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
                         });
 
 
