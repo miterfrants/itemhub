@@ -82,6 +82,12 @@ namespace Homo.IotApi
 
             System.IO.File.WriteAllText(inoPath, inoTemplate);
             System.IO.File.Delete(sourceInoPath);
+            string trustAnchors = "";
+
+            if (System.IO.File.Exists("secrets/mqtt/bearssl-trust-anchors.h"))
+            {
+                trustAnchors = System.IO.File.ReadAllText("secrets/mqtt/bearssl-trust-anchors.h");
+            }
 
             if (System.IO.File.Exists(certsPath))
             {
@@ -89,9 +95,6 @@ namespace Homo.IotApi
                 string rootCa = System.IO.File.ReadAllText("secrets/mqtt/mqtt-root-ca.crt");
                 rootCa = rootCa.Replace("\n", "\\n\" \\\n\"");
                 rootCa = rootCa.Substring(0, rootCa.Length - 5);
-                string trustAnchors = System.IO.File.ReadAllText("secrets/mqtt/bearssl-trust-anchors.h");
-
-
                 certTemplate = certTemplate.Replace("{CA}", rootCa);
                 certTemplate = certTemplate.Replace("{TrustAnchors}", trustAnchors);
                 System.IO.File.WriteAllText(certsPath, certTemplate);
