@@ -6,7 +6,7 @@ import { KeyValuePair } from '@/types/common.type';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { DeviceItem } from '@/types/devices.type';
-import { PIN_TYPES } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/pin-type';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 
 const DeviceAndPinInputs = ({
