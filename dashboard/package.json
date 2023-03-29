@@ -46,7 +46,7 @@
         "eslint-plugin-react": "^7.28.0",
         "eslint-plugin-react-hooks": "^4.3.0",
         "history": "^5.1.0",
-        "node-sass": "^7.0.1",
+        "node-sass": "^8.0.0",
         "path": "^0.12.7",
         "prettier": "^2.5.1",
         "react-router-dom": "^6.1.1",
