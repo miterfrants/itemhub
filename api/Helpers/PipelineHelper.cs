@@ -75,12 +75,13 @@ namespace Homo.IotApi
                     x.ItemType == PIPELINE_ITEM_TYPE.OFFLINE
                 ) && endIds.Contains(x.Id) && x.Id != head.Id
             );
-            if(offlineInEnds.Count()>0) {
-             throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);   
+            if (offlineInEnds.Count() > 0)
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);
             }
         }
 
-        public static async void Execute(
+        public static async Task Execute(
             string serverId,
             long pipelineId,
             List<PipelineItem> pipelineItems,
@@ -97,7 +98,7 @@ namespace Homo.IotApi
             string mailTemplatePath,
             string systemEmail,
             string dbc,
-            bool isForceRun = false
+            bool fromSchedulePipeline = false
             )
         {
             await Task.Delay(0);
@@ -108,7 +109,7 @@ namespace Homo.IotApi
             {
                 var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
                 // schedule pipeline 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
-                if (!pipeline.IsRun && isForceRun == false)
+                if (!pipeline.IsRun && fromSchedulePipeline == false)
                 {
                     return;
                 }
