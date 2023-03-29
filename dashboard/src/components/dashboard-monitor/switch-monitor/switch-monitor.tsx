@@ -2,7 +2,7 @@ import Toggle from '@/components/toggle/toggle';
 import {
     useUpdateDeviceSwitchPinApi,
     useGetDevicePinApi,
-} from '@/hooks/apis/device.pin.hook';
+} from '@/hooks/apis/device-pin.hook';
 import { useEffect, useState } from 'react';
 import { PinItem } from '@/types/devices.type';
 import Spinner from '@/components/spinner/spinner';

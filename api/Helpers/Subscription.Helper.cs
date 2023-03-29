@@ -155,6 +155,27 @@ namespace Homo.IotApi
             return 1;
         }
 
+        public static int GetPipelineExecuteRateLimitPerDay(PRICING_PLAN? pricingPlan)
+        {
+            if (pricingPlan == PRICING_PLAN.BASIC)
+            {
+                return 10;
+            }
+            else if (pricingPlan == PRICING_PLAN.ADVANCE)
+            {
+                return 100;
+            }
+            else if (pricingPlan == PRICING_PLAN.GROWTH)
+            {
+                return 1000;
+            }
+            else if (pricingPlan == PRICING_PLAN.SMALL_BUSINESS)
+            {
+                return 5000;
+            }
+            return 1;
+        }
+
 
     }
 }

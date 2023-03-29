@@ -11,6 +11,9 @@ import oauthClientRedirectUrisReducer from './reducers/oauth-client-redirect-uri
 import monitorConfigDialogReducer from './reducers/monitor-config-dialog.reducer';
 import dashboardMonitorReducer from './reducers/dashboard-monitor.reducer';
 import deviceLastActivityReducer from './reducers/device-activity-logs.reducer';
+import pipelinesReducer from './reducers/pipelines.reducer';
+import pipelineItemsReducer from './reducers/pipeline-items.reducer';
+import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
 import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
 
 const store = configureStore({
@@ -28,6 +31,9 @@ const store = configureStore({
         monitorConfigDialog: monitorConfigDialogReducer,
         offlineNotificationDialog: offlineNotificationDialogReducer,
         dashboardMonitors: dashboardMonitorReducer,
+        pipelines: pipelinesReducer,
+        pipelineItems: pipelineItemsReducer,
+        pipelineConnectors: pipelineConnectorsReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

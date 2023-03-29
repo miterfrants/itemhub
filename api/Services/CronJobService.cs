@@ -106,10 +106,7 @@ namespace Homo.IotApi
                 Subject = _envName + " CronJobs 發生錯誤: " + serviceName,
                 Content = errorMessage
             }, _systemEmail, _adminEmail, _sendGridApiKey);
-
         }
-
-
     }
 
     public interface IScheduleConfig<T>

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
-import { DEVICE_MODE } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/pin-type';
 import ReactTooltip from 'react-tooltip';
 import { Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
@@ -83,7 +83,7 @@ const DevicePins = ({
             deviceId: deviceId,
             pin: pinData.pin || '',
             pinNumber: pinData.pinNumber || '',
-            mode: pinData.mode,
+            pinType: pinData.pinType,
             name: pinNameInputRef.current?.value || '',
             value: null,
         };
@@ -97,7 +97,7 @@ const DevicePins = ({
 
     useEffect(() => {
         const switchMode = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SWITCH;
+            return item.key === PIN_TYPES.SWITCH;
         })[0]?.value;
 
         if (switchMode !== undefined) {
@@ -105,7 +105,7 @@ const DevicePins = ({
         }
 
         const sensorMode = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SENSOR;
+            return item.key === PIN_TYPES.SENSOR;
         })[0]?.value;
 
         if (sensorMode !== undefined) {
@@ -167,7 +167,7 @@ const DevicePins = ({
                                 <div className="text-center pin-selector">
                                     {selectedPinList?.filter((pins) => {
                                         return pins.pin === pin.name;
-                                    })[0]?.mode === switchMode ? (
+                                    })[0]?.pinType === switchMode ? (
                                         <div>開關</div>
                                     ) : (
                                         <div>感應器</div>
@@ -197,7 +197,7 @@ const DevicePins = ({
                                                 deviceId: deviceId,
                                                 pin: pin.name,
                                                 pinNumber: pin.pinNumber,
-                                                mode: switchMode,
+                                                pinType: switchMode,
                                                 name: pin.name,
                                                 value: 0,
                                             };
@@ -214,7 +214,7 @@ const DevicePins = ({
                                                 deviceId: deviceId,
                                                 pin: pin.name,
                                                 pinNumber: pin.pinNumber,
-                                                mode: sensorMode,
+                                                pinType: sensorMode,
                                                 name: pin.name,
                                                 value: null,
                                             };

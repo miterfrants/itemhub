@@ -10,6 +10,7 @@ import {
     TriggerType,
     DashboardMonitorMode,
     Protocols,
+    UniversalOption,
 } from '@/types/universal.type';
 
 export const useGetTriggerOperatorsApi = () => {
@@ -128,7 +129,7 @@ export const useGetDeviceModesApi = () => {
         [dispatch]
     );
 
-    const apiPath = `${API_URL}${END_POINT.DEVICE_MODE}`;
+    const apiPath = `${API_URL}${END_POINT.PIN_TYPES}`;
 
     const { isLoading, error, fetchApi } = useFetchApi<DeviceMode[]>({
         apiPath,
@@ -195,5 +196,86 @@ export const useGetProtocols = () => {
         isLoading,
         error,
         getProtocols: fetchApi,
+    };
+};
+
+export const useGetPipelineItemTypes = () => {
+    const dispatch = useAppDispatch();
+    const dispatchGet = useCallback(
+        (data: UniversalOption[]) => {
+            if (data) {
+                dispatch(universalActions.setPipelineItemTypes(data));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.PIPELINE_ITEM_TYPES}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<DeviceMode[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchGet,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+    };
+};
+
+export const useGetPipelineNotificationTypes = () => {
+    const dispatch = useAppDispatch();
+    const dispatchGet = useCallback(
+        (data: UniversalOption[]) => {
+            if (data) {
+                dispatch(universalActions.setPipelineNotificationTypes(data));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.PIPELINE_NOTIFICATION_TYPES}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<UniversalOption[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchGet,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+    };
+};
+
+export const useGetPipelineStaticMethods = () => {
+    const dispatch = useAppDispatch();
+    const dispatchGet = useCallback(
+        (data: UniversalOption[]) => {
+            if (data) {
+                dispatch(universalActions.setPipelineDeviceStaticMethods(data));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.PIPELINE_DEVICE_STATIC_METHODS}`;
+
+    const { isLoading, error, fetchApi } = useFetchApi<UniversalOption[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchGet,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
     };
 };

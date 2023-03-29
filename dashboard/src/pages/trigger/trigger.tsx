@@ -9,7 +9,7 @@ import {
 } from '@/redux/reducers/toaster.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { selectTriggers } from '@/redux/reducers/triggers.reducer';
-import { useGetDevicePinsApi } from '@/hooks/apis/device.pin.hook';
+import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
 import {
     useCreateTriggerApi,
     useGetTriggerApi,
@@ -17,7 +17,6 @@ import {
 } from '@/hooks/apis/triggers.hook';
 import DeviceAndPinInputs from '@/components/inputs/device-and-pin-input/device-and-pin-input';
 import { useDispatch } from 'react-redux';
-import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
 import PageTitle from '@/components/page-title/page-title';
 import { TRIGGER_TYPE } from '@/constants/trigger-type';
 import { TriggerNotificationPeriod, TriggerType } from '@/types/universal.type';
@@ -40,6 +39,7 @@ const Trigger = () => {
 
     const trigger =
         triggers?.filter((trigger) => trigger.id === triggerId)[0] || null;
+
     const changeDeviceStateTriggerType = triggerTypes.find(
         (item) => item.key === TRIGGER_TYPE.CHANGE_DEVICE_STATE
     )?.value;
@@ -228,17 +228,6 @@ const Trigger = () => {
             sourceThreshold: editedTriggerData.sourceThreshold,
         });
 
-    const sourceDeviecePinsOptions =
-        editedTriggerData.sourceDeviceId === 0 ? [] : saurceDeviecePins;
-
-    const destinationDeviecePinsOptions =
-        editedTriggerData.destinationDeviceId === 0
-            ? []
-            : destinationDeviecePins;
-
-    // TODO: 可改用 pagination api，用 name query 去讓 sever 就篩選好我們要的 options，不用在 client 端 filter
-    const { allDevices, getAllDevicesApi } = useGetAllDevicesApi();
-
     const { getTriggerApi } = useGetTriggerApi(triggerId || 0);
 
     const { isUpdatingTrigger, updateTriggerResponse, updateTriggerApi } =
@@ -260,8 +249,6 @@ const Trigger = () => {
         } else {
             document.title = 'ItemHub - 編輯觸發';
         }
-
-        getAllDevicesApi();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -276,6 +263,7 @@ const Trigger = () => {
         if (!trigger) {
             return;
         }
+        setInputValue(trigger.name);
         setEditedTriggerData({
             name: trigger?.name || '',
             sourceDeviceId: trigger?.sourceDeviceId || 0,
@@ -319,6 +307,7 @@ const Trigger = () => {
                 })
             );
         }
+        // eslint-disable-next-line
     }, [navigate, createTriggerResponse]);
 
     useEffect(() => {
@@ -382,45 +371,45 @@ const Trigger = () => {
                 <div className="d-flex mt-5 mb-3 fs-5">
                     事件條件 <hr className="bg-gray flex-grow-1 ms-3" />
                 </div>
-                <DeviceAndPinInputs
-                    allDevices={allDevices}
-                    isDeviceNameError={!isValidEditedTrigger.sourceDeviceId}
-                    initialDeviceName={trigger?.sourceDevice?.name}
-                    deviceNameLabel="來源裝置"
-                    isPinError={!isValidEditedTrigger.sourcePin}
-                    pinLabel="來源裝置 Pin"
-                    pinValue={editedTriggerData.sourcePin}
-                    pinOptions={sourceDeviecePinsOptions}
-                    isDisabled={isReadMode}
-                    updatePin={(newPin) => {
-                        setEditedTriggerData((prev) => {
-                            return {
-                                ...prev,
-                                sourcePin: newPin,
-                            };
-                        });
-                        setIsValidEditedTrigger((prev) => {
-                            return {
-                                ...prev,
-                                sourcePin: newPin ? true : false,
-                            };
-                        });
-                    }}
-                    updateDeviceId={(newDeviceId) => {
-                        setEditedTriggerData((prev) => {
-                            return {
-                                ...prev,
-                                sourceDeviceId: newDeviceId,
-                            };
-                        });
-                        setIsValidEditedTrigger((prev) => {
-                            return {
-                                ...prev,
-                                sourceDeviceId: newDeviceId ? true : false,
-                            };
-                        });
-                    }}
-                />
+                {trigger?.sourceDevice?.id && (
+                    <DeviceAndPinInputs
+                        isDeviceNameError={!isValidEditedTrigger.sourceDeviceId}
+                        defaultDeviceId={trigger?.sourceDevice?.id || 0}
+                        deviceNameLabel="來源裝置"
+                        isPinError={!isValidEditedTrigger.sourcePin}
+                        pinLabel="來源裝置 Pin"
+                        defaultPinValue={editedTriggerData.sourcePin}
+                        isDisabled={isReadMode}
+                        updatePin={(newPin) => {
+                            setEditedTriggerData((prev) => {
+                                return {
+                                    ...prev,
+                                    sourcePin: newPin,
+                                };
+                            });
+                            setIsValidEditedTrigger((prev) => {
+                                return {
+                                    ...prev,
+                                    sourcePin: newPin ? true : false,
+                                };
+                            });
+                        }}
+                        updateDeviceId={(newDeviceId) => {
+                            setEditedTriggerData((prev) => {
+                                return {
+                                    ...prev,
+                                    sourceDeviceId: newDeviceId,
+                                };
+                            });
+                            setIsValidEditedTrigger((prev) => {
+                                return {
+                                    ...prev,
+                                    sourceDeviceId: newDeviceId ? true : false,
+                                };
+                            });
+                        }}
+                    />
+                )}
                 <div className="w-100 d-flex flex-column flex-md-row">
                     <div className="form-group w-100 mb-3 pe-md-3">
                         <label className="mb-1">運算子</label>
@@ -525,49 +514,57 @@ const Trigger = () => {
                 )}
                 {editedTriggerData.type === changeDeviceStateTriggerType ? (
                     <div className="mt-3">
-                        <DeviceAndPinInputs
-                            allDevices={allDevices}
-                            isDeviceNameError={
-                                !isValidEditedTrigger.destinationDeviceId
-                            }
-                            initialDeviceName={trigger?.destinationDevice?.name}
-                            deviceNameLabel="目標裝置"
-                            isPinError={!isValidEditedTrigger.destinationPin}
-                            pinLabel="目標裝置 Pin"
-                            pinValue={editedTriggerData.destinationPin || ''}
-                            pinOptions={destinationDeviecePinsOptions}
-                            isDisabled={isReadMode}
-                            updatePin={(newPin) => {
-                                setEditedTriggerData((prev) => {
-                                    return {
-                                        ...prev,
-                                        destinationPin: newPin,
-                                    };
-                                });
-                                setIsValidEditedTrigger((prev) => {
-                                    return {
-                                        ...prev,
-                                        destinationPin: newPin ? true : false,
-                                    };
-                                });
-                            }}
-                            updateDeviceId={(newDeviceId) => {
-                                setEditedTriggerData((prev) => {
-                                    return {
-                                        ...prev,
-                                        destinationDeviceId: newDeviceId,
-                                    };
-                                });
-                                setIsValidEditedTrigger((prev) => {
-                                    return {
-                                        ...prev,
-                                        destinationDeviceId: newDeviceId
-                                            ? true
-                                            : false,
-                                    };
-                                });
-                            }}
-                        />
+                        {trigger?.destinationDevice?.id && (
+                            <DeviceAndPinInputs
+                                isDeviceNameError={
+                                    !isValidEditedTrigger.destinationDeviceId
+                                }
+                                defaultDeviceId={
+                                    trigger?.destinationDevice?.id || 0
+                                }
+                                deviceNameLabel="目標裝置"
+                                isPinError={
+                                    !isValidEditedTrigger.destinationPin
+                                }
+                                pinLabel="目標裝置 Pin"
+                                defaultPinValue={
+                                    editedTriggerData.destinationPin || ''
+                                }
+                                isDisabled={isReadMode}
+                                updatePin={(newPin) => {
+                                    setEditedTriggerData((prev) => {
+                                        return {
+                                            ...prev,
+                                            destinationPin: newPin,
+                                        };
+                                    });
+                                    setIsValidEditedTrigger((prev) => {
+                                        return {
+                                            ...prev,
+                                            destinationPin: newPin
+                                                ? true
+                                                : false,
+                                        };
+                                    });
+                                }}
+                                updateDeviceId={(newDeviceId) => {
+                                    setEditedTriggerData((prev) => {
+                                        return {
+                                            ...prev,
+                                            destinationDeviceId: newDeviceId,
+                                        };
+                                    });
+                                    setIsValidEditedTrigger((prev) => {
+                                        return {
+                                            ...prev,
+                                            destinationDeviceId: newDeviceId
+                                                ? true
+                                                : false,
+                                        };
+                                    });
+                                }}
+                            />
+                        )}
                         <div className="row">
                             <label className="col-6">
                                 <div className="mb-1">目標狀態</div>
@@ -586,19 +583,10 @@ const Trigger = () => {
                                             parseInt(e.target.value)
                                         );
                                     }}
+                                    value={currentTargetStateValue || ''}
                                 >
-                                    <option
-                                        value="1"
-                                        selected={currentTargetStateValue === 1}
-                                    >
-                                        開
-                                    </option>
-                                    <option
-                                        value="0"
-                                        selected={currentTargetStateValue === 0}
-                                    >
-                                        關
-                                    </option>
+                                    <option value="1">開</option>
+                                    <option value="0">關</option>
                                 </select>
                             </label>
                         </div>
@@ -708,7 +696,6 @@ const Trigger = () => {
                         </div>
                     </div>
                 )}
-
                 <div className="d-flex justify-content-end">
                     <button
                         type="button"

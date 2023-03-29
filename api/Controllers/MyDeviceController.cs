@@ -25,7 +25,12 @@ namespace Homo.IotApi
         private readonly string _smsClientUrl;
         private readonly string _systemEmail;
         private readonly string _sendGridApiKey;
-        public MyDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer)
+        private readonly string _mqttUsername;
+        private readonly string _mqttPassword;
+        private readonly string _serverId;
+        private readonly List<MqttPublisher> _localMqttPublishers;
+
+        public MyDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublishers)
         {
             _iotDbContext = iotDbContext;
             _dbContext = dbContext;
@@ -39,6 +44,11 @@ namespace Homo.IotApi
             _smsClientUrl = appSettings.Value.Common.SmsClientUrl;
             _systemEmail = appSettings.Value.Common.SystemEmail;
             _sendGridApiKey = appSettings.Value.Secrets.SendGridApiKey;
+            _serverId = appSettings.Value.Common.ServerId;
+
+            _mqttUsername = appSettings.Value.Secrets.MqttUsername;
+            _mqttPassword = appSettings.Value.Secrets.MqttPassword;
+            _localMqttPublishers = localMqttPublishers;
 
         }
 
@@ -205,7 +215,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> online([FromRoute] long id, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, _serverId, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

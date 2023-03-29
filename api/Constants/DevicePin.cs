@@ -3,7 +3,7 @@ using Homo.AuthApi;
 
 namespace Homo.IotApi
 {
-    public enum DEVICE_MODE
+    public enum PIN_TYPE
     {
         SENSOR,
         SWITCH

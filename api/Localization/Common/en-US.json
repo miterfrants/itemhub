@@ -25,6 +25,8 @@
     "mailContentGetNewPremiumUserDescription": "User is pay: ",
     "moreThanMaxNumberOfDevice": "more than max number of device",
     "moreThanMaxNumberOfDeviceInAnyPlan": "over top plan",
+    "moreThanMaxNumberOfPipelineInAnyPlan": "over top plan",
+    "moreThanMaxNumberOfPipelineItemInAnyPlan": "over top plan",
     "cartSecretIsNull": "transition is successful, but return unknow format response 'cart secret is null', please contact with us {adminEmail}",
     "cartKeyIsNull": "transition is successful, but return unknow format response 'cart key is null', please contact with us {adminEmail}",
     "cartTokenIsNull": "transition is successful, but return unknow format response 'cart token is null', please contact with us {adminEmail}",

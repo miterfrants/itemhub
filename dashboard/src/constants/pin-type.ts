@@ -1,4 +1,4 @@
-export const DEVICE_MODE = {
+export const PIN_TYPES = {
     SENSOR: 'SENSOR',
     SWITCH: 'SWITCH',
 };

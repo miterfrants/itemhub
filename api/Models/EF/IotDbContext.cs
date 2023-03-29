@@ -1,11 +1,7 @@
-using System;
-using System.Data;
-using System.Data.Common;
-using System.Linq;
-using Homo.AuthApi;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
+using System.Drawing;
+using System.Collections.Generic;
 
 namespace Homo.IotApi
 {
@@ -37,6 +33,10 @@ namespace Homo.IotApi
         public virtual DbSet<Microcontroller> Microcontroller { get; set; }
         public virtual DbSet<DashboardMonitor> DashboardMonitor { get; set; }
         public virtual DbSet<Log> Log { get; set; }
+        public virtual DbSet<Pipeline> Pipeline { get; set; }
+        public virtual DbSet<PipelineItem> PipelineItem { get; set; }
+        public virtual DbSet<PipelineConnector> PipelineConnector { get; set; }
+        public virtual DbSet<PipelineExecuteLog> PipelineExecuteLog { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -137,7 +137,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Value });
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.OwnerId });
-                entity.HasIndex(p => new { p.Mode });
+                entity.HasIndex(p => new { p.PinType });
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.Property(p => p.Value).HasDefaultValueSql("0");
@@ -185,6 +185,48 @@ namespace Homo.IotApi
             {
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeviceId });
+            });
+
+            modelBuilder.Entity<Pipeline>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.LockBy });
+            });
+
+            modelBuilder.Entity<PipelineItem>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.PipelineId });
+                entity.Property(p => p.Point).HasConversion(
+                    data => JsonConvert.SerializeObject(data),
+                    raw => JsonConvert.DeserializeObject<Point>(raw)
+                );
+            });
+
+            modelBuilder.Entity<PipelineConnector>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.PipelineId });
+            });
+
+            modelBuilder.Entity<PipelineExecuteLog>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.PipelineId });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.IsHead });
+                entity.HasIndex(p => new { p.IsEnd });
+                entity.Property(p => p.IsHead).HasDefaultValueSql("0");
+                entity.Property(p => p.IsEnd).HasDefaultValueSql("0");
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValue(System.DateTime.Now);
             });
 
             OnModelCreatingPartial(modelBuilder);

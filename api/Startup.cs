@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Homo.Api;
+using Homo.Core.Helpers;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using System.Security.Authentication;
@@ -49,8 +50,11 @@ namespace Homo.IotApi
         public void ConfigureServices(IServiceCollection services)
         {
             AppSettings appSettings = new AppSettings();
-            Configuration.GetSection("Config").Bind(appSettings);
-            services.Configure<AppSettings>(Configuration.GetSection("Config"));
+            var configureSection = Configuration.GetSection("Config");
+            configureSection.Bind(appSettings);
+            appSettings.Common.ServerId = CryptographicHelper.GetSpecificLengthRandomString(24, true, false);
+
+            services.Configure<AppSettings>(configureSection);
             services.Configure<Homo.AuthApi.AppSettings>(Configuration.GetSection("Config"));
 
             // setup CROS if config file includ CROS section
@@ -117,11 +121,23 @@ namespace Homo.IotApi
             services.AddDbContext<IotDbContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
             services.AddDbContext<Homo.AuthApi.DBContext>(options => options.UseMySql(secrets.DBConnectionString, serverVersion));
             if (
-                _env.EnvironmentName.ToLower() != "dev"
-                && _env.EnvironmentName.ToLower() != "development"
+                _env.EnvironmentName.ToLower() != "development"
                 && _env.EnvironmentName.ToLower() != "migration")
             {
-                StartupOfflineService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
+                RestorePrevisousStateService.OfflineTooLongNoActivityDevice(secrets.DBConnectionString);
+                RestorePrevisousStateService.RestartSchedulePipeline(
+                    appSettings.Common.ServerId,
+                    secrets.DBConnectionString,
+                    localMqttPublishers,
+                    appSettings.Secrets.MqttUsername,
+                    appSettings.Secrets.MqttPassword,
+                    appSettings.Secrets.SmsUsername,
+                    appSettings.Secrets.SmsPassword,
+                    appSettings.Common.SmsClientUrl,
+                    appSettings.Secrets.SendGridApiKey,
+                    appSettings.Common.StaticPath,
+                    appSettings.Common.SystemEmail
+                );
             }
 
             services.AddControllers();
