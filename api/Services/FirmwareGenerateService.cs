@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace Homo.IotApi
             string dbc,
             string firmwareTemplatePath,
             string staticPath,
+            string domain,
             long deviceId,
             long ownerId,
             string clientId,
@@ -56,6 +58,8 @@ namespace Homo.IotApi
             string zipSourcePath = $"{staticPath}/firmware/{folderName}";
             string sourceInoPath = $"{destPath}/{mcuName}.ino";
             string inoPath = $"{destPath}/{folderName}.ino";
+            string certsPath = $"{destPath}/ItemhubUtilities/Certs.h";
+
 
             // copy to static 
             CopyDirectory(microcontrollerFirmwareTemplatePath, destPath, true);
@@ -74,9 +78,28 @@ namespace Homo.IotApi
             inoTemplate = inoTemplate.Replace("{CLIENT_SECRET}", clientSecret);
             inoTemplate = inoTemplate.Replace("{DEVICE_ID}", deviceId.ToString());
             inoTemplate = inoTemplate.Replace("{PINS}", String.Join(";", pins));
+            inoTemplate = inoTemplate.Replace("{DOMAIN}", domain);
 
             System.IO.File.WriteAllText(inoPath, inoTemplate);
             System.IO.File.Delete(sourceInoPath);
+            string trustAnchors = "";
+
+            if (System.IO.File.Exists("secrets/mqtt/bearssl-trust-anchors.h"))
+            {
+                trustAnchors = System.IO.File.ReadAllText("secrets/mqtt/bearssl-trust-anchors.h");
+            }
+
+            if (System.IO.File.Exists(certsPath))
+            {
+                string certTemplate = System.IO.File.ReadAllText(certsPath);
+                string rootCa = System.IO.File.ReadAllText("secrets/mqtt/mqtt-root-ca.crt");
+                rootCa = rootCa.Replace("\n", "\\n\" \\\n\"");
+                rootCa = rootCa.Substring(0, rootCa.Length - 5);
+                certTemplate = certTemplate.Replace("{CA}", rootCa);
+                certTemplate = certTemplate.Replace("{TrustAnchors}", trustAnchors);
+                System.IO.File.WriteAllText(certsPath, certTemplate);
+            }
+
 
             // zip
             var zipFile = new ZipFile();

@@ -38,8 +38,8 @@ namespace Homo.IotApi
                                         {
                                             return true;
                                         };
-                                        var certificate = new X509Certificate("secrets/mqtt-server.pfx");
-                                        var ca = new X509Certificate("secrets/chain.crt");
+                                        var certificate = new X509Certificate("secrets/mqtt/mqtt.pfx");
+                                        var ca = new X509Certificate("secrets/mqtt/chain.crt");
                                         options.Certificates = new List<X509Certificate>() { certificate, ca };
                                     }))
                                     .WithCredentials(mqttUsername, mqttPassword)
@@ -68,11 +68,20 @@ namespace Homo.IotApi
                         publisher.IsDisconnected = true;
                         return Task.CompletedTask;
                     };
+
+                    if (client.IsConnected || publisher.IsConnecting)
+                    {
+                        return;
+                    }
                     Task<MqttClientConnectResult> result = client.ConnectAsync(mqttClientOptions, CancellationToken.None);
 
 
                     try
                     {
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsCompleted:{result.IsCompleted}", Newtonsoft.Json.Formatting.Indented)}");
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsCompletedSuccessfully:{result.IsCompletedSuccessfully}", Newtonsoft.Json.Formatting.Indented)}");
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.Status:{result.Status}", Newtonsoft.Json.Formatting.Indented)}");
+                        System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsFaulted:{result.IsFaulted}", Newtonsoft.Json.Formatting.Indented)}");
                         result.Wait();
                     }
                     catch (System.Exception ex)
@@ -113,8 +122,8 @@ namespace Homo.IotApi
                                             return true;
                                         };
 
-                                        var certificate = new X509Certificate("secrets/mqtt-server.pfx");
-                                        var ca = new X509Certificate("secrets/chain.crt");
+                                        var certificate = new X509Certificate("secrets/mqtt/mqtt.pfx");
+                                        var ca = new X509Certificate("secrets/mqtt/chain.crt");
                                         options.Certificates = new List<X509Certificate>() { certificate, ca };
 
                                     }))
@@ -122,6 +131,10 @@ namespace Homo.IotApi
                                     .WithCleanSession()
                                     .Build();
                     Task<MqttClientConnectResult> result = publisher.Client.ConnectAsync(mqttClientOptions, CancellationToken.None);
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsCompleted:{result.IsCompleted}", Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsCompletedSuccessfully:{result.IsCompletedSuccessfully}", Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.Status:{result.Status}", Newtonsoft.Json.Formatting.Indented)}");
+                    System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject($"result.IsFaulted:{result.IsFaulted}", Newtonsoft.Json.Formatting.Indented)}");
                     result.Wait();
                 }
             });
