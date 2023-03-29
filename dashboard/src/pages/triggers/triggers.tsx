@@ -346,13 +346,21 @@ const Triggers = () => {
                                     datalistId="sourceDevice"
                                     placeholder="來源裝置篩選"
                                     isDisabled={false}
-                                    value={sourceDeviceName}
-                                    updateCurrentValue={(
-                                        newValue: string | undefined
+                                    defaultValue={''}
+                                    onValueChanged={(
+                                        newValue: string | number | undefined
                                     ) => {
-                                        setSourceDeviceName(newValue || '');
+                                        setSourceDeviceName(
+                                            newValue ? newValue.toString() : ''
+                                        );
                                     }}
-                                    allSuggestions={sourceDeviceNameOptions}
+                                    allSuggestions={sourceDeviceNameOptions.map(
+                                        (item) =>
+                                            ({
+                                                key: item,
+                                                value: item,
+                                            } as KeyValuePair)
+                                    )}
                                     onEnterKeyUp={(
                                         newValue: string | undefined
                                     ) => {
@@ -376,17 +384,21 @@ const Triggers = () => {
                                     datalistId="destinationDevice"
                                     placeholder="目標裝置篩選"
                                     isDisabled={false}
-                                    value={destinationDeviceName}
-                                    updateCurrentValue={(
-                                        newValue: string | undefined
+                                    defaultValue={''}
+                                    onValueChanged={(
+                                        newValue: number | string | undefined
                                     ) => {
                                         setDestinationDeviceName(
-                                            newValue || ''
+                                            newValue ? newValue.toString() : ''
                                         );
                                     }}
-                                    allSuggestions={
-                                        destinationDeviceNameOptions
-                                    }
+                                    allSuggestions={destinationDeviceNameOptions.map(
+                                        (item) =>
+                                            ({
+                                                key: item,
+                                                value: item,
+                                            } as KeyValuePair)
+                                    )}
                                     onEnterKeyUp={(
                                         newValue: string | undefined
                                     ) => {
@@ -466,6 +478,7 @@ const Triggers = () => {
                                                         checked={selectedIds.includes(
                                                             id
                                                         )}
+                                                        onChange={() => {}}
                                                     />
                                                     <div>{name || '--'}</div>
                                                 </div>

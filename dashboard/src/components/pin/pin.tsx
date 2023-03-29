@@ -1,7 +1,7 @@
 import {
     useUpdateDevicePinNameApi,
     useUpdateDeviceSwitchPinApi,
-} from '@/hooks/apis/device.pin.hook';
+} from '@/hooks/apis/device-pin.hook';
 import { useEffect, useState, useRef } from 'react';
 import { useDebounce } from '@/hooks/debounce.hook';
 import { PinItem } from '@/types/devices.type';
@@ -14,7 +14,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
         deviceId,
         pin,
         createdAt,
-        mode,
+        pinType: pinType,
         value: valueFromPorps,
         name: nameFromProps,
     } = pinItem;
@@ -22,7 +22,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const [name, setName] = useState('');
     const [isInitialized, setIsInitialized] = useState(false);
     const isNameChangedRef = useRef(false);
-    const isSwitch = mode === 1;
+    const isSwitch = pinType === 1;
 
     const { updateDeviceSwitchPinApi } = useUpdateDeviceSwitchPinApi({
         deviceId,
@@ -48,7 +48,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const updateLocalPinName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
         isNameChangedRef.current = true;
-        debounceUpdatePinName();
+        debounceUpdatePinName(null);
     };
 
     useEffect(() => {

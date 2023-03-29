@@ -1,6 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
 using Homo.Api;
 using Homo.AuthApi;
 using Homo.Core.Constants;
@@ -31,7 +30,7 @@ namespace Homo.IotApi
         private readonly string _mqttUsername;
         private readonly string _mqttPassword;
         private readonly string _dbConnectionString;
-        private readonly string _mailTemplatePath;
+        private readonly string _serverId;
         public MyDevicePinSensorController(IotDbContext iotDbContext, DBContext dbContext, Homo.Api.CommonLocalizer commonLocalizer, IOptions<AppSettings> optionAppSettings, List<MqttPublisher> localMqttPublishers)
         {
             var secrets = optionAppSettings.Value.Secrets;
@@ -51,7 +50,7 @@ namespace Homo.IotApi
             _mqttUsername = secrets.MqttUsername;
             _mqttPassword = secrets.MqttPassword;
             _dbConnectionString = secrets.DBConnectionString;
-            _mailTemplatePath = common.StaticPath;
+            _serverId = common.ServerId;
         }
 
         [SwaggerOperation(
@@ -68,7 +67,31 @@ namespace Homo.IotApi
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             await DeviceSensorHelper.Create(_dbContext, _iotDbContext, extraPayload.Id, id, pin, dto, _commonLocalizer, _staticPath, _webSiteUrl, _systemEmail, _adminEmail, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _localMqttPublishers, isVIP);
             long ownerId = extraPayload.Id;
-            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword);
+            DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, _serverId, ownerId, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers);
+
+            // run pipeline head is sensor
+            var pipelines = PipelineDataservice.GetAll(_iotDbContext, ownerId, PIPELINE_ITEM_TYPE.SENSOR, id, pin, true);
+            pipelines.ForEach(pipeline =>
+            {
+                var pipelineItems = PipelineItemDataservice.GetAll(_iotDbContext, ownerId, pipeline.Id, null);
+                var pipelineConnectors = PipelineConnectorDataservice.GetAll(_iotDbContext, ownerId, pipeline.Id, null);
+                var pipelineHead = PipelineHelper.GetHead(pipelineItems, pipelineConnectors);
+                // double check
+                if (pipelineHead.ItemType != PIPELINE_ITEM_TYPE.SENSOR)
+                {
+                    // todo: 代表資料不一至要提醒工程師
+                    return;
+                }
+                var pipelinePayload = JsonConvert.DeserializeObject<SensorPipelinePayload>(pipelineHead.Value);
+                // double check
+                if (pipelinePayload.DeviceId != id || pipelinePayload.Pin != pin)
+                {
+                    // todo: 代表資料不一至要提醒工程師
+                    return;
+                }
+                PipelineHelper.Execute(_serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbConnectionString);
+            });
+
             return new
             {
                 status = CUSTOM_RESPONSE.OK

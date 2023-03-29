@@ -10,7 +10,7 @@ import {
     useDeletePinsApi,
     useGetDevicePinsApi,
     useUpdatePinsApi,
-} from '@/hooks/apis/device.pin.hook';
+} from '@/hooks/apis/device-pin.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
@@ -264,7 +264,7 @@ const DeviceForm = () => {
                 )[0]?.id,
                 deviceId: Number(id),
                 pin: target.pin,
-                mode: target.mode,
+                pinType: target.pinType,
                 name: target.name,
                 value: target.value,
                 pinNumber: target.pinNumber,
@@ -557,15 +557,12 @@ const DeviceForm = () => {
                                     });
                                 }}
                                 className="form-select mt-2"
+                                value={microcontrollerId || 0}
                             >
                                 <option>請選擇單晶片</option>
                                 {microcontrollers.map(({ id, key }) => {
                                     return (
-                                        <option
-                                            key={id}
-                                            value={id}
-                                            selected={id === microcontrollerId}
-                                        >
+                                        <option key={id} value={id}>
                                             {key === MCU_TYPE.CUSTOM
                                                 ? '自定義'
                                                 : key
@@ -613,6 +610,7 @@ const DeviceForm = () => {
                                             });
                                             setProtocol(Number(e.target.value));
                                         }}
+                                        defaultValue={device?.protocol || 0}
                                     >
                                         <option>請選擇通訊方式</option>
                                         {protocols.map(
@@ -621,10 +619,6 @@ const DeviceForm = () => {
                                                     <option
                                                         key={key}
                                                         value={value}
-                                                        selected={
-                                                            value ===
-                                                            device?.protocol
-                                                        }
                                                     >
                                                         {label}
                                                     </option>

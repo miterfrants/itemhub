@@ -281,6 +281,7 @@ const OauthClients = () => {
                                             value={id}
                                             className="me-3"
                                             checked={selectedIds.includes(id)}
+                                            onChange={() => {}}
                                         />
                                         {clientId}
                                     </div>

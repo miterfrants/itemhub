@@ -1,0 +1,9 @@
+.custom-pipeline-item {
+    border: 2px solid #4ac5ff;
+    background-color: white;
+    border-radius: 40px;
+    min-width: 250px;
+    &.runing {
+        background-color: $grey-100;
+    }
+}

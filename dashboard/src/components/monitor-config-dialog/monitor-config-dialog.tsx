@@ -1,4 +1,4 @@
-import { DEVICE_MODE } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/device-mode';
 import { useCreateDashboardMonitorApi } from '@/hooks/apis/dashboard-monitor.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
@@ -33,7 +33,7 @@ const MonitorConfigDialog = () => {
     const [pinMode, setPinMode] = useState<number | null>(null);
     const [pin, setPin] = useState<string | null>(null);
     const [dashboardMonitorMode, setDashboardMonitorMode] = useState<
-        number | null
+        number | null | string
     >(defaultSwitchModeValue);
     const [devicePins, setDevicePins] = useState<PinItem[]>([]);
     const [sensorValue, setSensorValue] = useState<number | null>(null);
@@ -107,7 +107,7 @@ const MonitorConfigDialog = () => {
 
         // eslint-disable-next-line
         const sensorValue = deviceModes.filter((item) => {
-            return item.key === DEVICE_MODE.SENSOR;
+            return item.key === PIN_TYPES.SENSOR;
         })[0]?.value;
 
         setSensorValue(sensorValue);
@@ -178,7 +178,7 @@ const MonitorConfigDialog = () => {
             (item) => item.pin === event.target.value
         );
         if (targetPin) {
-            setPinMode(targetPin.mode);
+            setPinMode(targetPin.pinType);
         }
         setDashboardMonitorMode(null);
     };
@@ -194,7 +194,7 @@ const MonitorConfigDialog = () => {
 
     const valid = () => {
         const sensorModeValue = deviceModes.find(
-            (item) => item.key === DEVICE_MODE.SENSOR
+            (item) => item.key === PIN_TYPES.SENSOR
         )?.value;
 
         if (pin === null) {
@@ -261,27 +261,13 @@ const MonitorConfigDialog = () => {
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectMonitorMode(e);
                             }}
+                            value={dashboardMonitorMode || ''}
                         >
-                            <option selected={dashboardMonitorMode === null}>
-                                請選擇監控類型
-                            </option>
-                            <option
-                                selected={
-                                    dashboardMonitorMode ===
-                                    currentValueModeValue
-                                }
-                                value={currentValueModeValue}
-                            >
+                            <option>請選擇監控類型</option>
+                            <option value={currentValueModeValue}>
                                 當前數值
                             </option>
-                            <option
-                                selected={
-                                    dashboardMonitorMode === lineChartModeValue
-                                }
-                                value={lineChartModeValue}
-                            >
-                                折線圖
-                            </option>
+                            <option value={lineChartModeValue}>折線圖</option>
                         </select>
                     </div>
                 </div>

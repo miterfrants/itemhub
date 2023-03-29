@@ -11,7 +11,13 @@ import {
 import { ResponseOK } from '@/types/response.type';
 import { pinsActions } from '@/redux/reducers/pins.reducer';
 
-export const useGetDevicePinsApi = ({ id }: { id: number }) => {
+export const useGetDevicePinsApi = ({
+    id,
+    pinType,
+}: {
+    id: number;
+    pinType?: number;
+}) => {
     const dispatch = useAppDispatch();
     const dispatchAppendPins = useCallback(
         (data: PinItem[]) => {
@@ -22,6 +28,9 @@ export const useGetDevicePinsApi = ({ id }: { id: number }) => {
     );
     let apiPath = `${API_URL}${END_POINT.DEVICE_PINS}`;
     apiPath = apiPath.replace(':id', id.toString());
+    if (pinType) {
+        apiPath = `${apiPath}?pinType=${pinType}`;
+    }
 
     const { isLoading, error, data, fetchApi } = useFetchApi<PinItem[]>({
         apiPath,

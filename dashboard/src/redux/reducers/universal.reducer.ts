@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
 import {
+    UniversalOption,
     Microcontroller,
     DeviceMode,
     TriggerOerator,
@@ -18,6 +19,9 @@ interface UniversalState {
     triggerNotificationPeriod: TriggerNotificationPeriod[];
     dashboardMonitorModes: DashboardMonitorMode[];
     protocols: Protocols[];
+    pipelineItemTypes: UniversalOption[];
+    pipelineNotificationTypes: UniversalOption[];
+    pipelineDeviceStaticMethods: UniversalOption[];
 }
 
 const initialState: UniversalState = {
@@ -28,6 +32,9 @@ const initialState: UniversalState = {
     triggerNotificationPeriod: [],
     dashboardMonitorModes: [],
     protocols: [],
+    pipelineItemTypes: [],
+    pipelineNotificationTypes: [],
+    pipelineDeviceStaticMethods: [],
 };
 
 export const universalSlice = createSlice({
@@ -92,6 +99,33 @@ export const universalSlice = createSlice({
             return {
                 ...state,
                 protocols: action.payload,
+            };
+        },
+        setPipelineItemTypes: (
+            state,
+            action: PayloadAction<UniversalOption[]>
+        ) => {
+            return {
+                ...state,
+                pipelineItemTypes: action.payload,
+            };
+        },
+        setPipelineNotificationTypes: (
+            state,
+            action: PayloadAction<UniversalOption[]>
+        ) => {
+            return {
+                ...state,
+                pipelineNotificationTypes: action.payload,
+            };
+        },
+        setPipelineDeviceStaticMethods: (
+            state,
+            action: PayloadAction<UniversalOption[]>
+        ) => {
+            return {
+                ...state,
+                pipelineDeviceStaticMethods: action.payload,
             };
         },
     },

@@ -25,6 +25,8 @@
     "mailContentGetNewPremiumUserDescription": "會員已付費: ",
     "moreThanMaxNumberOfDevice": "你目前的裝置數量已超過訂閱數量, 如果需要新增更多裝置請訂閱下一個方案, 下一方案裝置數量為 {deviceCountInNextLevelPricingPlan}",
     "moreThanMaxNumberOfDeviceInAnyPlan": "你的裝置已經超越現有的方案, 如果需要新增更多裝置, 請與我們聯繫 {adminEmail}",
+    "moreThanMaxNumberOfPipelineInAnyPlan": "你的自動化觸發流程數量已達目前使用方案的上限, 如要新增更多, 請升級方案或與我們聯繫 {adminEmail}",
+    "moreThanMaxNumberOfPipelineItemInAnyPlan": "你的 Pipeline 單元已經超越現有的方案, 如果需要新增更多裝置, 請與我們聯繫 {adminEmail}",
     "cartSecretIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart secret is null, 請於我們聯繫 {adminEmail}",
     "cartKeyIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart key is null, 請於我們聯繫 {adminEmail}",
     "cartTokenIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart token is null, 請於我們聯繫 {adminEmail}",
