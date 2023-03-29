@@ -1,4 +1,4 @@
-import { PIN_TYPES } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/pin-type';
 import { useCreateDashboardMonitorApi } from '@/hooks/apis/dashboard-monitor.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {

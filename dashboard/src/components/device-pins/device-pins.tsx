@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PinItem } from '@/types/devices.type';
-import { PIN_TYPES } from '@/constants/device-mode';
+import { PIN_TYPES } from '@/constants/pin-type';
 import ReactTooltip from 'react-tooltip';
 import { Pins } from '@/types/universal.type';
 import closeIcon from '@/assets/images/dark-close.svg';
