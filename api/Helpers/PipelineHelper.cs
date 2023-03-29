@@ -75,12 +75,13 @@ namespace Homo.IotApi
                     x.ItemType == PIPELINE_ITEM_TYPE.OFFLINE
                 ) && endIds.Contains(x.Id) && x.Id != head.Id
             );
-            if(offlineInEnds.Count()>0) {
-             throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);   
+            if (offlineInEnds.Count() > 0)
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);
             }
         }
 
-        public static async void Execute(
+        public static async Task Execute(
             string serverId,
             long pipelineId,
             List<PipelineItem> pipelineItems,

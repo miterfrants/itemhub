@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Homo.Api;
 using Homo.Core.Constants;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Threading.Tasks;
 
 namespace Homo.IotApi
 {
@@ -152,7 +153,7 @@ namespace Homo.IotApi
 
         [HttpPost]
         [Route("{id}/toggle")]
-        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto, bool isVIP)
+        public async Task<ActionResult<dynamic>> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto, bool isVIP)
         {
             long ownerId = extraPayload.Id;
             var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
@@ -214,7 +215,7 @@ namespace Homo.IotApi
                 {
                     try
                     {
-                        PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                        await PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
                     }
                     catch (CustomException ex)
                     {
