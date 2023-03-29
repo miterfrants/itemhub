@@ -71,7 +71,7 @@ const CustomPipelineItem = ({
             <Handle type="target" position={Position.Top} />
             <div>
                 <select
-                    className="form-control"
+                    className="form-control form-select"
                     onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                         event.stopPropagation();
                         event.preventDefault();

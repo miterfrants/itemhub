@@ -150,7 +150,7 @@ const NotificationPipelineItem = ({
             <label className="mt-3 w-100">
                 <div>通知模式:</div>
                 <select
-                    className="form-control"
+                    className="form-control form-select"
                     onChange={(event: ChangeEvent<HTMLSelectElement>) => {
                         setState({
                             ...state,
