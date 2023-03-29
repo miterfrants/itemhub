@@ -107,15 +107,11 @@ export const PipelineFlow = ({
                     newItemType: number
                 ) => {
                     const newNodes = reactFlowInstance.getNodes();
-                    console.log('newNodes:', JSON.stringify(newNodes));
-                    console.log(nodeId);
-
                     const shouldBeChangeNode = newNodes.find(
                         (node) => node.id.toString() === nodeId
                     );
 
                     if (!shouldBeChangeNode) {
-                        console.log('testing');
                         return;
                     }
 
@@ -353,14 +349,6 @@ export const PipelineFlow = ({
         (changeNodes: PipelineItemType[]) => {
             setShouldBeUpdateNodes(
                 changeNodes.filter((newOne: PipelineItemType) => {
-                    console.log('newOne', newOne);
-                    console.log(
-                        'oldOne',
-                        pipelineItems.find(
-                            (oldOne: PipelineItemType) =>
-                                Number(oldOne.id) === Number(newOne.id)
-                        )
-                    );
                     return compareItem(
                         newOne,
                         pipelineItems.find(
