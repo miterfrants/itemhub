@@ -33,7 +33,7 @@ const MonitorConfigDialog = () => {
     const [pinMode, setPinMode] = useState<number | null>(null);
     const [pin, setPin] = useState<string | null>(null);
     const [dashboardMonitorMode, setDashboardMonitorMode] = useState<
-        number | null | string
+        number | null
     >(defaultSwitchModeValue);
     const [devicePins, setDevicePins] = useState<PinItem[]>([]);
     const [sensorValue, setSensorValue] = useState<number | null>(null);
