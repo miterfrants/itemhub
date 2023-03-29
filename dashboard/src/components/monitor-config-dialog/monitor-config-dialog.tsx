@@ -236,7 +236,7 @@ const MonitorConfigDialog = () => {
                 <div className="row mt-3">
                     <div className="col-12 px-0">
                         <select
-                            className="form-control"
+                            className="form-control form-select"
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectPin(e);
                             }}
@@ -257,7 +257,7 @@ const MonitorConfigDialog = () => {
                 >
                     <div className="col-12 px-0">
                         <select
-                            className="form-control"
+                            className="form-control form-select"
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectMonitorMode(e);
                             }}
