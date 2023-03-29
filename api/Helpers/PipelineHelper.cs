@@ -98,7 +98,7 @@ namespace Homo.IotApi
             string mailTemplatePath,
             string systemEmail,
             string dbc,
-            bool isForceRun = false
+            bool fromSchedulePipeline = false
             )
         {
             await Task.Delay(0);
@@ -109,7 +109,7 @@ namespace Homo.IotApi
             {
                 var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
                 // schedule pipeline 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
-                if (!pipeline.IsRun && isForceRun == false)
+                if (!pipeline.IsRun && fromSchedulePipeline == false)
                 {
                     return;
                 }
