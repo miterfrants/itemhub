@@ -204,9 +204,9 @@ namespace Homo.IotApi
                     deviceId = offlinePipelinePayload.DeviceId;
                 }
 
-                if (pipelineItems.Count > 10)
+                if (pipelineItems.Count > 20)
                 {
-                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN, System.Net.HttpStatusCode.BadRequest);
+                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TWENTY, System.Net.HttpStatusCode.BadRequest);
                 }
 
                 PipelineHelper.Validate(pipelineItems, pipelineConnectors);

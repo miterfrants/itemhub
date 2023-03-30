@@ -35,7 +35,7 @@
   "PIPELINE_INVALID_INFINITY_LOOP": "Pipeline detected an infinite loop.",
   "PIPELINE_INVALID_HEAD_TYPE": "Invalid starting type for the Pipeline.",
   "PIPELINE_INVALID_PAYLOAD_REQUIRED": "There are missing data for a Pipeline item",
-  "PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN": "There are more than 10 Pipeline items",
+  "PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TWENTY": "There are more than 20 Pipeline items",
   "PIPELINE_INVALID_TEM_TYPE_IN_MID": "Notification, switch, and schedule are not allowed to appear in the middle of the pipeline.",
   "PIPELINE_INVALID_TYPE_SCHEDULE_IN_END": "Scheduling is not allowed at the end of the pipeline.",
   "PIPELINE_COULD_NOT_ALLOW_MULTIPLE_HEAD": "Pipeline does not allow multiple head items.",
