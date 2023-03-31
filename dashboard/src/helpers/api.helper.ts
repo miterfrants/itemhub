@@ -24,6 +24,7 @@ export const ApiHelpers = {
         signal,
         shouldDeleteContentType = false,
         callbackFunc,
+        skipErrorToaster = false,
     }: SendRequestParams<T>) => {
         const token =
             CookieHelpers.GetCookie({ name: COOKIE_KEY.DASHBOARD_TOKEN }) || '';
@@ -35,6 +36,7 @@ export const ApiHelpers = {
             signal,
             shouldDeleteContentType,
             callbackFunc,
+            skipErrorToaster,
         });
     },
     SendRequest: <T>({
@@ -45,6 +47,7 @@ export const ApiHelpers = {
         signal,
         shouldDeleteContentType = false,
         callbackFunc,
+        skipErrorToaster = false,
     }: SendRequestParams<T>) => {
         const fetchOption = payload
             ? {
@@ -118,14 +121,15 @@ export const ApiHelpers = {
                         },
                     };
                 }
-
-                store.dispatch(
-                    toasterActions.pushOne({
-                        message: errorResult.data.message,
-                        duration: 10,
-                        type: ToasterTypeEnum.ERROR,
-                    })
-                );
+                if (!skipErrorToaster) {
+                    store.dispatch(
+                        toasterActions.pushOne({
+                            message: errorResult.data.message,
+                            duration: 10,
+                            type: ToasterTypeEnum.ERROR,
+                        })
+                    );
+                }
 
                 return reject(errorResult);
             }
