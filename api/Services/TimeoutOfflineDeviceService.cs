@@ -74,12 +74,10 @@ namespace Homo.IotApi
                                 // todo: 代表資料不一至要提醒工程師
                                 return;
                             }
-                            PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc);
+                            PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, mailTemplatePath, systemEmail, dbc, false, true);
                         });
 
-
                         // offline notification
-
                         Subscription subscription = SubscriptionDataservice.GetCurrnetOne(iotDbContext, ownerId);
                         if (subscription == null && !RelationOfGroupAndUserDataservice.IsVIP(dbContext, ownerId))
                         {

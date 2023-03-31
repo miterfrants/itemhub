@@ -112,7 +112,7 @@ namespace Homo.IotApi
             var dbContext = new IotDbContext(dbContextBuilder.Options);
             var pipelineItems = PipelineItemDataservice.GetAll(dbContext, ownerId, pipelineId, null);
             var pipelineConnectors = PipelineConnectorDataservice.GetAll(dbContext, ownerId, pipelineId, null);
-            PipelineHelper.Execute(serverId, pipelineId, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString);
+            PipelineHelper.Execute(serverId, pipelineId, pipelineItems, pipelineConnectors, ownerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsUrl, sendGridApiKey, mailTemplatePath, systemEmail, DBConnectionString, false, true);
         }
 
         public static System.DateTimeOffset? ValidateAndGetPayload(string cronExpression)
