@@ -42,13 +42,14 @@ namespace Homo.IotApi
 
         public static List<long> GetTooLongWithoutActivityDeviceIds(IotDbContext dbContext, int seconds) // 這個有效能低落的風險
         {
+            var time = DateTime.Now.AddSeconds(-seconds);
             return dbContext.Device
             .Where(x => x.DeletedAt == null)
             .ToList()
             .GroupJoin(dbContext.DeviceActivityLog, x => x.Id, y => y.DeviceId, (device, activityLogs) => new
             {
                 DeviceId = device.Id,
-                ActivityLogs = activityLogs.ToList()
+                ActivityLogs = activityLogs.Where(log => log.CreatedAt >= time).ToList()
             })
             .Where(x => x.ActivityLogs.Count() == 0)
             .Select(x => x.DeviceId).ToList();

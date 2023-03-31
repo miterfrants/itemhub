@@ -20,7 +20,7 @@ namespace Homo.IotApi
             IotDbContext dbContext = new IotDbContext(builder.Options);
 
             // Get pagination devices
-            List<long> ids = DeviceActivityLogDataservice.GetTooLongWithoutActivityDeviceIds(dbContext, 15);
+            List<long> ids = DeviceActivityLogDataservice.GetTooLongWithoutActivityDeviceIds(dbContext, 60);
             DeviceDataservice.OfflineMultiple(dbContext, ids);
         }
 
