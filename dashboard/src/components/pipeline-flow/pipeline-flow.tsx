@@ -154,9 +154,7 @@ export const PipelineFlow = ({
         } as any;
     };
 
-    const [nodes, setNodes, onNodesChange] = useNodesState<any>(
-        pipelineItems.map(pipelineItemToNode)
-    );
+    const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
 
     const [edges, setEdges, onEdgesChange] = useEdgesState(
         pipelineConnectors.map(pipelineConnectorToEdge)
@@ -436,142 +434,156 @@ export const PipelineFlow = ({
         // eslint-disable-next-line
     }, [pipeline]);
 
+    useEffect(() => {
+        setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
+    }, [pipelineItems]);
+
     return (
-        <ReactFlow
-            className="pipeline-flow"
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            nodesDraggable={!pipeline?.isRun}
-            nodesConnectable={!pipeline?.isRun}
-            elementsSelectable={!pipeline?.isRun}
-            onNodesChange={(changes) => {
-                onNodesChange(changes);
-            }}
-            onNodeDragStop={(event: React.MouseEvent, dropNode: Node) => {
-                setDirtyForm(true);
+        <>
+            length: {nodes.length}
+            <ReactFlow
+                className="pipeline-flow"
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                nodesDraggable={!pipeline?.isRun}
+                nodesConnectable={!pipeline?.isRun}
+                elementsSelectable={!pipeline?.isRun}
+                onNodesChange={(changes) => {
+                    onNodesChange(changes);
+                }}
+                onNodeDragStop={(event: React.MouseEvent, dropNode: Node) => {
+                    setDirtyForm(true);
 
-                const changeNodes = reactFlowInstance
-                    .getNodes()
-                    .filter((node) => node.id === dropNode.id)
-                    .map(
-                        (item: any) =>
-                            ({
-                                ...item.data,
-                                point: {
-                                    x: Math.round(dropNode.position.x),
-                                    y: Math.round(dropNode.position.y),
-                                },
-                            } as PipelineItemType)
-                    );
-
-                setShouldBeUpdateNodes(
-                    changeNodes.filter((newOne: PipelineItemType) => {
-                        return compareItem(
-                            newOne,
-                            pipelineItems.find(
-                                (oldOne: PipelineItemType) =>
-                                    Number(oldOne.id) === Number(newOne.id)
-                            )
+                    const changeNodes = reactFlowInstance
+                        .getNodes()
+                        .filter((node) => node.id === dropNode.id)
+                        .map(
+                            (item: any) =>
+                                ({
+                                    ...item.data,
+                                    point: {
+                                        x: Math.round(dropNode.position.x),
+                                        y: Math.round(dropNode.position.y),
+                                    },
+                                } as PipelineItemType)
                         );
-                    })
-                );
-            }}
-            onEdgesChange={onEdgesChange}
-            onConnect={(params) => {
-                setDirtyForm(true);
-                setShouldBeCreateConnector({
-                    pipelineId: id || 0,
-                    sourcePipelineItemId: Number(params.source),
-                    destPipelineItemId: Number(params.target),
-                });
-            }}
-            onEdgesDelete={(params) => {
-                setDirtyForm(true);
-                setShouldBeDeleteConnectors(
-                    params.map((param) => ({
+
+                    setShouldBeUpdateNodes(
+                        changeNodes.filter((newOne: PipelineItemType) => {
+                            return compareItem(
+                                newOne,
+                                pipelineItems.find(
+                                    (oldOne: PipelineItemType) =>
+                                        Number(oldOne.id) === Number(newOne.id)
+                                )
+                            );
+                        })
+                    );
+                }}
+                onEdgesChange={onEdgesChange}
+                onConnect={(params) => {
+                    setDirtyForm(true);
+                    setShouldBeCreateConnector({
                         pipelineId: id || 0,
-                        id: Number(param.id),
-                    }))
-                );
-            }}
-            onNodesDelete={(params) => {
-                setDirtyForm(true);
-                setShouldBeDeleteIds(params.map((param) => Number(param.id)));
-            }}
-        >
-            <Panel position="top-left">
-                <div className="d-flex">
-                    <div
-                        onClick={() => {
-                            if (isDirty) {
-                                return;
-                            }
-                            const nodes = reactFlowInstance.getNodes();
-                            const lastNode = nodes[nodes.length - 1];
-                            setShouldBeCreatePipelineItem({
-                                pipelineId: Number(id || 0),
-                                point: {
-                                    x: lastNode
-                                        ? Math.round(lastNode.position.x)
-                                        : 100,
-                                    y: lastNode
-                                        ? Math.round(
-                                              lastNode.position.y +
-                                                  (lastNode.height || 0)
-                                          ) + 50
-                                        : 100,
-                                } as XYPosition,
-                            });
-                        }}
-                        role="button"
-                        className={`d-flex align-items-center ${
-                            isDirty ? 'cursor-na' : ''
-                        }`}
-                        style={{
-                            width: '40px',
-                            height: '40px',
-                        }}
-                    >
-                        <img
-                            className="icon"
-                            src={pipeline?.isRun ? disabledPlusIcon : plusIcon}
-                        />
+                        sourcePipelineItemId: Number(params.source),
+                        destPipelineItemId: Number(params.target),
+                    });
+                }}
+                onEdgesDelete={(params) => {
+                    setDirtyForm(true);
+                    setShouldBeDeleteConnectors(
+                        params.map((param) => ({
+                            pipelineId: id || 0,
+                            id: Number(param.id),
+                        }))
+                    );
+                }}
+                onNodesDelete={(params) => {
+                    setDirtyForm(true);
+                    setShouldBeDeleteIds(
+                        params.map((param) => Number(param.id))
+                    );
+                }}
+            >
+                <Panel position="top-left">
+                    <div className="d-flex">
+                        <div
+                            onClick={() => {
+                                if (isDirty) {
+                                    return;
+                                }
+                                const nodes = reactFlowInstance.getNodes();
+                                const lastNode = nodes[nodes.length - 1];
+                                setShouldBeCreatePipelineItem({
+                                    pipelineId: Number(id || 0),
+                                    point: {
+                                        x: lastNode
+                                            ? Math.round(lastNode.position.x)
+                                            : 100,
+                                        y: lastNode
+                                            ? Math.round(
+                                                  lastNode.position.y +
+                                                      (lastNode.height || 0)
+                                              ) + 50
+                                            : 100,
+                                    } as XYPosition,
+                                });
+                            }}
+                            role="button"
+                            className={`d-flex align-items-center ${
+                                isDirty ? 'cursor-na' : ''
+                            }`}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                            }}
+                        >
+                            <img
+                                className="icon"
+                                src={
+                                    pipeline?.isRun
+                                        ? disabledPlusIcon
+                                        : plusIcon
+                                }
+                            />
+                        </div>
+                        <div
+                            onClick={() => {
+                                if (isDirty) {
+                                    return;
+                                }
+                                togglePipeline();
+                            }}
+                            className={`d-flex align-items-center rounded ms-2 ${
+                                isDirty ? 'cursor-na' : ''
+                            }`}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                            }}
+                            role="button"
+                        >
+                            <img
+                                className="icon"
+                                src={
+                                    isDirty
+                                        ? disabledPlayIcon
+                                        : pipeline?.isRun
+                                        ? pauseIcon
+                                        : playIcon
+                                }
+                            />
+                        </div>
                     </div>
-                    <div
-                        onClick={() => {
-                            if (isDirty) {
-                                return;
-                            }
-                            togglePipeline();
-                        }}
-                        className={`d-flex align-items-center rounded ms-2 ${
-                            isDirty ? 'cursor-na' : ''
-                        }`}
-                        style={{
-                            width: '40px',
-                            height: '40px',
-                        }}
-                        role="button"
-                    >
-                        <img
-                            className="icon"
-                            src={
-                                isDirty
-                                    ? disabledPlayIcon
-                                    : pipeline?.isRun
-                                    ? pauseIcon
-                                    : playIcon
-                            }
-                        />
-                    </div>
-                </div>
-            </Panel>
-            <MiniMap />
-            <Controls />
-            <Background />
-        </ReactFlow>
+                </Panel>
+                <MiniMap />
+                <Controls />
+                <Background />
+            </ReactFlow>
+        </>
     );
 };
 
