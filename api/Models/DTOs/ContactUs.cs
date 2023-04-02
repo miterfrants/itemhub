@@ -7,9 +7,10 @@ namespace Homo.IotApi
     {
         public partial class ContactUs : DTOs
         {
-            [Required]
             public string Subject { get; set; }
             public string Content { get; set; }
+            public string Phone { get; set; }
+            public string Name { get; set; }
             public string FromMail { get; set; }
 
         }

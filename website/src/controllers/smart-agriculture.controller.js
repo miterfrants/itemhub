@@ -1,7 +1,11 @@
 import { APP_CONFIG } from '../config.js';
+import { RESPONSE_STATUS } from '../constants.js';
+import { ContactDataService } from '../dataservices/contact.dataservice.js';
 import {
     RoutingController
 } from '../swim/routing-controller.js';
+import { Toaster } from '../util/toaster.js';
+import { Validate } from '../util/validate.js';
 
 export class SmartAgricultureController extends RoutingController {
     static get id () {
@@ -18,5 +22,84 @@ export class SmartAgricultureController extends RoutingController {
         };
         await super.render({
         });
+    }
+
+    async sendContactUs (event) {
+        const elButton = event.currentTarget;
+        elButton.setAttribute('disabled', 'disabled');
+        elButton.innerHTML = '資料送出中...';
+
+        this.elHTML.querySelectorAll('.validation').forEach((elItem) => {
+            elItem.innerHTML = '';
+        });
+
+        const elForm = elButton.closest('.form');
+        const content = document.querySelector('[data-field=content').value;
+        const data = {
+            ...elForm.collectFormData(), content: content
+        };
+
+        const validationMessage = [];
+        if (!data.name) {
+            validationMessage.push({ key: 'name', message: '姓名為必填欄位' });
+        }
+
+        if (!data.phone) {
+            validationMessage.push({ key: 'phone', message: '手機為必填欄位' });
+        }
+
+        if (!Validate.Phone(data.phone)) {
+            validationMessage.push({ key: 'phone', message: '手機格式錯誤' });
+        }
+
+        if (!data.content) {
+            validationMessage.push({ key: 'content', message: '期望的運用為必填欄位' });
+        }
+
+        if (validationMessage.length > 0) {
+            for (let i = 0; i < validationMessage.length; i++) {
+                const elInput = this.elHTML.querySelector(`[data-field="${validationMessage[i].key}"]`);
+                const elFormInputContainer = elInput.closest('label');
+                const elValidation = elFormInputContainer.querySelector('.validation');
+                if (!elInput.classList.contains('invalid')) {
+                    elInput.classList.add('invalid');
+                }
+                elValidation.innerHTML = `${elValidation.innerHTML} ${validationMessage[i].message}`;
+            }
+            this.elHTML.querySelector(`[data-field="${validationMessage[0].key}"]`).focus();
+            elButton.removeAttribute('disabled');
+            elButton.innerHTML = '送出';
+            return;
+        }
+
+        const resp = await ContactDataService.ContactUs(data);
+        if (resp.status === RESPONSE_STATUS.OK) {
+            Toaster.popup(Toaster.TYPE.INFO, '留言成功，我們將儘速與你聯繫。');
+        } else {
+            Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
+        }
+
+        elButton.removeAttribute('disabled');
+        elButton.innerHTML = '送出';
+    }
+
+    validatePhone (event) {
+        const elSendSmsButton = this.elHTML.querySelector('.btn-send-sms');
+        if (event.type === 'keyup' && event.keyCode === 13) {
+            elSendSmsButton.click();
+            return;
+        }
+
+        const elPhone = this.elHTML.querySelector('[data-field="phone"]');
+        const phone = elPhone.value;
+        const phonePattern = /^09[0-9]{8}$/;
+        const isValid = phonePattern.test(phone);
+        if (isValid) {
+            elSendSmsButton.removeAttribute('disabled');
+            this.pageVariable.phoneInvalidMessage = '';
+        } else {
+            elSendSmsButton.setAttribute('disabled', 'disabled');
+            this.pageVariable.phoneInvalidMessage = '手機格式錯誤';
+        }
     }
 }

@@ -11,5 +11,9 @@ export const Validate = {
             return false;
         }
         return true;
+    },
+    Phone: (phone) => {
+        const phonePattern = /^09[0-9]{8}$/;
+        return phonePattern.test(phone);
     }
 };
