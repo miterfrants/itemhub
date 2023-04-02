@@ -3,7 +3,11 @@ import { useAppDispatch } from '@/hooks/redux.hook';
 import { useFetchApi } from '@/hooks/apis/fetch.hook';
 import { devicesActions } from '@/redux/reducers/devices.reducer';
 import { ApiHelpers } from '@/helpers/api.helper';
-import { DeviceItem, PinItem } from '@/types/devices.type';
+import {
+    DeviceItem,
+    DeviceLastActivityLog,
+    PinItem,
+} from '@/types/devices.type';
 import {
     API_URL,
     END_POINT,
@@ -109,6 +113,34 @@ export const useGetDeviceApi = (id: number) => {
         method: HTTP_METHOD.GET,
         initialData: null,
         callbackFunc: dispatchRefresh,
+    });
+};
+
+export const useGetLastDeviceActivityApi = (id: number) => {
+    const dispatch = useAppDispatch();
+    const dispatchRefresh = useCallback(
+        (data: DeviceLastActivityLog) => {
+            if (data) {
+                dispatch(
+                    devicesActions.refreshLastActivity({
+                        deviceId: id,
+                        lastActivity: data.createdAt,
+                    })
+                );
+            }
+        },
+        [dispatch, id]
+    );
+
+    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_ACTIVITY}`;
+    apiPath = apiPath.replace(':id', id.toString());
+
+    return useFetchApi<DeviceLastActivityLog>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchRefresh,
+        skipErrorToaster: true,
     });
 };
 

@@ -26,18 +26,14 @@ namespace Homo.IotApi
             ).Count();
         }
 
-        public static List<DeviceActivityLog> GetLast(IotDbContext dbContext, long ownerId, List<long> deviceIds)
+        public static DeviceActivityLog GetLast(IotDbContext dbContext, long ownerId, long deviceId)
         {
             return dbContext.DeviceActivityLog.Where(x =>
                 x.DeletedAt == null
-                && deviceIds.Contains(x.DeviceId)
+                && x.DeviceId == deviceId
                 && x.OwnerId == ownerId
-            )
-            .GroupBy(x => x.DeviceId)
-            .Select(x => x.OrderBy(x => x.DeviceId)
-                        .OrderByDescending(x => x.CreatedAt)
-                        .FirstOrDefault())
-            .ToList();
+            ).OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefault();
         }
 
         public static List<long> GetTooLongWithoutActivityDeviceIds(IotDbContext dbContext, int seconds) // 這個有效能低落的風險

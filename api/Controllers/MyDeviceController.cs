@@ -62,7 +62,6 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             List<Device> records = DeviceDataservice.GetList(_iotDbContext, ownerId, page, limit, name);
-            List<DeviceActivityLog> lastLogs = DeviceActivityLogDataservice.GetLast(_iotDbContext, ownerId, records.Select(x => x.Id).ToList<long>());
             return new
             {
                 devices = records.Select(x =>
@@ -79,8 +78,7 @@ namespace Homo.IotApi
                     x.OwnerId,
                     x.Protocol,
                     x.OfflineNotificationTarget,
-                    x.IsOfflineNotification,
-                    LastActivityLogCreatedAt = lastLogs.Where(item => item.DeviceId == x.Id).FirstOrDefault()?.CreatedAt
+                    x.IsOfflineNotification
                 }),
                 rowNum = DeviceDataservice.GetRowNum(_iotDbContext, ownerId, name)
             };
@@ -167,6 +165,26 @@ namespace Homo.IotApi
             }
             return record;
         }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "裝置 - 取得單一裝置最後上線時間",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{id}/last-activity")]
+        public ActionResult<dynamic> getLastActivity([FromRoute] int id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            DeviceActivityLog record = DeviceActivityLogDataservice.GetLast(_iotDbContext, ownerId, id);
+            if (record == null)
+            {
+                throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
+            }
+            return record;
+        }
+
+
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },

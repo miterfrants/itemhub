@@ -6,6 +6,7 @@ export interface SendRequestParams<T> {
     payload?: { [key: string]: any };
     shouldDeleteContentType?: boolean;
     callbackFunc?: (result: FetchResult<T>) => null;
+    skipErrorToaster?: boolean;
 }
 
 export interface FetchParams {

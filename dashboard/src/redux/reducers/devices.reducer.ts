@@ -19,6 +19,27 @@ export const devicesSlice = createSlice({
         refresh: (state, action: PayloadAction<DeviceState>) => {
             return action.payload;
         },
+        refreshLastActivity: (
+            state,
+            action: PayloadAction<{ deviceId: number; lastActivity: string }>
+        ) => {
+            const list = [...state.devices];
+
+            const targetIndex = list.findIndex(
+                (oldOne) => oldOne.id === action.payload.deviceId
+            );
+
+            const oldOne = list[targetIndex] as DeviceItem;
+            list[targetIndex] = {
+                ...oldOne,
+                lastActivity: new Date(action.payload.lastActivity),
+            } as DeviceItem;
+
+            return {
+                ...state,
+                devices: list,
+            };
+        },
         refreshOne: (state, action: PayloadAction<DeviceItem>) => {
             const list = [...state.devices];
             const newOne = action.payload;
