@@ -154,9 +154,7 @@ export const PipelineFlow = ({
         } as any;
     };
 
-    const [nodes, setNodes, onNodesChange] = useNodesState<any>(
-        pipelineItems.map(pipelineItemToNode)
-    );
+    const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
 
     const [edges, setEdges, onEdgesChange] = useEdgesState(
         pipelineConnectors.map(pipelineConnectorToEdge)
@@ -435,6 +433,11 @@ export const PipelineFlow = ({
         setNodes(pipelineItems.map(pipelineItemToNode));
         // eslint-disable-next-line
     }, [pipeline]);
+
+    useEffect(() => {
+        setNodes(pipelineItems.map(pipelineItemToNode));
+        // eslint-disable-next-line
+    }, [pipelineItems]);
 
     return (
         <ReactFlow
