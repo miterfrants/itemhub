@@ -20,7 +20,7 @@ namespace Homo.IotApi
             IotDbContext dbContext = new IotDbContext(builder.Options);
 
             // Get pagination devices
-            List<long> ids = DeviceActivityLogDataservice.GetTooLongWithoutActivityDeviceIds(dbContext, 15);
+            List<long> ids = DeviceActivityLogDataservice.GetTooLongWithoutActivityDeviceIds(dbContext, 60);
             DeviceDataservice.OfflineMultiple(dbContext, ids);
         }
 
@@ -55,7 +55,7 @@ namespace Homo.IotApi
                 var isVIP = roles.Contains("VIP");
                 var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, pipeline.OwnerId, pipeline.Id, null);
                 var pipelineConnectors = PipelineConnectorDataservice.GetAll(iotDbContext, pipeline.OwnerId, pipeline.Id, null);
-                PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, pipeline.OwnerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, staticPath, systemEmail, dbc);
+                PipelineHelper.Execute(serverId, pipeline.Id, pipelineItems, pipelineConnectors, pipeline.OwnerId, isVIP, localMqttPublishers, mqttUsername, mqttPassword, smsUsername, smsPassword, smsClientUrl, sendGridApiKey, staticPath, systemEmail, dbc, false, true);
             });
         }
     }

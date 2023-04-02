@@ -32,8 +32,7 @@ import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dial
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem } from '@/types/devices.type';
 import { offlineNotificationDialogActions } from '@/redux/reducers/offline-notification-dialog.reducer';
-// import jwt_decode from 'jwt-decode';
-// import { CookieHelpers } from '@/helpers/cookie.helper';
+import PseudoDeviceLastActivity from '@/components/pseudo-device-last-activity/pseudo-device-last-activity';
 
 const Devices = () => {
     const query = useQuery();
@@ -53,10 +52,6 @@ const Devices = () => {
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
     const isFilter = !query.keys().next().done;
-    // const jwtPayload = jwt_decode<{ roles: string[] }>(
-    //     CookieHelpers.GetCookie({ name: 'dashboardToken' }) || ''
-    // );
-    // const isVIP = jwtPayload.roles.includes('VIP');
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
@@ -244,7 +239,7 @@ const Devices = () => {
                                             name,
                                             online,
                                             protocol,
-                                            lastActivityLogCreatedAt,
+                                            lastActivity,
                                             isOfflineNotification,
                                         }) => {
                                             const targetProtocol =
@@ -256,12 +251,19 @@ const Devices = () => {
                                                 <div
                                                     className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
                                                     key={id}
-                                                    title={`最後上線時間: ${moment(
-                                                        lastActivityLogCreatedAt
-                                                    ).format(
-                                                        'YYYY-MM-DD HH:mm:ss'
-                                                    )}`}
+                                                    title={`最後上線時間: ${
+                                                        lastActivity
+                                                            ? moment(
+                                                                  lastActivity
+                                                              ).format(
+                                                                  'YYYY-MM-DD HH:mm:ss'
+                                                              )
+                                                            : '目前沒有資料'
+                                                    }`}
                                                 >
+                                                    <PseudoDeviceLastActivity
+                                                        deviceId={id}
+                                                    />
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         裝置名稱
                                                     </div>

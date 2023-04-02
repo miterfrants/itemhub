@@ -11,7 +11,7 @@ export interface DeviceItem {
     zoneId: null | number;
     microcontroller: number;
     protocol: number;
-    lastActivityLogCreatedAt: Date;
+    lastActivity?: Date;
     isOfflineNotification: boolean;
     offlineNotificationTarget: string;
 }
