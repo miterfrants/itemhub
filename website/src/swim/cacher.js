@@ -108,6 +108,8 @@ import signUpFinishHTML from '../template/sign-up-finish.html';
 
 import signUpHTML from '../template/sign-up.html';
 
+import smartAgricultureHTML from '../template/smart-agriculture.html';
+
 import transactionHTML from '../template/transaction.html';
 
 import twoFactorAuthHTML from '../template/two-factor-auth.html';
@@ -198,6 +200,7 @@ export const Cacher = {
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-in.html`] = signInHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-up-finish.html`] = signUpFinishHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/sign-up.html`] = signUpHTML;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/smart-agriculture.html`] = smartAgricultureHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/transaction.html`] = transactionHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/two-factor-auth.html`] = twoFactorAuthHTML;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/template/verify-email.html`] = verifyEmailHTML;
