@@ -40,7 +40,15 @@ namespace Homo.IotApi
                                     }
 
                                     SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(iotDbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
-                                    MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, localMqttPublishers, mqttUsername, mqttPassword);
+                                    try
+                                    {
+                                        MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, localMqttPublishers, mqttUsername, mqttPassword);
+                                    }
+                                    catch (System.Exception ex)
+                                    {
+                                        System.Console.WriteLine($"testing exception:{Newtonsoft.Json.JsonConvert.SerializeObject(ex, Newtonsoft.Json.Formatting.Indented)}");
+                                    }
+
                                     DeviceSwitchHelper.Update(iotDbContext, ownerId, payload.DeviceId.GetValueOrDefault(), payload.Pin, new DTOs.DevicePinSwitchValue { Value = payload.Status.GetValueOrDefault() }, localMqttPublishers);
                                     PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
                                     {
