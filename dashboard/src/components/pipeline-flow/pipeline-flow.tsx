@@ -435,6 +435,17 @@ export const PipelineFlow = ({
     }, [pipeline]);
 
     useEffect(() => {
+        // 只在一次進到這個 hook 才做 setNodes, 否則會一直在操作的過程中 re-render
+        if (
+            JSON.stringify(nodes.map((item) => item.id).sort()) ===
+            JSON.stringify(
+                pipelineItems
+                    .map((item) => (item.id ? item.id.toString() : ''))
+                    .sort()
+            )
+        ) {
+            return;
+        }
         setNodes(pipelineItems.map(pipelineItemToNode));
         // eslint-disable-next-line
     }, [pipelineItems]);
