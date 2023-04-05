@@ -10,7 +10,6 @@ namespace Homo.IotApi
 {
     [Route("v1/contact")]
     [SwaggerUiInvisibility]
-    [IotAuthorizeFactory]
     [Validate]
     public class ContactController : ControllerBase
     {
@@ -46,7 +45,7 @@ namespace Homo.IotApi
             {
                 webSiteUrl = _webSiteUrl,
                 adminEmail = _adminEmail,
-                message = dto.Content,
+                message = "name: " + dto.Name + "<br />phone: " + dto.Phone + "<br />content: " + dto.Content,
                 mailContentContactUsDescription = _commonLocalizer.Get("mailContentContactUsDescription"),
                 mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
             });
@@ -55,7 +54,8 @@ namespace Homo.IotApi
             {
                 Subject = _commonLocalizer.Get(template.Subject),
                 Content = template.Content
-            }, dto.FromMail, _systemEmail, _sendGridApiKey);
+            }, _systemEmail, _adminEmail, _sendGridApiKey);
+
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

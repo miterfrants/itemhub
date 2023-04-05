@@ -34,7 +34,8 @@ export const API = {
     CHECK_IN: 'users/check-in',
     TRANSACTION: 'my/transaction/{id}',
     SUBSCRIPTION_BY_TRANSACTION_ID: 'my/subscription/by-transaction-id/{id}',
-    SUBSCRIPTION: 'my/subscription'
+    SUBSCRIPTION: 'my/subscription',
+    CONTACT: 'contact'
 };
 
 export const OAUTH_TYPE = {
