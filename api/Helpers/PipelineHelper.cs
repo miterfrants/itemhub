@@ -75,12 +75,13 @@ namespace Homo.IotApi
                     x.ItemType == PIPELINE_ITEM_TYPE.OFFLINE
                 ) && endIds.Contains(x.Id) && x.Id != head.Id
             );
-            if(offlineInEnds.Count()>0) {
-             throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);   
+            if (offlineInEnds.Count() > 0)
+            {
+                throw new CustomException(ERROR_CODE.PIPELINE_INVALID_TYPE_OFFLINE_IN_END, System.Net.HttpStatusCode.BadRequest);
             }
         }
 
-        public static async void Execute(
+        public static async Task Execute(
             string serverId,
             long pipelineId,
             List<PipelineItem> pipelineItems,
@@ -97,30 +98,35 @@ namespace Homo.IotApi
             string mailTemplatePath,
             string systemEmail,
             string dbc,
-            bool isForceRun = false
+            bool isForceRun = false,
+            bool shouldCheckLockBy = false
             )
         {
-            await Task.Delay(0);
             DbContextOptionsBuilder<IotDbContext> IotDbContextBuilder = new DbContextOptionsBuilder<IotDbContext>();
             var mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
             IotDbContextBuilder.UseMySql(dbc, mysqlVersion);
             using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
             {
                 var pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
-                // schedule pipeline 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
+                // MyPipelineController.toggle 當下 isRun 會是 false, 所以需要 isForceRun 不管當前的
                 if (!pipeline.IsRun && isForceRun == false)
                 {
                     return;
                 }
-                PipelineDataservice.Occupy(iotDbContext, pipelineId, serverId);
-                await Task.Delay(5000);
 
-
-                pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
-                if (pipeline.LockBy != serverId)
+                // Controller 都是 Base on request, 所以不會有多台主機執行的問題也就不需要做 Lock free 
+                if (shouldCheckLockBy)
                 {
-                    return;
+                    PipelineDataservice.Occupy(iotDbContext, pipelineId, serverId);
+                    await Task.Delay(5000);
+
+                    pipeline = PipelineDataservice.GetOne(iotDbContext, ownerId, pipelineId, true);
+                    if (pipeline.LockBy != serverId)
+                    {
+                        return;
+                    }
                 }
+
 
                 PipelineHelper.Validate(pipelineItems, pipelineConnectors);
                 Dictionary<long, IPropagatorBlock<bool, bool>> blocks = new Dictionary<long, IPropagatorBlock<bool, bool>>();

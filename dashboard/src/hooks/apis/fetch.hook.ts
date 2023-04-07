@@ -11,12 +11,14 @@ export const useFetchApi = <T>({
     payload,
     initialData,
     callbackFunc,
+    skipErrorToaster,
 }: {
     apiPath: string;
     method: string;
     payload?: { [key: string]: any };
     initialData: T | null;
     callbackFunc?: (data: T) => void;
+    skipErrorToaster?: boolean;
 }) => {
     const [data, setData] = useState<T | null>(initialData);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,12 +31,12 @@ export const useFetchApi = <T>({
         try {
             setIsLoading(true);
             setError(null);
-
             const result = await ApiHelpers.SendRequestWithToken<T>({
                 apiPath,
                 method,
                 payload,
                 signal: controller.signal,
+                skipErrorToaster,
             });
             const data = result.data;
 

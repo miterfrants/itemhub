@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Homo.Api;
 using Homo.Core.Constants;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Threading.Tasks;
 
 namespace Homo.IotApi
 {
@@ -152,7 +153,7 @@ namespace Homo.IotApi
 
         [HttpPost]
         [Route("{id}/toggle")]
-        public ActionResult<dynamic> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto, bool isVIP)
+        public async Task<ActionResult<dynamic>> toggle([FromRoute] long id, dynamic extraPayload, [FromBody] DTOs.PipelineIsRun dto, bool isVIP)
         {
             long ownerId = extraPayload.Id;
             var pipeline = PipelineDataservice.GetOne(_dbContext, ownerId, id);
@@ -203,18 +204,19 @@ namespace Homo.IotApi
                     deviceId = offlinePipelinePayload.DeviceId;
                 }
 
-                if (pipelineItems.Count > 10)
+                if (pipelineItems.Count > 20)
                 {
-                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TEN, System.Net.HttpStatusCode.BadRequest);
+                    throw new CustomException(ERROR_CODE.PIPELINE_INVALID_PAYLOAD_ITEMS_BIGGER_THAN_TWENTY, System.Net.HttpStatusCode.BadRequest);
                 }
 
+                PipelineHelper.Validate(pipelineItems, pipelineConnectors);
                 PipelineDataservice.Toggle(_dbContext, ownerId, ownerId, id, true, pipelineHead.ItemType, deviceId, devicePin);
 
                 if (pipelineHead.ItemType == PIPELINE_ITEM_TYPE.SCHEDULE)
                 {
                     try
                     {
-                        PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true);
+                        await PipelineHelper.Execute(_serverId, id, pipelineItems, pipelineConnectors, ownerId, isVIP, _localMqttPublishers, _mqttUsername, _mqttPassword, _smsUsername, _smsPassword, _smsClientUrl, _sendGridApiKey, _staticPath, _systemEmail, _dbc, true, false);
                     }
                     catch (CustomException ex)
                     {
