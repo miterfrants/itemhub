@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux.hook';
 import { menuActions, selectMenu } from '@/redux/reducers/menu.reducer';
-import triggerIcon from '@/assets/images/trigger.svg';
 import chartIcon from '@/assets/images/chart.svg';
 import deviceIcon from '@/assets/images/device.svg';
 import logoIcon from '@/assets/images/logo.svg';
@@ -93,15 +92,6 @@ const Header = () => {
                         </span>
                     </Link>
 
-                    <Link
-                        to="/dashboard/triggers"
-                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
-                    >
-                        <img src={triggerIcon} />
-                        <span className="text-block text-nowrap overflow-hidden">
-                            <div className="mx-3">觸發</div>
-                        </span>
-                    </Link>
                     <Link
                         to="/dashboard/oauth-clients"
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
