@@ -5,8 +5,6 @@ import {
     Microcontroller,
     DeviceMode,
     TriggerOerator,
-    TriggerType,
-    TriggerNotificationPeriod,
     DashboardMonitorMode,
     Protocols,
 } from '@/types/universal.type';
@@ -15,8 +13,6 @@ interface UniversalState {
     triggerOperators: TriggerOerator[];
     microcontrollers: Microcontroller[];
     deviceModes: DeviceMode[];
-    triggerTypes: TriggerType[];
-    triggerNotificationPeriod: TriggerNotificationPeriod[];
     dashboardMonitorModes: DashboardMonitorMode[];
     protocols: Protocols[];
     pipelineItemTypes: UniversalOption[];
@@ -28,8 +24,6 @@ const initialState: UniversalState = {
     triggerOperators: [],
     microcontrollers: [],
     deviceModes: [],
-    triggerTypes: [],
-    triggerNotificationPeriod: [],
     dashboardMonitorModes: [],
     protocols: [],
     pipelineItemTypes: [],
@@ -66,23 +60,6 @@ export const universalSlice = createSlice({
             return {
                 ...state,
                 deviceModes: newDeviceModes,
-            };
-        },
-        setTriggerTypes: (state, action: PayloadAction<TriggerType[]>) => {
-            const newTriggerTypes = action.payload;
-            return {
-                ...state,
-                triggerTypes: newTriggerTypes,
-            };
-        },
-        setTriggerNotificationPeriod: (
-            state,
-            action: PayloadAction<TriggerNotificationPeriod[]>
-        ) => {
-            const newTriggerNotificationPeriod = action.payload;
-            return {
-                ...state,
-                triggerNotificationPeriod: newTriggerNotificationPeriod,
             };
         },
         setDashboardMonitorModes: (
