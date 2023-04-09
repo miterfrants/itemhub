@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import universalReducer from './reducers/universal.reducer';
 import devicesReducer from './reducers/devices.reducer';
 import oauthClientsReducer from './reducers/oauth-clients.reducer';
-import triggersReducer from './reducers/triggers.reducer';
 import pinsReducer from './reducers/pins.reducer';
 import menuReducer from './reducers/menu.reducer';
 import dialogReducer from './reducers/dialog.reducer';
@@ -22,7 +21,6 @@ const store = configureStore({
         devices: devicesReducer,
         deviceLastActivityLogs: deviceLastActivityReducer,
         oauthClients: oauthClientsReducer,
-        triggers: triggersReducer,
         pins: pinsReducer,
         menu: menuReducer,
         dialog: dialogReducer,

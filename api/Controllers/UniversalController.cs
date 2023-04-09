@@ -37,8 +37,6 @@ namespace Homo.IotApi
                 DeviceCount = SubscriptionHelper.GetDeviceCount((PRICING_PLAN)x.Value),
                 Frequency = SubscriptionHelper.GetFrequency((PRICING_PLAN)x.Value),
                 StorageTime = SubscriptionHelper.GetStorageTime((PRICING_PLAN)x.Value),
-                NotificationEmailRateLimit = SubscriptionHelper.GetTriggerEmailNotificastionRateLimit((PRICING_PLAN)x.Value),
-                NotificationSmsRateLimit = SubscriptionHelper.GetTriggerSmsNotificastionRateLimit((PRICING_PLAN)x.Value),
 
             }).ToList<dynamic>();
 
@@ -84,19 +82,6 @@ namespace Homo.IotApi
             }).ToList<dynamic>();
         }
 
-        [Route("trigger-notification-periods")]
-        [HttpGet]
-        public ActionResult<dynamic> getTriggerNotificationPeriods()
-        {
-            List<ConvertHelper.EnumList> triggerNotificationPeriods = ConvertHelper.EnumToList(typeof(TRIGGER_NOTIFICATION_PERIOD));
-            return triggerNotificationPeriods.Select(x => new
-            {
-                x.Key,
-                x.Label,
-                x.Value,
-            }).ToList<dynamic>();
-        }
-
         [SwaggerOperation(
             Tags = new[] { "常數" },
             Summary = "交易狀態",
@@ -138,20 +123,6 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getPinTypes()
         {
             return ConvertHelper.EnumToList(typeof(PIN_TYPE));
-        }
-
-
-        [SwaggerOperation(
-            Tags = new[] { "常數" },
-            Summary = "觸發類型",
-            Description = ""
-        )]
-        [Route("trigger-types")]
-        [HttpGet]
-        public ActionResult<dynamic> getTriggerType()
-        {
-            // 目前只有實作 device current value 和 notification 
-            return ConvertHelper.EnumToList(typeof(TRIGGER_TYPE)).Where(x => x.Key == TRIGGER_TYPE.CHANGE_DEVICE_STATE.ToString() || x.Key == TRIGGER_TYPE.NOTIFICATION.ToString()).ToList();
         }
 
         [SwaggerOperation(

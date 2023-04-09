@@ -203,11 +203,11 @@ int value = analogRead(pins[i].pin);</pre>
             </div>
 
             <div class="mt-3">
-                <h5>ItemHub 觸發</h5>
+                <h5>設定自動化觸發流程</h5>
                 <p>
                     <ul>
                         <li>
-                            新增觸發, 當濕度感測器 (A0) 低於某一個數值的時候, ItemHub 就會將對應的 D2 腳位改成啟動(高電位)
+                            新增流程, 當濕度感測器 (A0) 低於某一個數值的時候, 就會將對應的 D2 腳位改成啟動(高電位)，並於 5 分鐘後關閉。
                             <img class="w-100 mt-1"
                                 src="/assets/images/how/implement-autopot/how-to-implement-autopot-add-trigger.png" />
                         </li>

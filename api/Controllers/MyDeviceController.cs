@@ -184,8 +184,6 @@ namespace Homo.IotApi
             return record;
         }
 
-
-
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
             Summary = "裝置 - 更新單一裝置基本資料",

@@ -13,7 +13,7 @@ export class HowToStartController extends RoutingController {
         this.meta = {
             title: '開始使用 ItemHub - 如何使用 - ItemHub',
             'og:title': '開始使用 ItemHub - 如何使用 - ItemHub',
-            description: '新增裝置設定 PIN, 燒錄我們提供的原始碼, 設定自動觸發, 三個步驟達到你的物聯網',
+            description: '新增裝置設定 PIN, 燒錄我們提供的原始碼, 設定自動化觸發流程, 三個步驟達到你的物聯網',
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
             keywords: '使用教學'
         };
