@@ -155,10 +155,7 @@ export const PipelineFlow = ({
     };
 
     const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-
-    const [edges, setEdges, onEdgesChange] = useEdgesState(
-        pipelineConnectors.map(pipelineConnectorToEdge)
-    );
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const { id: idFromUrl } = useParams();
 
     const id: number | undefined = idFromUrl ? Number(idFromUrl) : undefined;
@@ -449,6 +446,22 @@ export const PipelineFlow = ({
         setNodes(pipelineItems.map(pipelineItemToNode));
         // eslint-disable-next-line
     }, [pipelineItems]);
+
+    useEffect(() => {
+        // 只在一次進到這個 hook 才做 setNodes, 否則會一直在操作的過程中 re-render
+        if (
+            JSON.stringify(edges.map((item) => item.id).sort()) ===
+            JSON.stringify(
+                pipelineConnectors
+                    .map((item) => (item.id ? item.id.toString() : ''))
+                    .sort()
+            )
+        ) {
+            return;
+        }
+        setEdges(pipelineConnectors.map(pipelineConnectorToEdge));
+        // eslint-disable-next-line
+    }, [pipelineConnectors]);
 
     return (
         <ReactFlow
