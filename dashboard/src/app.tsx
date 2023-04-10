@@ -3,11 +3,9 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
-    useGetTriggerTypesApi,
     useGetTriggerOperatorsApi,
     useGetMicrocontrollersApi,
     useGetDeviceModesApi,
-    useGetTriggerNotificationPeriodApi,
     useGetProtocols,
 } from '@/hooks/apis/universal.hook';
 
@@ -49,17 +47,11 @@ const App = () => {
     const { getDeviceModesApi } = useGetDeviceModesApi();
     const { getProtocols } = useGetProtocols();
 
-    const { fetchApi: getTriggerTypes } = useGetTriggerTypesApi();
-    const { fetchApi: getTriggerNotificationPeriodApi } =
-        useGetTriggerNotificationPeriodApi();
-
     useEffect(() => {
         getTriggerOperatorsApi();
         getMicrocontrollersApi();
         getDeviceModesApi();
-        getTriggerTypes();
         getProtocols();
-        getTriggerNotificationPeriodApi();
         // eslint-disable-next-line
     }, []);
 

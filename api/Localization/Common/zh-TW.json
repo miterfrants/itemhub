@@ -30,7 +30,6 @@
     "cartSecretIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart secret is null, 請於我們聯繫 {adminEmail}",
     "cartKeyIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart key is null, 請於我們聯繫 {adminEmail}",
     "cartTokenIsNull": "第三方金流交易成功, 但為回傳正確的資訊格式 cart token is null, 請於我們聯繫 {adminEmail}",
-    "triggerNotification": "Itemhub - 觸發通知 {deviceName}",
     "notificationContent": "你的裝置已經達到所設定的門檻",
     "checkout": "前往確認",
     "mailSubjectSurvey": "Itemhub - 使用體驗調查",

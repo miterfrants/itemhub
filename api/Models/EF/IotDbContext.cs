@@ -21,8 +21,6 @@ namespace Homo.IotApi
         public virtual DbSet<OauthClientRedirectUri> OauthClientRedirectUri { get; set; }
 
         public virtual DbSet<DevicePin> DevicePin { get; set; }
-        public virtual DbSet<Trigger> Trigger { get; set; }
-        public virtual DbSet<TriggerLog> TriggerLog { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
         public virtual DbSet<ThirdPartyPaymentFlow> ThirdPartyPaymentFlow { get; set; }
@@ -65,28 +63,6 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.Property(p => p.Protocol).HasDefaultValueSql(((int)FIRMWARE_PROTOCOL.HTTP).ToString());
-            });
-
-            modelBuilder.Entity<Trigger>(entity =>
-            {
-                entity.HasIndex(p => new { p.SourcePin });
-                entity.HasIndex(p => new { p.SourceDeviceId });
-                entity.HasIndex(p => new { p.DestinationPin });
-                entity.HasIndex(p => new { p.DestinationDeviceId });
-                entity.HasIndex(p => new { p.OwnerId });
-                entity.HasIndex(p => new { p.Name });
-                entity.HasOne(p => p.SourceDevice).WithMany().HasForeignKey(p => p.SourceDeviceId);
-                entity.HasOne(p => p.DestinationDevice).WithMany().HasForeignKey(p => p.DestinationDeviceId).IsRequired(false);
-                entity.HasIndex(p => new { p.CreatedAt });
-                entity.HasIndex(p => new { p.DeletedAt });
-                entity.HasIndex(p => new { p.Type });
-                entity.HasIndex(p => new { p.Email });
-                entity.HasIndex(p => new { p.Phone });
-            });
-
-            modelBuilder.Entity<TriggerLog>(entity =>
-            {
-                entity.HasIndex(p => new { p.CreatedAt });
             });
 
             modelBuilder.Entity<Subscription>(entity =>
