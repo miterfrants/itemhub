@@ -1,0 +1,196 @@
+<div class="how-to-implement-pipeline">
+    <link href="/components/how-to-implement-pipeline/how-to-implement-pipeline.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            使用 ItemHub 自動化觸發流程
+        </div>
+        <img class="arrow {expandedHowToImplementPipelineArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToImplementPipelineVisible}">
+        <div class="pt-2">
+            為了更方便的操控物聯網 (IoT) 裝置，此功能提供了多種觸發模式，如：排程、感應器、設置狀態等。可彈性的依據需求設定流程，也能讓不同裝置互相支援，實現裝置操控自動化。
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">觸發項目類型</h4>
+            <div>
+                <h5>排程</h5>
+                <p>
+                    <div>採用 Cron Job 的方式設定，時間設定由五個欄位所組成，分別代表分鐘、小時、日期、月份和星期幾。在這五個欄位中，可以設定不同的數值來定義要執行的時間或頻率。</div>
+                    <div>如:</div>
+                    <ul>
+                        <li>
+                            每天晚上 10 點：「0 22 * * *」
+                        </li>
+                        <li>
+                            每週一至週五的上午八點與下午 2 點：「0 8,14 * * 1-5」
+                        </li>
+                    </ul>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-schedule.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>感測器</h5>
+
+                <p>
+                    <div>可以根據感測器的數值，設定不同的統計方式及指定筆數的條件設定值來觸發其他事件。</div>
+                    <div>感測器資料設定:</div>
+                    <ul>
+                        <li>
+                            統計方式: 平均數、最大值、最小值、中位數、標準差、總和
+                        </li>
+                        <li>
+                            條件: 大於、大於等於、小於、小於等於、等於
+                        </li>
+                    </ul>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-sensor.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>開關</h5>
+                <p>
+                    <div>控制開關為「開」或「關」。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-switch.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>檢查開關狀態</h5>
+
+                <p>
+                    <div>可檢查開關狀態是否為「開」或「關」。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-check-switch.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>延遲</h5>
+
+                <p>
+                    <div>可設置延遲時間，最少為1分鐘。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-delay.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>網路</h5>
+
+                <p>
+                    <div>可自行串接其他系統的 API，透過回傳的資料來觸發其他事件。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-network.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>通知</h5>
+
+                <p>
+                    <div>可設定通知方式為 Email 或 簡訊。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-notification.png" />
+                    </div>
+                </p>
+            </div>
+
+            <div>
+                <h5>離線</h5>
+
+                <p>
+                    <div>當裝置離線時會觸發該事件。</div>
+                    <div class="col-12 col-md-5">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-offline.png" />
+                    </div>
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">觸發範例</h4>
+            <div class="mt-3">
+                <h5>範例1</h5>
+                <p>
+                    <div>
+                        每週 1 至週 5 天上午 8:30 自動開燈，35分鐘後自動關燈。
+                    </div>
+                    <ul>
+                        <li>起始項目: 排程 - 每週 1 至週 5 天上午 8:30</li>
+                        <li>中間項目: 延遲 - 35 分鐘 </li>
+                        <li>結尾項目: 開關 - 開燈 / 開關 - 關燈</li>
+                    </ul>
+                    <div class="">
+                        <img class="w-100 mt-1"
+                            src="/assets/images/how/implement-pipeline/how-to-implement-pipeline-sample.png" />
+                    </div>
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">觸發限制</h4>
+            <div class="mt-3">
+                <h5>項目</h5>
+                <p>
+                    <ul>
+                        <li>需有一個起始項目，但不可有多個起始項目</li>
+                        <li>項目限 20 個內</li>
+                    </ul>
+                </p>
+                <h5>起始項目</h5>
+                <p>
+                    <div>不允許起始項目為以下類型</div>
+                    <ul>
+                        <li>通知</li>
+                        <li>開關</li>
+                        <li>延遲</li>
+                        <li>網路</li>
+                    </ul>
+                </p>
+                <h5>中間項目</h5>
+                <p>
+                    <div>不允許中間項目為以下類型</div>
+                    <ul>
+                        <li>通知</li>
+                        <li>開關</li>
+                        <li>排程</li>
+                    </ul>
+                </p>
+                <h5>結尾項目</h5>
+                <p>
+                    <div>不允許結尾項目為以下類型</div>
+                    <ul>
+                        <li>裝置下線</li>
+                        <li>排程</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="mb-7">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+</div>

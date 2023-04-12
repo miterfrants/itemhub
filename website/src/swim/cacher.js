@@ -43,6 +43,12 @@ import HowToImplementHygrometerHTML from '../components/how-to-implement-hygrome
 import '../components/how-to-implement-hygrometer/how-to-implement-hygrometer.scss';
 
 import {
+    HowToImplementPipelineComponent
+} from '../components/how-to-implement-pipeline/how-to-implement-pipeline.component.js';
+import HowToImplementPipelineHTML from '../components/how-to-implement-pipeline/how-to-implement-pipeline.html';
+import '../components/how-to-implement-pipeline/how-to-implement-pipeline.scss';
+
+import {
     HowToIntegrateGoogleNestComponent
 } from '../components/how-to-integrate-google-nest/how-to-integrate-google-nest.component.js';
 import HowToIntegrateGoogleNestHTML from '../components/how-to-integrate-google-nest/how-to-integrate-google-nest.html';
@@ -167,6 +173,9 @@ export const Cacher = {
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-hygrometer/how-to-implement-hygrometer.css`);
         window.SwimAppComponents.HowToImplementHygrometerComponent = HowToImplementHygrometerComponent;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-hygrometer/how-to-implement-hygrometer.html`] = HowToImplementHygrometerHTML;
+        window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-pipeline/how-to-implement-pipeline.css`);
+        window.SwimAppComponents.HowToImplementPipelineComponent = HowToImplementPipelineComponent;
+        window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-implement-pipeline/how-to-implement-pipeline.html`] = HowToImplementPipelineHTML;
         window.SwimAppStylesheet.push(`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-integrate-google-nest/how-to-integrate-google-nest.css`);
         window.SwimAppComponents.HowToIntegrateGoogleNestComponent = HowToIntegrateGoogleNestComponent;
         window.SwimAppLoaderCache[`${APP_CONFIG.FRONT_END_PREFIX}/components/how-to-integrate-google-nest/how-to-integrate-google-nest.html`] = HowToIntegrateGoogleNestHTML;

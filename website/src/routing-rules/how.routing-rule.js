@@ -1,6 +1,7 @@
 import { HowToImplementHygrometerController } from '../controllers/how-to-implement-hygrometer.controller.js';
 import { HowToIntegrateGoogleNestController } from '../controllers/how-to-integrate-google-nest.controller.js';
 import { HowToImplementAutopotController } from '../controllers/how-to-implement-autopot.controller.js';
+import { HowToImplementPipelineController } from '../controllers/how-to-implement-pipeline.controller.js';
 import { HowToStartController } from '../controllers/how-to-start.controller.js';
 import { HowController } from '../controllers/how.controller.js';
 
@@ -20,5 +21,8 @@ export const HowRoutingRule = {
     }, {
         path: 'implement-autopot/',
         controller: HowToImplementAutopotController
+    }, {
+        path: 'implement-pipeline/',
+        controller: HowToImplementPipelineController
     }]
 };
