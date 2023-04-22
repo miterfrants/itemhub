@@ -36,8 +36,25 @@ export const dashboardMonitorsSlice = createSlice({
             );
 
             return [...updatedOldPins, ...newPinsExcludedExists];
-
-            return;
+        },
+        updateSorting: (
+            state,
+            action: PayloadAction<
+                {
+                    id: number;
+                    sort: number;
+                }[]
+            >
+        ) => {
+            state.map((item) => {
+                const target = action.payload.find(
+                    (sortingData) => sortingData.id === item.id
+                );
+                return {
+                    ...item,
+                    sort: target?.sort || 1,
+                };
+            });
         },
         delete: (state, action: PayloadAction<number[]>) => {
             const oldRecords = [...state];
