@@ -89,6 +89,39 @@ export const useCreateDashboardMonitorApi = ({
     };
 };
 
+export const useUpdateDashboardMonitorSortingApi = (
+    sortingData: {
+        id: number;
+        sort: number;
+    }[]
+) => {
+    const dispatch = useAppDispatch();
+    const dispatchUpdateSorting = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(dashboardMonitorsActions.updateSorting(sortingData));
+            }
+        },
+        [dispatch]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.DASHBOARD_MONITORS_SORTING}`;
+    const { isLoading, error, data, fetchApi } = useFetchApi<ResponseOK>({
+        apiPath,
+        method: HTTP_METHOD.PATCH,
+        payload: sortingData,
+        initialData: null,
+        callbackFunc: dispatchUpdateSorting,
+    });
+
+    return {
+        isLoading,
+        error,
+        data,
+        fetchApi,
+    };
+};
+
 export const useUpdateDashboardMonitorApi = ({
     id,
     updatedData,
