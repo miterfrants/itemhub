@@ -20,5 +20,13 @@ namespace Homo.IotApi
             public int Column { get; set; }
 
         }
+
+        public partial class DashboardMonitorSorting : DTOs
+        {
+            public long Id { get; set; }
+
+            public int Sort { get; set; }
+
+        }
     }
 }

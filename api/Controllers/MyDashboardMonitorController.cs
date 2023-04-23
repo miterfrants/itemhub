@@ -43,6 +43,21 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "監控中心" },
+            Summary = "監控中心 - 更新監控排序",
+            Description = ""
+        )]
+        [HttpPatch]
+        [Route("sorting")]
+        public ActionResult<dynamic> updateSort([FromRoute] long id,
+                    [FromBody] List<DTOs.DashboardMonitorSorting> dto,
+                    Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            DashboardMonitorDataservice.UpdateSort(_dbContext, extraPayload.Id, dto);
+            return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "監控中心" },
             Summary = "監控中心 - 更新單一監控資料",
             Description = ""
         )]

@@ -14,7 +14,7 @@ namespace Homo.IotApi
                     x.DeletedAt == null
                     && x.OwnerId == ownerId
                 )
-                .OrderByDescending(x => x.Sort)
+                .OrderBy(x => x.Sort)
                 .ToList();
         }
 
@@ -54,6 +54,23 @@ namespace Homo.IotApi
             }
             record.EditedAt = DateTime.Now;
             dbContext.SaveChanges();
+        }
+
+        public static void UpdateSort(IotDbContext dbContext, long ownerId, List<DTOs.DashboardMonitorSorting> dto)
+        {
+            List<long> ids = dto.Select(x => x.Id).ToList();
+            dto.ForEach(item =>
+            {
+                dbContext.DashboardMonitor.Where(x =>
+                    x.Id == item.Id
+                    && x.OwnerId == ownerId
+                ).UpdateFromQuery(x => new DashboardMonitor
+                {
+                    EditedAt = DateTime.Now,
+                    Sort = item.Sort
+                });
+            });
+
         }
 
     }
