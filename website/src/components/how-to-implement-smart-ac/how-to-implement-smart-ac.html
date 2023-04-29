@@ -127,9 +127,10 @@
                         初始化 IRRemoteESP8266
                     </h5>
                     <p>
-                        <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">ac.begin()</pre>
-                        <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-6.png" />
+                        在原本的 setup 底下加入
                     </p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">ac.begin()</pre>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-6.png" />
                 </div>
 
                 <div>
@@ -158,10 +159,10 @@
                     </h5>
                     <p class="mt-4">
                         打開 .ino 檔案，在原本
-                        <prev class="border border-grey-500 p-3 bg-grey-800 mt-2 rounded-2 mx-3">
-                            ItemhubUtilities::CheckSwitchState(client, ca, host, token, remoteDeviceId, pins);</prev>
-                        的下方加入自定義的程式碼。
                     </p>
+                    <prev class="border border-grey-500 p-3 bg-grey-800 rounded-2">
+                        ItemhubUtilities::CheckSwitchState(client, ca, host, token, remoteDeviceId, pins);</prev>
+                    <p class="mt-4">的下方加入自定義的程式碼。</p>
                     <p class="text-warn">注意: 不同的協定在實作時這邊會有些不同，如果不知道該如何實作可以在左下方的 LINE 詢問我們，我們會給予協助</p>
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
                         if (pins[0].value == "0" && pins[0].value != originState)
