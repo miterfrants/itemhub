@@ -33,6 +33,8 @@ export class HowController extends RoutingController {
             expandedHowToImplementAutopotArrowVisible: '',
             expandedHowToImplementPipelineVisible: 'd-none',
             expandedHowToImplementPipelineArrowVisible: '',
+            expandedHowToImplementSmartAcVisible: 'd-none',
+            expandedHowToImplementSmartAcArrowVisible: '',
             howImageVisible: 'd-none d-md-block'
         });
     }
