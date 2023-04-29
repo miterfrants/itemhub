@@ -34,13 +34,13 @@
         <div class="pt-2">
             <h4 class="text-green h4 py-3">材料</h4>
             <div>
-                <h5 class="py-2">硬體</h5>
+                <h5 class="pt-3">硬體</h5>
                 <ul>
                     <li>ESP-01S: 單晶片具有 Wifi 功能, 把我們需要的資料送到 Server，下方說明的例子通用 ESP8266 相關的單晶片</li>
                     <li>紅外線接收器: 接收遙控器的通訊協定</li>
                     <li>紅外線發送器: 充當遙控器的角色，發送訊號給冷氣</li>
                 </ul>
-                <h5 class="py-2">軟體</h5>
+                <h5 class="pt-3">軟體</h5>
                 <ul>
                     <li>Arduino IDE: 撰寫程式的介面</li>
                     <li>Arduino-IRRemote: 前人寫好的紅外線收送資料程式庫</li>
@@ -61,24 +61,24 @@
                 </p>
 
                 <div>
-                    <h5 class="py-2">選擇晶片類型</h5>
+                    <h5 class="pt-3">選擇晶片類型</h5>
                     <p>在 Arduino IDE 選擇對應的單晶片 Generic ESP8266 Module</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-1.png" />
                 </div>
                 <div>
-                    <h5 class="py-2">開啟範例程式</h5>
+                    <h5 class="pt-3">開啟範例程式</h5>
                     <p>Arduino IRremote 已經有寫好的紅外線接收器範例程式 IRrecvDumpV3，不需要自己再重新寫過</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-2.png" />
                 </div>
                 <div>
-                    <h5 class="py-2">修改範例程式</h5>
+                    <h5 class="pt-3">修改範例程式</h5>
                     <p>範例程式中有腳位的編號是 14，但在 ESP-01S 可用的腳位只有四個，沒有 14，所以這邊把範例程式接收紅外線的腳位改為 0，修改好後就可以執行燒錄動作</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-3.png" />
                     <pre
                         class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">const uint16_t kRecvPin = 0;</pre>
                 </div>
                 <div>
-                    <h5 class="py-2">確認紅外線協定</h5>
+                    <h5 class="pt-3">確認紅外線協定</h5>
                     <p>接著我們把紅外線感測器接到 ESP-01S IO00 的腳上，如下圖所示 (電池建議在前方加裝一個直流穩壓 3.3V 輸出)</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-4.png" />
 
@@ -95,7 +95,7 @@
             <h4 class="text-green h4 py-3">發送程式燒錄</h4>
             <div>
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         ItemHub 範例程式碼下載
                     </h5>
                     <p>
@@ -106,7 +106,7 @@
                 </div>
 
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         Wifi 資訊
                     </h5>
                     <p>
@@ -117,7 +117,7 @@
 
 
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         導入 IRRemoteESP8266
                     </h5>
                     <p>導入 Arduino IRRemoteESP8266 不同的通訊協定需要不導入不同的實作容器，參考下圖 第 11 行，
@@ -132,7 +132,7 @@
                 </div>
 
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         初始化 IRRemoteESP8266
                     </h5>
                     <p>
@@ -143,7 +143,7 @@
                 </div>
 
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         修改 ItemHub 工具庫
                     </h5>
                     <p>
@@ -163,7 +163,7 @@
                 </div>
 
                 <div>
-                    <h5 class="py-2">
+                    <h5 class="pt-3">
                         加上自定義的開關紅外線 LED 的信號
                     </h5>
                     <p class="mt-4">
