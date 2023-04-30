@@ -2,7 +2,7 @@
 name: Dashboard Feature Template
 about: Dashboard Feature Template
 title: "Dashboard - "
-labels: ""
+labels: "dashboard"
 ---
 
 # Why

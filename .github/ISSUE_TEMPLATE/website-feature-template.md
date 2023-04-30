@@ -2,7 +2,7 @@
 name: Website Feature Template
 about: Website Feature Template
 title: "Website - "
-labels: ""
+labels: "website"
 ---
 
 # Why
