@@ -1,0 +1,203 @@
+<div class="how-to-implement-smart-ac">
+    <link href="/components/how-to-implement-smart-ac/how-to-implement-smart-ac.css" rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            把冷氣變聰明
+        </div>
+        <img class="arrow {expandedHowToImplementSmartAcArrowVisible}" src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="how-to-integerate-google-nest content {expandedHowToImplementSmartAcVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">原理</h4>
+            <div>
+                <div class="d-block d-flex flex-column-reverse flex-lg-row">
+                    <div class="col-12 col-lg-6">
+                        <p class="mt-3">
+                            在古代，人們經常使用旗號作為通訊工具，透過不同的旗號組合和動作來傳達不同的訊息。這些旗號代表不同的意思，例如：紅旗代表進攻，白旗代表投降，黑旗代表凶險等等。旗號的發送者會透過不同的旗號組合來傳達特定的信息，而接收者則需要了解這些旗號的意義才能理解訊息。
+                        </p>
+                        <p class="mt-3">
+                            這跟冷氣遙控器的原理很像。遙控器會發送一個特定的紅外線的信號，而冷氣上的接收器則收到這個訊號執行相應的操作。這些訊號可以看作是旗號的組合，每個訊碼都代表著不同的指令，例如：開啟空調、關閉電視、增加音量等等。
+                        </p>
+                        <p class="mt-3">
+                            現在知道了紅外線遙控的原理，要如何把傳統冷氣變成智慧冷氣，我們只需要拿遙控控制冷氣時加入網際網路，可以想像是一個透過 wifi
+                            電話跟你通話的人拿著你的遙控器，等著你對他說幫我開冷氣的指令。
+                        </p>
+                    </div>
+                    <div class="col-12 col-lg-6 ps-0 ps-lg-3">
+                        <img class="w-100 mb-4" src="/assets/images/how/smart-ac/flag-signal.png" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">材料</h4>
+            <div>
+                <h5 class="pt-3">硬體</h5>
+                <ul>
+                    <li>ESP-01S: 單晶片具有 Wifi 功能, 把我們需要的資料送到 Server，下方說明的例子通用 ESP8266 相關的單晶片</li>
+                    <li>紅外線接收器: 接收遙控器的通訊協定</li>
+                    <li>紅外線發送器: 充當遙控器的角色，發送訊號給冷氣</li>
+                </ul>
+                <h5 class="pt-3">軟體</h5>
+                <ul>
+                    <li>Arduino IDE: 撰寫程式的介面</li>
+                    <li>Arduino-IRRemote: 前人寫好的紅外線收送資料程式庫</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">確認遙控器說的語言</h4>
+            <div>
+                <p>
+                    遙控器丟出去的紅外線信號就像是不同的語言，並不是通用的，所以你必須先確定你家的冷氣是在說什麼語言，常見的協定有 NEC、RC5 等等。
+                    接下來我們需要把裝置先切換到
+                    <a href="https://itemhub.io/how/implement-hygrometer/#step3-1" target="_blank">燒錄模式</a>
+                </p>
+                <p>
+                    把 Arduino IRRemote 預先寫好的程式碼燒錄到 ESP-01S，步驟如下。
+                </p>
+
+                <div>
+                    <h5 class="pt-3">選擇晶片類型</h5>
+                    <p>在 Arduino IDE 選擇對應的單晶片 Generic ESP8266 Module</p>
+                    <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-1.png" />
+                </div>
+                <div>
+                    <h5 class="pt-3">開啟範例程式</h5>
+                    <p>Arduino IRremote 已經有寫好的紅外線接收器範例程式 IRrecvDumpV3，不需要自己再重新寫過</p>
+                    <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-2.png" />
+                </div>
+                <div>
+                    <h5 class="pt-3">修改範例程式</h5>
+                    <p>範例程式中有腳位的編號是 14，但在 ESP-01S 可用的腳位只有四個，沒有 14，所以這邊把範例程式接收紅外線的腳位改為 0，修改好後就可以執行燒錄動作</p>
+                    <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-3.png" />
+                    <pre
+                        class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">const uint16_t kRecvPin = 0;</pre>
+                </div>
+                <div>
+                    <h5 class="pt-3">確認紅外線協定</h5>
+                    <p>接著我們把紅外線感測器接到 ESP-01S IO00 的腳上，如下圖所示 (電池建議在前方加裝一個直流穩壓 3.3V 輸出)</p>
+                    <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-4.png" />
+
+                    <p class="mt-2 mb-4">重新開啟 ESP-01S 進到運作模式，並把紅外線接收器接上。遙控器對著紅外線接收器確認紅外線所使用的協定。</p>
+                    <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-5.png" />
+
+                    <p class="mt-2 mb-4">由上圖可以知道我們冷氣遙控器跟冷氣之間溝通的協定是 Coolix，我們知道需要用什麼語言跟冷氣溝通。接下來就是撰寫發送紅外線的程式碼</p>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">發送程式燒錄</h4>
+            <div>
+                <div>
+                    <h5 class="pt-3">
+                        ItemHub 範例程式碼下載
+                    </h5>
+                    <p>
+                        新增冷氣裝置，把 IO00 的腳位設定為開關
+                    </p>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-1.png" />
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-2.png" />
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        Wifi 資訊
+                    </h5>
+                    <p>
+                        修改 WIFI 的連線資訊，讓 ESP-01S 可以連上家中的 WIFI
+                    </p>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-3.png" />
+                </div>
+
+
+                <div>
+                    <h5 class="pt-3">
+                        導入 IRRemoteESP8266
+                    </h5>
+                    <p>導入 Arduino IRRemoteESP8266 不同的通訊協定需要不導入不同的實作容器，參考下圖 第 11 行，
+                        我的冷氣遙控器是 Coolix 協定所以這邊是導入
+                        <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-4.png" />
+                        <pre
+                            class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;ir_Coolix.h&gt;</pre>
+                        如果你是 Bosch 就導入 ir_Bosch.h，以此類推
+                        <pre
+                            class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;ir_Bosch.h&gt;</pre>
+                    </p>
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        初始化 IRRemoteESP8266
+                    </h5>
+                    <p>
+                        在原本的 setup 底下加入
+                    </p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">ac.begin()</pre>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-6.png" />
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        修改 ItemHub 工具庫
+                    </h5>
+                    <p>
+                        修改 ItemHub 工具庫 (./ItemhubUtilities/ItemhubUtilities.h) 中開關的邏輯，避免原本的程式直接修改開關腳的電訊號，因為我們需要在 ItemHub
+                        切換的時候發送一連串開關紅外線發射器，讓冷氣知道我們需要它做什麼動作，e.g: 當紅外線發射器 開關開開關，冷氣就會知道現在是要打開冷氣到 22度
+                    </p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+                        if (pins[i].pinString == pin && intValue == 0)
+                        {
+                            pins[i].value = "0";
+                        }
+                        else if (pins[i].pinString == pin && intValue == 1)
+                        {
+                            pins[i].value = "1";
+                        }</pre>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-7.png" />
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        加上自定義的開關紅外線 LED 的信號
+                    </h5>
+                    <p class="mt-4">
+                        打開 .ino 檔案，在原本
+                    </p>
+                    <prev class="border border-grey-500 p-3 bg-grey-800 rounded-2">
+                        ItemhubUtilities::CheckSwitchState(client, ca, host, token, remoteDeviceId, pins);</prev>
+                    <p class="mt-4">的下方加入自定義的程式碼。</p>
+                    <p class="text-warn">注意: 不同的協定在實作時這邊會有些不同，如果不知道該如何實作可以在左下方的 LINE 詢問我們，我們會給予協助</p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+                        if (pins[0].value == "0" && pins[0].value != originState)
+                        {
+                            ac.off();
+                            ac.send();
+                        }
+                        else if (pins[0].value == "1" && pins[0].value != originState)
+                        {
+                            ac.on();
+                            ac.setFan(kCoolixFanMed);
+                            ac.setMode(kCoolixCool);
+                            ac.setTemp(22); // 16-30C
+                            ac.send();
+                        }</pre>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-8.png" />
+                </div>
+
+                <div>
+                    把以上的 Code 燒錄完成後，切回運作模式。<br />把你的紅外線發射器對準冷氣，現在你就可以用 ItemHub 開關你的冷氣了。
+                </div>
+
+            </div>
+        </div>
+        <div class="mb-7 d-flex align-items-center justify-content-center mt-4">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
