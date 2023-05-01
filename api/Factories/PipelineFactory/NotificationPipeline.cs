@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks.Dataflow;
 using Newtonsoft.Json;
 using Homo.Core.Constants;
@@ -28,6 +29,13 @@ namespace Homo.IotApi
                                 IotDbContextBuilder.UseMySql(DBConnectionString, mysqlVersion);
                                 using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
+                                    // 檢查上一次 Notification 是否在三十分鐘以內
+                                    List<PipelineExecuteLog> logs = PipelineExecuteLogDataservice.GetList(iotDbContext, ownerId, pipelineId, null, DateTime.Now.AddMinutes(-30), null);
+                                    if (logs.Count > 0)
+                                    {
+                                        return false;
+                                    }
+
                                     if (!isVIP && isHead && RateLimitDataservice.IsPipelineExecuteLogOverPricingPlan(iotDbContext, ownerId, pipelineId))
                                     {
                                         PipelineExecuteLogDataservice.Create(iotDbContext, ownerId, new DTOs.PipelineExecuteLog()
