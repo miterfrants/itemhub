@@ -12,7 +12,9 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [value, setValue] = useState(0);
-    const [isFirstTimeGetPinValue, setIsFirstTimeGetPinValue] = useState(true);
+    const [isFirstTimeGetPinValue, setIsFirstTimeGetPinValue] = useState<
+        null | boolean
+    >(null);
 
     const { updateDeviceSwitchPinApi } = useUpdateDeviceSwitchPinApi({
         deviceId,
@@ -35,7 +37,11 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
     }, []);
 
     useEffect(() => {
+        if (isFirstTimeGetPinValue === null) {
+            return;
+        }
         if (isFirstTimeGetPinValue) {
+            setIsFirstTimeGetPinValue(false); // 避免從其他裝置改狀態, 這邊一拿到新狀態發現不一樣就打 updateDeviceSwitchPinApi
             return;
         }
         updateDeviceSwitchPinApi();
@@ -48,7 +54,7 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
         }
         setDevicePin(responseOfGetDevicePin as PinItem);
         setValue(responseOfGetDevicePin.value || 0);
-        setIsFirstTimeGetPinValue(false); // 避免從其他裝置改狀態, 這邊一拿到新狀態發現不一樣就打 updateDeviceSwitchPinApi
+        setIsFirstTimeGetPinValue(true);
     }, [responseOfGetDevicePin]);
 
     return (
