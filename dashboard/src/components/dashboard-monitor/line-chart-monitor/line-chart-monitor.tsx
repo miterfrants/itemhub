@@ -50,8 +50,6 @@ const LineChartMonitor = (props: {
 
     const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
 
-    const lineChartHead = useRef(null);
-
     ChartJS.register(
         CategoryScale,
         LinearScale,
@@ -241,10 +239,7 @@ const LineChartMonitor = (props: {
         >
             <div className="d-flex align-items-center w-100 h-100 justify-content-center">
                 <div className="d-flex flex-column w-100 h-100">
-                    <div
-                        ref={lineChartHead}
-                        className="d-flex flex-wrap align-items-center justify-content-center mt-3 "
-                    >
+                    <div className="d-flex flex-wrap align-items-center justify-content-center mt-3 ">
                         <div
                             className="cursor-point px-4 d-flex flex-row align-items-center mb-3    "
                             onClick={() => setIsLiveData(!isLiveData)}
