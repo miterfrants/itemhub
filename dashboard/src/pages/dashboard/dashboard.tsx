@@ -106,6 +106,7 @@ const Dashboard = () => {
                         className="row"
                         list={monitors}
                         setList={setMonitors}
+                        handle=".sorting-icon"
                     >
                         {monitors.map((item: DashboardMonitorItem) => (
                             <div
@@ -115,41 +116,51 @@ const Dashboard = () => {
                                 } position-relative`}
                             >
                                 <div
-                                    className={`monitor-item d-flex align-items-center justify-content-center ${
+                                    className={`monitor-item ${
                                         item.mode === 1 ? 'line-chart' : ''
                                     }`}
                                 >
                                     <div
-                                        className={`border border-grey-200 rounded-3 w-100 h-100 d-flex justify-content-center align-items-center overflow-hidden ${
+                                        className={`border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column ${
                                             item.mode !== 1 && 'bg-grey-100'
                                         }`}
                                     >
-                                        {item.mode === 0 ? (
-                                            <CurrentValueMonitor
-                                                deviceId={item.deviceId}
-                                                pin={item.pin}
+                                        <div className="d-fle justify-content-between position-relative">
+                                            <div className=" w-100 position-absolute top-0 text-center mb-2">
+                                                <span className="sorting-icon">
+                                                    :::::
+                                                </span>
+                                            </div>
+                                            <div
+                                                role="button"
+                                                className="btn-close me-3 ms-auto d-none d-sm-block py-3"
+                                                onClick={() => {
+                                                    setShouldBeDeleteId(
+                                                        item.id
+                                                    );
+                                                }}
                                             />
-                                        ) : item.mode === 1 ? (
-                                            <LineChartMonitor
-                                                deviceId={item.deviceId}
-                                                pin={item.pin}
-                                            />
-                                        ) : (
-                                            <SwitchMonitor
-                                                deviceId={item.deviceId}
-                                                pin={item.pin}
-                                            />
-                                        )}
+                                        </div>
+                                        <div className="flex-grow-1">
+                                            {item.mode === 0 ? (
+                                                <CurrentValueMonitor
+                                                    deviceId={item.deviceId}
+                                                    pin={item.pin}
+                                                />
+                                            ) : item.mode === 1 ? (
+                                                <LineChartMonitor
+                                                    deviceId={item.deviceId}
+                                                    pin={item.pin}
+                                                />
+                                            ) : (
+                                                <SwitchMonitor
+                                                    deviceId={item.deviceId}
+                                                    pin={item.pin}
+                                                />
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div
-                                    role="button"
-                                    className="btn-close position-absolute top-0 end-0 me-4 mt-3 d-none d-sm-block"
-                                    onClick={() => {
-                                        setShouldBeDeleteId(item.id);
-                                    }}
-                                />
                             </div>
                         ))}
                     </ReactSortable>

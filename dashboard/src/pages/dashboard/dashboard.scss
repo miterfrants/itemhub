@@ -5,6 +5,9 @@
             padding-top: $mobile-header-h;
         }
     }
+    .sorting-icon {
+        cursor: move;
+    }
     .monitor-item {
         position: relative;
         > div {
