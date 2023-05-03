@@ -24,6 +24,12 @@
             }
         }
 
+        &.one-third.line-chart {
+            &::after {
+                padding-top: calc(100% / 3 + 120px);
+            }
+        }
+
         &.half {
             &::after {
                 padding-top: 50%;

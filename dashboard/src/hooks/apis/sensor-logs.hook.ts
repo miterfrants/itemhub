@@ -7,17 +7,26 @@ export const useGetSensorLogsApi = ({
     pin,
     page,
     limit,
+    startAt,
+    endAt,
 }: {
     deviceId: number;
     pin: string;
     page: number;
     limit: number;
+    startAt?: string;
+    endAt?: string;
 }) => {
     let apiPath = `${API_URL}${END_POINT.SENSOR_LOGS}`;
     apiPath = apiPath.replace(':id', deviceId.toString()).replace(':pin', pin);
     apiPath = ApiHelpers.AppendQueryStrings({
         basicPath: apiPath,
-        queryStrings: { page: page, limit: limit },
+        queryStrings: {
+            page: page,
+            limit: limit,
+            startAt: startAt,
+            endAt: endAt,
+        },
     });
 
     const { isLoading, error, data, fetchApi } = useFetchApi<any[]>({

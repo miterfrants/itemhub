@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Homo.Api;
@@ -105,9 +106,9 @@ namespace Homo.IotApi
         )]
         [HttpGet]
         [Route("{pin}")]
-        public ActionResult<dynamic> getList([FromRoute] long id, [FromRoute] string pin, [FromQuery] int page, [FromQuery] int limit, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> getList([FromRoute] long id, [FromRoute] string pin, [FromQuery] int page, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt, [FromQuery] int limit, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return SensorLogDataservice.GetList(_iotDbContext, extraPayload.Id, new List<long>() { id }, pin, page, limit);
+            return SensorLogDataservice.GetList(_iotDbContext, extraPayload.Id, new List<long>() { id }, pin, page, limit, startAt, endAt);
         }
     }
 }
