@@ -1,10 +1,10 @@
 .switch-monitor {
     .toggle-button {
-        transform: scale(3);
-        transform-origin: top;
+        transform-origin: center;
     }
-    .toggle-button-container {
-        height: 60px;
+    .toggle-button-container,
+    .title {
+        transition: transform 0.8s;
     }
     .device-name {
         display: -webkit-box !important;

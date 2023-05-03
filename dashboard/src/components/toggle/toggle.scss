@@ -5,6 +5,7 @@ $button-size: 15px;
     width: $button-size * 2;
     height: $button-size;
     box-shadow: 0 0 0 2px rgba($black, 0.25);
+    transition: background 0.3s, box-shadow 0.3s;
 
     .button-head {
         transition: transform 0.2s ease-in-out;
