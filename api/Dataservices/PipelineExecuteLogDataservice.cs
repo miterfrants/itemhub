@@ -32,5 +32,15 @@ namespace Homo.IotApi
                 && (endAt == null || x.CreatedAt <= endAt)
             ).ToList();
         }
+
+        public static int GetCount(IotDbContext dbContext, long ownerId, long pipelineId, long itemId, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.PipelineExecuteLog.Where(x => x.PipelineId == pipelineId
+                && x.OwnerId == ownerId
+                && x.ItemId == itemId
+                && (startAt == null || x.CreatedAt >= startAt)
+                && (endAt == null || x.CreatedAt <= endAt)
+            ).Count();
+        }
     }
 }
