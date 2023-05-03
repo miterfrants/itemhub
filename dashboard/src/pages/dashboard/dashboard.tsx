@@ -116,15 +116,8 @@ const Dashboard = () => {
                             >
                                 <div
                                     className={`monitor-item d-flex align-items-center justify-content-center ${
-                                        item.row === 1 && item.column === 3
-                                            ? 'one-third'
-                                            : (item.row === 1 &&
-                                                  item.column === 2) ||
-                                              (item.row === 2 &&
-                                                  item.column === 3)
-                                            ? 'half'
-                                            : ''
-                                    } ${item.mode === 1 ? 'line-chart' : ''}`}
+                                        item.mode === 1 ? 'line-chart' : ''
+                                    }`}
                                 >
                                     <div
                                         className={`border border-grey-200 rounded-3 w-100 h-100 d-flex justify-content-center align-items-center overflow-hidden ${
