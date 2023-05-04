@@ -44,6 +44,7 @@ const DeviceForm = () => {
     const devicePinsFromStore = useAppSelector(selectDevicePins);
 
     const [name, setName] = useState('');
+    const [sortableMcu, setSortableMcu] = useState<Microcontroller[]>();
     const [customPinName, setCustomPinName] = useState('');
     const [customPinNumber, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
@@ -56,7 +57,6 @@ const DeviceForm = () => {
 
     const [selectedPins, setSelectedPins] = useState([] as PinItem[]);
     const devicePinsRef = useRef<PinItem[]>([]);
-    let mcuOptions = [];
     const { microcontrollers, protocols } = useAppSelector(selectUniversal);
     const [microcontrollerImg, setMicrocontrollerIdImg] = useState('');
     const [selectedMicrocontroller, setSelectedMicrocontroller] =
@@ -292,6 +292,21 @@ const DeviceForm = () => {
     }, []);
 
     useEffect(() => {
+        if (!microcontrollers || microcontrollers.length === 0) {
+            return;
+        }
+        setSortableMcu(
+            [...microcontrollers].sort((current) => {
+                if (current.key === MCU_TYPE.CUSTOM) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            })
+        );
+    }, [microcontrollers]);
+
+    useEffect(() => {
         const devicePins =
             devicePinsFromStore?.filter(
                 (item: PinItem) => item.deviceId === id
@@ -397,19 +412,6 @@ const DeviceForm = () => {
             )?.value;
             setProtocol(protocolValue || 0);
         }
-
-        const microcontrollerWithoutCustom = microcontrollers.filter((item) => {
-            return item.key !== MCU_TYPE.CUSTOM;
-        });
-        const microcontrollerWithCustom = microcontrollers.find((item) => {
-            return item.key === MCU_TYPE.CUSTOM;
-        });
-
-        mcuOptions = [
-            ...microcontrollerWithoutCustom,
-            ...[microcontrollerWithCustom],
-        ];
-
         // eslint-disable-next-line
     }, [microcontrollers, microcontrollerId]);
 
@@ -560,7 +562,7 @@ const DeviceForm = () => {
                                 value={microcontrollerId || 0}
                             >
                                 <option>請選擇單晶片</option>
-                                {microcontrollers.map(({ id, key }) => {
+                                {sortableMcu?.map(({ id, key }) => {
                                     return (
                                         <option key={id} value={id}>
                                             {key === MCU_TYPE.CUSTOM
