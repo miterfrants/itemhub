@@ -10,8 +10,14 @@ const CurrentValueMonitor = (props: {
     deviceId: number;
     pin: string;
     isLiveData: boolean;
+    customTitle: string;
 }) => {
-    const { deviceId, pin, isLiveData: isLiveDataFromProps } = props;
+    const {
+        deviceId,
+        pin,
+        isLiveData: isLiveDataFromProps,
+        customTitle,
+    } = props;
     const [currentValue, setCurrentValue] = useState<number | null>(null);
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
@@ -121,7 +127,11 @@ const CurrentValueMonitor = (props: {
                                         : 'dot-grey'
                                 }`}
                             />
-                            <span>{devicePin?.name || devicePin?.pin}</span>
+                            <span>
+                                {customTitle ||
+                                    devicePin?.name ||
+                                    devicePin?.pin}
+                            </span>
                         </div>
                     </div>
                 </>

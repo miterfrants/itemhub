@@ -10,8 +10,12 @@ import debounce from 'lodash.debounce';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectLayout } from '@/redux/reducers/layout.reducer';
 
-const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
-    const { deviceId, pin } = props;
+const SwitchMonitor = (props: {
+    deviceId: number;
+    pin: string;
+    customTitle: string;
+}) => {
+    const { deviceId, pin, customTitle } = props;
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [value, setValue] = useState(0);
@@ -131,17 +135,7 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
                             transform: `translateY(${titleVerticalOffset}px)`,
                         }}
                     >
-                        <span className="d-none d-md-inline ps-2">
-                            <div
-                                className={`align-middle dot rounded-circle ${
-                                    devicePin?.device?.online
-                                        ? 'dot-green'
-                                        : 'dot-grey'
-                                }`}
-                            />
-                            {devicePin?.device?.name} -
-                        </span>{' '}
-                        {devicePin?.name || devicePin?.pin}
+                        {customTitle || devicePin?.name || devicePin?.pin}
                     </div>
                 </div>
             )}

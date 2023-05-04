@@ -47,12 +47,14 @@ export const useCreateDashboardMonitorApi = ({
     mode,
     row,
     column,
+    customTitle,
 }: {
     deviceId: number;
     pin: string;
     mode: number;
     row: number;
     column: number;
+    customTitle: string;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchUpdate = useCallback(
@@ -76,6 +78,7 @@ export const useCreateDashboardMonitorApi = ({
                 row,
                 column,
                 sort: 1,
+                customTitle,
             },
             initialData: null,
             callbackFunc: dispatchUpdate,

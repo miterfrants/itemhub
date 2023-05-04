@@ -35,14 +35,14 @@ enum TIME_RANGE {
 const LineChartMonitor = (props: {
     deviceId: number;
     pin: string;
-    monitorName?: string;
     isLiveData: boolean;
+    customTitle: string;
 }) => {
     const {
         deviceId,
         pin,
-        monitorName,
         isLiveData: isLiveDataFromProps,
+        customTitle,
     } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
@@ -96,7 +96,7 @@ const LineChartMonitor = (props: {
             ...lineChartOption.plugins,
             title: {
                 ...lineChartOption.plugins?.title,
-                text: monitorName || devicePin?.name || '',
+                text: customTitle || devicePin?.name || '',
             },
         },
         scales: {

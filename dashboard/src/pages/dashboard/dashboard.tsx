@@ -181,6 +181,9 @@ const Dashboard = () => {
                                                         <div className="flex-grow-1">
                                                             {item.mode === 0 ? (
                                                                 <CurrentValueMonitor
+                                                                    customTitle={
+                                                                        item.customTitle
+                                                                    }
                                                                     isLiveData={
                                                                         item.isLiveData ||
                                                                         false
@@ -195,6 +198,9 @@ const Dashboard = () => {
                                                             ) : item.mode ===
                                                               1 ? (
                                                                 <LineChartMonitor
+                                                                    customTitle={
+                                                                        item.customTitle
+                                                                    }
                                                                     isLiveData={
                                                                         item.isLiveData ||
                                                                         false
@@ -208,6 +214,9 @@ const Dashboard = () => {
                                                                 />
                                                             ) : (
                                                                 <SwitchMonitor
+                                                                    customTitle={
+                                                                        item.customTitle
+                                                                    }
                                                                     deviceId={
                                                                         item.deviceId
                                                                     }
