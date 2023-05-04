@@ -81,6 +81,15 @@
                     <h5 class="pt-3">確認紅外線協定</h5>
                     <p>接著我們把紅外線感測器接到 ESP-01S IO00 的腳上，如下圖所示 (電池建議在前方加裝一個直流穩壓 3.3V 輸出)</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-4.png" />
+                    <p>
+                        ESP01S:IO00 ↔ 紅外線感測器:D0
+                        <br />
+                        ESP01S:VCC ↔ 電池:正極
+                        ESP01S:GND ↔ 電池:負極
+                        <br />
+                        紅外線感測器:VCC ↔ 電池:正極
+                        紅外線感測器:GND ↔ 電池:負極
+                    </p>
 
                     <p class="mt-2 mb-4">重新開啟 ESP-01S 進到運作模式，並把紅外線接收器接上。遙控器對著紅外線接收器確認紅外線所使用的協定。</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-5.png" />
