@@ -30,7 +30,7 @@ namespace Homo.IotApi
                                 using (var iotDbContext = new IotDbContext(IotDbContextBuilder.Options))
                                 {
                                     // 檢查上一次 Notification 是否在三十分鐘以內
-                                    int count = PipelineExecuteLogDataservice.GetCount(iotDbContext, ownerId, pipelineId, pipelineId, DateTime.Now.AddMinutes(-30), null);
+                                    int count = PipelineExecuteLogDataservice.GetCount(iotDbContext, ownerId, pipelineId, id, DateTime.Now.AddMinutes(-30), null);
                                     if (count > 0)
                                     {
                                         return false;
