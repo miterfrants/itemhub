@@ -10,6 +10,7 @@ import docIcon from '@/assets/images/doc.svg';
 import pipelineIcon from '@/assets/images/pipeline.svg';
 import lineUs from '@/assets/images/icon-line.png';
 import { useState, useEffect } from 'react';
+import { layoutActions } from '@/redux/reducers/layout.reducer';
 
 const Header = () => {
     const isOpen = useAppSelector(selectMenu).isOpen;
@@ -35,10 +36,12 @@ const Header = () => {
 
     const closeMenu = () => {
         dispatch(menuActions.close());
+        dispatch(layoutActions.resize());
     };
 
     const openMenu = () => {
         dispatch(menuActions.open());
+        dispatch(layoutActions.resize());
     };
 
     return (

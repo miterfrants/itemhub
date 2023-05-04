@@ -6,7 +6,7 @@ import paginationDot from '@/assets/images/pagination-dot.svg';
 import { useQuery } from '@/hooks/query.hook';
 
 const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
-    const [pages, setPages] = useState<Array<number>>([]);
+    const [pages, setPages] = useState<number[]>([]);
     const { rowNum, limit, page } = props;
     const [isShowPrevDot, setIsShowPrevDot] = useState<boolean>(false);
     const [isShowNextDot, setIsShowNextDot] = useState<boolean>(false);
@@ -25,7 +25,7 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
             setIsShowNextDot(true);
         }
 
-        const pages = [];
+        const pages: number[] = [];
         for (let i = 1; i <= maxPage; i++) {
             if (i + 1 == page || i + 2 == page) {
                 pages.push(i);
@@ -38,6 +38,7 @@ const Pagination = (props: { rowNum: number; limit: number; page: number }) => {
             }
         }
         setPages(pages);
+        //eslint-disable-next-line
     }, [rowNum, limit]);
 
     useEffect(() => {

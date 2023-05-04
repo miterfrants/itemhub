@@ -11,4 +11,5 @@ export interface DashboardMonitorItem {
     sort: number;
     row: number;
     column: number;
+    isLiveData?: boolean;
 }

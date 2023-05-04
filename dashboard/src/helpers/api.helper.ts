@@ -197,7 +197,7 @@ export const ApiHelpers = {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        let filename = null;
+        let filename: string | null = null;
 
         const disposition = response.headers.get('content-disposition');
         if (disposition && disposition.indexOf('attachment') !== -1) {

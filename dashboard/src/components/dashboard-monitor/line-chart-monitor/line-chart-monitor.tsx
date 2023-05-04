@@ -4,7 +4,6 @@ import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 import { PinItem } from '@/types/devices.type';
-import Toggle from '@/components/toggle/toggle';
 import { Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -37,20 +36,24 @@ const LineChartMonitor = (props: {
     deviceId: number;
     pin: string;
     monitorName?: string;
+    isLiveData: boolean;
 }) => {
-    const { deviceId, pin, monitorName } = props;
+    const {
+        deviceId,
+        pin,
+        monitorName,
+        isLiveData: isLiveDataFromProps,
+    } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
-    const [isLiveData, setIsLiveData] = useState<boolean>(false);
+    const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
     const [xAxisTicks, setXAxisTicks] = useState<any[]>([]);
     const [sensorLogIds, setSensorLogIds] = useState<number[]>([]);
     const [startAt, setStartAt] = useState<string | undefined>(undefined);
     const timer: any = useRef(null);
 
     const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
-
-    const lineChartHead = useRef(null);
 
     ChartJS.register(
         CategoryScale,
@@ -164,6 +167,10 @@ const LineChartMonitor = (props: {
     }, []);
 
     useEffect(() => {
+        setIsLiveData(isLiveDataFromProps);
+    }, [isLiveDataFromProps]);
+
+    useEffect(() => {
         if (!responseOfSensorLogs) {
             return;
         }
@@ -241,19 +248,7 @@ const LineChartMonitor = (props: {
         >
             <div className="d-flex align-items-center w-100 h-100 justify-content-center">
                 <div className="d-flex flex-column w-100 h-100">
-                    <div
-                        ref={lineChartHead}
-                        className="d-flex flex-wrap align-items-center justify-content-center mt-3 "
-                    >
-                        <div
-                            className="cursor-point px-4 d-flex flex-row align-items-center mb-3    "
-                            onClick={() => setIsLiveData(!isLiveData)}
-                        >
-                            <div className="me-2">
-                                <Toggle value={isLiveData ? 1 : 0} />
-                            </div>
-                            <div>{isLiveData ? 'real-time' : 'static'}</div>
-                        </div>
+                    <div className="d-flex flex-wrap align-items-center justify-content-center">
                         <button
                             onClick={() =>
                                 setTimeRange(TIME_RANGE.THREE_HOURS_AGO)
