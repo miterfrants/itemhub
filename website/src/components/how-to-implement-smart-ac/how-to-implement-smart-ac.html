@@ -84,11 +84,13 @@
                     <p>
                         ESP01S:IO00 ↔ 紅外線感測器:D0
                         <br />
-                        ESP01S:VCC ↔ 電池:正極
-                        ESP01S:GND ↔ 電池:負極
+                        PL2303:RXD ↔ ESP01S:TXD
+                        PL2303:TXD ↔ ESP01S:RXD
+                        PL2303:VCC ↔ ESP01S:VCC
+                        PL2303:GND ↔ ESP01S:GND
                         <br />
-                        紅外線感測器:VCC ↔ 電池:正極
-                        紅外線感測器:GND ↔ 電池:負極
+                        紅外線感測器:VCC ↔ PL2303:VCC
+                        紅外線感測器:GND ↔ PL2303:GND
                     </p>
 
                     <p class="mt-2 mb-4">重新開啟 ESP-01S 進到運作模式，並把紅外線接收器接上。遙控器對著紅外線接收器確認紅外線所使用的協定。</p>
