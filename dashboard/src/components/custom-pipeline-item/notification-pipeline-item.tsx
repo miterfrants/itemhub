@@ -147,6 +147,9 @@ const NotificationPipelineItem = ({
 
     return (
         <div className="notification-pipeline-item">
+            <div className="text-warn">
+                當通知過一次後，會隔三十分鐘才發送第二次
+            </div>
             <label className="mt-3 w-100">
                 <div>通知模式:</div>
                 <select
