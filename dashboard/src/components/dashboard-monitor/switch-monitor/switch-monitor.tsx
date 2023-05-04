@@ -51,7 +51,7 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
             let targetScale =
                 (containerWidth - horizontalPadding) /
                 (toggleButtonWidth + boxShadowWidth);
-            const maxScale = 10;
+            const maxScale = 7;
             const minScale = 1.3;
 
             if (targetScale > maxScale) {
