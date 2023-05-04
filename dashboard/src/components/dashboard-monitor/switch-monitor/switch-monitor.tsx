@@ -53,14 +53,15 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
                 (toggleButtonWidth + boxShadowWidth);
             const maxScale = 7;
             const minScale = 1.3;
-
+            const scaleRange = maxScale - minScale;
             if (targetScale > maxScale) {
                 targetScale = maxScale;
             } else if (targetScale < minScale) {
                 targetScale = minScale;
             }
-
-            setTitleVerticalOffset(targetScale * 10);
+            setTitleVerticalOffset(
+                targetScale * 10 * ((0.5 / scaleRange) * targetScale + 0.4)
+            );
             setScale(targetScale);
         }, 800)
     );
@@ -72,7 +73,6 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
         return () => {
             window.removeEventListener('resize', resizeHandler.current);
         };
-
         // eslint-disable-next-line
     }, []);
 
@@ -100,13 +100,13 @@ const SwitchMonitor = (props: { deviceId: number; pin: string }) => {
     return (
         <div
             ref={elementContainerRef}
-            className="switch-monitor w-100 p-3 h-100"
+            className="switch-monitor w-100 px-1 h-100"
             onClick={() => {
                 setValue(value === 1 ? 0 : 1);
             }}
         >
             {isLoading ? (
-                <div className="">
+                <div className="w-100 d-flex align-items-center justify-content-center mt-5">
                     <Spinner />
                 </div>
             ) : (

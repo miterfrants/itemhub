@@ -1,15 +1,16 @@
 import PageTitle from '@/components/page-title/page-title';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Flippy, { FrontSide, BackSide } from 'react-flippy';
+import { useSelector, useDispatch } from 'react-redux';
+import { ReactSortable } from 'react-sortablejs';
+
 import {
     useDeleteDashboardMonitorsApi,
     useGetDashboardMonitorsApi,
     useUpdateDashboardMonitorSortingApi,
-} from '../../hooks/apis/dashboard-monitor.hook';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-    dashboardMonitorsActions,
-    selectDashboardMonitors,
-} from '@/redux/reducers/dashboard-monitor.reducer';
+} from '@/hooks/apis/dashboard-monitor.hook';
+
+import { selectDashboardMonitors } from '@/redux/reducers/dashboard-monitor.reducer';
 import { DashboardMonitorItem } from '@/types/dashboard-monitors.type';
 import CurrentValueMonitor from '@/components/dashboard-monitor/current-value-monitor/current-value-monitor';
 import LineChartMonitor from '@/components/dashboard-monitor/line-chart-monitor/line-chart-monitor';
@@ -19,13 +20,16 @@ import {
     ToasterTypeEnum,
 } from '@/redux/reducers/toaster.reducer';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
-import { ReactSortable } from 'react-sortablejs';
+import gearIcon from '@/assets/images/gear.svg';
+import Toggle from '@/components/toggle/toggle';
+import trashIcon from '@/assets/images/trash.svg';
 
 const Dashboard = () => {
     const { fetchApi: getDashboardMonitors } = useGetDashboardMonitorsApi();
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState<number | null>(
         null
     );
+    const flippyRefs = useRef<any[]>([]);
     const { fetchApi: deleteDashboardMonitors, data: responseOfDelete } =
         useDeleteDashboardMonitorsApi([shouldBeDeleteId || 0]);
 
@@ -55,7 +59,16 @@ const Dashboard = () => {
         });
 
         setMonitors(
-            sortingDashboard.map((item) => ({ ...item, chosen: true }))
+            sortingDashboard.map((item) => {
+                const oldData = monitors.find(
+                    (monitor) => monitor.id === item.id
+                );
+                return {
+                    ...item,
+                    chosen: true,
+                    isLiveData: oldData ? oldData.isLiveData : false,
+                };
+            })
         );
     }, [dashboardMonitors]);
 
@@ -78,6 +91,9 @@ const Dashboard = () => {
                     checkedMessage: 'DELETE',
                     callback: deleteDashboardMonitors,
                     promptInvalidMessage: '輸入錯誤',
+                    cancelCallback: () => {
+                        setShouldBeDeleteId(null);
+                    },
                 })
             );
         }
@@ -108,61 +124,192 @@ const Dashboard = () => {
                         setList={setMonitors}
                         handle=".sorting-icon"
                     >
-                        {monitors.map((item: DashboardMonitorItem) => (
-                            <div
-                                key={item.id}
-                                className={`mb-4 col-12 col-sm-${
-                                    item.column * 4
-                                } position-relative`}
-                            >
-                                <div
-                                    className={`monitor-item ${
-                                        item.mode === 1 ? 'line-chart' : ''
-                                    }`}
-                                >
+                        {monitors.map(
+                            (item: DashboardMonitorItem, index: number) => {
+                                return (
                                     <div
-                                        className={`border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column ${
-                                            item.mode !== 1 && 'bg-grey-100'
-                                        }`}
+                                        key={item.id}
+                                        className={`mb-4 col-${
+                                            item.column * 4
+                                        } position-relative`}
                                     >
-                                        <div className="d-fle justify-content-between position-relative">
-                                            <div className=" w-100 position-absolute top-0 text-center mb-2">
-                                                <span className="sorting-icon">
-                                                    :::::
-                                                </span>
-                                            </div>
-                                            <div
-                                                role="button"
-                                                className="btn-close me-3 ms-auto d-none d-sm-block py-3"
-                                                onClick={() => {
-                                                    setShouldBeDeleteId(
-                                                        item.id
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex-grow-1">
-                                            {item.mode === 0 ? (
-                                                <CurrentValueMonitor
-                                                    deviceId={item.deviceId}
-                                                    pin={item.pin}
-                                                />
-                                            ) : item.mode === 1 ? (
-                                                <LineChartMonitor
-                                                    deviceId={item.deviceId}
-                                                    pin={item.pin}
-                                                />
-                                            ) : (
-                                                <SwitchMonitor
-                                                    deviceId={item.deviceId}
-                                                    pin={item.pin}
-                                                />
-                                            )}
-                                        </div>
+                                        <Flippy
+                                            flipOnClick={false}
+                                            flipDirection="horizontal"
+                                            ref={(el: any) =>
+                                                (flippyRefs.current[index] = el)
+                                            }
+                                        >
+                                            <FrontSide>
+                                                <div
+                                                    className={`monitor-item ${
+                                                        item.mode === 1
+                                                            ? 'line-chart'
+                                                            : ''
+                                                    }`}
+                                                >
+                                                    <div
+                                                        className={`border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column ${
+                                                            item.mode !== 1
+                                                                ? 'bg-grey-100'
+                                                                : 'bg-white'
+                                                        }`}
+                                                    >
+                                                        <div className="d-flex justify-content-between position-relative">
+                                                            <div className="w-100 position-absolute top-0 text-center">
+                                                                <span className="sorting-icon">
+                                                                    :::::
+                                                                </span>
+                                                            </div>
+                                                            <div
+                                                                role="button"
+                                                                className="btn-gear me-2 ms-auto mt-1 position-relative"
+                                                                onClick={() => {
+                                                                    flippyRefs.current[
+                                                                        index
+                                                                    ].toggle();
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    className="gear-icon ps-3"
+                                                                    src={
+                                                                        gearIcon
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex-grow-1">
+                                                            {item.mode === 0 ? (
+                                                                <CurrentValueMonitor
+                                                                    isLiveData={
+                                                                        item.isLiveData ||
+                                                                        false
+                                                                    }
+                                                                    deviceId={
+                                                                        item.deviceId
+                                                                    }
+                                                                    pin={
+                                                                        item.pin
+                                                                    }
+                                                                />
+                                                            ) : item.mode ===
+                                                              1 ? (
+                                                                <LineChartMonitor
+                                                                    isLiveData={
+                                                                        item.isLiveData ||
+                                                                        false
+                                                                    }
+                                                                    deviceId={
+                                                                        item.deviceId
+                                                                    }
+                                                                    pin={
+                                                                        item.pin
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                <SwitchMonitor
+                                                                    deviceId={
+                                                                        item.deviceId
+                                                                    }
+                                                                    pin={
+                                                                        item.pin
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </FrontSide>
+                                            <BackSide>
+                                                <div
+                                                    className={`border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column ${
+                                                        item.mode !== 1 &&
+                                                        'bg-grey-100'
+                                                    }`}
+                                                >
+                                                    <div className="d-flex justify-content-between position-relative">
+                                                        <div className="w-100 position-absolute top-0 text-center">
+                                                            <span className="sorting-icon">
+                                                                :::::
+                                                            </span>
+                                                        </div>
+
+                                                        <div
+                                                            role="button"
+                                                            className="btn-close me-2 ms-auto mt-2 pt-3 position-relative"
+                                                            onClick={() => {
+                                                                flippyRefs.current[
+                                                                    index
+                                                                ].toggle();
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex flex-column justify-content-center h-100 align-items-center">
+                                                        <div
+                                                            className={`cursor-point d-flex flex-row align-items-center w-100 justify-content-center mb-2 ${
+                                                                item.mode ===
+                                                                    2 &&
+                                                                'd-none'
+                                                            }`}
+                                                            onClick={() => {
+                                                                const newMonitors =
+                                                                    monitors.map(
+                                                                        (
+                                                                            monitor
+                                                                        ) => {
+                                                                            return {
+                                                                                ...monitor,
+                                                                                isLiveData:
+                                                                                    !monitor.isLiveData,
+                                                                            };
+                                                                        }
+                                                                    );
+                                                                setMonitors(
+                                                                    newMonitors
+                                                                );
+                                                            }}
+                                                        >
+                                                            <div className="me-2">
+                                                                <Toggle
+                                                                    value={
+                                                                        item.isLiveData
+                                                                            ? 1
+                                                                            : 0
+                                                                    }
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                {item.isLiveData
+                                                                    ? 'real-time'
+                                                                    : 'static'}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <button
+                                                                onClick={() =>
+                                                                    setShouldBeDeleteId(
+                                                                        item.id
+                                                                    )
+                                                                }
+                                                                className="btn btn-secondary"
+                                                            >
+                                                                <img
+                                                                    className="me-2"
+                                                                    src={
+                                                                        trashIcon
+                                                                    }
+                                                                />
+                                                                刪除
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </BackSide>
+                                        </Flippy>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            }
+                        )}
                     </ReactSortable>
                 </div>
             </div>

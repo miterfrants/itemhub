@@ -1,17 +1,20 @@
 import Spinner from '@/components/spinner/spinner';
-import Toggle from '@/components/toggle/toggle';
 import { useGetDevicePinApi } from '@/hooks/apis/device-pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 import { PinItem } from '@/types/devices.type';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import './current-value-monitor.scss';
 
-const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
-    const { deviceId, pin } = props;
+const CurrentValueMonitor = (props: {
+    deviceId: number;
+    pin: string;
+    isLiveData: boolean;
+}) => {
+    const { deviceId, pin, isLiveData: isLiveDataFromProps } = props;
     const [currentValue, setCurrentValue] = useState<number | null>(null);
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
-    const [isLiveData, setIsLiveData] = useState<boolean>(false);
+    const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     const timer: any = useRef(null);
     const {
@@ -35,6 +38,10 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
         getSensorLogs();
         timer.current = setTimeout(startPooling, 5000);
     }, [isLiveData, getSensorLogs]);
+
+    useEffect(() => {
+        setIsLiveData(isLiveDataFromProps);
+    }, [isLiveDataFromProps]);
 
     useEffect(() => {
         getSensorLogs();
@@ -70,38 +77,26 @@ const CurrentValueMonitor = (props: { deviceId: number; pin: string }) => {
         }
     }, [isLoading]);
     return (
-        <div className="current-value-monitor p-3 w-100">
+        <div className="current-value-monitor px-3 w-100">
             {isLoading && !isLoaded ? (
-                <div className="">
+                <div className="d-flex justify-content-center">
                     <Spinner />
                 </div>
             ) : (
                 <>
-                    <div
-                        className="position-absolute cursor-point d-flex flex-row align-items-center top-0 start-0 mt-3 ms-3"
-                        onClick={() => setIsLiveData(!isLiveData)}
-                    >
-                        <div className="me-2">
-                            <Toggle value={isLiveData ? 1 : 0} />
-                        </div>
-                        <div>{isLiveData ? 'real-time' : 'static'}</div>
-                    </div>
-                    <div className="d-flex align-items-center flex-column mt-4">
-                        <h3 className="mb-0 text-center">
+                    <div className="d-flex align-items-center flex-column mt-2">
+                        <h3 className="mt-3 text-center">
                             {currentValue?.toFixed(4) || '暫無資料'}
                         </h3>
-                        <div className="d-flex justify-content-center mt-2">
-                            <h3 className="mb-0 device-name ps-2">
-                                <div
-                                    className={`align-middle dot rounded-circle ${
-                                        devicePin?.device?.online
-                                            ? 'dot-green'
-                                            : 'dot-grey'
-                                    }`}
-                                />
-                                {devicePin?.device?.name} -{' '}
-                                {devicePin?.name || devicePin?.pin}
-                            </h3>
+                        <div className="device-name">
+                            <span
+                                className={`align-middle dot rounded-circle ${
+                                    devicePin?.device?.online
+                                        ? 'dot-green'
+                                        : 'dot-grey'
+                                }`}
+                            />
+                            <span>{devicePin?.name || devicePin?.pin}</span>
                         </div>
                     </div>
                 </>
