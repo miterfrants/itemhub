@@ -71,9 +71,6 @@ const MonitorConfigDialog = () => {
             { id: 0, selected: true },
             { id: 1, selected: false },
             { id: 2, selected: false },
-            { id: 3, selected: false },
-            { id: 4, selected: false },
-            { id: 5, selected: false },
         ]);
     }, []);
 
@@ -156,7 +153,7 @@ const MonitorConfigDialog = () => {
     const selectLayoutSize = (id: number) => {
         const columnNum = 3;
         const targetColumn = (id % columnNum) + 1;
-        const targetRow = Math.floor(id / columnNum) + 1;
+        const targetRow = 1;
         setRow(targetRow);
         setColumn(targetColumn);
         const newLayout = [...layouts];

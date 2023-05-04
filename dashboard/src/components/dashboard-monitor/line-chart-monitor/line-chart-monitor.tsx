@@ -1,46 +1,68 @@
 import Spinner from '@/components/spinner/spinner';
 import { useGetDevicePinApi } from '@/hooks/apis/device-pin.hook';
 import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
-import debounce from 'lodash.debounce';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import {
-    Area,
-    AreaChart,
-    AreaSeries,
-    Gradient,
-    GradientStop,
-    Line,
-    Margins,
-} from 'reaviz';
 
 import { PinItem } from '@/types/devices.type';
 import Toggle from '@/components/toggle/toggle';
+import { Line } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Filler,
+    Legend,
+    ScriptableContext,
+    ChartOptions,
+} from 'chart.js';
+import lineChartOption from '@/constants/line-chart-options';
+import moment from 'moment';
+import { InnerYAxesTicks } from '@/chart-plugins/inner-y-axes-ticks';
+import { InnerXAxesTicks } from '@/chart-plugins/inner-x-axes-ticks';
 
-const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
-    const { deviceId, pin } = props;
+enum TIME_RANGE {
+    NONE = 0,
+    THREE_HOURS_AGO = 1,
+    TWENTY_FOUR_HOURS_AGO = 2,
+    THREE_DAYS_AGO = 3,
+    A_WEEK_AGO = 4,
+    A_MOUNTH_AGO = 5,
+}
+
+const LineChartMonitor = (props: {
+    deviceId: number;
+    pin: string;
+    monitorName?: string;
+}) => {
+    const { deviceId, pin, monitorName } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [isLiveData, setIsLiveData] = useState<boolean>(false);
+    const [xAxisTicks, setXAxisTicks] = useState<any[]>([]);
+    const [sensorLogIds, setSensorLogIds] = useState<number[]>([]);
+    const [startAt, setStartAt] = useState<string | undefined>(undefined);
     const timer: any = useRef(null);
 
-    const [lineChartMargin, setLineChartMargin] = useState<Margins | undefined>(
-        [50, 50, 0, 50]
-    );
+    const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
 
-    const resizeHandler = useRef(
-        debounce(() => {
-            const chartWidth = elementContainerRef.current?.offsetWidth || 0;
-            setChartWidth(chartWidth);
-            setChartHeight(
-                elementContainerRef.current?.offsetHeight
-                    ? elementContainerRef.current?.offsetHeight - 80
-                    : 0
-            );
-            if (chartWidth <= 700) {
-                setLineChartMargin([20, 20, 0, 10]);
-            }
-        }, 800)
+    const lineChartHead = useRef(null);
+
+    ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        LineElement,
+        Title,
+        Tooltip,
+        Filler,
+        Legend,
+        InnerYAxesTicks,
+        InnerXAxesTicks
     );
 
     const {
@@ -51,7 +73,8 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         deviceId: deviceId,
         pin: pin,
         page: 1,
-        limit: 200,
+        limit: startAt == undefined ? 200 : 20000,
+        startAt: startAt,
     });
 
     const { data: responseOfLastSensorLogs, fetchApi: getLastSensorLogs } =
@@ -63,8 +86,61 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         });
 
     const elementContainerRef = useRef<HTMLDivElement>(null);
-    const [chartWidth, setChartWidth] = useState(0);
-    const [chartHeight, setChartHeight] = useState(0);
+
+    const options: ChartOptions = {
+        ...lineChartOption,
+        plugins: {
+            ...lineChartOption.plugins,
+            title: {
+                ...lineChartOption.plugins?.title,
+                text: monitorName || devicePin?.name || '',
+            },
+        },
+        scales: {
+            ...lineChartOption.scales,
+            y: {
+                ...lineChartOption.scales?.y,
+                min: Math.min(...lineChartData) - 3,
+            },
+            x: {
+                ...lineChartOption.scales?.x,
+                ticks: {
+                    ...lineChartOption.scales?.x?.ticks,
+                    callback: (val: any, index: number, c: any) => {
+                        const createdAt = xAxisTicks[index];
+                        const step = Math.floor(c.length / 5);
+                        const halfStep = Math.floor(step / 2);
+                        const time = `${createdAt
+                            .getHours()
+                            .toString()
+                            .padStart(2, '0')}:${createdAt
+                            .getMinutes()
+                            .toString()
+                            .padStart(2, '0')}`;
+                        const date = `${(createdAt.getMonth() + 1)
+                            .toString()
+                            .padStart(2, '0')}/${createdAt
+                            .getDate()
+                            .toString()
+                            .padStart(2, '0')}`;
+                        const text =
+                            timeRange === TIME_RANGE.NONE ||
+                            timeRange === TIME_RANGE.THREE_HOURS_AGO ||
+                            timeRange === TIME_RANGE.TWENTY_FOUR_HOURS_AGO
+                                ? time
+                                : timeRange === TIME_RANGE.THREE_DAYS_AGO ||
+                                  timeRange === TIME_RANGE.A_WEEK_AGO ||
+                                  timeRange === TIME_RANGE.A_MOUNTH_AGO
+                                ? `${date} ${time}`
+                                : '';
+                        return index !== 0 && index % step === halfStep
+                            ? text
+                            : '';
+                    },
+                },
+            },
+        },
+    };
 
     const { fetchApi: getDevicePin, data: responseOfGetDevicePin } =
         useGetDevicePinApi({
@@ -84,27 +160,19 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         getSensorLogs();
         getDevicePin();
 
-        resizeHandler.current();
-        const resizeHanlder = resizeHandler.current;
-        window.addEventListener('resize', resizeHanlder);
-        return () => {
-            clearTimeout(timer.current);
-            window.removeEventListener('resize', resizeHanlder);
-        };
         // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        if (!responseOfSensorLogs || responseOfSensorLogs.length === 0) {
+        if (!responseOfSensorLogs) {
             return;
         }
-        setLineChartData(
+        responseOfSensorLogs.reverse();
+        setLineChartData(responseOfSensorLogs.map((item) => item.value));
+        setSensorLogIds(responseOfSensorLogs.map((item) => item.id));
+        setXAxisTicks(
             responseOfSensorLogs.map((item) => {
-                return {
-                    key: new Date(item.createdAt),
-                    data: item.value,
-                    id: item.id,
-                };
+                return new Date(item.createdAt);
             })
         );
     }, [responseOfSensorLogs]);
@@ -117,18 +185,14 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
             return;
         }
         const newLog = responseOfLastSensorLogs[0];
-        const targetLog = lineChartData.find((item) => item.id === newLog.id);
+        const targetLog = sensorLogIds.find((id) => id === newLog.id);
         if (targetLog) {
             return;
         }
-        setLineChartData([
-            {
-                key: new Date(newLog.createdAt),
-                data: newLog.value,
-                id: newLog.id,
-            },
-            ...lineChartData,
-        ]);
+
+        setLineChartData([...lineChartData, newLog.value]);
+        setSensorLogIds([...sensorLogIds, newLog.id]);
+        setXAxisTicks([...xAxisTicks, new Date(newLog.createdAt)]);
         // eslint-disable-next-line
     }, [responseOfLastSensorLogs]);
 
@@ -147,106 +211,158 @@ const LineChartMonitor = (props: { deviceId: number; pin: string }) => {
         }
     }, [isLiveData, startPooling]);
 
+    useEffect(() => {
+        getSensorLogs();
+        // eslint-disable-next-line
+    }, [startAt]);
+
+    useEffect(() => {
+        if (timeRange === TIME_RANGE.NONE) {
+            setStartAt(undefined);
+        } else if (timeRange === TIME_RANGE.THREE_HOURS_AGO) {
+            setStartAt(moment().add(-3, 'hour').format('YYYY-MM-DD HH:mm:ss'));
+        } else if (timeRange === TIME_RANGE.TWENTY_FOUR_HOURS_AGO) {
+            setStartAt(moment().add(-24, 'hour').format('YYYY-MM-DD HH:mm:ss'));
+        } else if (timeRange === TIME_RANGE.THREE_DAYS_AGO) {
+            setStartAt(moment().add(-3, 'days').format('YYYY-MM-DD HH:mm:ss'));
+        } else if (timeRange === TIME_RANGE.A_WEEK_AGO) {
+            setStartAt(moment().add(-7, 'days').format('YYYY-MM-DD HH:mm:ss'));
+        } else if (timeRange === TIME_RANGE.A_MOUNTH_AGO) {
+            setStartAt(
+                moment().add(-30, 'month').format('YYYY-MM-DD HH:mm:ss')
+            );
+        }
+    }, [timeRange]);
+
     return (
         <div
             ref={elementContainerRef}
             className="line-chart-monitor w-100 h-100"
         >
-            {isLoading ? (
-                <div className="">
-                    <Spinner />
-                </div>
-            ) : (
-                <div className="d-flex align-items-center h-100 justify-content-center">
-                    {lineChartData.length <= 0 ? (
-                        <div>
-                            <h2 className="mb-0 px-45 my-3">暫無資料</h2>
-                            <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center">
-                                <div
-                                    className={`dot rounded-circle flex-shirk-0 ${
-                                        devicePin?.device?.online
-                                            ? 'dot-green'
-                                            : 'dot-grey'
-                                    }`}
-                                />
-                                {devicePin?.device?.name} - {devicePin?.name}
-                            </h3>
+            <div className="d-flex align-items-center w-100 h-100 justify-content-center">
+                <div className="d-flex flex-column w-100 h-100">
+                    <div
+                        ref={lineChartHead}
+                        className="d-flex flex-wrap align-items-center justify-content-center mt-3 "
+                    >
+                        <div
+                            className="cursor-point px-4 d-flex flex-row align-items-center mb-3    "
+                            onClick={() => setIsLiveData(!isLiveData)}
+                        >
+                            <div className="me-2">
+                                <Toggle value={isLiveData ? 1 : 0} />
+                            </div>
+                            <div>{isLiveData ? 'real-time' : 'static'}</div>
+                        </div>
+                        <button
+                            onClick={() =>
+                                setTimeRange(TIME_RANGE.THREE_HOURS_AGO)
+                            }
+                            className="mb-3 mb-sm-3  me-3 btn btn-secondary"
+                        >
+                            近 3 小時
+                        </button>
+                        <button
+                            onClick={() =>
+                                setTimeRange(TIME_RANGE.TWENTY_FOUR_HOURS_AGO)
+                            }
+                            className="mb-3 mb-sm-3  me-3 btn btn-secondary"
+                        >
+                            近 24 小時
+                        </button>
+                        <button
+                            onClick={() =>
+                                setTimeRange(TIME_RANGE.THREE_DAYS_AGO)
+                            }
+                            className="mb-3 mb-sm-3  me-3 btn btn-secondary"
+                        >
+                            近 3 天
+                        </button>
+                        <button
+                            onClick={() => setTimeRange(TIME_RANGE.A_WEEK_AGO)}
+                            className="mb-3 mb-sm-3  me-3 btn btn-secondary"
+                        >
+                            近 1 週
+                        </button>
+                        <button
+                            onClick={() =>
+                                setTimeRange(TIME_RANGE.A_MOUNTH_AGO)
+                            }
+                            className="mb-3 mb-sm-3  me-3 btn btn-secondary"
+                        >
+                            近 30 天
+                        </button>
+                    </div>
+                    {isLoading ? (
+                        <div className="w-100 d-flex align-items-center justify-content-center mt-5">
+                            <Spinner />
                         </div>
                     ) : (
-                        <div
-                            className={`${
-                                lineChartData.length > 0 ? '' : 'd-none'
-                            }`}
-                        >
+                        <div className="w-100 flex-grow-1">
                             <div
-                                className="position-absolute cursor-point px-4 d-flex flex-row align-items-center"
-                                onClick={() => setIsLiveData(!isLiveData)}
+                                className={`d-flex flex-wrap align-items-center justify-content-center ${
+                                    lineChartData.length === 0 ? '' : 'd-none'
+                                }`}
                             >
-                                <div className="me-2">
-                                    <Toggle value={isLiveData ? 1 : 0} />
-                                </div>
-                                <div>{isLiveData ? 'real-time' : 'static'}</div>
+                                <h2 className="mb-0 w-100 px-45 my-3 text-center">
+                                    暫無資料
+                                </h2>
+                                <h3 className="mb-0 w-100 text-center px-45 my-3 d-flex align-items-center justify-content-center">
+                                    <div
+                                        className={`dot rounded-circle flex-shirk-0 me-2 ${
+                                            devicePin?.device?.online
+                                                ? 'dot-green'
+                                                : 'dot-grey'
+                                        }`}
+                                    />
+                                    {devicePin?.device?.name} -{' '}
+                                    {devicePin?.name}
+                                </h3>
                             </div>
-                            <h3 className="w-100 text-center px-45 mt-4 mb-3">
-                                <div
-                                    className={`align-middle dot rounded-circle ${
-                                        devicePin?.device?.online
-                                            ? 'dot-green'
-                                            : 'dot-grey'
-                                    }`}
-                                />
-                                {devicePin?.device?.name} - {devicePin?.name}
-                            </h3>
-                            <div>
-                                <AreaChart
-                                    width={chartWidth}
-                                    height={chartHeight}
-                                    margins={lineChartMargin}
-                                    data={lineChartData}
-                                    series={
-                                        <AreaSeries
-                                            area={
-                                                <Area
-                                                    gradient={
-                                                        <Gradient
-                                                            color="red"
-                                                            stops={[
-                                                                <GradientStop
-                                                                    key="index"
-                                                                    offset={0.1}
-                                                                    color="#4ac5ff"
-                                                                    stopOpacity={
-                                                                        0.2
-                                                                    }
-                                                                />,
-                                                                <GradientStop
-                                                                    key="index"
-                                                                    offset={1}
-                                                                    color="#4ac5ff"
-                                                                    stopOpacity={
-                                                                        1
-                                                                    }
-                                                                />,
-                                                            ]}
-                                                        />
-                                                    }
-                                                />
-                                            }
-                                            line={
-                                                <Line
-                                                    strokeWidth={2}
-                                                    color={'#ff0000'}
-                                                />
-                                            }
-                                            colorScheme={'#4ac5ff'}
-                                        />
-                                    }
-                                />
-                            </div>
+                            <Line
+                                className={
+                                    lineChartData.length > 0 ? '' : 'd-none'
+                                }
+                                options={options}
+                                data={{
+                                    labels: xAxisTicks,
+                                    datasets: [
+                                        {
+                                            backgroundColor: (
+                                                context: ScriptableContext<'line'>
+                                            ) => {
+                                                const ctx = context.chart.ctx;
+                                                const gradient =
+                                                    ctx.createLinearGradient(
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        300
+                                                    );
+                                                gradient.addColorStop(
+                                                    0,
+                                                    'rgba(204, 233, 238, 0.7)'
+                                                );
+                                                gradient.addColorStop(
+                                                    0.8,
+                                                    'rgba(152, 214, 223, 1)'
+                                                );
+                                                return gradient;
+                                            },
+                                            fill: true,
+                                            label: devicePin?.name || '',
+                                            data: lineChartData,
+                                            borderColor: '#51c7cf',
+                                            borderWidth: 1,
+                                            tension: 0.4,
+                                        },
+                                    ],
+                                }}
+                            />
                         </div>
                     )}
                 </div>
-            )}
+            </div>
         </div>
     );
 };

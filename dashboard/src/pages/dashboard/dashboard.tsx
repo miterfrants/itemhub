@@ -116,17 +116,14 @@ const Dashboard = () => {
                             >
                                 <div
                                     className={`monitor-item d-flex align-items-center justify-content-center ${
-                                        item.row === 1 && item.column === 3
-                                            ? 'one-third'
-                                            : (item.row === 1 &&
-                                                  item.column === 2) ||
-                                              (item.row === 2 &&
-                                                  item.column === 3)
-                                            ? 'half'
-                                            : ''
+                                        item.mode === 1 ? 'line-chart' : ''
                                     }`}
                                 >
-                                    <div className="border border-grey-200 bg-grey-100 rounded-3 w-100 h-100 d-flex justify-content-center align-items-center overflow-hidden">
+                                    <div
+                                        className={`border border-grey-200 rounded-3 w-100 h-100 d-flex justify-content-center align-items-center overflow-hidden ${
+                                            item.mode !== 1 && 'bg-grey-100'
+                                        }`}
+                                    >
                                         {item.mode === 0 ? (
                                             <CurrentValueMonitor
                                                 deviceId={item.deviceId}

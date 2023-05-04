@@ -18,16 +18,11 @@
             padding-top: 100%;
         }
 
-        &.one-third {
-            &::after {
-                padding-top: calc(100% / 3);
-            }
+        &.line-chart {
+            min-height: 400px;
         }
-
-        &.half {
-            &::after {
-                padding-top: 50%;
-            }
+        &.line-chart::after {
+            padding-top: calc(100% / 3);
         }
     }
 
