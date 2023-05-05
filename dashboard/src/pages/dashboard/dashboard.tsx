@@ -270,7 +270,7 @@ const Dashboard = () => {
                                                                                 monitor.id ===
                                                                                 item.id
                                                                                     ? !item.isLiveData
-                                                                                    : item.isLiveData;
+                                                                                    : monitor.isLiveData;
                                                                             return {
                                                                                 ...monitor,
                                                                                 isLiveData,
