@@ -266,10 +266,14 @@ const Dashboard = () => {
                                                                         (
                                                                             monitor
                                                                         ) => {
+                                                                            const isLiveData =
+                                                                                monitor.id ===
+                                                                                item.id
+                                                                                    ? !item.isLiveData
+                                                                                    : item.isLiveData;
                                                                             return {
                                                                                 ...monitor,
-                                                                                isLiveData:
-                                                                                    !monitor.isLiveData,
+                                                                                isLiveData,
                                                                             };
                                                                         }
                                                                     );
