@@ -18,15 +18,15 @@ const SwitchMonitor = (props: {
     const { deviceId, pin, customTitle } = props;
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
-    const [value, setValue] = useState(0);
-    const [isFirstTimeGetPinValue, setIsFirstTimeGetPinValue] = useState<
-        null | boolean
-    >(null);
+    const [value, setValue] = useState<undefined | number>(undefined);
+    const [defaultValue, setDefaultValue] = useState<undefined | number>(
+        undefined
+    );
 
     const { updateDeviceSwitchPinApi } = useUpdateDeviceSwitchPinApi({
         deviceId,
         pin,
-        value,
+        value: value || 0,
     });
 
     const {
@@ -87,11 +87,8 @@ const SwitchMonitor = (props: {
     }, [layout]);
 
     useEffect(() => {
-        if (isFirstTimeGetPinValue === null) {
-            return;
-        }
-        if (isFirstTimeGetPinValue) {
-            setIsFirstTimeGetPinValue(false); // 避免從其他裝置改狀態, 這邊一拿到新狀態發現不一樣就打 updateDeviceSwitchPinApi
+        if (defaultValue === undefined) {
+            // 還沒從 API 拿到資料
             return;
         }
         updateDeviceSwitchPinApi();
@@ -103,8 +100,7 @@ const SwitchMonitor = (props: {
             return;
         }
         setDevicePin(responseOfGetDevicePin as PinItem);
-        setValue(responseOfGetDevicePin.value || 0);
-        setIsFirstTimeGetPinValue(true);
+        setDefaultValue(responseOfGetDevicePin.value || 0);
     }, [responseOfGetDevicePin]);
 
     return (
@@ -112,7 +108,13 @@ const SwitchMonitor = (props: {
             ref={elementContainerRef}
             className="switch-monitor w-100 px-1 h-100"
             onClick={() => {
-                setValue(value === 1 ? 0 : 1);
+                let result = 0;
+                if (value === undefined && defaultValue === 0) {
+                    result = 1;
+                } else if (value !== undefined) {
+                    result = value === 0 ? 1 : 0;
+                }
+                setValue(result);
             }}
         >
             {isLoading ? (
@@ -126,7 +128,13 @@ const SwitchMonitor = (props: {
                         style={{ transform: `scale(${scale})` }}
                     >
                         <div ref={toggleButtonRef}>
-                            <Toggle value={value} />
+                            <Toggle
+                                value={
+                                    value === undefined
+                                        ? defaultValue || 0
+                                        : value
+                                }
+                            />
                         </div>
                     </div>
                     <div
