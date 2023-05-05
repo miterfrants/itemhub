@@ -29,5 +29,7 @@ namespace Homo.IotApi
         [Required]
         public int Column { get; set; }
 
+        public string CustomTitle { get; set; }
+
     }
 }

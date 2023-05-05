@@ -51,11 +51,13 @@ namespace Homo.IotApi
             return latestId;
         }
 
-        public static List<SensorLog> GetList(IotDbContext dbContext, long? ownerId, List<long> deviceIds, string pin, int page = 1, int limit = 50)
+        public static List<SensorLog> GetList(IotDbContext dbContext, long? ownerId, List<long> deviceIds, string pin, int page = 1, int limit = 50, DateTime? startAt = null, DateTime? endAt = null)
         {
             return dbContext.SensorLog
                 .Where(x =>
                     x.DeletedAt == null &&
+                    (startAt == null || x.CreatedAt >= startAt) &&
+                    (endAt == null || x.CreatedAt <= endAt) &&
                     (ownerId == null || x.OwnerId == ownerId) &&
                     (deviceIds == null || deviceIds.Contains(x.DeviceId)) &&
                     (pin == null || x.Pin == pin)

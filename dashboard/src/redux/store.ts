@@ -14,6 +14,7 @@ import pipelinesReducer from './reducers/pipelines.reducer';
 import pipelineItemsReducer from './reducers/pipeline-items.reducer';
 import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
 import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
+import layoutReducer from './reducers/layout.reducer';
 
 const store = configureStore({
     reducer: {
@@ -32,6 +33,7 @@ const store = configureStore({
         pipelines: pipelinesReducer,
         pipelineItems: pipelineItemsReducer,
         pipelineConnectors: pipelineConnectorsReducer,
+        layout: layoutReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

@@ -42,6 +42,7 @@ const gTag = {
                 }
                 gtag('js', new Date());
                 gtag('config', APP_CONFIG.GA_PROPERTY_ID);
+                gtag('config', APP_CONFIG.GOOGLE_ADS_PROPERTY_ID);
                 window.gtag = gtag;
             }
 

@@ -81,11 +81,23 @@
                     <h5 class="pt-3">確認紅外線協定</h5>
                     <p>接著我們把紅外線感測器接到 ESP-01S IO00 的腳上，如下圖所示 (電池建議在前方加裝一個直流穩壓 3.3V 輸出)</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-4.png" />
+                    <p>
+                        ESP01S:IO00 ↔ 紅外線感測器:D0
+                        <br />
+                        PL2303:RXD ↔ ESP01S:TXD
+                        PL2303:TXD ↔ ESP01S:RXD
+                        PL2303:VCC ↔ ESP01S:VCC
+                        PL2303:GND ↔ ESP01S:GND
+                        <br />
+                        紅外線感測器:VCC ↔ PL2303:VCC
+                        紅外線感測器:GND ↔ PL2303:GND
+                    </p>
 
                     <p class="mt-2 mb-4">重新開啟 ESP-01S 進到運作模式，並把紅外線接收器接上。遙控器對著紅外線接收器確認紅外線所使用的協定。</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-5.png" />
 
-                    <p class="mt-2 mb-4">由上圖可以知道我們冷氣遙控器跟冷氣之間溝通的協定是 Coolix，我們知道需要用什麼語言跟冷氣溝通。接下來就是撰寫發送紅外線的程式碼</p>
+                    <p class="mt-2 mb-4">由上圖 Serial Monitor 可以知道我們冷氣遙控器跟冷氣之間溝通的協定是
+                        Coolix，我們知道需要用什麼語言跟冷氣溝通。接下來就是撰寫發送紅外線的程式碼</p>
                 </div>
             </div>
 

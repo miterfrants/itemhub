@@ -10,6 +10,7 @@ export type DialogState = {
     buttonClassName: string;
     promptInvalidMessage: string;
     callback: () => void;
+    cancelCallback: () => void;
 };
 
 export enum DialogTypeEnum {
@@ -29,6 +30,7 @@ export const dialogSlice = createSlice({
         buttonClassName: '',
         promptInvalidMessage: '',
         callback: () => {},
+        cancelCallback: () => {},
     },
     reducers: {
         open: (state, action: PayloadAction<Partial<DialogState>>) => {
@@ -40,6 +42,7 @@ export const dialogSlice = createSlice({
                 buttonClassName,
                 promptInvalidMessage,
                 callback,
+                cancelCallback,
             } = action.payload;
 
             return {
@@ -51,10 +54,12 @@ export const dialogSlice = createSlice({
                 buttonClassName: buttonClassName || '',
                 promptInvalidMessage: promptInvalidMessage || '',
                 callback: callback ? callback : () => {},
+                cancelCallback: cancelCallback ? cancelCallback : () => {},
             };
         },
         close: (state) => {
             state.isOpen = false;
+            state.cancelCallback();
             return state;
         },
     },

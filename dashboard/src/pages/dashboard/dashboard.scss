@@ -5,6 +5,20 @@
             padding-top: $mobile-header-h;
         }
     }
+    .sorting-icon {
+        cursor: move;
+        z-index: 1;
+    }
+    .btn-gear {
+        z-index: 2;
+        img {
+            width: 40px;
+        }
+    }
+    .btn-close {
+        transform: scale(1.2);
+    }
+
     .monitor-item {
         position: relative;
         > div {
@@ -18,17 +32,18 @@
             padding-top: 100%;
         }
 
-        &.one-third {
-            &::after {
-                padding-top: calc(100% / 3);
-            }
+        &.line-chart {
+            min-height: 400px;
         }
+        &.line-chart::after {
+            padding-top: calc(100% / 3);
+        }
+    }
 
-        &.half {
-            &::after {
-                padding-top: 50%;
-            }
-        }
+    .flippy-front,
+    .flippy-back {
+        padding: 0;
+        box-shadow: none;
     }
 
     @include media-breakpoint-down(sm) {
