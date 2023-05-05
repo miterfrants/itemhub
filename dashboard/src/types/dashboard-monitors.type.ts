@@ -12,4 +12,5 @@ export interface DashboardMonitorItem {
     row: number;
     column: number;
     isLiveData?: boolean;
+    customTitle: string;
 }

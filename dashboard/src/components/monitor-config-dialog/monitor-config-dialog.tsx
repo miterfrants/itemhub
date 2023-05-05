@@ -49,6 +49,7 @@ const MonitorConfigDialog = () => {
         defaultSwitchModeValue
     );
     const [isValidedForm, setIsValidedForm] = useState<boolean>(false);
+    const [customTitle, setCustomTitle] = useState<string>('');
 
     const {
         fetchApi: createDashboardMonitorApi,
@@ -62,6 +63,7 @@ const MonitorConfigDialog = () => {
                 : dashboardMonitorMode,
         row,
         column,
+        customTitle,
     });
 
     const { getDashboardMonitorModesApi } = useGetDashboardMonitorModesApi();
@@ -245,6 +247,21 @@ const MonitorConfigDialog = () => {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                <div className="row mt-3">
+                    <div className="col-12 px-0">
+                        <input
+                            type="text"
+                            className="form-control"
+                            onKeyUp={(
+                                event: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                                setCustomTitle(event.currentTarget.value);
+                            }}
+                            placeholder="自定義面板名稱"
+                        />
                     </div>
                 </div>
                 <div

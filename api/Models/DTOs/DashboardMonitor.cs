@@ -18,6 +18,7 @@ namespace Homo.IotApi
             public int Row { get; set; }
 
             public int Column { get; set; }
+            public string CustomTitle { get; set; }
 
         }
 
