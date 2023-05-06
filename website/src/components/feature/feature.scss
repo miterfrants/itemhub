@@ -8,6 +8,9 @@ $feature-block-padding-bottom: 140px;
 
 .feature {
     padding-top: calc(#{$feature-block-padding-top} / 2);
+    a {
+        text-decoration: none;
+    }
 
     .icon-bottom-circle {
         width: $icon-bottom-circle-wh;

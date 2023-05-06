@@ -10,7 +10,8 @@ export class FeatureComponent extends BaseComponent {
 
     async render () {
         await super.render({
-            ...this.variable
+            ...this.variable,
+            role: this.variable.withInteraction === 'true' ? 'button' : ''
         });
     }
 }
