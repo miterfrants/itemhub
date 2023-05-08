@@ -143,6 +143,13 @@ const SwitchMonitor = (props: {
                             transform: `translateY(${titleVerticalOffset}px)`,
                         }}
                     >
+                        <div
+                            className={`align-middle dot rounded-circle ${
+                                devicePin?.device?.online
+                                    ? 'dot-green'
+                                    : 'dot-grey'
+                            }`}
+                        />
                         {customTitle || devicePin?.name || devicePin?.pin}
                     </div>
                 </div>

@@ -2,10 +2,13 @@
 . $HOME/.nvm/nvm.sh
 ENV="$NODE_ENV";
 
-cd ./api
-git pull origin dev;
-git submodule update --remote --init;
 
+git pull origin dev;
+cd ./firmware
+git pull origin master
+
+cd ../
+cd ./api
 sudo docker build -t itemhub-api ./
 
 if [ "$(sudo docker ps -q -f name=itemhub-api)" ]; then

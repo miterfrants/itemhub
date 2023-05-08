@@ -24,6 +24,9 @@ import { RESPONSE_STATUS } from './constants.js';
 import { HowRoutingRule } from './routing-rules/how.routing-rule.js';
 import { AuthDataService } from './dataservices/auth.dataservice.js';
 import { Toaster } from './util/toaster.js';
+import { FeatureEasyConnectivityController } from './controllers/feature-easy-connectivity.controller.js';
+import { FeatureSecurityController } from './controllers/feature-security.controller.js';
+import { FeatureAutomationController } from './controllers/feature-automation.controller.js';
 
 const gTag = {
     dependency: {
@@ -178,7 +181,20 @@ export const RoutingRule = [{
             }, HowRoutingRule, {
                 path: 'feature/',
                 controller: FeatureController,
-                html: '/components/feature/feature.html'
+                html: '/template/feature.html',
+                children: [{
+                    path: 'easy-connectivity/',
+                    controller: FeatureEasyConnectivityController,
+                    html: '/template/feature-easy-connectivity.html'
+                }, {
+                    path: 'security/',
+                    controller: FeatureSecurityController,
+                    html: '/template/feature-security.html'
+                }, {
+                    path: 'automation/',
+                    controller: FeatureAutomationController,
+                    html: '/template/feature-automation.html'
+                }]
             }, {
                 path: 'me/',
                 skipSitemap: true,

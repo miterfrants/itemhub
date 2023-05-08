@@ -116,7 +116,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard" data-testid="Dashboard">
             <PageTitle title="監控中心" />
-            <div className="card">
+            <div className="card p-0 p-sm-4">
                 <div>
                     <ReactSortable
                         className="row"
