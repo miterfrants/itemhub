@@ -249,6 +249,13 @@ const LineChartMonitor = (props: {
             <div className="d-flex align-items-center w-100 h-100 justify-content-center">
                 <div className="d-flex flex-column w-100 h-100">
                     <div className="d-flex flex-wrap align-items-center justify-content-center">
+                        <div
+                            className={`dot rounded-circle flex-shirk-0 mb-3 me-3 ${
+                                devicePin?.device?.online
+                                    ? 'dot-green'
+                                    : 'dot-grey'
+                            }`}
+                        />
                         <button
                             onClick={() =>
                                 setTimeRange(TIME_RANGE.THREE_HOURS_AGO)

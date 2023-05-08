@@ -46,7 +46,15 @@
         box-shadow: none;
     }
 
+    .card {
+        background-color: white;
+    }
+
     @include media-breakpoint-down(sm) {
+        .card {
+            background-color: $transparent;
+            box-shadow: none !important;
+        }
         .monitor-item {
             &.one-third,
             &.half {
