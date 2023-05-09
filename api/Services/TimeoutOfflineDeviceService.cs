@@ -17,7 +17,8 @@ namespace Homo.IotApi
         public static void StartAsync(string serverId, long ownerId, long deviceId, string dbc, CommonLocalizer commonLocalizer,
         string mailTemplatePath, string systemEmail, string sendGridApiKey,
         string smsClientUrl, string smsUsername, string smsPassword,
-        string mqttUsername, string mqttPassword, List<MqttPublisher> localMqttPublishers
+        string mqttUsername, string mqttPassword, List<MqttPublisher> localMqttPublishers,
+        string webSiteUrl, string adminEmail
         )
         {
             if (tokenSourceCollections.ContainsKey(deviceId))
@@ -112,7 +113,7 @@ namespace Homo.IotApi
                                     device.Name
                                 }
                                     }),
-                                    Content = template.Content.Replace("{{deviceName}}", device.Name).Replace("{{now}}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                    Content = template.Content.Replace("{{deviceName}}", device.Name).Replace("{{now}}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")).Replace("{{websiteUrl}}", webSiteUrl).Replace("{{adminEmail}}", adminEmail),
                                 }, systemEmail, target, sendGridApiKey);
                             }
                             else if (isPhone)
