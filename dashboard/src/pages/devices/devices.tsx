@@ -55,8 +55,8 @@ const Devices = () => {
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
-        page,
-        limit,
+        page: Number(query.get('page') || 1),
+        limit: Number(query.get('limit') || 10),
         name: deviceName,
     });
 
@@ -87,7 +87,7 @@ const Devices = () => {
     useEffect(() => {
         getDevicesApi();
         // eslint-disable-next-line
-    }, [query, page, refreshFlag]);
+    }, [query, refreshFlag]);
 
     useEffect(() => {
         if (shouldBeDeleteId) {

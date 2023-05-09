@@ -46,8 +46,8 @@ const OauthClients = () => {
     ] = useState('btn btn-danger disabled');
 
     const { isLoading, fetchApi } = useGetOauthClients({
-        page,
-        limit,
+        limit: Number(query.get('limit') || 20),
+        page: Number(query.get('page') || 1),
     });
 
     const { fetchApi: deleteMultipleApi, data: responseOfDelete } =
@@ -73,7 +73,8 @@ const OauthClients = () => {
 
     useEffect(() => {
         fetchApi();
-    }, [page, refreshFlag]);
+        // eslint-disable-next-line
+    }, [query, refreshFlag]);
 
     useEffect(() => {
         if (responseOfDelete?.status === RESPONSE_STATUS.OK) {
