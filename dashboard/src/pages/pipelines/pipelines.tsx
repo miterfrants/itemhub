@@ -29,7 +29,7 @@ const Pipelines = () => {
     const query = useQuery();
     const dispatch = useDispatch();
     const limit = Number(query.get('limit') || 10);
-    const [page, setPage] = useState(Number(query.get('page')) || 1);
+    const page = Number(query.get('page') || 1);
     const [searchTitle, setSearchTitle] = useState(query.get('title') || '');
     const navigate = useNavigate();
     const [refreshFlag, setRefreshFlag] = useState(false);
@@ -42,8 +42,8 @@ const Pipelines = () => {
     >(undefined);
     const { isLoading: isGetting, fetchApi: getPipelines } = useGetPipelinesApi(
         {
-            page,
-            limit,
+            limit: Number(query.get('limit') || 10),
+            page: Number(query.get('page') || 1),
             title: searchTitle,
         }
     );
@@ -69,7 +69,7 @@ const Pipelines = () => {
     useEffect(() => {
         getPipelines();
         // eslint-disable-next-line
-    }, [query, page, refreshFlag]);
+    }, [query, refreshFlag]);
 
     useEffect(() => {
         if (!respOfToggle) {
