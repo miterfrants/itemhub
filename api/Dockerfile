@@ -13,6 +13,7 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 RUN echo "Asia/Taipei" > /etc/timezone
 ENV TZ Asia/Taipei
+ENV LANG zh_TW.UTF-8
 
 WORKDIR /app
 COPY --from=build-env /app/out .
