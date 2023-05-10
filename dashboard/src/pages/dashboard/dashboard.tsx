@@ -253,7 +253,13 @@ const Dashboard = () => {
                                                             }}
                                                         />
                                                     </div>
-                                                    <div className="d-flex flex-column justify-content-center h-100 align-items-center">
+                                                    <div
+                                                        className={`d-flex flex-column justify-content-center h-100 align-items-center ${
+                                                            item.mode === 1
+                                                                ? 'bg-whitr'
+                                                                : 'grey-100'
+                                                        }`}
+                                                    >
                                                         <div
                                                             className={`cursor-point d-flex flex-row align-items-center w-100 justify-content-center mb-2 ${
                                                                 item.mode ===
