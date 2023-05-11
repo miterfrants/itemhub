@@ -51,7 +51,7 @@
     }
 
     @include media-breakpoint-down(sm) {
-        .card {
+        .monitor-container {
             background-color: $transparent;
             box-shadow: none !important;
         }

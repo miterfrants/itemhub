@@ -116,7 +116,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard" data-testid="Dashboard">
             <PageTitle title="監控中心" />
-            <div className="card p-0 p-sm-4">
+            <div className="card monitor-container p-0 p-sm-4">
                 <div>
                     <ReactSortable
                         className="row"
@@ -140,7 +140,7 @@ const Dashboard = () => {
                                                 (flippyRefs.current[index] = el)
                                             }
                                         >
-                                            <FrontSide>
+                                            <FrontSide className="bg-white">
                                                 <div
                                                     className={`monitor-item ${
                                                         item.mode === 1
@@ -229,7 +229,7 @@ const Dashboard = () => {
                                                     </div>
                                                 </div>
                                             </FrontSide>
-                                            <BackSide>
+                                            <BackSide className="bg-white">
                                                 <div
                                                     className={`border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column ${
                                                         item.mode !== 1 &&
