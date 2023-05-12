@@ -55,7 +55,7 @@ const SchedulePipelineItem = ({
 
             <div className="mt-3">
                 <a
-                    href="https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm#:~:text=A%20cron%20expression%20is%20a,allowed%20characters%20for%20that%20field."
+                    href="https://en.wikipedia.org/wiki/Cron"
                     target="_blank"
                     rel="noreferrer"
                 >
