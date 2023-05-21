@@ -6,6 +6,12 @@ using Homo.Core.Constants;
 using Homo.AuthApi;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
+using System.Net;
+using System.IO;
+using System;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using Microsoft.AspNetCore.Http;
 
 namespace Homo.IotApi
 {
@@ -29,6 +35,7 @@ namespace Homo.IotApi
         private readonly string _mqttPassword;
         private readonly string _serverId;
         private readonly string _webSiteUrl;
+        private readonly string _staticPath;
         private readonly List<MqttPublisher> _localMqttPublishers;
 
         public MyDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublishers)
@@ -46,6 +53,7 @@ namespace Homo.IotApi
             _systemEmail = appSettings.Value.Common.SystemEmail;
             _sendGridApiKey = appSettings.Value.Secrets.SendGridApiKey;
             _serverId = appSettings.Value.Common.ServerId;
+            _staticPath = appSettings.Value.Common.StaticPath;
 
             _mqttUsername = appSettings.Value.Secrets.MqttUsername;
             _mqttPassword = appSettings.Value.Secrets.MqttPassword;
@@ -235,6 +243,143 @@ namespace Homo.IotApi
             long ownerId = extraPayload.Id;
             DeviceStateHelper.Create(_iotDbContext, _dbConnectionString, _serverId, ownerId, id, _commonLocalizer, _mailTemplatePath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers, _webSiteUrl, _adminEmail);
             return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "裝置 - 上傳圖片檔案",
+            Description = ""
+        )]
+        [HttpPost]
+        [Route("{id}/upload-file")]
+        public ActionResult<dynamic> uploadFile([FromRoute] long id, dynamic extraPayload)
+        {
+            if (Request.ContentType.IndexOf("multipart/form-data") == -1)
+            {
+                throw new CustomException(ERROR_CODE.UNSUPPORT_MEDIA_TYPE, HttpStatusCode.UnsupportedMediaType);
+            }
+
+
+            long ownerId = extraPayload.Id;
+            string destinationalFilename = "";
+            DateTime now = DateTime.Now;
+            string folder = $"{_staticPath}/private/{now.ToString("yyyyMMdd")}/{ownerId}/{id}";
+
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            string filename = now.ToString("yyyyMMddHHmmssfff");
+            string ext = "";
+
+            if (Request.Form.Files.Count > 1)
+            {
+                throw new CustomException(ERROR_CODE.CAN_UPLOAD_ONLY_ONE_FILE, HttpStatusCode.BadRequest);
+            }
+
+            IFormFile file = Request.Form.Files[0];
+            ext = Path.GetExtension(file.FileName);
+            if (!new List<string> { ".jpeg", ".png", ".jpg", ".gif" }.Contains(ext))
+            {
+                throw new CustomException(ERROR_CODE.INVALID_FILE_EXT, HttpStatusCode.BadRequest);
+            }
+
+            destinationalFilename = $"{folder}/{filename}{ext}";
+            FileStream filestream = new FileStream(destinationalFilename, FileMode.Create);
+            file.CopyTo(filestream);
+            filestream.Close();
+            filestream.Dispose();
+
+            // save filename to database
+            DeviceUploadedImageDataservice.Create(_iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
+            {
+                OwnerId = ownerId,
+                DeviceId = id,
+                Filename = $"{filename}{ext}"
+            });
+
+
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
+            {
+                using var image = Image.Load(destinationalFilename);
+                image.Mutate(x => x.Resize(image.Width * 3 / 100, image.Height * 3 / 100));
+                image.Save($"{folder}/{filename}-thumbnail{ext}");
+            }
+            return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "裝置 - 上傳檔案",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{deviceId}/read-last-file")]
+        public ActionResult<dynamic> readFile([FromRoute] long deviceId, dynamic extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_iotDbContext, ownerId, deviceId);
+            if (record == null)
+            {
+                throw new CustomException(ERROR_CODE.FILE_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+            string folder = $"{_staticPath}/private/{record.Filename.Substring(0, 8)}/{ownerId}/{deviceId}";
+            var image = Image.Load($"{folder}/{record.Filename}");
+
+            Stream outputStream = new MemoryStream();
+
+            if (record.Filename.EndsWith("jpg") || record.Filename.EndsWith("jpeg"))
+            {
+                image.SaveAsJpeg(outputStream);
+                outputStream.Position = 0;
+                return File(outputStream, "image/jpeg");
+            }
+            else if (record.Filename.EndsWith("png"))
+            {
+                image.SaveAsPng(outputStream);
+                outputStream.Position = 0;
+                return File(outputStream, "image/png");
+            }
+            return File(outputStream, "image/*");
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "裝置 - 上傳檔案",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{deviceId}/read-last-file-thumbnail")]
+        public ActionResult<dynamic> readFileThumbnail([FromRoute] long deviceId, dynamic extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_iotDbContext, ownerId, deviceId);
+            if (record == null)
+            {
+                throw new CustomException(ERROR_CODE.FILE_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+
+            string ext = Path.GetExtension(record.Filename);
+            string filename = Path.GetFileNameWithoutExtension(record.Filename);
+            string folder = $"{_staticPath}/private/{record.Filename.Substring(0, 8)}/{ownerId}/{deviceId}";
+            var image = Image.Load($"{folder}/{filename}-thumbnail{ext}");
+
+            Stream outputStream = new MemoryStream();
+
+            if (record.Filename.EndsWith("jpg") || record.Filename.EndsWith("jpeg"))
+            {
+                image.SaveAsJpeg(outputStream);
+                outputStream.Position = 0;
+                return File(outputStream, "image/jpeg");
+            }
+            else if (record.Filename.EndsWith("png"))
+            {
+                image.SaveAsPng(outputStream);
+                outputStream.Position = 0;
+                return File(outputStream, "image/png");
+            }
+            return File(outputStream, "image/*");
         }
     }
 }
