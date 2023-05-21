@@ -259,7 +259,7 @@ export const useCreateDeviceApi = (
 };
 
 export const useGetLastUploadedImageThumbnailApi = (id: number) => {
-    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_UPLOADED_THUMBNAIL}`;
+    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_DEVICE_IMAGE_THUMBNAIL}`;
     apiPath = apiPath.replace(':id', id.toString());
 
     return useFetchApi<any>({
