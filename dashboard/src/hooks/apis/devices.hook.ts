@@ -257,3 +257,15 @@ export const useCreateDeviceApi = (
         callbackFunc: dispatchRefresh,
     });
 };
+
+export const useGetLastUploadedImageThumbnailApi = (id: number) => {
+    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_UPLOADED_THUMBNAIL}`;
+    apiPath = apiPath.replace(':id', id.toString());
+
+    return useFetchApi<any>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        skipErrorToaster: true,
+    });
+};

@@ -6,6 +6,7 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import {
     useBundleFirmwareApi,
     useGetDevicesApi,
+    useGetLastUploadedImageThumbnailApi,
 } from '@/hooks/apis/devices.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import Pins from '@/components/pins/pins';
@@ -13,6 +14,7 @@ import PageTitle from '@/components/page-title/page-title';
 import pencilIcon from '@/assets/images/pencil.svg';
 import cloudIcon from '@/assets/images/cloud.svg';
 import trashIcon from '@/assets/images/trash.svg';
+import cameraIcon from '@/assets/images/camera.svg';
 import Pagination from '@/components/pagination/pagination';
 import SearchInput from '@/components/inputs/search-input/search-input';
 import EmptyDataToCreateItem from '@/components/empty-data-to-create-item/empty-data-to-create-item';
@@ -41,17 +43,34 @@ const Devices = () => {
     const [deviceName, setDeviceName] = useState(query.get('deviceName') || '');
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
     const [shouldBeBundledId, setShouldBeBundledId] = useState(0);
+    const [selectedDeviceId, setSelectedDeviceId] = useState(0);
+
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
     const { protocols } = useAppSelector(selectUniversal);
     const dispatch = useDispatch();
     const { search } = useLocation();
+    const [uploadedImageThumbnailPosition, setUploadedImageThumbnailPosition] =
+        useState<any>({});
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
     const isFilter = !query.keys().next().done;
+
+    const [lastUploadedImageContainerShow, setLastUploadedImageContainerShow] =
+        useState(false);
+    const [lastUploadedImage, setLastUploadedImage] = useState<null | string>(
+        ''
+    );
+    const lastUploadedImageContainerRef = useRef<null | HTMLDivElement>(null);
+    const nnnn = useRef<null | HTMLDivElement>(null);
+    const recursiveGetUploadedImageTimer = useRef<null | NodeJS.Timeout>(null);
+    const [
+        recursiveGetUploadedImageStartFlag,
+        setRecursiveGetUploadedImageStartFlag,
+    ] = useState(false);
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
@@ -59,6 +78,12 @@ const Devices = () => {
         limit: Number(query.get('limit') || 10),
         name: deviceName,
     });
+
+    const {
+        fetchApi: getLastUploadedImageThumbnail,
+        data: lastUploadedImageBlob,
+        error: lastUploadedImageError,
+    } = useGetLastUploadedImageThumbnailApi(selectedDeviceId);
 
     const { fetchApi: deleteMultipleApi, data: responseOfDelete } =
         useDeleteDevicesApi([shouldBeDeleteId]);
@@ -121,6 +146,64 @@ const Devices = () => {
         }
     }, [devices]);
 
+    useEffect(() => {
+        if (!lastUploadedImageBlob) {
+            return;
+        }
+
+        setLastUploadedImage(arrayBufferToBase64(lastUploadedImageBlob.blob));
+    }, [lastUploadedImageBlob]);
+
+    useEffect(() => {
+        if (lastUploadedImageError) {
+            setLastUploadedImage('');
+        }
+    }, [lastUploadedImageError]);
+
+    useEffect(() => {
+        if (nnnn.current) {
+            updateDeviceUploadedImagePosition(nnnn.current);
+        }
+        // eslint-disable-next-line
+    }, [lastUploadedImage]);
+
+    useEffect(() => {
+        if (!selectedDeviceId) {
+            return;
+        }
+        getLastUploadedImageThumbnail();
+        // eslint-disable-next-line
+    }, [selectedDeviceId]);
+
+    useEffect(() => {
+        if (recursiveGetUploadedImageStartFlag) {
+            recursiveGetUploadedImageStart();
+        } else if (recursiveGetUploadedImageTimer.current) {
+            clearTimeout(recursiveGetUploadedImageTimer.current);
+        }
+        // eslint-disable-next-line
+    }, [recursiveGetUploadedImageStartFlag]);
+
+    const recursiveGetUploadedImageStart = () => {
+        if (!recursiveGetUploadedImageStartFlag) {
+            return;
+        }
+        recursiveGetUploadedImageTimer.current = setTimeout(() => {
+            getLastUploadedImageThumbnail();
+            recursiveGetUploadedImageStart();
+        }, 5 * 1000);
+    };
+
+    const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    };
+
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
             (item: DeviceItem) => item.id === id
@@ -173,6 +256,24 @@ const Devices = () => {
                 deviceId: id,
             })
         );
+    };
+
+    const updateDeviceUploadedImagePosition = (
+        currentTarget: HTMLDivElement
+    ) => {
+        if (!currentTarget) {
+            return;
+        }
+
+        const clientRect = currentTarget.getBoundingClientRect();
+        const containerRect = lastUploadedImageContainerRef.current
+            ? lastUploadedImageContainerRef.current?.getBoundingClientRect()
+            : { height: 0, width: 0 };
+        setUploadedImageThumbnailPosition({
+            top: clientRect.top - containerRect.height - 20,
+            left:
+                clientRect.left + (clientRect.width - containerRect.width) / 2,
+        });
     };
 
     return (
@@ -300,7 +401,7 @@ const Devices = () => {
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         操作
                                                     </div>
-                                                    <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap align-content-start">
+                                                    <div className="col-8 col-lg-2 p-3 p-lg-0 d-flex flex-wrap align-content-start">
                                                         <Link
                                                             className="me-4 mb-3"
                                                             to={`/dashboard/devices/${id}${search}`}
@@ -410,11 +511,105 @@ const Devices = () => {
                                                                 }
                                                             />
                                                         </div>
-                                                        <ReactTooltip effect="solid" />
+
+                                                        <div
+                                                            role="button"
+                                                            onMouseOver={(
+                                                                event: React.MouseEvent<HTMLDivElement>
+                                                            ) => {
+                                                                setSelectedDeviceId(
+                                                                    id
+                                                                );
+                                                                setLastUploadedImageContainerShow(
+                                                                    true
+                                                                );
+                                                                updateDeviceUploadedImagePosition(
+                                                                    event.currentTarget
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    true
+                                                                );
+                                                                nnnn.current =
+                                                                    event.currentTarget;
+                                                            }}
+                                                            onTouchStart={(
+                                                                event: React.TouchEvent<HTMLDivElement>
+                                                            ) => {
+                                                                setSelectedDeviceId(
+                                                                    id
+                                                                );
+                                                                setLastUploadedImageContainerShow(
+                                                                    true
+                                                                );
+                                                                updateDeviceUploadedImagePosition(
+                                                                    event.currentTarget
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    true
+                                                                );
+                                                                nnnn.current =
+                                                                    event.currentTarget;
+                                                            }}
+                                                            onMouseOut={() => {
+                                                                setLastUploadedImage(
+                                                                    null
+                                                                );
+                                                                setSelectedDeviceId(
+                                                                    0
+                                                                );
+                                                                setLastUploadedImageContainerShow(
+                                                                    false
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    false
+                                                                );
+                                                            }}
+                                                            onTouchEnd={() => {
+                                                                setLastUploadedImage(
+                                                                    null
+                                                                );
+                                                                setSelectedDeviceId(
+                                                                    0
+                                                                );
+                                                                setLastUploadedImageContainerShow(
+                                                                    false
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    false
+                                                                );
+                                                            }}
+                                                        >
+                                                            <img
+                                                                className="icon"
+                                                                src={cameraIcon}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
                                         }
+                                    )}
+                                </div>
+                                <ReactTooltip effect="solid" />
+                                <div
+                                    ref={lastUploadedImageContainerRef}
+                                    className={`position-fixed bg-grey-800 p-3 rounded text-white bg-opacity-90 uploaded-image ${
+                                        lastUploadedImageContainerShow
+                                            ? ''
+                                            : 'invisible'
+                                    }`}
+                                    style={uploadedImageThumbnailPosition}
+                                >
+                                    {lastUploadedImage == null ? (
+                                        <Spinner />
+                                    ) : lastUploadedImage ? (
+                                        <img
+                                            src={`data:image/jpg;base64, ${lastUploadedImage}`}
+                                        />
+                                    ) : (
+                                        lastUploadedImage != null && (
+                                            <div>目前沒有資料</div>
+                                        )
                                     )}
                                 </div>
                                 <div
