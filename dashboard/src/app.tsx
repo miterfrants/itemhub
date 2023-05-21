@@ -18,6 +18,7 @@ import Toaster from './components/toaster/toaster';
 import jwt_decode from 'jwt-decode';
 import MonitorConfigDialog from './components/monitor-config-dialog/monitor-config-dialog';
 import OfflineNotificationDialog from './components/offline-notification-dialog/offline-notification-dialog';
+import RealtimeDeviceImageDialog from './components/realtime-device-image-dialog/realtime-device-image-dialog';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -66,6 +67,7 @@ const App = () => {
             </div>
             <Dialog />
             <MonitorConfigDialog />
+            <RealtimeDeviceImageDialog />
             <OfflineNotificationDialog />
             <Toaster />
         </div>

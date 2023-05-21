@@ -1,0 +1,23 @@
+@import '../../css/zindex.scss';
+.realtime-device-image-dialog {
+    z-index: $dialog-index;
+
+    .btn-close {
+        z-index: 1;
+    }
+    &.dialog .card {
+        max-width: calc(100% - 20px);
+
+        @include media-breakpoint-down(sm) {
+            max-width: 100%;
+            margin: 0;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        &.dialog .card {
+            max-width: 100%;
+            margin: 0;
+        }
+    }
+}

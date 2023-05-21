@@ -20,6 +20,7 @@ export const END_POINT = {
     DEVICE_LAST_ACTIVITY: 'my/devices/:id/last-activity',
     DEVICE_LAST_DEVICE_IMAGE_THUMBNAIL:
         'my/devices/:id/read-last-file-thumbnail',
+    DEVICE_LAST_DEVICE_IMAGE: 'my/devices/:id/read-last-file',
     DEVICE_PINS: 'my/devices/:id/pins',
     DEVICE_SWITCH_PIN: 'my/devices/:id/switches/:pin',
     DEVICE_PIN: 'my/devices/:id/pins/:pin',

@@ -1,24 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
 
-export type MonitorConfigDialogState = {
+export type RealtimeDeviceImageDialogState = {
     isOpen: boolean;
     callback: () => void;
     deviceId: number | null;
 };
-const initMonnitorConfigDialogState = {
+const initRealtimeDeviceImageDialogState = {
     isOpen: false,
     deviceId: null,
     callback: () => {},
-} as MonitorConfigDialogState;
+} as RealtimeDeviceImageDialogState;
 
-export const monitorConfigDialogSlice = createSlice({
-    name: 'monitorConfigDialog',
-    initialState: initMonnitorConfigDialogState,
+export const realtimeDeviceImageDialogSlice = createSlice({
+    name: 'realtimeDeviceImageDialog',
+    initialState: initRealtimeDeviceImageDialogState,
     reducers: {
         open: (
             state,
-            action: PayloadAction<Partial<MonitorConfigDialogState>>
+            action: PayloadAction<Partial<RealtimeDeviceImageDialogState>>
         ) => {
             const { callback, deviceId } = action.payload;
             return {
@@ -35,9 +35,10 @@ export const monitorConfigDialogSlice = createSlice({
     },
 });
 
-export const monitorConfigDialogActions = monitorConfigDialogSlice.actions;
+export const realtimeDeviceImageDialogActions =
+    realtimeDeviceImageDialogSlice.actions;
 
-export const selectMonitorConfigDialog = (state: RootState) =>
-    state.monitorConfigDialog;
+export const selectRealtimeDeviceImageDialog = (state: RootState) =>
+    state.realtimeDeviceImageDialog;
 
-export default monitorConfigDialogSlice.reducer;
+export default realtimeDeviceImageDialogSlice.reducer;

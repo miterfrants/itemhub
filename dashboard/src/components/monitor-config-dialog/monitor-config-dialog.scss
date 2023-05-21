@@ -1,4 +1,6 @@
+@import '../../css/zindex.scss';
 .monitor-config-dialog {
+    z-index: $dialog-index;
     .card {
         max-width: 500px;
         width: 75%;
