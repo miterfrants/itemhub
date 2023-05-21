@@ -265,6 +265,12 @@ namespace Homo.IotApi
             DateTime now = DateTime.Now;
             string folder = $"{_staticPath}/private/{now.ToString("yyyyMMdd")}/{ownerId}/{id}";
 
+            decimal todayUploadedSize = Directory.GetFiles(folder).Sum(fi => fi.Length);
+            if (todayUploadedSize / 100 > 100)
+            {
+                throw new CustomException(ERROR_CODE.MAX_UPLOAD_SIZE_PER_DAILY, HttpStatusCode.FailedDependency);
+            }
+
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
