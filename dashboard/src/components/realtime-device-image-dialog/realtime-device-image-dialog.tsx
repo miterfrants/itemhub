@@ -87,9 +87,11 @@ const RealtimeDeviceImageDialog = () => {
                 isOpen ? '' : 'd-none'
             }`}
         >
-            <div className="card">
+            <div className="card ">
                 {deviceImage == null ? (
-                    <Spinner />
+                    <div className="d-flex align-items-center justify-content-center w-100 h-100">
+                        <Spinner />
+                    </div>
                 ) : deviceImage ? (
                     <div
                         className="w-100 h-100"
