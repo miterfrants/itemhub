@@ -257,3 +257,27 @@ export const useCreateDeviceApi = (
         callbackFunc: dispatchRefresh,
     });
 };
+
+export const useGetLastDeviceImageThumbnailApi = (id: number) => {
+    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_DEVICE_IMAGE_THUMBNAIL}`;
+    apiPath = apiPath.replace(':id', id.toString());
+
+    return useFetchApi<any>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        skipErrorToaster: true,
+    });
+};
+
+export const useGetLastDeviceImageApi = (id: number) => {
+    let apiPath = `${API_URL}${END_POINT.DEVICE_LAST_DEVICE_IMAGE}`;
+    apiPath = apiPath.replace(':id', id.toString());
+
+    return useFetchApi<any>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        skipErrorToaster: true,
+    });
+};

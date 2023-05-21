@@ -6,6 +6,7 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import {
     useBundleFirmwareApi,
     useGetDevicesApi,
+    useGetLastDeviceImageThumbnailApi,
 } from '@/hooks/apis/devices.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import Pins from '@/components/pins/pins';
@@ -13,6 +14,7 @@ import PageTitle from '@/components/page-title/page-title';
 import pencilIcon from '@/assets/images/pencil.svg';
 import cloudIcon from '@/assets/images/cloud.svg';
 import trashIcon from '@/assets/images/trash.svg';
+import cameraIcon from '@/assets/images/camera.svg';
 import Pagination from '@/components/pagination/pagination';
 import SearchInput from '@/components/inputs/search-input/search-input';
 import EmptyDataToCreateItem from '@/components/empty-data-to-create-item/empty-data-to-create-item';
@@ -33,6 +35,8 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { DeviceItem } from '@/types/devices.type';
 import { offlineNotificationDialogActions } from '@/redux/reducers/offline-notification-dialog.reducer';
 import PseudoDeviceLastActivity from '@/components/pseudo-device-last-activity/pseudo-device-last-activity';
+import { realtimeDeviceImageDialogActions } from '@/redux/reducers/realtime-device-image-dialog.reducer';
+import { ApiHelpers } from '@/helpers/api.helper';
 
 const Devices = () => {
     const query = useQuery();
@@ -41,17 +45,42 @@ const Devices = () => {
     const [deviceName, setDeviceName] = useState(query.get('deviceName') || '');
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
     const [shouldBeBundledId, setShouldBeBundledId] = useState(0);
+    const [selectedDeviceId, setSelectedDeviceId] = useState(0);
+
     const [refreshFlag, setRefreshFlag] = useState(false);
     const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
     const devicesState = useAppSelector(selectDevices);
     const { protocols } = useAppSelector(selectUniversal);
     const dispatch = useDispatch();
     const { search } = useLocation();
+    const [
+        lastDeviceImageThumbnailPosition,
+        setLastDeviceImageThumbnailPosition,
+    ] = useState<any>({});
     const hasDevicesRef = useRef(false);
     const devices = devicesState.devices;
     const rowNum = devicesState.rowNum;
     const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
     const isFilter = !query.keys().next().done;
+
+    const [
+        lastDeviceImageThumbnailContainerShow,
+        setLastDeviceImageThumbnailContainerShow,
+    ] = useState(false);
+    const [lastDeviceImageThumbnail, setLastDeviceImageThumbnail] = useState<
+        null | string
+    >('');
+    const lastDeviceImageThumbnailContainerRef = useRef<null | HTMLDivElement>(
+        null
+    );
+    const lastDeviceImageIconRef = useRef<null | HTMLDivElement>(null);
+    const recursiveGetLastDeviceImageTimer = useRef<null | NodeJS.Timeout>(
+        null
+    );
+    const [
+        recursiveGetLastDeviceImageStartFlag,
+        setRecursiveGetUploadedImageStartFlag,
+    ] = useState(false);
 
     const navigate = useNavigate();
     const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
@@ -59,6 +88,12 @@ const Devices = () => {
         limit: Number(query.get('limit') || 10),
         name: deviceName,
     });
+
+    const {
+        fetchApi: getLastDeviceImageThumbnail,
+        data: lastDeviceImageThumbnailBlob,
+        error: lastDeviceImageThumbnailError,
+    } = useGetLastDeviceImageThumbnailApi(selectedDeviceId);
 
     const { fetchApi: deleteMultipleApi, data: responseOfDelete } =
         useDeleteDevicesApi([shouldBeDeleteId]);
@@ -72,6 +107,11 @@ const Devices = () => {
     useEffect(() => {
         document.title = 'ItemHub - 裝置列表';
         // eslint-disable-next-line
+        return () => {
+            if (recursiveGetLastDeviceImageTimer.current) {
+                clearTimeout(recursiveGetLastDeviceImageTimer.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -120,6 +160,56 @@ const Devices = () => {
             hasDevicesRef.current = true;
         }
     }, [devices]);
+
+    useEffect(() => {
+        if (!lastDeviceImageThumbnailBlob) {
+            return;
+        }
+
+        setLastDeviceImageThumbnail(
+            ApiHelpers.ArrayBufferToBase64(lastDeviceImageThumbnailBlob.blob)
+        );
+    }, [lastDeviceImageThumbnailBlob]);
+
+    useEffect(() => {
+        if (lastDeviceImageThumbnailError) {
+            setLastDeviceImageThumbnail('');
+        }
+    }, [lastDeviceImageThumbnailError]);
+
+    useEffect(() => {
+        if (lastDeviceImageIconRef.current) {
+            updateDeviceUploadedImagePosition(lastDeviceImageIconRef.current);
+        }
+        // eslint-disable-next-line
+    }, [lastDeviceImageThumbnail]);
+
+    useEffect(() => {
+        if (!selectedDeviceId) {
+            return;
+        }
+        getLastDeviceImageThumbnail();
+        // eslint-disable-next-line
+    }, [selectedDeviceId]);
+
+    useEffect(() => {
+        if (recursiveGetLastDeviceImageStartFlag) {
+            recursiveGetLastDeviceImageStart();
+        } else if (recursiveGetLastDeviceImageTimer.current) {
+            clearTimeout(recursiveGetLastDeviceImageTimer.current);
+        }
+        // eslint-disable-next-line
+    }, [recursiveGetLastDeviceImageStartFlag]);
+
+    const recursiveGetLastDeviceImageStart = () => {
+        if (!recursiveGetLastDeviceImageStartFlag) {
+            return;
+        }
+        recursiveGetLastDeviceImageTimer.current = setTimeout(() => {
+            getLastDeviceImageThumbnail();
+            recursiveGetLastDeviceImageStart();
+        }, 5 * 1000);
+    };
 
     const deleteOne = (id: number) => {
         const shouldBeDeleteDevice = (devices || []).find(
@@ -173,6 +263,24 @@ const Devices = () => {
                 deviceId: id,
             })
         );
+    };
+
+    const updateDeviceUploadedImagePosition = (
+        currentTarget: HTMLDivElement
+    ) => {
+        if (!currentTarget) {
+            return;
+        }
+
+        const clientRect = currentTarget.getBoundingClientRect();
+        const containerRect = lastDeviceImageThumbnailContainerRef.current
+            ? lastDeviceImageThumbnailContainerRef.current?.getBoundingClientRect()
+            : { height: 0, width: 0 };
+        setLastDeviceImageThumbnailPosition({
+            top: clientRect.top - containerRect.height - 20,
+            left:
+                clientRect.left + (clientRect.width - containerRect.width) / 2,
+        });
     };
 
     return (
@@ -300,7 +408,7 @@ const Devices = () => {
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         操作
                                                     </div>
-                                                    <div className="col-8 col-lg-2 p-3 p-lg-25 d-flex flex-wrap align-content-start">
+                                                    <div className="col-8 col-lg-2 p-3 p-lg-0 d-flex flex-wrap align-content-start">
                                                         <Link
                                                             className="me-4 mb-3"
                                                             to={`/dashboard/devices/${id}${search}`}
@@ -410,11 +518,132 @@ const Devices = () => {
                                                                 }
                                                             />
                                                         </div>
-                                                        <ReactTooltip effect="solid" />
+
+                                                        <div
+                                                            role="button"
+                                                            onMouseOver={(
+                                                                event: React.MouseEvent<HTMLDivElement>
+                                                            ) => {
+                                                                setSelectedDeviceId(
+                                                                    id
+                                                                );
+                                                                setLastDeviceImageThumbnailContainerShow(
+                                                                    true
+                                                                );
+                                                                updateDeviceUploadedImagePosition(
+                                                                    event.currentTarget
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    true
+                                                                );
+                                                                lastDeviceImageIconRef.current =
+                                                                    event.currentTarget;
+                                                            }}
+                                                            onClick={() => {
+                                                                if (
+                                                                    !lastDeviceImageThumbnail
+                                                                ) {
+                                                                    return;
+                                                                }
+                                                                dispatch(
+                                                                    realtimeDeviceImageDialogActions.open(
+                                                                        {
+                                                                            deviceId:
+                                                                                id,
+                                                                        }
+                                                                    )
+                                                                );
+                                                            }}
+                                                            onTouchStart={(
+                                                                event: React.TouchEvent<HTMLDivElement>
+                                                            ) => {
+                                                                setSelectedDeviceId(
+                                                                    id
+                                                                );
+                                                                setLastDeviceImageThumbnailContainerShow(
+                                                                    true
+                                                                );
+                                                                updateDeviceUploadedImagePosition(
+                                                                    event.currentTarget
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    true
+                                                                );
+                                                                lastDeviceImageIconRef.current =
+                                                                    event.currentTarget;
+                                                            }}
+                                                            onMouseOut={() => {
+                                                                setLastDeviceImageThumbnail(
+                                                                    null
+                                                                );
+                                                                setSelectedDeviceId(
+                                                                    0
+                                                                );
+                                                                setLastDeviceImageThumbnailContainerShow(
+                                                                    false
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    false
+                                                                );
+                                                            }}
+                                                            onTouchEnd={() => {
+                                                                if (
+                                                                    lastDeviceImageThumbnail
+                                                                ) {
+                                                                    dispatch(
+                                                                        realtimeDeviceImageDialogActions.open(
+                                                                            {
+                                                                                deviceId:
+                                                                                    id,
+                                                                            }
+                                                                        )
+                                                                    );
+                                                                }
+                                                                setLastDeviceImageThumbnail(
+                                                                    null
+                                                                );
+                                                                setSelectedDeviceId(
+                                                                    0
+                                                                );
+                                                                setLastDeviceImageThumbnailContainerShow(
+                                                                    false
+                                                                );
+                                                                setRecursiveGetUploadedImageStartFlag(
+                                                                    false
+                                                                );
+                                                            }}
+                                                        >
+                                                            <img
+                                                                className="icon"
+                                                                src={cameraIcon}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
                                         }
+                                    )}
+                                </div>
+                                <ReactTooltip effect="solid" />
+                                <div
+                                    ref={lastDeviceImageThumbnailContainerRef}
+                                    className={`position-fixed bg-grey-800 p-3 rounded text-white bg-opacity-90 uploaded-image ${
+                                        lastDeviceImageThumbnailContainerShow
+                                            ? ''
+                                            : 'invisible'
+                                    }`}
+                                    style={lastDeviceImageThumbnailPosition}
+                                >
+                                    {lastDeviceImageThumbnail == null ? (
+                                        <Spinner />
+                                    ) : lastDeviceImageThumbnail ? (
+                                        <img
+                                            src={`data:image/jpg;base64, ${lastDeviceImageThumbnail}`}
+                                        />
+                                    ) : (
+                                        lastDeviceImageThumbnail != null && (
+                                            <div>目前沒有資料</div>
+                                        )
                                     )}
                                 </div>
                                 <div

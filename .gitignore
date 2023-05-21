@@ -3,4 +3,5 @@ dev-ops
 static/firmware
 static/upload
 static/archived
+static/private
 !guideline/*

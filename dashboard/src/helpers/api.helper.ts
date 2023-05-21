@@ -136,6 +136,7 @@ export const ApiHelpers = {
 
             if (response.status === 200) {
                 const contentType = response.headers.get('content-type');
+
                 const downloadTypes = [
                     'text/csv',
                     'application/zip',
@@ -145,8 +146,21 @@ export const ApiHelpers = {
                 const isDownloadFile =
                     contentType && downloadTypes.includes(contentType);
 
+                const blobTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                const isBlobType =
+                    contentType && blobTypes.includes(contentType);
+
                 if (isDownloadFile) {
                     result = await ApiHelpers.HandleDownloadFile({ response });
+                } else if (isBlobType) {
+                    const blob = await response.arrayBuffer();
+                    result = {
+                        httpStatus: response.status,
+                        status: RESPONSE_STATUS.OK,
+                        data: {
+                            blob,
+                        } as any,
+                    };
                 } else {
                     const jsonData = await response.json();
                     result = {
@@ -192,6 +206,14 @@ export const ApiHelpers = {
         };
 
         return fetch(apiPath, finalOption);
+    },
+    IsJsonString: (str: string) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
     },
     HandleDownloadFile: async ({ response }: { response: Response }) => {
         const blob = await response.blob();
@@ -251,5 +273,14 @@ export const ApiHelpers = {
             ''
         );
         return `${basicPath}${finalQueryStrings}`;
+    },
+    ArrayBufferToBase64: (buffer: ArrayBuffer) => {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
     },
 };

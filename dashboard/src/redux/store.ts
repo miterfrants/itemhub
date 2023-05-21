@@ -15,6 +15,7 @@ import pipelineItemsReducer from './reducers/pipeline-items.reducer';
 import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
 import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
 import layoutReducer from './reducers/layout.reducer';
+import realtimeDeviceImageDialogReducer from './reducers/realtime-device-image-dialog.reducer';
 
 const store = configureStore({
     reducer: {
@@ -34,6 +35,7 @@ const store = configureStore({
         pipelineItems: pipelineItemsReducer,
         pipelineConnectors: pipelineConnectorsReducer,
         layout: layoutReducer,
+        realtimeDeviceImageDialog: realtimeDeviceImageDialogReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({
