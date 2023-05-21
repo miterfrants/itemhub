@@ -5,18 +5,18 @@
     .btn-close {
         z-index: 1;
     }
+
     &.dialog .card {
         max-width: calc(100% - 20px);
-
-        @include media-breakpoint-down(sm) {
-            max-width: 100%;
-            margin: 0;
-        }
+        width: calc(100% - 20px);
+        height: calc(100vh - 100px);
     }
 
     @include media-breakpoint-down(sm) {
         &.dialog .card {
             max-width: 100%;
+            width: 100%;
+            height: calc(100vh - 50px);
             margin: 0;
         }
     }

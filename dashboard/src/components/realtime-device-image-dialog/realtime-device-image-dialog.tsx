@@ -88,20 +88,21 @@ const RealtimeDeviceImageDialog = () => {
             }`}
         >
             <div className="card">
-                <div className="runway">
-                    <div>
-                        {deviceImage == null ? (
-                            <Spinner />
-                        ) : deviceImage ? (
-                            <img
-                                className="w-100"
-                                src={`data:image/jpg;base64, ${deviceImage}`}
-                            />
-                        ) : (
-                            deviceImage != null && <div>目前沒有資料</div>
-                        )}
-                    </div>
-                </div>
+                {deviceImage == null ? (
+                    <Spinner />
+                ) : deviceImage ? (
+                    <div
+                        className="w-100 h-100"
+                        style={{
+                            backgroundImage: `url(data:image/jpg;base64,${deviceImage})`,
+                            backgroundSize: 'contain',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center',
+                        }}
+                    />
+                ) : (
+                    deviceImage != null && <div>目前沒有資料</div>
+                )}
                 <div
                     onClick={() => {
                         close();
