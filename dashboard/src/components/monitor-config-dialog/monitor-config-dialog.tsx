@@ -275,7 +275,11 @@ const MonitorConfigDialog = () => {
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectMonitorMode(e);
                             }}
-                            value={dashboardMonitorMode || ''}
+                            value={
+                                dashboardMonitorMode != null
+                                    ? dashboardMonitorMode
+                                    : ''
+                            }
                         >
                             <option>請選擇監控類型</option>
                             <option value={currentValueModeValue}>
