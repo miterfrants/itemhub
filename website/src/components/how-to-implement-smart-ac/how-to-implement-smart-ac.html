@@ -62,18 +62,28 @@
 
                 <div>
                     <h5 class="pt-3">選擇晶片類型</h5>
-                    <p>在 Arduino IDE 選擇對應的單晶片 Generic ESP8266 Module</p>
+                    <p>在 Arduino IDE 選擇對應的單晶片 Generic ESP8266 Module (Tools > Board > esp8266 > Generic ESP8266 Module
+                        如果沒有 esp8266 可以透過右下方的客服系統與我們聯繫)</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-1.png" />
                 </div>
                 <div>
                     <h5 class="pt-3">開啟範例程式</h5>
-                    <p>Arduino IRremote 已經有寫好的紅外線接收器範例程式 IRrecvDumpV3，不需要自己再重新寫過</p>
+                    <p>Arduino IRremote 已經有寫好的紅外線接收器範例程式 IRrecvDumpV3 (File > Examples > IRremoteESP8266 >
+                        IRrecvDumpV3)，不需要自己再重新寫過</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-2.png" />
                 </div>
                 <div>
                     <h5 class="pt-3">修改範例程式</h5>
                     <p>範例程式中有腳位的編號是 14，但在 ESP-01S 可用的腳位只有四個，沒有 14，所以這邊把範例程式接收紅外線的腳位改為 0，修改好後就可以執行燒錄動作</p>
                     <img class="w-100 mb-4" src="/assets/images/how/smart-ac/step3-3.png" />
+                    本來的程式碼
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#ifdef ARDUINO_ESP32C3_DEV
+const uint16_t kRecvPin = 10;  // 14 on a ESP32-C3 causes a boot loop.
+#else  // ARDUINO_ESP32C3_DEV
+const uint16_t kRecvPin = 14;
+#endif  // ARDUINO_ESP32C3_DEV</pre>
+
+                    修改成
                     <pre
                         class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">const uint16_t kRecvPin = 0;</pre>
                 </div>
@@ -125,6 +135,14 @@
                         修改 WIFI 的連線資訊，讓 ESP-01S 可以連上家中的 WIFI
                     </p>
                     <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-3.png" />
+
+                    原本的程式碼
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#define WIFI_SSID "{SSID}"
+#define WIFI_PWD "{WIFI_PASSWORD}"</pre>
+
+                    修改成
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#define WIFI_SSID "你的無線網路名稱"
+#define WIFI_PWD "密碼"</pre>
                 </div>
 
 
@@ -135,6 +153,14 @@
                     <p>導入 Arduino IRRemoteESP8266 不同的通訊協定需要不導入不同的實作容器，參考下圖 第 11 行，
                         我的冷氣遙控器是 Coolix 協定所以這邊是導入
                         <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-4.png" />
+                        <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;IRecv.h&gt;
+#include &lt;IRecv.h&gt;
+#include &lt;IRRemoteESP8266.h&gt;
+#include &lt;IRsend.h&gt;
+#include &lt;IRtimer.h&gt;
+#include &lt;ir_Coolix.h&gt;</pre>
+
+                        其中比較要注意的是：我的冷氣使用 Coolix 作為溝通的協定所以引入 ir_Coolix.h，如下面的
                         <pre
                             class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;ir_Coolix.h&gt;</pre>
                         如果你是 Bosch 就導入 ir_Bosch.h，以此類推
@@ -162,6 +188,21 @@
                         修改 ItemHub 工具庫 (./ItemhubUtilities/ItemhubUtilities.h) 中開關的邏輯，避免原本的程式直接修改開關腳的電訊號，因為我們需要在 ItemHub
                         切換的時候發送一連串開關紅外線發射器，讓冷氣知道我們需要它做什麼動作，e.g: 當紅外線發射器 開關開開關，冷氣就會知道現在是要打開冷氣到 22度
                     </p>
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-7.png" />
+
+
+                    原本的程式碼
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
+                        if (pins[i].pinString == pin && intValue == 0)
+                        {
+                            digitalWrite(pins[i].pin, LOW);
+                        }
+                        else if (pins[i].pinString == pin && intValue == 1)
+                        {
+                            digitalWrite(pins[i].pin, HIGH);
+                        }</pre>
+
+                    修改成
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">
                         if (pins[i].pinString == pin && intValue == 0)
                         {
@@ -171,13 +212,14 @@
                         {
                             pins[i].value = "1";
                         }</pre>
-                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-7.png" />
                 </div>
 
                 <div>
                     <h5 class="pt-3">
                         加上自定義的開關紅外線 LED 的信號
                     </h5>
+
+                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-8.png" />
                     <p class="mt-4">
                         打開 .ino 檔案，在原本
                     </p>
@@ -199,7 +241,7 @@
                             ac.setTemp(22); // 16-30C
                             ac.send();
                         }</pre>
-                    <img class="w-100 my-2" src="/assets/images/how/smart-ac/step4-8.png" />
+
                 </div>
 
                 <div>

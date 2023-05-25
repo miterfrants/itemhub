@@ -68,5 +68,9 @@
     "SENSOR_PIPELINE_INVALID_STATIC_METHOD_REQUIRED": "感測器自動化觸發流程必須填寫統計方法",
     "SENSOR_PIPELINE_INVALID_OPERATOR_REQUIRED": "感測器自動化觸發流程必須填寫運算符",
     "SENSOR_PIPELINE_INVALID_THRESHOLD_REQUIRED": "感測器自動化觸發流程必須填寫門檻",
-    "SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED": "排程自動化觸發流程必須填寫值"
+    "SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED": "排程自動化觸發流程必須填寫值",
+    "UNSUPPORT_MEDIA_TYPE": "不支援上傳的媒體類型",
+    "INVALID_FILE_EXT": "無效的檔案副檔名",
+    "CAN_UPLOAD_ONLY_ONE_FILE": "這個 API 僅能上傳一個檔案",
+    "FILE_NOT_FOUND": "找不到檔案"
 }

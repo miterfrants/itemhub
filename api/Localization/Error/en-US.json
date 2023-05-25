@@ -58,5 +58,9 @@
     "SENSOR_PIPELINE_INVALID_STATIC_METHOD_REQUIRED": "Sensor Pipeline must provide statistical method",
     "SENSOR_PIPELINE_INVALID_OPERATOR_REQUIRED": "Sensor Pipeline must provide operator",
     "SENSOR_PIPELINE_INVALID_THRESHOLD_REQUIRED": "Sensor Pipeline must provide threshold",
-    "SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED": "Schedule Pipeline must provide value"
+    "SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED": "Schedule Pipeline must provide value",
+    "UNSUPPORT_MEDIA_TYPE": "Unsupported media type",
+    "INVALID_FILE_EXT": "Invalid file extension",
+    "CAN_UPLOAD_ONLY_ONE_FILE": "This API can only upload one file",
+    "FILE_NOT_FOUND": "File not found"
 }

@@ -35,6 +35,7 @@ namespace Homo.IotApi
         public virtual DbSet<PipelineItem> PipelineItem { get; set; }
         public virtual DbSet<PipelineConnector> PipelineConnector { get; set; }
         public virtual DbSet<PipelineExecuteLog> PipelineExecuteLog { get; set; }
+        public virtual DbSet<DeviceUploadedImage> DeviceUploadedImage { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -201,6 +202,17 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.IsEnd });
                 entity.Property(p => p.IsHead).HasDefaultValueSql("0");
                 entity.Property(p => p.IsEnd).HasDefaultValueSql("0");
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValue(System.DateTime.Now);
+            });
+
+            modelBuilder.Entity<DeviceUploadedImage>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.OwnerId });
+                entity.HasIndex(p => new { p.DeviceId });
+                entity.HasIndex(p => new { p.Filename });
                 entity.Property(p => p.CreatedAt)
                     .HasDefaultValue(System.DateTime.Now);
             });

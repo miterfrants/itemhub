@@ -17,7 +17,7 @@ namespace Homo.IotApi
         public static string DEVICE_NOT_FOUND = "DEVICE_NOT_FOUND";
         public static string DEIVCE_WITHOUT_MCU = "DEIVCE_WITHOUT_MCU";
         public static string OVER_PRICING_PLAN = "OVER_PRICING_PLAN";
-        
+
         public static string OFFLINE_NOTIFICATION_USAGE_LIMIT = "OFFLINE_NOTIFICATION_USAGE_LIMIT";
 
         public static string PIPELINE_INVALID_CONNECTOR_EXISTS = "PIPELINE_INVALID_CONNECTOR_EXISTS";
@@ -62,6 +62,10 @@ namespace Homo.IotApi
 
         public static string SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED = "SCHEDULE_PIPELINE_INVALID_VALUE_REQUIRED";
         public static string PIPELINE_INVALID_TYPE_OFFLINE_IN_END = "PIPELINE_INVALID_TYPE_OFFLINE_IN_END";
-
+        public static string UNSUPPORT_MEDIA_TYPE = "UNSUPPORT_MEDIA_TYPE";
+        public static string INVALID_FILE_EXT = "INVALID_FILE_EXT";
+        public static string CAN_UPLOAD_ONLY_ONE_FILE = "CAN_UPLOAD_ONLY_ONE_FILE";
+        public static string FILE_NOT_FOUND = "FILE_NOT_FOUND";
+        public static string MAX_UPLOAD_SIZE_PER_DAILY = "MAX_UPLOAD_SIZE_PER_DAILY";
     }
 }
