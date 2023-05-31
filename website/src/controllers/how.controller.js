@@ -35,6 +35,8 @@ export class HowController extends RoutingController {
             expandedHowToImplementPipelineArrowVisible: '',
             expandedHowToImplementSmartAcVisible: 'd-none',
             expandedHowToImplementSmartAcArrowVisible: '',
+            expandedHowToImplementSolarPoweredWeatherStationVisible: 'd-none',
+            expandedHowToImplementSolarPoweredWeatherStationArrowVisible: '',
             howImageVisible: 'd-none d-md-block'
         });
     }

@@ -5,6 +5,7 @@ import { HowToImplementPipelineController } from '../controllers/how-to-implemen
 import { HowToStartController } from '../controllers/how-to-start.controller.js';
 import { HowController } from '../controllers/how.controller.js';
 import { HowToImplementSmartAcController } from '../controllers/how-to-implement-smart-ac.controller.js';
+import { HowToImplementSolarPoweredWeatherStationController } from '../controllers/how-to-implement-solar-powered-weather-station.controller.js';
 
 export const HowRoutingRule = {
     path: 'how/',
@@ -28,5 +29,8 @@ export const HowRoutingRule = {
     }, {
         path: 'implement-smart-ac/',
         controller: HowToImplementSmartAcController
+    }, {
+        path: 'implement-solar-powered-weather-station/',
+        controller: HowToImplementSolarPoweredWeatherStationController
     }]
 };
