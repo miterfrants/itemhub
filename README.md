@@ -9,6 +9,8 @@ graph LR
     A --> F(教學推廣)
     F --> G(FB 社團教學)
     F --> H(學校研習)
+    A --> I(技術壁壘)
+    I --> J(加入 Matter Protocol 提供家用應用場景)
 ```
 
 # 專案結構
