@@ -1,0 +1,325 @@
+<div class="how-to-implement-solar-powered-weather-station">
+    <link
+        href="/components/how-to-implement-solar-powered-weather-station/how-to-implement-solar-powered-weather-station.css"
+        rel="stylesheet">
+    <div onclick="controller.toggle" class="d-flex justify-content-between mb-2 mt-5" role="button">
+        <div class="title h3 ">
+            低功耗太陽能氣象站
+        </div>
+        <img class="arrow {expandedHowToImplementSolarPoweredWeatherStationArrowVisible}"
+            src="/assets/images/icon-down-arrow.svg" />
+    </div>
+    <hr class="border-white opacity-100 bg-opacity-0" />
+    <div class="content {expandedHowToImplementSolarPoweredWeatherStationVisible}">
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">目標</h4>
+            <div>
+                <div class="">
+                    <p class="mt-3">
+                        放在戶外的小型氣象站，需在沒有外部電源供應的情況下，用白天太陽能充電並撐過夜間能耗，以達到隨時測量溫溼度的狀況以及現在是否有下雨。所以我們需要一個太陽能板 +
+                        磷酸鐵鋰電池做為能源供應系統。在能源使用上我們也盡可能在不需要的時候把裝置切換到休眠狀態，減少不必要的能耗。
+                    </p>
+                    <p class="mt-3">
+                        有以上機制後，我們幾乎不需要做什麼維護，但電池還是有壽命限制，在電池快壽終正寢的時候透過 ItemHub 的自動化功能提醒我們更換電池。
+                    </p>
+                    <p class="mt-3">
+                        根據我們的目標列出需要的材料
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">材料</h4>
+            <div>
+                <h5 class="pt-3">硬體</h5>
+                <ul>
+                    <li>太陽能板</li>
+                    <li>電源控制板: 可在電池充滿電的時候斷電，並對太陽能板來的電源做壓降</li>
+                    <li>磷酸鐵鋰電池</li>
+                    <li>溫濕度計 DHT11</li>
+                    <li>電壓感測計</li>
+                    <li>降雨感測器</li>
+                    <li>NBIoT 單晶片: DSI2598+ </li>
+                    <li>中華電信申請 NBIoT SIM 卡</li>
+                    <li>FDTI (Mac OS 沒有對應的驅動程式需要 FDTI 才有辦法燒錄)</li>
+                </ul>
+                <h5 class="pt-3">軟體</h5>
+                <ul>
+                    <li>Arduino IDE: 撰寫程式的介面</li>
+                    <li>DHT Library: 把 DHT 送回來的數位訊號變成讀數的工具</li>
+                    <li>STM32LowPower Library: 方便讓 STM32 休眠狀態</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">實作</h4>
+            <div>
+                <h5>準備工作 - NBIoT 晶片設定 </h5>
+                <p>
+                    DSI2598+ 所使用的 NBIoT 射頻晶片是中國製的 QUECTEL BC26，透過 AT command 作為設定和溝通。
+                </p>
+                <p>
+                    如何設定 BC26 晶片可以參考 <a class="text-wrap text-break"
+                        href="https://iforum.ideaschain.com.tw/develop_board/%E7%89%A9%E8%81%AF%E7%B6%B2%E8%A3%BD%E9%80%A0%E5%9F%BA%E5%9C%B0DSI2598+.pdf">
+                        https://iforum.ideaschain.com.tw/develop_board/%E7%89%A9%E8%81%AF%E7%B6%B2%E8%A3%BD%E9%80%A0%E5%9F%BA%E5%9C%B0DSI2598+.pdf</a>
+                </p>
+
+                <p>
+                    Windows 程式碼
+                </p>
+
+                <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">void setup()
+{
+    Serial.begin(115200);
+    Serial1.begin(115200);
+}
+
+void loop()
+{
+    if (Serial.available())
+    {
+        Serial1.write(Serial.read());
+    }
+    if (Serial1.available())
+    {
+        Serial.write(Serial1.read());
+    }
+}</pre>
+                <p>
+                    MacOS 因為沒有對應的驅動程式需要透過 FDTI 進行燒錄<br />
+                    燒錄時接線方式
+                </p>
+                <p>
+                    <img class="w-100 mb-4"
+                        src="/assets/images/how/implement-solar-powered-weather-station/flash-circuit-in-mac.png" />
+
+                    <div>
+                        FDTI 5V ↔ DSI2598+ 5V<br />
+                        FDTI GND ↔ DSI2598+ GND<br />
+                        FDTI RXD ↔ DSI2598+ PA9<br />
+                        FDTI TXD ↔ DSI2598+ PA10<br />
+                    </div>
+                </p>
+                <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">void setup()
+{
+    Serial.begin(115200);
+    Serial2.begin(115200);
+}
+
+void loop()
+{
+    if (Serial.available())
+    {
+        Serial2.write(Serial.read());
+    }
+    if (Serial2.available())
+    {
+        Serial.write(Serial2.read());
+    }
+}</pre>
+
+                <p>
+                    燒錄完後把接線變成
+                </p>
+                <p>
+                    <img class="w-100 mb-4"
+                        src="/assets/images/how/implement-solar-powered-weather-station/setup-bc26-in-mac.png" />
+
+                    <div>
+                        FDTI 5V ↔ DSI2598+ 5V<br />
+                        FDTI GND ↔ DSI2598+ GND<br />
+                        FDTI RXD ↔ DSI2598+ PA2<br />
+                        FDTI TXD ↔ DSI2598+ PA3<br />
+                    </div>
+                </p>
+
+                <p>
+                    接著設定 BC26 NBIoT 的連線
+                </p>
+            </div>
+
+            <div>
+                <h5 class="pt-3">太陽能和電池配置</h5>
+                <img class="w-100 mb-4"
+                    src="/assets/images/how/implement-solar-powered-weather-station/power-circuit.png" />
+                <p>
+                    太陽能板和能源管理板串在一起，在最下方通常會有一個穩壓的裝置，讓電池的 3.7 伏特的電壓轉乘 5 伏特給 DSI2598+
+                </p>
+
+                <p>
+                    市面上很多商品是把這些東西都串在一起，可以單買這種商品直接給 DSI2598+ 供電。
+                </p>
+
+                <img class="w-100 mb-4"
+                    src="/assets/images/how/implement-solar-powered-weather-station/power-manager-board.jpeg" />
+            </div>
+
+            <div>
+                <h5 class="pt-3">溫室度感測器配置</h5>
+                <img class="w-100 mb-4 mt-3"
+                    src="/assets/images/how/implement-solar-powered-weather-station/humidity-circuit.png" />
+                <div>
+                    DHT11 VCC ↔ DSI2598+ 3V3<br />
+                    DHT11 GND ↔ DSI2598+ GND<br />
+                    DHT11 DATA ↔ DSI2598+ PB5<br />
+                </div>
+            </div>
+
+            <div>
+                <h5 class="pt-3">降雨感測器配置</h5>
+                <img class="w-100 mb-4 mt-3"
+                    src="/assets/images/how/implement-solar-powered-weather-station/rain-circuit.png" />
+                <div>
+                    降雨感測器 VCC ↔ DSI2598+ 3V3<br />
+                    降雨感測器 GND ↔ DSI2598+ GND<br />
+                    降雨感測器 D0 ↔ DSI2598+ PA4<br />
+                </div>
+
+                <p>
+                    降雨感測器是由一個下雨感測電極和放大器所組成
+                </p>
+
+                <div class="row mb-4 mt-3">
+                    <div class="col-12 col-lg-6 mb-3">
+                        <img class="w-100"
+                            src="/assets/images/how/implement-solar-powered-weather-station/rain-sensor.png" />
+                        <br />
+                        <div class="inline-block text-center pt-2">
+                            下雨感測電極
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 mb-3">
+                        <img class="w-100"
+                            src="/assets/images/how/implement-solar-powered-weather-station/amplifier.jpeg" />
+
+                        <div class="inline-block text-center pt-2">放大器</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h5 class="pt-3">電池電壓感測配置</h5>
+                <img class="w-100 mb-4 mt-3"
+                    src="/assets/images/how/implement-solar-powered-weather-station/voltage-sensor.png" />
+                <div>
+                    電壓感測器 + ↔ DSI2598+ 3V3<br />
+                    電壓感測器 - ↔ DSI2598+ GND<br />
+                    電壓感測器 S ↔ DSI2598+ PA5<br />
+                    電壓感測器 VCC ↔ 電池正極<br />
+                    電壓感測器 GND ↔ 電池負極<br />
+                </div>
+
+                <p class="pt-3">
+                    鋰電池壽命快到的時候會出現電壓不穩定或是電壓突然落下的狀況，透過電壓感測裝置測量和記錄電壓值，依照這個特性通知自己該換電池了。可以參考
+                    <a href="/how/implement-pipeline/">自動化觸發流程</a>
+                </p>
+            </div>
+        </div>
+        <div class="pt-2">
+            <h4 class="text-green h4 py-3">撰寫程式碼</h4>
+            <div>
+                <a href="https://github.com/miterfrants/solar-weather-station.git" target="_blank">範例程式</a>
+                <div>
+                    <h5 class="pt-3">
+                        電壓感測程式碼
+                    </h5>
+                    <p>
+                        ino 檔 :line 47 加上電壓感測器的 PIN
+                    </p>
+
+                    <pre
+                        class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">pins.push_back(ItemhubPin(PA0, "PA0", SENSOR)); // voltage</pre>
+
+                    <p>
+                        ino 檔 :line 120 量測電壓的程式
+                    </p>
+
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">if (strcmp(mode.c_str(), SENSOR) == 0 && i == 0) // 量測電壓的腳位，下方程式碼是量測電壓並作相關的處理
+    {
+        // voltage
+        std::vector<int> arr; // 建立一個陣列儲存未來量測三十次的電壓值
+        for (int i = 0; i < 30; i++)
+        {
+        double value = analogRead(pins[0].pin); // 取得電壓腳的類比訊號
+        arr.push_back(value); // 把量到的資料儲存到陣列裡頭
+        }
+    
+        // 以下這個迴圈是把量測的電壓值一小到大排序，好再下一步取得中位數
+        for (int i = 0; i < 30; i++)
+        {
+        for (int j = i + 1; j < 30; j++)
+        {
+            if (arr[i] > arr[j])
+            {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            }
+        }
+        }
+        int median = arr[15]; // 取得中位數
+        double currentVoltage = 16.5 * median / 1024; // 做電壓的轉換，這個通常不同量測電壓的晶片會有不同的算法，可以參考購買的店家附的文件
+        pins[i].value = String(currentVoltage); // 把電壓值存起來，在將來的 ItemhubUtilities::SendSensor 會把資料送到 ItemHub Server
+    }</pre>
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        溫溼度感測程式碼
+                    </h5>
+                    <p>
+                        ino 檔 :line 2 導入 DHT 第三方程式庫
+                    </p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;DHT.h&gt;</pre>
+
+                    <p>ino 檔 :line 39 宣告 DHT 腳位</p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">DHT dht(PA1, DHT11);</pre>
+                    <p>ino 檔 :line 45 初始化 DHT 程式庫</p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">dht.begin();</pre>
+                    <p>ino 檔 :line 147 透過 DHT 第三方程式庫，解析 DHT 11 丟回來的數位訊號並存到 pin 陣列裡頭</p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">else if (strcmp(mode.c_str(), SENSOR) == 0 && i == 1)
+    {
+        pins[1].value = String(dht.readHumidity());  // 讀取濕度，並把它存在 pin 第 2 個腳位上
+        pins[2].value = String(dht.readTemperature()); // 讀取溫度，並把它存在 pin 第 3 個腳位上
+    }</pre>
+
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        降雨感測程式碼
+                    </h5>
+                    <p>
+                        ino 檔 :line 152 讀取降雨感測器丟回來的數位訊號
+                    </p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">else if (strcmp(mode.c_str(), SENSOR) == 0 && i == 3)
+    {
+        pins[3].value = String(digitalRead(pins[3].pin)); // 把降雨感測器丟回來的數位訊號存到 pi 陣列第 4 個腳位
+    }</pre>
+
+                </div>
+
+                <div>
+                    <h5 class="pt-3">
+                        休眠程式碼
+                    </h5>
+                    <p>
+                        ino 檔 :line 168 把該送的資料都送出去後，修眠 30 分鐘 (1800 秒) 減少能源的消耗。
+                    </p>
+                    <pre
+                        class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">ItemhubUtilities::Sleep(1800, BC26ResponseTimeoutCount);</pre>
+
+                </div>
+            </div>
+        </div>
+        <div class="mb-7 d-flex align-items-center justify-content-center mt-4">
+            <a href="/auth/verify-email/" class="btn btn-md bg-white text-blue rounded-pill py-2 px-4 text-nowrap link"
+                onclick="controller.sendGaEvent">立即註冊使用</a>
+        </div>
+    </div>
+
+
+</div>
