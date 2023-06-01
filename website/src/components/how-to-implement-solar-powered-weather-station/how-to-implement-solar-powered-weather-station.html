@@ -14,16 +14,16 @@
         <div class="pt-2">
             <h4 class="text-green h4 py-3">目標</h4>
             <div>
-                <div class="d-block d-flex flex-column-reverse flex-lg-row">
+                <div class="">
                     <p class="mt-3">
-                        放在戶外的小型氣象站，可以測量溫溼度狀況以及現在是否有下雨，在沒有佈線和外部電源供應的情況下，單靠白天太陽能充電，撐過夜間能耗。所以我們需要一個太陽能板 +
-                        磷酸鐵鋰電池做為能源供應系統。在能源使用上我們也盡可能在不需要的時候把裝置進到休眠狀態減少不需要的能耗。
+                        放在戶外的小型氣象站，需在沒有外部電源供應的情況下，用白天太陽能充電並撐過夜間能耗，以達到隨時測量溫溼度的狀況以及現在是否有下雨。所以我們需要一個太陽能板 +
+                        磷酸鐵鋰電池做為能源供應系統。在能源使用上我們也盡可能在不需要的時候把裝置切換到休眠狀態，減少不必要的能耗。
                     </p>
                     <p class="mt-3">
-                        有以上機制我們幾乎不需要做什麼維護，但電池還是有壽命限制，在電池快壽終正寢的時候透過 ItemHub 的自動化功能提醒我們更換電池。
+                        有以上機制後，我們幾乎不需要做什麼維護，但電池還是有壽命限制，在電池快壽終正寢的時候透過 ItemHub 的自動化功能提醒我們更換電池。
                     </p>
                     <p class="mt-3">
-                        根據我們的目標我們可以列出我們需要的材料
+                        根據我們的目標列出需要的材料
                     </p>
                 </div>
             </div>
@@ -136,7 +136,7 @@ void loop()
                 </p>
 
                 <p>
-                    接著跟 Windows 相同進行 AT Command 設定 BC26 NBIoT 的連線
+                    接著設定 BC26 NBIoT 的連線
                 </p>
             </div>
 
@@ -145,7 +145,7 @@ void loop()
                 <img class="w-100 mb-4"
                     src="/assets/images/how/implement-solar-powered-weather-station/power-circuit.png" />
                 <p>
-                    太陽能板和能源管理版串在一起，在最下方通常會有一個穩壓的裝置，讓電池的 3.7 伏特的電壓轉乘 5 伏特給 DSI2598+
+                    太陽能板和能源管理板串在一起，在最下方通常會有一個穩壓的裝置，讓電池的 3.7 伏特的電壓轉乘 5 伏特給 DSI2598+
                 </p>
 
                 <p>
@@ -182,20 +182,20 @@ void loop()
                 </p>
 
                 <div class="row mb-4 mt-3">
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-6 mb-3">
                         <img class="w-100"
                             src="/assets/images/how/implement-solar-powered-weather-station/rain-sensor.png" />
                         <br />
-                        <div class="inline-block text-center">
+                        <div class="inline-block text-center pt-2">
                             下雨感測電極
                         </div>
                     </div>
 
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-6 mb-3">
                         <img class="w-100"
                             src="/assets/images/how/implement-solar-powered-weather-station/amplifier.jpeg" />
 
-                        <div class="inline-block text-center">放大器</div>
+                        <div class="inline-block text-center pt-2">放大器</div>
                     </div>
                 </div>
             </div>
@@ -227,14 +227,14 @@ void loop()
                         電壓感測程式碼
                     </h5>
                     <p>
-                        weather-station.ino:line 47 加上電壓感測器的 PIN
+                        ino 檔 :line 47 加上電壓感測器的 PIN
                     </p>
 
                     <pre
                         class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">pins.push_back(ItemhubPin(PA0, "PA0", SENSOR)); // voltage</pre>
 
                     <p>
-                        weather-station.ino:line 120 量測電壓的程式
+                        ino 檔 :line 120 量測電壓的程式
                     </p>
 
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">if (strcmp(mode.c_str(), SENSOR) == 0 && i == 0) // 量測電壓的腳位，下方程式碼是量測電壓並作相關的處理
@@ -271,16 +271,16 @@ void loop()
                         溫溼度感測程式碼
                     </h5>
                     <p>
-                        weather-station.ino:line 2 導入 DHT 第三方程式庫
+                        ino 檔 :line 2 導入 DHT 第三方程式庫
                     </p>
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">#include &lt;DHT.h&gt;</pre>
 
-                    <p>weather-station.ino:line 39 宣告 DHT 腳位</p>
+                    <p>ino 檔 :line 39 宣告 DHT 腳位</p>
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">DHT dht(PA1, DHT11);</pre>
-                    <p>weather-station.ino:line 45 初始化 DHT 程式庫</p>
+                    <p>ino 檔 :line 45 初始化 DHT 程式庫</p>
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">dht.begin();</pre>
-                    <p>weather-station.ino:line 147 透過 DHT 第三方程式庫，解析 DHT 11 丟回來的數位訊號並存到 pin 陣列裡頭</p>
-                    <pre class="">else if (strcmp(mode.c_str(), SENSOR) == 0 && i == 1)
+                    <p>ino 檔 :line 147 透過 DHT 第三方程式庫，解析 DHT 11 丟回來的數位訊號並存到 pin 陣列裡頭</p>
+                    <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2 inline-block">else if (strcmp(mode.c_str(), SENSOR) == 0 && i == 1)
     {
         pins[1].value = String(dht.readHumidity());  // 讀取濕度，並把它存在 pin 第 2 個腳位上
         pins[2].value = String(dht.readTemperature()); // 讀取溫度，並把它存在 pin 第 3 個腳位上
@@ -293,7 +293,7 @@ void loop()
                         降雨感測程式碼
                     </h5>
                     <p>
-                        weather-station.ino:line 152 讀取降雨感測器丟回來的數位訊號
+                        ino 檔 :line 152 讀取降雨感測器丟回來的數位訊號
                     </p>
                     <pre class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">else if (strcmp(mode.c_str(), SENSOR) == 0 && i == 3)
     {
@@ -307,7 +307,7 @@ void loop()
                         休眠程式碼
                     </h5>
                     <p>
-                        weather-station.ino:line 168 把該送的資料都送出去後，修眠 30 分鐘 (1800 秒) 減少能源的消耗。
+                        ino 檔 :line 168 把該送的資料都送出去後，修眠 30 分鐘 (1800 秒) 減少能源的消耗。
                     </p>
                     <pre
                         class="border border-grey-500 p-3 bg-grey-800 mt-1 rounded-2">ItemhubUtilities::Sleep(1800, BC26ResponseTimeoutCount);</pre>
