@@ -127,16 +127,20 @@ export const useUpdateDashboardMonitorSortingApi = (
 
 export const useUpdateDashboardMonitorApi = ({
     id,
-    updatedData,
+    deviceId,
+    row,
+    column,
+    pin,
+    mode,
+    customTitle,
 }: {
     id: number;
-    updatedData: {
-        sort: number;
-        row: number;
-        column: number;
-        deviceId: number;
-        pin: string;
-    };
+    deviceId: number;
+    row: number;
+    column: number;
+    pin: string;
+    mode: number;
+    customTitle: string;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchUpdateDashboardMonitor = useCallback(
@@ -146,22 +150,27 @@ export const useUpdateDashboardMonitorApi = ({
                     dashboardMonitorsActions.update([
                         {
                             id,
-                            ...updatedData,
+                            deviceId,
+                            row,
+                            column,
+                            pin,
+                            mode,
+                            customTitle,
                         } as DashboardMonitorItem,
                     ])
                 );
             }
         },
-        [id, updatedData, dispatch]
+        [id, deviceId, row, column, pin, mode, customTitle, dispatch]
     );
 
-    let apiPath = `${API_URL}${END_POINT.DASHBOARD_MONITORS}`;
+    let apiPath = `${API_URL}${END_POINT.DASHBOARD_MONITOR}`;
     apiPath = apiPath.replace(':id', id.toString());
 
     const { isLoading, error, data, fetchApi } = useFetchApi<ResponseOK>({
         apiPath,
         method: HTTP_METHOD.PATCH,
-        payload: updatedData,
+        payload: { id, deviceId, row, column, pin, customTitle, mode },
         initialData: null,
         callbackFunc: dispatchUpdateDashboardMonitor,
     });

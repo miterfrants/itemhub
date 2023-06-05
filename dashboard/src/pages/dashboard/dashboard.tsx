@@ -20,9 +20,11 @@ import {
     ToasterTypeEnum,
 } from '@/redux/reducers/toaster.reducer';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
+import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import gearIcon from '@/assets/images/gear.svg';
 import Toggle from '@/components/toggle/toggle';
 import trashIcon from '@/assets/images/trash.svg';
+import displayIcon from '@/assets/images/display.svg';
 
 const Dashboard = () => {
     const { fetchApi: getDashboardMonitors } = useGetDashboardMonitorsApi();
@@ -40,6 +42,15 @@ const Dashboard = () => {
             monitors.map((item, index) => ({ id: item.id, sort: index + 1 }))
         );
     const dispatch = useDispatch();
+    const popupMonitorConfig = (monitorItem: DashboardMonitorItem) => {
+        // console.log('monitorItem', monitorItem);
+        dispatch(
+            monitorConfigDialogActions.open({
+                callback: () => {},
+                ...monitorItem,
+            })
+        );
+    };
 
     useEffect(() => {
         document.title = 'ItemHub - 監控中心';
@@ -297,22 +308,42 @@ const Dashboard = () => {
                                                                     : 'static'}
                                                             </div>
                                                         </div>
-                                                        <div>
+                                                        <div className="d-flex justify-content-center">
                                                             <button
                                                                 onClick={() =>
                                                                     setShouldBeDeleteId(
                                                                         item.id
                                                                     )
                                                                 }
-                                                                className="btn btn-secondary"
+                                                                className="btn btn-secondary mx-1 mx-sm-3"
                                                             >
                                                                 <img
-                                                                    className="me-2"
+                                                                    className="me-0 me-sm-2"
                                                                     src={
                                                                         trashIcon
                                                                     }
                                                                 />
-                                                                刪除
+                                                                <span className="d-none d-sm-inline">
+                                                                    刪除
+                                                                </span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() =>
+                                                                    popupMonitorConfig(
+                                                                        item
+                                                                    )
+                                                                }
+                                                                className="btn btn-secondary mx-1 mx-sm-3"
+                                                            >
+                                                                <img
+                                                                    className="me-0 me-sm-2"
+                                                                    src={
+                                                                        displayIcon
+                                                                    }
+                                                                />
+                                                                <span className="d-none d-sm-inline">
+                                                                    版面
+                                                                </span>
                                                             </button>
                                                         </div>
                                                     </div>

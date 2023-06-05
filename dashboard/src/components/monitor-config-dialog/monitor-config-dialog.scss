@@ -18,4 +18,12 @@
     .btn-close {
         z-index: 1;
     }
+
+    @include media-breakpoint-down(sm) {
+        .card {
+            max-width: none;
+            width: calc(100% - 10px);
+            margin: 0;
+        }
+    }
 }

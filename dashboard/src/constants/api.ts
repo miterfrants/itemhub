@@ -32,6 +32,7 @@ export const END_POINT = {
     OAUTH_CLIENT_REVOKE_SECRET: 'my/oauth-clients/:id/revoke-secret',
     FIRMWARE: 'firmware/:bundleId',
     DASHBOARD_MONITORS: 'my/dashboard-monitors',
+    DASHBOARD_MONITOR: 'my/dashboard-monitors/:id',
     DASHBOARD_MONITORS_SORTING: 'my/dashboard-monitors/sorting',
     PIPELINE_ITEMS: 'my/pipelines/:pipelineId/items',
     PIPELINE_ITEM: 'my/pipelines/:pipelineId/items/:id',
