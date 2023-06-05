@@ -14,6 +14,7 @@ import OfflinePipelineItem from './offline-pipeline';
 import SchedulePipelineItem from './schedule-pipeline-item';
 import SensorPipelineItem from './sensor-pipeline-item';
 import SwitchPipelineItem from './switch-pipeline-item';
+import CheckLastOnlinePipelineItem from './check-last-online-pipeline-item';
 
 const CustomPipelineItem = ({
     data,
@@ -212,6 +213,21 @@ const CustomPipelineItem = ({
                 {pipelineItemData.itemTypeKey ===
                     PIPELINE_ITEM_TYPE.OFFLINE && (
                     <OfflinePipelineItem
+                        onChangedCallback={(value: string) => {
+                            if (pipelineItemData.pipelineItemChangedCallback) {
+                                pipelineItemData.pipelineItemChangedCallback(
+                                    (pipelineItemData?.id || '').toString(),
+                                    value || '',
+                                    pipelineItemData.itemType || 0
+                                );
+                            }
+                        }}
+                        pipelineItem={pipelineItemData}
+                    />
+                )}
+                {pipelineItemData.itemTypeKey ===
+                    PIPELINE_ITEM_TYPE.CHECK_LAST_ONLINE && (
+                    <CheckLastOnlinePipelineItem
                         onChangedCallback={(value: string) => {
                             if (pipelineItemData.pipelineItemChangedCallback) {
                                 pipelineItemData.pipelineItemChangedCallback(

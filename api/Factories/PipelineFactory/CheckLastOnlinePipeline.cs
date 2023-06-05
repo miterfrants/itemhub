@@ -89,7 +89,7 @@ namespace Homo.IotApi
             {
                 throw new CustomException(
                     ERROR_CODE.PIPELINE_INVALID_PAYLOAD, System.Net.HttpStatusCode.BadRequest,
-                    new Dictionary<string, string> { { "reason", "Check Last Online Activity Payload Error" } }
+                    new Dictionary<string, string> { { "reason", "Check last online activity payload error" } }
                 );
             }
 
