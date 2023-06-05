@@ -44,6 +44,7 @@ namespace Homo.IotApi
                 || head.ItemType == PIPELINE_ITEM_TYPE.DELAY
                 || head.ItemType == PIPELINE_ITEM_TYPE.SWITCH
                 || head.ItemType == PIPELINE_ITEM_TYPE.NETWORK
+                || head.ItemType == PIPELINE_ITEM_TYPE.CHECK_LAST_ONLINE
             )
             {
                 throw new CustomException(ERROR_CODE.PIPELINE_INVALID_HEAD_TYPE, System.Net.HttpStatusCode.BadRequest);

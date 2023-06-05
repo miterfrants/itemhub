@@ -72,5 +72,6 @@
     "UNSUPPORT_MEDIA_TYPE": "不支援上傳的媒體類型",
     "INVALID_FILE_EXT": "無效的檔案副檔名",
     "CAN_UPLOAD_ONLY_ONE_FILE": "這個 API 僅能上傳一個檔案",
-    "FILE_NOT_FOUND": "找不到檔案"
+    "FILE_NOT_FOUND": "找不到檔案",
+    "PIPELINE_INVALID_PAYLOAD": "自動化觸發流程設定資料發生錯誤: {reason}"
 }

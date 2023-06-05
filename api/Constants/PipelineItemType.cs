@@ -19,7 +19,9 @@ namespace Homo.IotApi
         [Description("通知")]
         NOTIFICATION,
         [Description("裝置離線")]
-        OFFLINE
+        OFFLINE,
+        [Description("檢查最後上線狀態")]
+        CHECK_LAST_ONLINE
     }
 
     public enum PIPELINE_NOTIFICATION_TYPE

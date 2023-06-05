@@ -62,6 +62,10 @@ namespace Homo.IotApi
             {
                 return new OfflinePipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData, localMqttPublishers, mqttUsername, mqttPassword);
             }
+            else if (pipelineItemType == PIPELINE_ITEM_TYPE.CHECK_LAST_ONLINE)
+            {
+                return new CheckLastOnlinePipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
+            }
             else
             {
                 return null;
