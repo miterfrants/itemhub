@@ -306,17 +306,21 @@ namespace Homo.IotApi
                 image.Save($"{folder}/{filename}-thumbnail{ext}");
             }
 
-            // save filename to database
-            DeviceUploadedImageDataservice.Create(_iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
-            {
-                OwnerId = ownerId,
-                DeviceId = id,
-                Filename = $"{filename}{ext}"
-            });
 
-            // waiting file write finish
-            await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}-thumbnail{ext}");
-            await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}{ext}");
+            Task.Run(async () =>
+            {
+                // waiting file write finish
+                await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}-thumbnail{ext}");
+                await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}{ext}");
+
+                // save filename to database
+                DeviceUploadedImageDataservice.Create(_iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
+                {
+                    OwnerId = ownerId,
+                    DeviceId = id,
+                    Filename = $"{filename}{ext}"
+                });
+            });
 
             return new { status = CUSTOM_RESPONSE.OK };
         }
