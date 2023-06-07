@@ -13,6 +13,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Homo.IotApi
 {
@@ -37,6 +38,7 @@ namespace Homo.IotApi
         private readonly string _serverId;
         private readonly string _webSiteUrl;
         private readonly string _staticPath;
+        private readonly MySqlServerVersion _mysqlVersion;
         private readonly List<MqttPublisher> _localMqttPublishers;
 
         public MyDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings, Homo.Api.CommonLocalizer commonLocalizer, List<MqttPublisher> localMqttPublishers)
@@ -60,6 +62,7 @@ namespace Homo.IotApi
             _mqttPassword = appSettings.Value.Secrets.MqttPassword;
             _localMqttPublishers = localMqttPublishers;
             _webSiteUrl = appSettings.Value.Common.WebsiteUrl;
+            _mysqlVersion = new MySqlServerVersion(new Version(8, 0, 25));
 
         }
 
@@ -255,7 +258,6 @@ namespace Homo.IotApi
         [Route("{id}/upload-file")]
         public async Task<dynamic> uploadFile([FromRoute] long id, dynamic extraPayload)
         {
-            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(Request.ContentType, Newtonsoft.Json.Formatting.Indented)}");
             if (Request.ContentType.IndexOf("multipart/form-data") == -1)
             {
                 throw new CustomException(ERROR_CODE.UNSUPPORT_MEDIA_TYPE, HttpStatusCode.UnsupportedMediaType);
@@ -312,9 +314,12 @@ namespace Homo.IotApi
                 // waiting file write finish
                 await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}-thumbnail{ext}");
                 await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}{ext}");
+                DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
+                iotBuilder.UseMySql(_dbConnectionString, _mysqlVersion);
+                var iotDbContext = new IotDbContext(iotBuilder.Options);
 
                 // save filename to database
-                DeviceUploadedImageDataservice.Create(_iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
+                DeviceUploadedImageDataservice.Create(iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
                 {
                     OwnerId = ownerId,
                     DeviceId = id,
