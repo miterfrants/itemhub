@@ -137,7 +137,17 @@ const CheckLastOnlinePipelineItem = ({
                                     key={operator.key}
                                     value={operator.value}
                                 >
-                                    {operator.label}
+                                    {operator.key === 'E'
+                                        ? '等於'
+                                        : operator.key === 'BE'
+                                        ? '超過或等於'
+                                        : operator.key === 'B'
+                                        ? '超過'
+                                        : operator.key === 'LE'
+                                        ? '少於或等於'
+                                        : operator.key === 'L'
+                                        ? '少於'
+                                        : ''}
                                 </option>
                             );
                         })}
