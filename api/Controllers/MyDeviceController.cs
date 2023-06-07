@@ -12,6 +12,7 @@ using System;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Homo.IotApi
 {
@@ -252,8 +253,9 @@ namespace Homo.IotApi
         )]
         [HttpPost]
         [Route("{id}/upload-file")]
-        public ActionResult<dynamic> uploadFile([FromRoute] long id, dynamic extraPayload)
+        public async Task<dynamic> uploadFile([FromRoute] long id, dynamic extraPayload)
         {
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(Request.ContentType, Newtonsoft.Json.Formatting.Indented)}");
             if (Request.ContentType.IndexOf("multipart/form-data") == -1)
             {
                 throw new CustomException(ERROR_CODE.UNSUPPORT_MEDIA_TYPE, HttpStatusCode.UnsupportedMediaType);
@@ -297,6 +299,13 @@ namespace Homo.IotApi
             filestream.Close();
             filestream.Dispose();
 
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
+            {
+                using var image = Image.Load(destinationalFilename);
+                image.Mutate(x => x.Resize(image.Width * 3 / 100, image.Height * 3 / 100));
+                image.Save($"{folder}/{filename}-thumbnail{ext}");
+            }
+
             // save filename to database
             DeviceUploadedImageDataservice.Create(_iotDbContext, ownerId, id, new DTOs.DeviceUploadedImage()
             {
@@ -305,13 +314,10 @@ namespace Homo.IotApi
                 Filename = $"{filename}{ext}"
             });
 
+            // waiting file write finish
+            await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}-thumbnail{ext}");
+            await FileHelper.RecursiveCheckFileExists($"{folder}/{filename}{ext}");
 
-            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
-            {
-                using var image = Image.Load(destinationalFilename);
-                image.Mutate(x => x.Resize(image.Width * 3 / 100, image.Height * 3 / 100));
-                image.Save($"{folder}/{filename}-thumbnail{ext}");
-            }
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -387,5 +393,8 @@ namespace Homo.IotApi
             }
             return File(outputStream, "image/*");
         }
+
     }
 }
+
+
