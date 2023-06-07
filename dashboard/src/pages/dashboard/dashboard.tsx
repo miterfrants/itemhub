@@ -43,7 +43,6 @@ const Dashboard = () => {
         );
     const dispatch = useDispatch();
     const popupMonitorConfig = (monitorItem: DashboardMonitorItem) => {
-        // console.log('monitorItem', monitorItem);
         dispatch(
             monitorConfigDialogActions.open({
                 callback: () => {},
@@ -84,8 +83,21 @@ const Dashboard = () => {
     }, [dashboardMonitors]);
 
     useEffect(() => {
-        const originSorting = dashboardMonitors.map((item) => item.id);
-        const sorting = monitors.map((item) => item.id);
+        if (
+            !dashboardMonitors ||
+            !monitors ||
+            dashboardMonitors.length === 0 ||
+            monitors.length === 0
+        ) {
+            return;
+        }
+        const sortedDashboardMonitors = [...dashboardMonitors].sort(
+            (item) => item.sort
+        );
+        const originSorting = sortedDashboardMonitors.map((item) => item.id);
+
+        const sortedMonitors = [...monitors].sort((item) => item.sort);
+        const sorting = sortedMonitors.map((item) => item.id);
         if (JSON.stringify(originSorting) === JSON.stringify(sorting)) {
             return;
         }

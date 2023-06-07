@@ -46,7 +46,7 @@ export const dashboardMonitorsSlice = createSlice({
                 }[]
             >
         ) => {
-            state.map((item) => {
+            const newState = state.map((item) => {
                 const target = action.payload.find(
                     (sortingData) => sortingData.id === item.id
                 );
@@ -55,6 +55,10 @@ export const dashboardMonitorsSlice = createSlice({
                     sort: target?.sort || 1,
                 };
             });
+            newState.sort((current, next) =>
+                current.sort > next.sort ? 1 : -1
+            );
+            return newState;
         },
         delete: (state, action: PayloadAction<number[]>) => {
             const oldRecords = [...state];
