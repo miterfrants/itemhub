@@ -105,7 +105,7 @@ export const useUpdateDashboardMonitorSortingApi = (
                 dispatch(dashboardMonitorsActions.updateSorting(sortingData));
             }
         },
-        [dispatch]
+        [dispatch, sortingData]
     );
 
     const apiPath = `${API_URL}${END_POINT.DASHBOARD_MONITORS_SORTING}`;
