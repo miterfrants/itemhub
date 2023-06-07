@@ -86,19 +86,21 @@ const MonitorConfigDialog = () => {
         pinType: undefined,
     });
 
-    const { fetchApi: updateDashboardMonitorApi } =
-        useUpdateDashboardMonitorApi({
-            deviceId: deviceId || 0,
-            id: id || 0,
-            pin: pin || '',
-            mode:
-                dashboardMonitorMode === null
-                    ? switchModeValue
-                    : dashboardMonitorMode,
-            row,
-            column,
-            customTitle,
-        });
+    const {
+        fetchApi: updateDashboardMonitorApi,
+        data: responseOfUpdateDashboardMonitor,
+    } = useUpdateDashboardMonitorApi({
+        deviceId: deviceId || 0,
+        id: id || 0,
+        pin: pin || '',
+        mode:
+            dashboardMonitorMode === null
+                ? switchModeValue
+                : dashboardMonitorMode,
+        row,
+        column,
+        customTitle,
+    });
 
     const { getDashboardMonitorModesApi } = useGetDashboardMonitorModesApi();
 
@@ -202,6 +204,20 @@ const MonitorConfigDialog = () => {
         }
         // eslint-disable-next-line
     }, [responseOfCreateDashboardMonitor]);
+
+    useEffect(() => {
+        if (responseOfUpdateDashboardMonitor) {
+            close();
+            dispatch(
+                toasterActions.pushOne({
+                    message: '成功更新監控看板',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
+        }
+        // eslint-disable-next-line
+    }, [responseOfUpdateDashboardMonitor]);
 
     useEffect(() => {
         valid();
