@@ -259,8 +259,14 @@ namespace Homo.IotApi
                 throw new CustomException(ERROR_CODE.UNSUPPORT_MEDIA_TYPE, HttpStatusCode.UnsupportedMediaType);
             }
 
-
             long ownerId = extraPayload.Id;
+
+            var device = DeviceDataservice.GetOne(_iotDbContext, ownerId, id);
+            if (device == null)
+            {
+                throw new CustomException(ERROR_CODE.DEVICE_NOT_FOUND, HttpStatusCode.NotFound);
+            }
+
             string destinationalFilename = "";
             DateTime now = DateTime.Now;
             string folder = $"{_staticPath}/private/{now.ToString("yyyyMMdd")}/{ownerId}/{id}";
