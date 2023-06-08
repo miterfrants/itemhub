@@ -1,5 +1,8 @@
 import { PIN_TYPES } from '@/constants/pin-type';
-import { useCreateDashboardMonitorApi } from '@/hooks/apis/dashboard-monitor.hook';
+import {
+    useCreateDashboardMonitorApi,
+    useUpdateDashboardMonitorApi,
+} from '@/hooks/apis/dashboard-monitor.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
     selectMonitorConfigDialog,
@@ -16,13 +19,23 @@ import {
     toasterActions,
     ToasterTypeEnum,
 } from '@/redux/reducers/toaster.reducer';
+import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
 
 const MonitorConfigDialog = () => {
     const dialog = useAppSelector(selectMonitorConfigDialog);
     const devicePinsPool: PinItem[] | null = useAppSelector(selectDevicePins);
     const { deviceModes, dashboardMonitorModes } =
         useAppSelector(selectUniversal);
-    const { isOpen, deviceId } = dialog;
+    const {
+        isOpen,
+        deviceId,
+        id,
+        row: rowDefaultValue,
+        column: columnDefaultValue,
+        customTitle: customTitleDefaultValue,
+        mode,
+        pin: pinDefaultValue,
+    } = dialog;
 
     const dispatch = useDispatch();
     const defaultSwitchModeValue = 2;
@@ -30,15 +43,15 @@ const MonitorConfigDialog = () => {
     type layoutType = { id: number; selected: boolean };
     const initialLayouts: layoutType[] = [];
     const [layouts, setLayouts] = useState(initialLayouts);
-    const [pinMode, setPinMode] = useState<number | null>(null);
-    const [pin, setPin] = useState<string | null>(null);
+    const [pinType, setPinType] = useState<number | null>(null);
+    const [pin, setPin] = useState<string | null>(pinDefaultValue || '');
     const [dashboardMonitorMode, setDashboardMonitorMode] = useState<
         number | null
-    >(defaultSwitchModeValue);
+    >(mode || defaultSwitchModeValue);
     const [devicePins, setDevicePins] = useState<PinItem[]>([]);
     const [sensorValue, setSensorValue] = useState<number | null>(null);
-    const [row, setRow] = useState<number>(1);
-    const [column, setColumn] = useState<number>(1);
+    const [row, setRow] = useState<number>(rowDefaultValue || 1);
+    const [column, setColumn] = useState<number>(columnDefaultValue || 1);
     const [lineChartModeValue, setLineChartModeValue] = useState<
         number | undefined
     >(undefined);
@@ -49,7 +62,9 @@ const MonitorConfigDialog = () => {
         defaultSwitchModeValue
     );
     const [isValidedForm, setIsValidedForm] = useState<boolean>(false);
-    const [customTitle, setCustomTitle] = useState<string>('');
+    const [customTitle, setCustomTitle] = useState<string>(
+        customTitleDefaultValue || ''
+    );
 
     const {
         fetchApi: createDashboardMonitorApi,
@@ -66,15 +81,63 @@ const MonitorConfigDialog = () => {
         customTitle,
     });
 
+    const { getDevicePinsApi: getDevicePins } = useGetDevicePinsApi({
+        id: deviceId || 0,
+        pinType: undefined,
+    });
+
+    const {
+        fetchApi: updateDashboardMonitorApi,
+        data: responseOfUpdateDashboardMonitor,
+    } = useUpdateDashboardMonitorApi({
+        deviceId: deviceId || 0,
+        id: id || 0,
+        pin: pin || '',
+        mode:
+            dashboardMonitorMode === null
+                ? switchModeValue
+                : dashboardMonitorMode,
+        row,
+        column,
+        customTitle,
+    });
+
     const { getDashboardMonitorModesApi } = useGetDashboardMonitorModesApi();
 
     useEffect(() => {
         setLayouts([
-            { id: 0, selected: true },
-            { id: 1, selected: false },
-            { id: 2, selected: false },
+            { id: 0, selected: (columnDefaultValue || 1) >= 0 },
+            { id: 1, selected: (columnDefaultValue || 1) >= 1 },
+            { id: 2, selected: (columnDefaultValue || 1) >= 2 },
         ]);
+
+        if (deviceId) {
+            getDevicePins();
+        }
+        // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (layouts.length === 0) {
+            return;
+        }
+        selectLayoutSize((columnDefaultValue || 1) - 1);
+        // eslint-disable-next-line
+    }, [columnDefaultValue]);
+
+    useEffect(() => {
+        setCustomTitle(customTitleDefaultValue || '');
+        // eslint-disable-next-line
+    }, [customTitleDefaultValue]);
+
+    useEffect(() => {
+        setPin(pinDefaultValue || '');
+        // eslint-disable-next-line
+    }, [pinDefaultValue]);
+
+    useEffect(() => {
+        setDashboardMonitorMode(mode || null);
+    }, [mode]);
 
     useEffect(() => {
         if (dashboardMonitorModes && dashboardMonitorModes.length > 0) {
@@ -108,7 +171,6 @@ const MonitorConfigDialog = () => {
         const sensorValue = deviceModes.filter((item) => {
             return item.key === PIN_TYPES.SENSOR;
         })[0]?.value;
-
         setSensorValue(sensorValue);
     }, [deviceModes, devicePins]);
 
@@ -116,6 +178,7 @@ const MonitorConfigDialog = () => {
         if (!devicePinsPool) {
             return;
         }
+
         setDevicePins(
             devicePinsPool.filter((item) => item.deviceId === deviceId)
         );
@@ -123,10 +186,10 @@ const MonitorConfigDialog = () => {
     }, [devicePinsPool, deviceId]);
 
     useEffect(() => {
-        setPinMode(null);
-        setPin(null);
-        setDashboardMonitorMode(null);
-    }, [isOpen]);
+        const targetPin = devicePins.find((item) => item.pin === pin);
+        setPinType(targetPin ? targetPin.pinType : null);
+        // eslint-disable-next-line
+    }, [pin]);
 
     useEffect(() => {
         if (responseOfCreateDashboardMonitor) {
@@ -139,11 +202,27 @@ const MonitorConfigDialog = () => {
                 })
             );
         }
+        // eslint-disable-next-line
     }, [responseOfCreateDashboardMonitor]);
 
     useEffect(() => {
+        if (responseOfUpdateDashboardMonitor) {
+            close();
+            dispatch(
+                toasterActions.pushOne({
+                    message: '成功更新監控看板',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
+        }
+        // eslint-disable-next-line
+    }, [responseOfUpdateDashboardMonitor]);
+
+    useEffect(() => {
         valid();
-    }, [layouts, pinMode, dashboardMonitorMode]);
+        // eslint-disable-next-line
+    }, [layouts, pinType, dashboardMonitorMode]);
 
     const close = () => {
         if (promptInputRef.current) {
@@ -173,12 +252,6 @@ const MonitorConfigDialog = () => {
 
     const selectPin = (event: ChangeEvent<HTMLSelectElement>) => {
         setPin(event.target.value ? event.target.value : null);
-        const targetPin = devicePins.find(
-            (item) => item.pin === event.target.value
-        );
-        if (targetPin) {
-            setPinMode(targetPin.pinType);
-        }
         setDashboardMonitorMode(null);
     };
 
@@ -188,7 +261,11 @@ const MonitorConfigDialog = () => {
     };
 
     const submit = () => {
-        createDashboardMonitorApi();
+        if (id) {
+            updateDashboardMonitorApi();
+        } else {
+            createDashboardMonitorApi();
+        }
     };
 
     const valid = () => {
@@ -201,7 +278,7 @@ const MonitorConfigDialog = () => {
             return;
         }
 
-        if (pinMode === sensorModeValue && dashboardMonitorMode === null) {
+        if (pinType === sensorModeValue && dashboardMonitorMode === null) {
             setIsValidedForm(false);
             return;
         }
@@ -239,8 +316,9 @@ const MonitorConfigDialog = () => {
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                                 selectPin(e);
                             }}
+                            value={pin || ''}
                         >
-                            <option>請選擇 PIN</option>
+                            <option value="">請選擇 PIN</option>
                             {devicePins.map(({ id, pin, name }) => (
                                 <option key={id} value={pin}>
                                     {name || pin}{' '}
@@ -249,24 +327,24 @@ const MonitorConfigDialog = () => {
                         </select>
                     </div>
                 </div>
-
                 <div className="row mt-3">
                     <div className="col-12 px-0">
                         <input
                             type="text"
                             className="form-control"
-                            onKeyUp={(
-                                event: React.KeyboardEvent<HTMLInputElement>
+                            onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
                             ) => {
                                 setCustomTitle(event.currentTarget.value);
                             }}
+                            value={customTitle}
                             placeholder="自定義面板名稱"
                         />
                     </div>
                 </div>
                 <div
                     className={`row mt-4 ${
-                        pinMode === sensorValue ? '' : 'd-none'
+                        pinType === sensorValue ? '' : 'd-none'
                     }`}
                 >
                     <div className="col-12 px-0">
@@ -281,7 +359,7 @@ const MonitorConfigDialog = () => {
                                     : ''
                             }
                         >
-                            <option>請選擇監控類型</option>
+                            <option value="">請選擇監控類型</option>
                             <option value={currentValueModeValue}>
                                 當前數值
                             </option>
@@ -298,11 +376,10 @@ const MonitorConfigDialog = () => {
                             }}
                             disabled={!isValidedForm}
                         >
-                            新增
+                            {id ? '修改' : '新增'}
                         </button>
                     </div>
                 </div>
-
                 <div
                     onClick={() => {
                         close();
