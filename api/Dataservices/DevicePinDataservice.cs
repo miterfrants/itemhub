@@ -203,6 +203,7 @@ namespace Homo.IotApi
                 DeviceId = pin.DeviceId,
                 Device = device
             })
+            .Where(x => x.Device.DeletedAt == null)
             .ToList().GroupJoin(
                 dbContext.SensorLog,
                 pin => new { pin.DeviceId, pin.OwnerId, pin.Pin },
