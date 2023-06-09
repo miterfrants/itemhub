@@ -62,5 +62,6 @@
     "UNSUPPORT_MEDIA_TYPE": "Unsupported media type",
     "INVALID_FILE_EXT": "Invalid file extension",
     "CAN_UPLOAD_ONLY_ONE_FILE": "This API can only upload one file",
-    "FILE_NOT_FOUND": "File not found"
+    "FILE_NOT_FOUND": "File not found",
+    "PIPELINE_INVALID_PAYLOAD": "Invalid pipeline payload: {reason}"
 }
