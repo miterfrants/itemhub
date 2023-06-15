@@ -7,11 +7,10 @@ labels: marketing
 
 # Why
 
-- [ ] 
 
-# Task
+# Budget
 
-- [ ]
+- 
 
 # Goal
 
