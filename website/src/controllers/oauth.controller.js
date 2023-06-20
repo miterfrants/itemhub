@@ -34,6 +34,7 @@ export class OauthController extends RoutingController {
             window.close();
             return;
         } else if (resp.status !== RESPONSE_STATUS.OK) {
+            Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
             history.pushState({}, '', '/auth/sign-in/');
             return;
         }
