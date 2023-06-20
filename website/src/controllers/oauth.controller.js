@@ -42,10 +42,13 @@ export class OauthController extends RoutingController {
 
         const payloadOfRefresh = window.jwt_decode(resp.data.refreshToken);
         CookieUtil.setCookie('refreshToken', resp.data.refreshToken, null, payloadOfRefresh.exp);
-
-        opener.history.pushState({}, '', '/?tf=' + new Date().getUTCMilliseconds());
-        opener.window.gtag('event', EVENTS.SIGN_IN);
-        window.close();
+        if (opener) {
+            opener.history.pushState({}, '', '/?tf=' + new Date().getUTCMilliseconds());
+            opener.window.gtag('event', EVENTS.SIGN_IN);
+            window.close();
+        } else {
+            history.replaceState({}, '', this.args.redirectUrl ? this.args.redirectUrl : '/me/');
+        }
     }
 
     async getVerifyPhoneToken () {
