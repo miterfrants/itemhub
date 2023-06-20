@@ -115,8 +115,6 @@ namespace Homo.AuthApi
             }
 
             var extraPayload = JsonConvert.DeserializeObject<DTOs.JwtExtraPayload>(payload.FindFirstValue("extra"));
-            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(extraPayload, Newtonsoft.Json.Formatting.Indented)}");
-
             VerifyCode record = VerifyCodeDataservice.GetOneUnUsedByPhone(_dbContext, dto.Phone, dto.Code);
             if (record == null)
             {
