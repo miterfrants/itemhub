@@ -114,7 +114,8 @@ namespace Homo.AuthApi
                 throw new CustomException(ERROR_CODE.VERIFY_PHONE_TOKEN_EXPIRED, HttpStatusCode.BadRequest);
             }
 
-            var extraPayload = JsonConvert.DeserializeObject<dynamic>(payload.FindFirstValue("extra"));
+            var extraPayload = JsonConvert.DeserializeObject<DTOs.JwtExtraPayload>(payload.FindFirstValue("extra"));
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(extraPayload, Newtonsoft.Json.Formatting.Indented)}");
 
             VerifyCode record = VerifyCodeDataservice.GetOneUnUsedByPhone(_dbContext, dto.Phone, dto.Code);
             if (record == null)
@@ -123,8 +124,8 @@ namespace Homo.AuthApi
             }
             record.IsUsed = true;
             _dbContext.SaveChanges();
-
-            return new { token = JWTHelper.GenerateToken(_signUpJwtKey, 5, new { Email = extraPayload.Email.Value, Phone = dto.Phone }) };
+            extraPayload.Phone = dto.Phone;
+            return new { token = JWTHelper.GenerateToken(_signUpJwtKey, 5, extraPayload) };
         }
     }
 }
