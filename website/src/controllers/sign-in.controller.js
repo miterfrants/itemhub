@@ -19,7 +19,7 @@ export class SignInController extends RoutingController {
         };
         const standalone = window.navigator.standalone;
         const userAgent = window.navigator.userAgent.toLowerCase();
-        const safari = /safari/.test(userAgent);
+        const safari = /safari\//.test(userAgent);
         const ios = /iphone|ipod|ipad/.test(userAgent);
         await super.render({
             isInApp: (ios && !standalone && !safari) || this.args.isInApp === 'true'
