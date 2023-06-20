@@ -91,6 +91,7 @@ namespace Homo.AuthApi
                 socialMediaProvider = SocialMediaProvider.LINE;
                 sub = extraPayload.LineSub;
             }
+            System.Console.WriteLine($"testing:{Newtonsoft.Json.JsonConvert.SerializeObject(sub, Newtonsoft.Json.Formatting.Indented)}");
 
             if (socialMediaProvider != null)
             {
@@ -107,7 +108,6 @@ namespace Homo.AuthApi
             string pseudoPhone = CryptographicHelper.GetHiddenString(extraPayload.Phone, 2, 2);
             string encryptPhone = CryptographicHelper.GetRSAEncryptResult(_PKCS1PublicKeyPath, extraPayload.Phone);
             string hashPhone = CryptographicHelper.GenerateSaltedHash(extraPayload.Phone, _phoneHashSalt);
-
             if (sub != null)
             {
                 newUser = UserDataservice.SignUpWithSocialMedia(_dbContext, socialMediaProvider.GetValueOrDefault(), sub, extraPayload.Email, pseudoPhone, encryptPhone, hashPhone, null, extraPayload.Profile, extraPayload.FirstName, extraPayload.LastName, dto.Birthday);
