@@ -29,11 +29,12 @@ export class OauthController extends RoutingController {
             provider: targetProvider.value,
             redirectUri: `${location.origin}${location.pathname}`
         });
-        if (resp.status !== RESPONSE_STATUS.OK) {
-            Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
-            setTimeout(() => {
-                window.close();
-            }, 5000);
+        if (resp.status !== RESPONSE_STATUS.OK && opener) {
+            opener.SwimAppController[1].Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
+            window.close();
+            return;
+        } else if (resp.status !== RESPONSE_STATUS.OK) {
+            history.pushState({}, '', '/auth/sign-in/');
             return;
         }
 
@@ -60,12 +61,21 @@ export class OauthController extends RoutingController {
         });
 
         if (resp.status !== RESPONSE_STATUS.OK) {
-            opener.SwimAppController[1].Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
-            window.close();
+            if (opener) {
+                opener.SwimAppController[1].Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
+                window.close();
+            } else {
+                Toaster.popup(Toaster.TYPE.ERROR, resp.data.message);
+                history.pushState({}, '', '/auth/sign-in/');
+            }
             return;
         }
 
-        opener.history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
-        window.close();
+        if (opener) {
+            opener.history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+            window.close();
+        } else {
+            history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+        }
     }
 }
