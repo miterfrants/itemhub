@@ -43,13 +43,16 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
             {isLoading || devicePins === null ? (
                 <div>Loading</div>
             ) : (
-                <div>
+                <div className="row">
                     {devicePins.map((item) => (
-                        <Pin
-                            pinItem={item}
-                            isEditMode={isEditMode}
+                        <div
+                            className={`${
+                                item.pinType === 0 ? 'col-12' : 'col-3'
+                            }`}
                             key={`${item.deviceId}-${item.pin}`}
-                        />
+                        >
+                            <Pin pinItem={item} isEditMode={isEditMode} />
+                        </div>
                     ))}
                 </div>
             )}

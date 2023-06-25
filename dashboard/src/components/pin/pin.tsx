@@ -7,6 +7,9 @@ import { useDebounce } from '@/hooks/debounce.hook';
 import { PinItem } from '@/types/devices.type';
 import moment from 'moment';
 import Toggle from '../toggle/toggle';
+import ReactTooltip from 'react-tooltip';
+import analyticsIcon from '@/assets/images/analytics.svg';
+import { Link } from 'react-router-dom';
 
 const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const { isEditMode, pinItem } = props;
@@ -109,8 +112,18 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
                 </div>
             ) : (
                 <>
-                    <div className="text-black text-opacity-65 mb-2">
+                    <div className="text-black text-opacity-65 mb-2 d-flex align-items-center">
                         : {value}
+                        <div className="ms-4">
+                            <Link
+                                to={`/dashboard/devices/${deviceId}/${pin}/statistics`}
+                                role="button"
+                                data-tip="查詢歷史統計資料"
+                            >
+                                <img src={analyticsIcon} />
+                            </Link>
+                            <ReactTooltip effect="solid" />
+                        </div>
                     </div>
                     <div className="fs-5 mb-0 text-black text-opacity-45 fw-normal w-100">
                         最後回傳時間

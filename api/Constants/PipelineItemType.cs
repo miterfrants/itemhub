@@ -40,7 +40,7 @@ namespace Homo.IotApi
         TIMES,
     }
 
-    public enum PIPELINE_DEVICE_STATIC_METHODS
+    public enum PIPELINE_DEVICE_STATISTICAL_METHODS
     {
 
         [Description("平均數")]
