@@ -120,7 +120,8 @@ export class SignInController extends RoutingController {
         if (!this.pageVariable.isInApp) {
             PopupHelper.PopupCenter(url, 'google auth', 600, 500);
         } else {
-            location.href = url;
+            // Google 目前擋掉 in app webview user agent
+            Toaster.popup(Toaster.TYPE.WARN, '請複製網址直接貼在瀏覽器上瀏覽網頁，App 內的瀏覽無法使用 Google 登入');
         }
     }
 }
