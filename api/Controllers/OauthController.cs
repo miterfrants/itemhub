@@ -176,7 +176,8 @@ namespace Homo.IotApi
             string token = JWTHelper.GenerateToken(_jwtKey, 24 * 30 * 24 * 60, new
             {
                 pricingPlan = subscrioption?.PricingPlan,
-                Id = user.Id
+                Id = user.Id,
+                IsDevice = true
             }, null);
 
             return new
