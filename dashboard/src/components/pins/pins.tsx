@@ -55,7 +55,9 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
                         .map((item) => (
                             <div
                                 className={`${
-                                    item.pinType === 0 ? 'col-12' : 'col-3'
+                                    item.pinType === 0
+                                        ? 'col-12'
+                                        : 'col-12 col-md-3'
                                 }`}
                                 key={`${item.deviceId}-${item.pin}`}
                             >

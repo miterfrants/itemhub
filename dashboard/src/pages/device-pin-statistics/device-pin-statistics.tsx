@@ -160,8 +160,8 @@ const DevicePinStatistics = () => {
         useGetPipelineStaticMethods();
     const { pipelineDeviceStaticMethods } = useAppSelector(selectUniversal);
 
-    const backToList = () => {
-        navigate(`/dashboard/devices${search}`);
+    const back = () => {
+        history.back();
     };
 
     useEffect(() => {
@@ -171,7 +171,7 @@ const DevicePinStatistics = () => {
     }, []);
 
     useEffect(() => {
-        setAggregateNumber(aggregateData);
+        setAggregateNumber(aggregateData || undefined);
     }, [aggregateData]);
 
     useEffect(() => {
@@ -229,16 +229,16 @@ const DevicePinStatistics = () => {
             <PageTitle
                 breadcrumbs={breadcrumbs}
                 titleBackIconVisible
-                titleClickCallback={backToList}
+                titleClickCallback={back}
                 title={`裝置 ${device ? device?.name : ''} ${pin} 統計`}
             />
             {isGetting || device === null ? null : (
-                <div className="card">
+                <div className="card p-4">
                     <div className="row m-0">
                         <div className="col-12 d-flex p-0 item">
-                            <div className="line-chart border border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column bg-white pt-5">
-                                <div className="px-4 d-flex ">
-                                    <label>
+                            <div className="line-chart border-0 border-sm-1  border-grey-200 rounded-3 w-100 h-100 overflow-hidden d-flex flex-column bg-white ">
+                                <div className="d-flex flex-wrap align-items-center">
+                                    <label className="col-5">
                                         <input
                                             className="form-control"
                                             type="datetime-local"
@@ -255,8 +255,8 @@ const DevicePinStatistics = () => {
                                             }}
                                         />
                                     </label>
-                                    <div className="mx-3">~</div>
-                                    <label>
+                                    <div className="col-1 text-center">~</div>
+                                    <label className="col-5">
                                         <input
                                             className="form-control"
                                             type="datetime-local"
@@ -274,7 +274,7 @@ const DevicePinStatistics = () => {
                                         />
                                     </label>
 
-                                    <div className="ms-5 d-flex align-items-center">
+                                    <div className="col-5 col-sm-3 mt-3 d-flex align-items-center">
                                         <select
                                             className="form-control form-select"
                                             value={statisticalMethods}
