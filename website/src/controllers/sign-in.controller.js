@@ -121,7 +121,7 @@ export class SignInController extends RoutingController {
             PopupHelper.PopupCenter(url, 'google auth', 600, 500);
         } else {
             // Google 目前擋掉 in app webview user agent
-            Toaster.popup(Toaster.TYPE.WARN, '請複製網址直接貼在瀏覽器上瀏覽網頁，App 內的瀏覽無法使用 Google 登入');
+            Toaster.popup(Toaster.TYPE.WARN, 'App 內的瀏覽無法使用 Google 登入，請複製網址後，開啟手機瀏覽器並貼上網址，再重新登入');
         }
     }
 }
