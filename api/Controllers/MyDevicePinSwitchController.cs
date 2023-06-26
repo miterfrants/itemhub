@@ -25,7 +25,10 @@ namespace Homo.IotApi
         private readonly string _systemEmail;
         private readonly string _staticPath;
         private readonly string _serverId;
-        public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers)
+        private readonly Homo.Api.CommonLocalizer _commonLocalizer;
+        private readonly string _websiteUrl;
+        private readonly string _adminEmail;
+        public MyDeviceSwitchController(IotDbContext dbContext, IOptions<AppSettings> appSettings, List<MqttPublisher> localMqttPublishers, Homo.Api.CommonLocalizer commonLocalizer)
         {
             _dbContext = dbContext;
             _localMqttPublishers = localMqttPublishers;
@@ -42,6 +45,9 @@ namespace Homo.IotApi
             _systemEmail = common.SystemEmail;
             _staticPath = common.StaticPath;
             _serverId = common.ServerId;
+            _commonLocalizer = commonLocalizer;
+            _websiteUrl = appSettings.Value.Common.WebsiteUrl;
+            _adminEmail = appSettings.Value.Common.AdminEmail;
         }
 
         [SwaggerOperation(
@@ -52,6 +58,11 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getAll([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
+            if (extraPayload.IsDevice == true)
+            {
+                DeviceStateHelper.Create(_dbContext, _dbConnectionString, _serverId, extraPayload.Id, id, _commonLocalizer, _staticPath, _systemEmail, _sendGridApiKey, _smsClientUrl, _smsUsername, _smsPassword, _mqttUsername, _mqttPassword, _localMqttPublishers, _websiteUrl, _adminEmail);
+            }
+
             return DevicePinDataservice.GetAllSummary(_dbContext, extraPayload.Id, new List<long>() { id }, PIN_TYPE.SWITCH, null);
         }
 
@@ -69,6 +80,7 @@ namespace Homo.IotApi
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_dbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             DeviceSwitchHelper.Update(_dbContext, extraPayload.Id, id, pin, dto, _localMqttPublishers);
+
             // run pipeline head is switch
             var pipelines = PipelineDataservice.GetAll(_dbContext, ownerId, PIPELINE_ITEM_TYPE.CHECK_SWITCH, id, pin, true);
             var pipelineInvalidError = new Dictionary<long, CustomException>();
