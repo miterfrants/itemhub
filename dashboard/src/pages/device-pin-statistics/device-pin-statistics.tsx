@@ -6,7 +6,7 @@ import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -34,6 +34,8 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { UniversalOption } from '@/types/universal.type';
 
 const DevicePinStatistics = () => {
+    const navigate = useNavigate();
+    const { search } = useLocation();
     const { id: idFromUrl, pin } = useParams();
     const [device, setDevice] = useState<DeviceItem | null>(null);
     const devices = useAppSelector(selectDevices).devices;
@@ -158,6 +160,10 @@ const DevicePinStatistics = () => {
         useGetPipelineStaticMethods();
     const { pipelineDeviceStaticMethods } = useAppSelector(selectUniversal);
 
+    const backToList = () => {
+        navigate(`/dashboard/devices${search}`);
+    };
+
     useEffect(() => {
         getDevicePin();
         getSensorLogs();
@@ -226,6 +232,7 @@ const DevicePinStatistics = () => {
             <PageTitle
                 breadcrumbs={breadcrumbs}
                 titleBackIconVisible
+                titleClickCallback={backToList}
                 title={`裝置 ${device ? device?.name : ''} ${pin} 統計`}
             />
             {isGetting || device === null ? null : (

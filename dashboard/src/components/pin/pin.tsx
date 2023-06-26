@@ -9,10 +9,11 @@ import moment from 'moment';
 import Toggle from '../toggle/toggle';
 import ReactTooltip from 'react-tooltip';
 import analyticsIcon from '@/assets/images/analytics.svg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
     const { isEditMode, pinItem } = props;
+    const { search } = useLocation();
     const {
         deviceId,
         pin,
@@ -116,7 +117,7 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
                         : {value}
                         <div className="ms-4">
                             <Link
-                                to={`/dashboard/devices/${deviceId}/${pin}/statistics`}
+                                to={`/dashboard/devices/${deviceId}/${pin}/statistics${search}`}
                                 role="button"
                                 data-tip="查詢歷史統計資料"
                             >
