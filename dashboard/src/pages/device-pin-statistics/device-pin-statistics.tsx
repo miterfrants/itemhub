@@ -171,9 +171,6 @@ const DevicePinStatistics = () => {
     }, []);
 
     useEffect(() => {
-        if (!aggregateData) {
-            return;
-        }
         setAggregateNumber(aggregateData);
     }, [aggregateData]);
 
