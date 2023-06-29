@@ -337,8 +337,10 @@ const Devices = () => {
                                     <div className="col-3">裝置名稱</div>
                                     <div className="col-2">狀態</div>
                                     <div className="col-2">Protocol</div>
-                                    <div className="col-3">Pins Data</div>
-                                    <div className="col-2">操作</div>
+                                    <div className="col-5">操作</div>
+                                </div>
+                                <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
+                                    <div className="col-12">Pins Data</div>
                                 </div>
                                 <div className="devices-list">
                                     {devices.map(
@@ -395,20 +397,9 @@ const Devices = () => {
                                                         {targetProtocol}
                                                     </div>
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
-                                                        Pins Data
-                                                    </div>
-                                                    <div className="col-8 col-lg-3 p-3 p-lg-0">
-                                                        <Pins
-                                                            deviceId={Number(
-                                                                id
-                                                            )}
-                                                            isEditMode={false}
-                                                        />
-                                                    </div>
-                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                         操作
                                                     </div>
-                                                    <div className="col-8 col-lg-2 p-3 p-lg-0 d-flex flex-wrap align-content-start">
+                                                    <div className="col-8 col-lg-5 p-3 p-lg-0 d-flex flex-wrap align-content-start">
                                                         <Link
                                                             className="me-4 mb-3"
                                                             to={`/dashboard/devices/${id}${search}`}
@@ -618,6 +609,18 @@ const Devices = () => {
                                                                 src={cameraIcon}
                                                             />
                                                         </div>
+                                                    </div>
+                                                    <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                        Pins Data
+                                                    </div>
+                                                    <div className="col-8 col-lg-12 p-3 p-lg-0">
+                                                        <hr className="border-grey-300" />
+                                                        <Pins
+                                                            deviceId={Number(
+                                                                id
+                                                            )}
+                                                            isEditMode={false}
+                                                        />
                                                     </div>
                                                 </div>
                                             );

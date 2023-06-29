@@ -182,7 +182,7 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getPipelineDeviceStaticMethods()
         {
-            return ConvertHelper.EnumToList(typeof(PIPELINE_DEVICE_STATIC_METHODS));
+            return ConvertHelper.EnumToList(typeof(PIPELINE_DEVICE_STATISTICAL_METHODS));
         }
     }
 }
