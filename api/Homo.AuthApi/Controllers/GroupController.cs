@@ -7,7 +7,6 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Homo.AuthApi
 {
     [Route("v1/groups")]
-    [SwaggerUiInvisibility]
     [AuthorizeFactory(AUTH_TYPE.COMMON, new ROLE[] { ROLE.USER })]
     public class GroupController : ControllerBase
     {
@@ -18,7 +17,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 取得分頁列表",
             Description = ""
         )]
@@ -34,7 +33,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 取得列表",
             Description = ""
         )]
@@ -46,7 +45,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 新增群組",
             Description = ""
         )]
@@ -59,7 +58,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 批次刪除",
             Description = ""
         )]
@@ -72,7 +71,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 取得單一資料",
             Description = ""
         )]
@@ -89,7 +88,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 更新單筆資料",
             Description = ""
         )]
@@ -103,7 +102,7 @@ namespace Homo.AuthApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "管理系統" },
+            Tags = new[] { "權限管理系統" },
             Summary = "群組 - 刪除單筆資料",
             Description = ""
         )]

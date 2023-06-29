@@ -56,6 +56,8 @@ namespace Homo.AuthApi
             record.CreatedBy = createdBy;
             dbContext.Group.Add(record);
             dbContext.SaveChanges();
+            record.Roles = $"[\"group_{record.Id}\"]";
+            dbContext.SaveChanges();
             return record;
         }
 
