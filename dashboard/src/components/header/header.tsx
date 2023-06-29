@@ -8,6 +8,7 @@ import logoWordingIcon from '@/assets/images/logo-wording.svg';
 import shieldIcon from '@/assets/images/shield.svg';
 import docIcon from '@/assets/images/doc.svg';
 import pipelineIcon from '@/assets/images/pipeline.svg';
+import groupIcon from '@/assets/images/group.svg';
 import lineUs from '@/assets/images/icon-line.png';
 import { useState, useEffect } from 'react';
 import { layoutActions } from '@/redux/reducers/layout.reducer';
@@ -112,6 +113,16 @@ const Header = () => {
                         <img src={pipelineIcon} />
                         <span className="text-block text-nowrap overflow-hidden">
                             <div className="mx-3">自動化觸發流程</div>
+                        </span>
+                    </Link>
+
+                    <Link
+                        to="/dashboard/groups"
+                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                    >
+                        <img src={groupIcon} />
+                        <span className="text-block text-nowrap overflow-hidden">
+                            <div className="mx-3">群組權限</div>
                         </span>
                     </Link>
 

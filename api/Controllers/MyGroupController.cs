@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Homo.Core.Constants;
+using Homo.AuthApi;
 using Homo.Api;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Homo.AuthApi
+namespace Homo.IotApi
 {
-    [Route("v1/groups")]
-    [AuthorizeFactory(AUTH_TYPE.COMMON, new ROLE[] { ROLE.USER })]
-    public class GroupController : ControllerBase
+    [Route("v1/my/groups")]
+    [IotDashboardAuthorizeFactory()]
+    public class MyGroupController : ControllerBase
     {
         private readonly DBContext _dbContext;
-        public GroupController(DBContext dbContext)
+        public MyGroupController(DBContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -22,13 +23,13 @@ namespace Homo.AuthApi
             Description = ""
         )]
         [HttpGet]
-        public ActionResult<dynamic> getList([FromQuery] string name, [FromQuery] int page = 1, [FromQuery] int limit = 20)
+        public ActionResult<dynamic> getList([FromQuery] string name, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload, [FromQuery] int page = 1, [FromQuery] int limit = 20)
         {
-            List<Group> records = GroupDataservice.GetList(_dbContext, page, limit, name);
+            List<Group> records = MyGroupDataservice.GetList(_dbContext, page, limit, extraPayload.Id, name);
             return new
             {
                 groups = records,
-                rowNum = GroupDataservice.GetRowNum(_dbContext, name)
+                rowNum = MyGroupDataservice.GetRowNum(_dbContext, extraPayload.Id, name)
             };
         }
 
@@ -39,9 +40,9 @@ namespace Homo.AuthApi
         )]
         [HttpGet]
         [Route("all")]
-        public ActionResult<dynamic> getAll([FromQuery] string name)
+        public ActionResult<dynamic> getAll([FromQuery] string name, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return GroupDataservice.GetAll(_dbContext, name);
+            return MyGroupDataservice.GetAll(_dbContext, extraPayload.Id, name);
         }
 
         [SwaggerOperation(
@@ -50,10 +51,10 @@ namespace Homo.AuthApi
             Description = ""
         )]
         [HttpPost]
-        public ActionResult<dynamic> create([FromBody] DTOs.Group dto, DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> create([FromBody] Homo.AuthApi.DTOs.Group dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long createdBy = extraPayload.Id;
-            Group rewRecord = GroupDataservice.Create(_dbContext, createdBy, dto);
+            Group rewRecord = MyGroupDataservice.Create(_dbContext, createdBy, dto);
             return rewRecord;
         }
 
@@ -63,10 +64,10 @@ namespace Homo.AuthApi
             Description = ""
         )]
         [HttpDelete]
-        public ActionResult<dynamic> batchDelete([FromBody] List<long?> ids, DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> batchDelete([FromBody] List<long?> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            long editedBy = extraPayload.Id;
-            GroupDataservice.BatchDelete(_dbContext, editedBy, ids);
+            long userId = extraPayload.Id;
+            MyGroupDataservice.BatchDelete(_dbContext, userId, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -77,12 +78,12 @@ namespace Homo.AuthApi
         )]
         [HttpGet]
         [Route("{id}")]
-        public ActionResult<dynamic> get([FromRoute] int id)
+        public ActionResult<dynamic> get([FromRoute] int id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            Group record = GroupDataservice.GetOne(_dbContext, id);
+            Group record = MyGroupDataservice.GetOne(_dbContext, extraPayload.Id, id);
             if (record == null)
             {
-                throw new CustomException(ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
+                throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
             }
             return record;
         }
@@ -94,10 +95,10 @@ namespace Homo.AuthApi
         )]
         [HttpPatch]
         [Route("{id}")]
-        public ActionResult<dynamic> update([FromRoute] int id, [FromBody] DTOs.Group dto, DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> update([FromRoute] int id, [FromBody] Homo.AuthApi.DTOs.Group dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long editedBy = extraPayload.Id;
-            GroupDataservice.Update(_dbContext, id, editedBy, dto);
+            MyGroupDataservice.Update(_dbContext, id, editedBy, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -108,10 +109,10 @@ namespace Homo.AuthApi
         )]
         [HttpDelete]
         [Route("{id}")]
-        public ActionResult<dynamic> delete([FromRoute] long id, DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> delete([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long editedBy = extraPayload.Id;
-            GroupDataservice.Delete(_dbContext, id, editedBy);
+            MyGroupDataservice.Delete(_dbContext, id, editedBy);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }
