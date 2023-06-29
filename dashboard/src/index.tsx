@@ -13,6 +13,7 @@ import store from './redux/store';
 import OauthClient from './pages/oauth-client/oauth-client';
 import Pipelines from './pages/pipelines/pipelines';
 import Pipeline from './pages/pipeline/pipeline';
+import DevicePinStatistics from './pages/device-pin-statistics/device-pin-statistics';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -28,10 +29,15 @@ ReactDOM.render(
                 <Route path="/" element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="dashboard/devices" element={<Devices />} />
+
                 <Route path="dashboard/devices/:id" element={<Device />} />
                 <Route
                     path="dashboard/devices/:id/:pin"
                     element={<DeviceForm />}
+                />
+                <Route
+                    path="dashboard/devices/:id/:pin/statistics"
+                    element={<DevicePinStatistics />}
                 />
                 <Route
                     path="dashboard/devices/create"

@@ -10,6 +10,8 @@ namespace Homo.IotApi
             [Required]
             public string Message { get; set; }
             public long DeviceId { get; set; }
+            public long? UserId { get; set; }
+            public string Pin { get; set; }
         }
     }
 }

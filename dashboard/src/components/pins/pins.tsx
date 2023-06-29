@@ -43,14 +43,27 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
             {isLoading || devicePins === null ? (
                 <div>Loading</div>
             ) : (
-                <div>
-                    {devicePins.map((item) => (
-                        <Pin
-                            pinItem={item}
-                            isEditMode={isEditMode}
-                            key={`${item.deviceId}-${item.pin}`}
-                        />
-                    ))}
+                <div className="row">
+                    {devicePins
+                        .sort((curr, next) =>
+                            curr.pinType == 1 && next.pinType == 0
+                                ? -1
+                                : curr.pinType == 1 && next.pinType == 1
+                                ? 0
+                                : 1
+                        )
+                        .map((item) => (
+                            <div
+                                className={`${
+                                    item.pinType === 0
+                                        ? 'col-12'
+                                        : 'col-12 col-md-3'
+                                }`}
+                                key={`${item.deviceId}-${item.pin}`}
+                            >
+                                <Pin pinItem={item} isEditMode={isEditMode} />
+                            </div>
+                        ))}
                 </div>
             )}
         </div>

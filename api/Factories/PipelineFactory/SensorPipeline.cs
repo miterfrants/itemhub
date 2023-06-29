@@ -115,7 +115,7 @@ namespace Homo.IotApi
         public string Pin { get; set; }
 
         public int? LastRows { get; set; }
-        public PIPELINE_DEVICE_STATIC_METHODS? StaticMethod { get; set; }
+        public PIPELINE_DEVICE_STATISTICAL_METHODS? StaticMethod { get; set; }
         public TRIGGER_OPERATOR? Operator { get; set; }
         public decimal? Threshold { get; set; }
     }
