@@ -53,6 +53,11 @@ namespace Homo.IotApi
         [HttpPost]
         public ActionResult<dynamic> create([FromBody] Homo.AuthApi.DTOs.Group dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
+            var existsGroup = MyGroupDataservice.GetOneByName(_dbContext, extraPayload.Id, dto.Name);
+            if (existsGroup != null)
+            {
+                throw new CustomException(ERROR_CODE.DEVICE_STATE_EXISTS, System.Net.HttpStatusCode.Forbidden);
+            }
             long createdBy = extraPayload.Id;
             Group rewRecord = MyGroupDataservice.Create(_dbContext, createdBy, dto);
             return rewRecord;

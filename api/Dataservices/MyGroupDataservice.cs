@@ -48,6 +48,11 @@ namespace Homo.IotApi
             return dbContext.Group.FirstOrDefault(x => x.DeletedAt == null && x.Id == id && x.CreatedBy == userId);
         }
 
+        public static Group GetOneByName(DBContext dbContext, long userId, string name)
+        {
+            return dbContext.Group.FirstOrDefault(x => x.DeletedAt == null && x.Name == name && x.CreatedBy == userId);
+        }
+
         public static Group Create(DBContext dbContext, long createdBy, Homo.AuthApi.DTOs.Group dto)
         {
             Group record = new Group();

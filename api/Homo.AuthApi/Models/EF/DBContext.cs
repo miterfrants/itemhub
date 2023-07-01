@@ -41,6 +41,11 @@ namespace Homo.AuthApi
                 entity.HasIndex(p => new { p.IsTwoFactorAuth });
             });
 
+            modelBuilder.Entity<Group>(entity =>
+            {
+                entity.HasIndex(p => new { p.Name, p.CreatedBy, p.DeletedAt }).IsUnique().HasFilter("[DeletedAt] IS NOT NULL"); ;
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
 
