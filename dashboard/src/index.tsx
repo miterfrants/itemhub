@@ -16,6 +16,7 @@ import Pipeline from './pages/pipeline/pipeline';
 import Groups from './pages/groups/groups';
 import Group from './pages/group/group';
 import DevicePinStatistics from './pages/device-pin-statistics/device-pin-statistics';
+import GroupsJoin from './pages/groups/groups-join';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -36,6 +37,10 @@ ReactDOM.render(
                 <Route path="dashboard/groups" element={<Groups />} />
                 <Route path="dashboard/groups/create" element={<Group />} />
                 <Route path="dashboard/groups/:id" element={<Group />} />
+                <Route
+                    path="dashboard/groups/:id/invitations/:invitationId/join"
+                    element={<GroupsJoin />}
+                />
                 <Route
                     path="dashboard/devices/:id/:pin"
                     element={<DeviceForm />}

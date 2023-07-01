@@ -8,5 +8,10 @@ namespace Homo.AuthApi
         {
             public string Name { get; set; }
         }
+
+        public partial class JoinGroup : DTOs
+        {
+            public string Token { get; set; }
+        }
     }
 }

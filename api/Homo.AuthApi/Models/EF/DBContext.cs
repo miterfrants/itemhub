@@ -58,6 +58,16 @@ namespace Homo.AuthApi
                 entity.HasIndex(x => new { x.IsDeleted, x.Name }).IsUnique();
             });
 
+            modelBuilder.Entity<Invitation>(entity =>
+            {
+                entity.HasIndex(p => new { p.Status });
+                entity.HasIndex(p => new { p.Email, p.GroupId, p.DeletedAt }).IsUnique();
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.CreatedBy });
+                entity.Property(b => b.Status).HasDefaultValue(INVITATION_STATUS.PENDING);
+
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
 
