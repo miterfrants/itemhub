@@ -40,6 +40,8 @@ export const END_POINT = {
     PIPELINE_CONNECTOR: 'my/pipelines/:pipelineId/connectors/:id',
     GROUPS: 'my/groups',
     GROUP: 'my/groups/:id',
+    INVITATIONS: 'my/groups/:id/invitations',
+    INVITATION: 'my/groups/:id/invitations/:invitationId',
 };
 
 export const HTTP_METHOD = {

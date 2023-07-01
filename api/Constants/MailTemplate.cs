@@ -31,5 +31,8 @@ namespace Homo.AuthApi
         INVITE = 9,
         [Description("下線通知")]
         OFFLINE_NOTIFICATION = 10,
+
+        [Description("邀請加入群組")]
+        INVITE_TO_JOIN_GROUP = 11,
     }
 }

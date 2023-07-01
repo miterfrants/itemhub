@@ -16,6 +16,7 @@ namespace Homo.AuthApi
         public virtual DbSet<VerifyCode> VerifyCode { get; set; }
         public virtual DbSet<RelationOfGroupAndUser> RelationOfGroupAndUser { get; set; }
         public virtual DbSet<Group> Group { get; set; }
+        public virtual DbSet<Invitation> Invitation { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -39,6 +40,16 @@ namespace Homo.AuthApi
                 entity.HasIndex(p => new { p.IsUsed });
                 entity.HasIndex(p => new { p.Code });
                 entity.HasIndex(p => new { p.IsTwoFactorAuth });
+            });
+
+            modelBuilder.Entity<Invitation>(entity =>
+            {
+                entity.HasIndex(p => new { p.Status });
+                entity.HasIndex(p => new { p.Email, p.GroupId, p.DeletedAt }).IsUnique();
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.CreatedBy });
+                entity.Property(b => b.Status).HasDefaultValue(INVITATION_STATUS.PENDING);
+
             });
 
             OnModelCreatingPartial(modelBuilder);
