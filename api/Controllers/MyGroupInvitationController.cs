@@ -82,7 +82,7 @@ namespace Homo.IotApi
         )]
         [HttpDelete]
         [Route("{invitationId}")]
-        public ActionResult<dynamic> delete([FromRoute] long id, [FromBody] long invitationId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> delete([FromRoute] long id, [FromRoute] long invitationId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long userId = extraPayload.Id;
             InvitationDataservice.BatchDelete(_dbContext, userId, id, new List<long> { invitationId });
