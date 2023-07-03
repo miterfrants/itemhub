@@ -11,6 +11,7 @@ namespace Homo.AuthApi
         public DateTime? EditedAt { get; set; }
         public long? EditedBy { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public bool? IsDeleted { get; set; }
 
         [Required]
         [MaxLength(128)]

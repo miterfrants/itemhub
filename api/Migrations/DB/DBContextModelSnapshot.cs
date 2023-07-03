@@ -40,6 +40,11 @@ namespace IotApi.Migrations.DB
                     b.Property<long?>("EditedBy")
                         .HasColumnType("bigint");
 
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tinyint(1)")
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -52,9 +57,8 @@ namespace IotApi.Migrations.DB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name", "CreatedBy", "DeletedAt")
-                        .IsUnique()
-                        .HasFilter("[DeletedAt] IS NOT NULL");
+                    b.HasIndex("IsDeleted", "Name")
+                        .IsUnique();
 
                     b.ToTable("Group");
                 });

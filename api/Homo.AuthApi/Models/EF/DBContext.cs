@@ -43,7 +43,9 @@ namespace Homo.AuthApi
 
             modelBuilder.Entity<Group>(entity =>
             {
-                entity.HasIndex(p => new { p.Name, p.CreatedBy, p.DeletedAt }).IsUnique().HasFilter("[DeletedAt] IS NOT NULL"); ;
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(x => new { x.IsDeleted, x.Name }).IsUnique();
             });
 
             OnModelCreatingPartial(modelBuilder);
