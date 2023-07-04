@@ -74,5 +74,5 @@
     "CAN_UPLOAD_ONLY_ONE_FILE": "這個 API 僅能上傳一個檔案",
     "FILE_NOT_FOUND": "找不到檔案",
     "PIPELINE_INVALID_PAYLOAD": "自動化觸發流程設定資料發生錯誤: {reason}",
-    "GROUP_EXISTS": "你新增的群組名稱已經存在，請重新命名"
+    "GROUP_EXISTS": "群組名稱已經存在，請重新命名"
 }

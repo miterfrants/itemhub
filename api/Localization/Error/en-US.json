@@ -64,5 +64,5 @@
     "CAN_UPLOAD_ONLY_ONE_FILE": "This API can only upload one file",
     "FILE_NOT_FOUND": "File not found",
     "PIPELINE_INVALID_PAYLOAD": "Invalid pipeline payload: {reason}",
-    "GROUP_EXISTS": "The group name you added already exists. Please rename it."
+    "GROUP_EXISTS": "The group name already exists. Please rename it."
 }
