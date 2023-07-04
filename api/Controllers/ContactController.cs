@@ -45,7 +45,7 @@ namespace Homo.IotApi
             {
                 webSiteUrl = _webSiteUrl,
                 adminEmail = _adminEmail,
-                message = "name: " + dto.Name + "<br />phone: " + dto.Phone + "<br />content: " + dto.Content,
+                message = "type:" + string.Join(",", dto.Type) + "<br />name: " + dto.Name + "<br />phone: " + dto.Phone + "<br />content: " + dto.Content,
                 mailContentContactUsDescription = _commonLocalizer.Get("mailContentContactUsDescription"),
                 mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail")
             });

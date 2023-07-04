@@ -1,6 +1,5 @@
 <div class="container mt-5 mt-lg-5 px-3">
-    <div>
-        <a href=""></a>
+    <div id="farm">
         <div class="py-3 text-center">
             <h1 class="pb-3">
                 輕量化的智慧農業解決方案
@@ -51,12 +50,12 @@
             </ul>
         </div>
     </div>
-    <div>
+    <div id="farm-resume">
         <div class="py-3 text-center">
             <h1 class="pb-3">智慧農業再升級 - 產銷覆歷自動化</h1>
             <h3 class="pb-3">提升效率，精準管理</h3>
             <div class="pb-3">
-                透過結合智能感測、資訊整合和雲端技術，簡化管理操作。並即時上傳產銷覆歷資訊，大幅降低人工作業時間，<br />改善產銷履歷填寫的不便性，協助農民提升農業生產管理的效能。
+                透過結合智能感測、資訊整合和雲端技術，簡化管理操作。並即時栽培計畫、生產記錄等資訊，大幅降低人工作業時間，<br />改善產銷履歷填寫的不便性，協助農民提升農業生產管理的效能。
             </div>
         </div>
         <div class="py-3 text-center">
@@ -87,22 +86,25 @@
         <div class="rounded bg-white px-4 py-45 mb-4 form">
             <div>
                 <div class="mb-2">類型</div>
-                <div class="">
-                    <div class="form-check d-inline-flex align-items-center me-3">
-                        <input class="form-check-input" type="checkbox" value="" id="farm">
-                        <label class="form-check-label lh-1 pt-1 ps-1" for="farm">
-                            智慧農業
+                <div class="checkbox-block">
+                    <div class="form-check d-inline-block me-3">
+                        <label class="form-check-label lh-1">
+                            <input data-field="type" class="form-check-input me-2 mt-0" type="checkbox" value="智慧農業"
+                                {farmCheck}>
+                            <span>智慧農業</span>
                         </label>
                     </div>
-                    <div class="form-check d-inline-flex align-items-center">
-                        <input class="form-check-input" type="checkbox" value="" id="farm-resume">
-                        <label class="form-check-label lh-1 pt-1 ps-1" for="farm-resume">
-                            產銷覆歷自動化
-                        </label>
-                    </div>
-                </div>
-                <div class="validation text-danger mt-2">
+                    <div class="form-check d-inline-block me-3">
+                        <label class="form-check-label lh-1">
+                            <input data-field="type" class="form-check-input me-2 mt-0" type="checkbox" value="產銷覆歷自動化"
+                                {farmResumeCheck}>
 
+                            <span>產銷覆歷自動化</span>
+                        </label>
+                    </div>
+                    <div class="validation text-danger mt-2">
+
+                    </div>
                 </div>
             </div>
             <div class="d-md-flex justify-content-between mt-3">
