@@ -15,6 +15,10 @@ import { useDeleteGroupsApi, useGetGroupsApi } from '@/hooks/apis/groups.hook';
 import { GroupType } from '@/types/group.type';
 import { DialogTypeEnum, dialogActions } from '@/redux/reducers/dialog.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
+import {
+    ToasterTypeEnum,
+    toasterActions,
+} from '@/redux/reducers/toaster.reducer';
 
 const Groups = () => {
     const query = useQuery();
@@ -69,6 +73,13 @@ const Groups = () => {
     useEffect(() => {
         if (responseOfDelete?.status === RESPONSE_STATUS.OK) {
             setRefreshFlag(!refreshFlag);
+            dispatch(
+                toasterActions.pushOne({
+                    message: '刪除成功',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
         }
         // eslint-disable-next-line
     }, [responseOfDelete]);
