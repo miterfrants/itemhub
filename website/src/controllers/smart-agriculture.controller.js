@@ -16,12 +16,33 @@ export class SmartAgricultureController extends RoutingController {
         this.meta = {
             title: '智慧農業 - ItemHub',
             'og:title': '智慧農業 - ItemHub',
-            description: '透過輕量化的建置方式，大幅降低導入智慧農業的設備成本，減輕農民的負擔並減少生產中的資源浪費，實現永續發展。讓我們一起攜手使作物生生不息',
+            description: '透過輕量化的建置方式，大幅降低導入智慧農業的設備成本，減輕農民的負擔並減少生產中的資源浪費，更提供產銷覆歷自動化服務，提升農業生產管理的效能，實現永續發展。讓我們一起攜手使作物生生不息',
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
-            keywords: 'ItemHub,智慧農業,輕量化智慧農業,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
+            keywords: 'ItemHub,智慧農業,輕量化智慧農業,產銷覆歷自動化,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
         };
+
         await super.render({
-        });
+            farmCheck: '',
+            farmResumeCheck: ''
+        }, this.scrollAndCheckedToType());
+    }
+
+    scrollAndCheckedToType () {
+        setTimeout(() => {
+            const searchParams = new URLSearchParams(location.search);
+            const type = searchParams.get('Type');
+            let scrollEl;
+            if (type === 'farm') {
+                scrollEl = document.querySelector('#farm');
+                scrollEl.scrollIntoView({ behavior: 'smooth' });
+                this.pageVariable.farmCheck = 'checked';
+            }
+            if (type === 'farm-resume') {
+                scrollEl = document.querySelector('#farm-resume');
+                scrollEl.scrollIntoView({ behavior: 'smooth' });
+                this.pageVariable.farmResumeCheck = 'checked';
+            }
+        }, 500);
     }
 
     async sendContactUs (event) {
@@ -40,6 +61,10 @@ export class SmartAgricultureController extends RoutingController {
         };
 
         const validationMessage = [];
+        if (!data.type) {
+            validationMessage.push({ key: 'type', message: '請選擇類型' });
+        }
+
         if (!data.name) {
             validationMessage.push({ key: 'name', message: '姓名為必填欄位' });
         }
@@ -59,8 +84,17 @@ export class SmartAgricultureController extends RoutingController {
         if (validationMessage.length > 0) {
             for (let i = 0; i < validationMessage.length; i++) {
                 const elInput = this.elHTML.querySelector(`[data-field="${validationMessage[i].key}"]`);
+                const inputType = elInput.getAttribute('type');
                 const elFormInputContainer = elInput.closest('label');
-                const elValidation = elFormInputContainer.querySelector('.validation');
+                let elValidation;
+
+                if (inputType === 'checkbox') {
+                    elValidation = elFormInputContainer.closest('.checkbox-block').querySelector('.validation');
+                }
+                if (inputType !== 'checkbox') {
+                    elValidation = elFormInputContainer.querySelector('.validation');
+                }
+
                 if (!elInput.classList.contains('invalid')) {
                     elInput.classList.add('invalid');
                 }
