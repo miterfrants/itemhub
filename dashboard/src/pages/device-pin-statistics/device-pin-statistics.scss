@@ -1,0 +1,8 @@
+.device-pin-statistics {
+    .line-chart {
+        min-height: 600px;
+    }
+    .line-chart::after {
+        padding-top: calc(100% / 3);
+    }
+}

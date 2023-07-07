@@ -68,43 +68,52 @@ namespace Homo.IotApi
                 .ToList<SensorLog>();
         }
 
-        public static decimal? GetAggregateValue(IotDbContext dbContext, long? ownerId, long deviceId, string pin, PIPELINE_DEVICE_STATIC_METHODS aggregateType, int page = 1, int limit = 50)
+        public static decimal? GetAggregateValue(IotDbContext dbContext, long? ownerId, long deviceId, string pin, PIPELINE_DEVICE_STATISTICAL_METHODS aggregateType, int? page, int? limit, DateTime? startAt = null, DateTime? endAt = null)
         {
             var query = dbContext.SensorLog
                 .Where(x =>
                     x.DeletedAt == null &&
                     (x.OwnerId == ownerId) &&
                     (deviceId == x.DeviceId) &&
-                    (x.Pin == pin)
+                    (x.Pin == pin) &&
+                    (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault()) &&
+                    (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())
                 )
-                .OrderByDescending(x => x.CreatedAt)
-                .Skip((page - 1) * limit)
-                .Take(limit);
+                .OrderByDescending(x => x.CreatedAt);
+
+
+
+            if (page != null && limit != null)
+            {
+                query = (IOrderedQueryable<SensorLog>)query.Skip((page.GetValueOrDefault() - 1) & limit.GetValueOrDefault()).Take(limit.GetValueOrDefault());
+            }
+
+
             decimal? result = null;
             try
             {
-                if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MAX)
+                if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.MAX)
                 {
                     result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Max(x => x.Value)).FirstOrDefault();
                 }
-                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MIN)
+                else if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.MIN)
                 {
                     result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Min(x => x.Value)).FirstOrDefault();
                 }
-                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.AVG)
+                else if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.AVG)
                 {
                     result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Average(x => x.Value)).FirstOrDefault();
                 }
-                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.SUM)
+                else if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.SUM)
                 {
                     result = query.GroupBy(x => new { x.OwnerId, x.DeviceId, x.Pin }).Select(g => g.Sum(x => x.Value)).FirstOrDefault();
                 }
-                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.MID)
+                else if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.MID)
                 {
                     var tempResult = query.Select(x => x.Value).ToList().OrderBy(x => x).ToList();
                     result = tempResult[tempResult.Count / 2];
                 }
-                else if (aggregateType == PIPELINE_DEVICE_STATIC_METHODS.STD)
+                else if (aggregateType == PIPELINE_DEVICE_STATISTICAL_METHODS.STD)
                 {
                     var data = query.Select(x => (decimal)x.Value).ToList();
                     var avg = data.Average();
@@ -149,6 +158,82 @@ namespace Homo.IotApi
                 record.DeletedAt = DateTime.Now;
             }
             dbContext.SaveChanges();
+        }
+
+        public static decimal GetMAX(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.SensorLog.Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())
+            ).Max(x => x.Value).GetValueOrDefault(0);
+        }
+
+        public static decimal GetMIN(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.SensorLog.Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())
+            ).Min(x => x.Value).GetValueOrDefault(0);
+        }
+
+
+        public static decimal GetSUM(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.SensorLog.Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())
+            ).Sum(x => x.Value.GetValueOrDefault(0));
+        }
+
+        public static decimal GetAVG(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+            return dbContext.SensorLog.Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())
+            ).Average(x => x.Value.GetValueOrDefault(0));
+        }
+
+        public static decimal GetSTD(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+            var data = dbContext.SensorLog
+            .Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault())).Select(x => (decimal)x.Value).ToList();
+            var avg = data.Average();
+            decimal sumOfSquaresOfDifferences = data.Select(val => (val - avg) * (val - avg)).Sum();
+            decimal sd = (decimal)Math.Sqrt((double)(sumOfSquaresOfDifferences / data.Count));
+            return sd;
+        }
+
+        public static decimal GetMID(IotDbContext dbContext, long ownerId, List<long> ids, string pin, DateTime? startAt, DateTime? endAt)
+        {
+
+            var tempResult = dbContext.SensorLog
+            .Where(x => x.DeletedAt == null
+                && x.OwnerId == ownerId
+                && ids.Contains(x.DeviceId)
+                && x.Pin == pin
+                && (startAt == null || x.CreatedAt >= startAt.GetValueOrDefault())
+                && (endAt == null || x.CreatedAt <= endAt.GetValueOrDefault()))
+            .Select(x => x.Value.GetValueOrDefault(0)).ToList().OrderBy(x => x).ToList();
+            var result = tempResult[tempResult.Count / 2];
+
+            return result;
         }
     }
 }

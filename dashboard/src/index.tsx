@@ -15,6 +15,7 @@ import Pipelines from './pages/pipelines/pipelines';
 import Pipeline from './pages/pipeline/pipeline';
 import Groups from './pages/groups/groups';
 import Group from './pages/group/group';
+import DevicePinStatistics from './pages/device-pin-statistics/device-pin-statistics';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -30,6 +31,7 @@ ReactDOM.render(
                 <Route path="/" element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="dashboard/devices" element={<Devices />} />
+
                 <Route path="dashboard/devices/:id" element={<Device />} />
                 <Route path="dashboard/groups" element={<Groups />} />
                 <Route path="dashboard/groups/create" element={<Group />} />
@@ -37,6 +39,10 @@ ReactDOM.render(
                 <Route
                     path="dashboard/devices/:id/:pin"
                     element={<DeviceForm />}
+                />
+                <Route
+                    path="dashboard/devices/:id/:pin/statistics"
+                    element={<DevicePinStatistics />}
                 />
                 <Route
                     path="dashboard/devices/create"

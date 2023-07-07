@@ -12,6 +12,7 @@ namespace Homo.IotApi
             public string Phone { get; set; }
             public string Name { get; set; }
             public string FromMail { get; set; }
+            public string[] Type { get; set; }
 
         }
     }
