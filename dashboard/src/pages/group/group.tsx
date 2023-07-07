@@ -161,7 +161,8 @@ const Group = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="d-flex justify-content-end mt-5">
+
+                        <div className="d-flex flex-wrap justify-content-end mt-5">
                             <button
                                 className="btn btn-secondary me-3"
                                 onClick={back}
