@@ -15,6 +15,10 @@ import { useDeleteGroupsApi, useGetGroupsApi } from '@/hooks/apis/groups.hook';
 import { GroupType } from '@/types/group.type';
 import { DialogTypeEnum, dialogActions } from '@/redux/reducers/dialog.reducer';
 import { RESPONSE_STATUS } from '@/constants/api';
+import {
+    ToasterTypeEnum,
+    toasterActions,
+} from '@/redux/reducers/toaster.reducer';
 
 const Groups = () => {
     const query = useQuery();
@@ -69,6 +73,13 @@ const Groups = () => {
     useEffect(() => {
         if (responseOfDelete?.status === RESPONSE_STATUS.OK) {
             setRefreshFlag(!refreshFlag);
+            dispatch(
+                toasterActions.pushOne({
+                    message: '刪除成功',
+                    duration: 5,
+                    type: ToasterTypeEnum.INFO,
+                })
+            );
         }
         // eslint-disable-next-line
     }, [responseOfDelete]);
@@ -127,27 +138,27 @@ const Groups = () => {
                                         <div className="col-10">名稱</div>
                                         <div className="col-2">操作</div>
                                     </div>
-                                    <div className="pipeline-list">
+                                    <div>
                                         {groups.map(({ id, name }) => {
                                             return (
                                                 <div
                                                     className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0 align-items-center"
                                                     key={id}
                                                 >
-                                                    <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                    <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3 text-nowrap">
                                                         名稱
                                                     </div>
                                                     <div className="col-10 col-lg-10 p-3 p-lg-0">
-                                                        <div className="fw-bold lh-base mb-2 mb-lg-0">
+                                                        <div className="fw-bold lh-base mb-lg-0">
                                                             {name}
                                                         </div>
                                                     </div>
-                                                    <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                    <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3 text-nowrap">
                                                         操作
                                                     </div>
-                                                    <div className="col-10 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
+                                                    <div className="col-10 col-lg-2 p-lg-25 d-flex flex-wrap align-items-center">
                                                         <Link
-                                                            className="me-4 mb-3"
+                                                            className="p-2 me-3"
                                                             to={`/dashboard/groups/${id}?name=${searchName}`}
                                                             data-tip="編輯"
                                                         >
@@ -157,7 +168,7 @@ const Groups = () => {
                                                             />
                                                         </Link>
                                                         <div
-                                                            className="me-4 mb-3"
+                                                            className="p-2"
                                                             role="button"
                                                             onClick={() => {
                                                                 deleteOne(id);

@@ -50,6 +50,11 @@ namespace Homo.AuthApi
                 entity.HasIndex(p => new { p.CreatedBy });
                 entity.Property(b => b.Status).HasDefaultValue(INVITATION_STATUS.PENDING);
 
+            modelBuilder.Entity<Group>(entity =>
+            {
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(x => new { x.IsDeleted, x.Name }).IsUnique();
             });
 
             OnModelCreatingPartial(modelBuilder);

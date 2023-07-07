@@ -110,5 +110,19 @@ namespace Homo.IotApi
         {
             return SensorLogDataservice.GetList(_iotDbContext, extraPayload.Id, new List<long>() { id }, pin, page, limit, startAt, endAt);
         }
+
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "裝置 PIN 感測 - 統計資料",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{pin}/aggregate")]
+        public ActionResult<dynamic> getAggregateValue([FromRoute] long id, [FromRoute] string pin, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt, [FromQuery] PIPELINE_DEVICE_STATISTICAL_METHODS statisticalMethods, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            return SensorLogDataservice.GetAggregateValue(_iotDbContext, extraPayload.Id, id, pin, statisticalMethods, null, null, startAt, endAt).GetValueOrDefault(0);
+        }
+
+
     }
 }
