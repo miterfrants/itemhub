@@ -69,5 +69,6 @@ namespace Homo.IotApi
         public static string CAN_UPLOAD_ONLY_ONE_FILE = "CAN_UPLOAD_ONLY_ONE_FILE";
         public static string FILE_NOT_FOUND = "FILE_NOT_FOUND";
         public static string MAX_UPLOAD_SIZE_PER_DAILY = "MAX_UPLOAD_SIZE_PER_DAILY";
+        public static string GROUP_EXISTS = "GROUP_EXISTS";
     }
 }

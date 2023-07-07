@@ -13,6 +13,8 @@ import store from './redux/store';
 import OauthClient from './pages/oauth-client/oauth-client';
 import Pipelines from './pages/pipelines/pipelines';
 import Pipeline from './pages/pipeline/pipeline';
+import Groups from './pages/groups/groups';
+import Group from './pages/group/group';
 import DevicePinStatistics from './pages/device-pin-statistics/device-pin-statistics';
 
 ReactDOM.render(
@@ -31,6 +33,9 @@ ReactDOM.render(
                 <Route path="dashboard/devices" element={<Devices />} />
 
                 <Route path="dashboard/devices/:id" element={<Device />} />
+                <Route path="dashboard/groups" element={<Groups />} />
+                <Route path="dashboard/groups/create" element={<Group />} />
+                <Route path="dashboard/groups/:id" element={<Group />} />
                 <Route
                     path="dashboard/devices/:id/:pin"
                     element={<DeviceForm />}

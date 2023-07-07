@@ -21,6 +21,40 @@ namespace Homo.AuthApi
                 .ToList();
         }
 
+        public static List<ViewRelationOfGroupAndUser> GetRelationByGroupId(DBContext dbContext, long userId, long groupId, string groupName)
+        {
+            return dbContext.RelationOfGroupAndUser
+                .Where(x => x.DeletedAt == null && x.GroupId == groupId && x.CreatedBy == userId)
+                .Join(dbContext.User, r => r.UserId, user => user.Id, (relation, user) =>
+                new
+                {
+                    user,
+                    relation
+                })
+                .Join(dbContext.Group, record => record.relation.GroupId, group => group.Id, (record, group) => new
+                {
+                    user = record.user,
+                    relation = record.relation,
+                    group = group
+                })
+                .Where(x =>
+                    x.user.DeletedAt != null
+                    && x.group.DeletedAt != null
+                    && x.group.Name.Contains(groupName)
+                    && x.group.CreatedBy == userId
+                )
+                .Select(x => new ViewRelationOfGroupAndUser
+                {
+                    Id = x.relation.Id,
+                    UserId = x.relation.UserId,
+                    GroupId = x.relation.GroupId,
+                    GroupName = x.group.Name,
+                    Roles = x.group.Roles,
+                    Email = x.user.Email
+                })
+                .ToList();
+        }
+
         public static void AddPermissionGroups(long createdBy, long userId, List<long> groupIds, DBContext dbContext)
         {
             foreach (long groupId in groupIds)
@@ -64,5 +98,6 @@ namespace Homo.AuthApi
         public long UserId { get; set; }
         public string Roles { get; set; }
         public string GroupName { get; set; }
+        public string Email { get; set; }
     }
 }
