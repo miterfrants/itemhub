@@ -1,5 +1,6 @@
 import Spinner from '@/components/spinner/spinner';
 import { RESPONSE_STATUS } from '@/constants/api';
+import { COOKIE_KEY } from '@/constants/cookie-key';
 import { useJoinGroupApi } from '@/hooks/apis/groups.hook';
 import { useQuery } from '@/hooks/query.hook';
 import { JoinGroupType } from '@/types/join-group.type';
@@ -9,6 +10,7 @@ import { useParams } from 'react-router-dom';
 const GroupsJoin = () => {
     const query = useQuery();
     const token = query.get('token') || '';
+
     const { id: idFromUrl, invitationId: invitationIdFromUrl } = useParams();
     const {
         fetchApi: joinGroup,

@@ -69,7 +69,7 @@ namespace Homo.IotApi
                     adminEmail = _adminEmail
                 });
                 template.Subject = _commonLocalizer.Get(template.Subject);
-                // MailHelper.Send(MailProvider.SEND_GRID, template, _systemEmail, invitation.Email, _sendGridAPIKey);
+                MailHelper.Send(MailProvider.SEND_GRID, template, _systemEmail, invitation.Email, _sendGridAPIKey);
             });
 
             return results;

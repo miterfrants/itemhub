@@ -1,6 +1,6 @@
 import './app.scss';
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
     useGetTriggerOperatorsApi,
@@ -19,11 +19,15 @@ import jwt_decode from 'jwt-decode';
 import MonitorConfigDialog from './components/monitor-config-dialog/monitor-config-dialog';
 import OfflineNotificationDialog from './components/offline-notification-dialog/offline-notification-dialog';
 import RealtimeDeviceImageDialog from './components/realtime-device-image-dialog/realtime-device-image-dialog';
+import moment from 'moment';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
 const App = () => {
     const query = useQuery();
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
+    const params = useParams();
     const dashboardTokenFromQueryString =
         query.get(COOKIE_KEY.DASHBOARD_TOKEN) || '';
 
@@ -39,8 +43,45 @@ const App = () => {
     }
 
     const token = CookieHelpers.GetCookie({ name: COOKIE_KEY.DASHBOARD_TOKEN });
-    if (!token) {
+
+    // invitation
+    const isInvitationUrl =
+        /\/dashboard\/groups\/\d+\/invitations\/\d+\/join/gi.test(pathname);
+    let isTokenExpired = false;
+
+    if (token) {
+        const payload = jwt_decode<{ exp: number }>(token);
+        isTokenExpired = payload.exp <= moment().unix();
+    }
+
+    if ((!token || isTokenExpired) && isInvitationUrl) {
+        const { id: groupId, invitationId } = params;
+        CookieHelpers.SetCookie({
+            name: COOKIE_KEY.INVITATION,
+            value: JSON.stringify({
+                token: query.get('token') || '',
+                groupId,
+                invitationId,
+            }),
+            unixTimestamp: moment().add(1, 'hours').unix(),
+        });
+    }
+
+    if (!token || isTokenExpired) {
         window.location.href = import.meta.env.VITE_WEBSITE_URL;
+    }
+
+    // join group
+    if (!isInvitationUrl) {
+        const rawInvitationData = CookieHelpers.GetCookie({
+            name: COOKIE_KEY.INVITATION,
+        });
+        if (rawInvitationData) {
+            const invitation = JSON.parse(rawInvitationData);
+            navigate(
+                `/dashboard/groups/${invitation.groupId}/invitations/${invitation.invitationId}/join?token=${invitation.token}`
+            );
+        }
     }
 
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
