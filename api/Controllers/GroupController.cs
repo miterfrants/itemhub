@@ -32,7 +32,7 @@ namespace Homo.IotApi
                 throw new CustomException(ERROR_CODE.INVITATION_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
             }
 
-            if (invitation.CreatedAt >= System.DateTime.Now.AddHours(-1))
+            if ((System.DateTime.Now - invitation.CreatedAt).TotalHours >= 1)
             {
                 throw new CustomException(ERROR_CODE.INVITATION_EXPIRED, System.Net.HttpStatusCode.Forbidden);
             }

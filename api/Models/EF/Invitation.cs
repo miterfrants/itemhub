@@ -18,5 +18,6 @@ namespace Homo.AuthApi
 
         [Required]
         public INVITATION_STATUS Status { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

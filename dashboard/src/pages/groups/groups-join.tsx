@@ -61,7 +61,12 @@ const GroupsJoin = () => {
                     <div>
                         <h3 className="text-center">加入群組發生錯誤</h3>
                         <div className="text-center text-warn">
-                            {errorOfJoinGroup.message}
+                            {errorOfJoinGroup.message &&
+                            errorOfJoinGroup.message.indexOf(
+                                'Duplicate entry'
+                            ) !== -1
+                                ? '重複加入群組'
+                                : errorOfJoinGroup.message}
                         </div>
                     </div>
                 )}
