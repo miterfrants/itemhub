@@ -49,6 +49,7 @@ namespace Homo.AuthApi
                 entity.HasIndex(p => new { p.DeletedAt });
                 entity.HasIndex(p => new { p.CreatedBy });
                 entity.Property(b => b.Status).HasDefaultValue(INVITATION_STATUS.PENDING);
+            });
 
             modelBuilder.Entity<Group>(entity =>
             {
