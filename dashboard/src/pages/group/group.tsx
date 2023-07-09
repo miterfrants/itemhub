@@ -1,8 +1,8 @@
+import GroupUsers from '@/components/group-users/group-users';
 import Invitation from '@/components/invitation/invitation';
 import PageTitle from '@/components/page-title/page-title';
 import Spinner from '@/components/spinner/spinner';
 import { RESPONSE_STATUS } from '@/constants/api';
-import { ValidationHelpers } from '@/helpers/validation.helper';
 import {
     useCreateGroupApi,
     useGetGroupApi,
@@ -185,6 +185,7 @@ const Group = () => {
                 )}
             </div>
             {!isCreateMode && <Invitation groupId={id} />}
+            {!isCreateMode && <GroupUsers groupId={id} />}
         </div>
     );
 };

@@ -18,6 +18,7 @@ import layoutReducer from './reducers/layout.reducer';
 import realtimeDeviceImageDialogReducer from './reducers/realtime-device-image-dialog.reducer';
 import groupsReducer from './reducers/groups.reducer';
 import invitationsReducer from './reducers/invitations.reducer';
+import groupUsersReducer from './reducers/group-users.reducer';
 
 const store = configureStore({
     reducer: {
@@ -40,6 +41,7 @@ const store = configureStore({
         realtimeDeviceImageDialog: realtimeDeviceImageDialogReducer,
         groups: groupsReducer,
         invitations: invitationsReducer,
+        groupUsers: groupUsersReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

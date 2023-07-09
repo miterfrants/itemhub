@@ -10,6 +10,7 @@ import { InvitationType } from '@/types/invitation.type';
 import { useEffect, useRef, useState } from 'react';
 import closeIcon from '@/assets/images/dark-close.svg';
 import { RESPONSE_STATUS } from '@/constants/api';
+import Spinner from '../spinner/spinner';
 interface ValidationInterface {
     email: { isInvalid: boolean; errorMessage: string[] };
 }
@@ -27,34 +28,41 @@ const Invitation = ({ groupId }: { groupId: number | undefined }) => {
     >([]);
 
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState<number>(0);
+    const [isGetted, setIsGetted] = useState<boolean>(false);
 
     const invitationsFromStore: InvitationType[] =
         useAppSelector(selectInvitations);
 
-    const { isLoading: isGetting, fetchApi: getInvitations } =
-        useGetInvitationsApi({
-            groupId: groupId || 0,
-        });
-
-    const { isLoading: isCreating, fetchApi: createInvitations } =
-        useCreateInvitationsApi({
-            groupId: groupId || 0,
-            emails: shouldBeCreatedEmails,
-        });
-
     const {
-        isLoading: isDeleting,
-        fetchApi: deleteInvitation,
-        data: responseOfDelete,
-    } = useDeleteInvitationsApi({
+        isLoading: isGetting,
+        fetchApi: getInvitations,
+        data: responseOfGet,
+    } = useGetInvitationsApi({
         groupId: groupId || 0,
-        id: shouldBeDeleteId,
     });
+
+    const { fetchApi: createInvitations } = useCreateInvitationsApi({
+        groupId: groupId || 0,
+        emails: shouldBeCreatedEmails,
+    });
+
+    const { fetchApi: deleteInvitation, data: responseOfDelete } =
+        useDeleteInvitationsApi({
+            groupId: groupId || 0,
+            id: shouldBeDeleteId,
+        });
 
     useEffect(() => {
         getInvitations();
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (!isGetted && responseOfGet) {
+            setIsGetted(true);
+        }
+        // eslint-disable-next-line
+    }, [isGetting, responseOfGet]);
 
     useEffect(() => {
         if (shouldBeDeleteId === 0) {
@@ -146,63 +154,79 @@ const Invitation = ({ groupId }: { groupId: number | undefined }) => {
                 <label className="form-label" htmlFor="title">
                     邀請清單
                 </label>
-                <div className="d-flex">
-                    <input
-                        className={`form-control me-3 ${
-                            validation.email.isInvalid && 'border-danger'
-                        }`}
-                        type="text"
-                        placeholder="輸入 Email"
-                        ref={inputRef}
-                        onKeyUp={(e) => {
-                            if (e.nativeEvent.key === 'Enter') {
-                                validateAndAddInvitation(e.currentTarget);
-                            }
-                        }}
-                    />
-
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                            if (!inputRef.current) {
-                                return;
-                            }
-                            validateAndAddInvitation(inputRef.current);
-                        }}
-                    >
-                        新增
-                    </button>
-                </div>
-                {validation.email.isInvalid && (
-                    <div className="text-danger mt-1 fs-5">
-                        {validation.email.errorMessage.join(' ')}
-                    </div>
-                )}
             </div>
-            <div className="d-inline-flex flex-wrap align-items-center mt-3">
-                {invitations.map((invitation) => {
-                    return (
-                        <div
-                            className={`px-3 py-1 border border-1 me-3 rounded-2 d-flex align-items-center mb-3 ${
-                                !invitation.id
-                                    ? 'border-warn bg-warn bg-opacity-30'
-                                    : 'border-gray-400'
-                            }`}
-                            key={`${invitation.id}-${invitation.email}`}
-                        >
-                            {invitation.email}
-                            <img
-                                role="button"
-                                className="ms-2"
-                                src={closeIcon}
-                                onClick={() => {
-                                    setShouldBeDeleteId(invitation.id || 0);
+            {isGetting && !isGetted ? (
+                <div className="d-flex justify-content-center">
+                    <Spinner />
+                </div>
+            ) : (
+                <>
+                    <div>
+                        <div className="d-flex">
+                            <input
+                                className={`form-control me-3 ${
+                                    validation.email.isInvalid &&
+                                    'border-danger'
+                                }`}
+                                type="text"
+                                placeholder="輸入 Email"
+                                ref={inputRef}
+                                onKeyUp={(e) => {
+                                    if (e.nativeEvent.key === 'Enter') {
+                                        validateAndAddInvitation(
+                                            e.currentTarget
+                                        );
+                                    }
                                 }}
                             />
+
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => {
+                                    if (!inputRef.current) {
+                                        return;
+                                    }
+                                    validateAndAddInvitation(inputRef.current);
+                                }}
+                            >
+                                新增
+                            </button>
                         </div>
-                    );
-                })}
-            </div>
+                        {validation.email.isInvalid && (
+                            <div className="text-danger mt-1 fs-5">
+                                {validation.email.errorMessage.join(' ')}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="d-inline-flex flex-wrap align-items-center mt-3">
+                        {invitations.map((invitation) => {
+                            return (
+                                <div
+                                    className={`px-3 py-1 border border-1 me-3 rounded-2 d-flex align-items-center mb-3 ${
+                                        !invitation.id
+                                            ? 'border-warn bg-warn bg-opacity-30'
+                                            : 'border-gray-400'
+                                    }`}
+                                    key={`${invitation.id}-${invitation.email}`}
+                                >
+                                    {invitation.email}
+                                    <img
+                                        role="button"
+                                        className="ms-2"
+                                        src={closeIcon}
+                                        onClick={() => {
+                                            setShouldBeDeleteId(
+                                                invitation.id || 0
+                                            );
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 };
