@@ -3,6 +3,7 @@ using System;
 using Homo.AuthApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations.DB
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230630152850_AddInvitation")]
+    partial class AddInvitation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,11 +42,6 @@ namespace IotApi.Migrations.DB
                     b.Property<long?>("EditedBy")
                         .HasColumnType("bigint");
 
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("tinyint(1)")
-                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -56,9 +53,6 @@ namespace IotApi.Migrations.DB
                         .HasColumnType("varchar(512)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IsDeleted", "Name")
-                        .IsUnique();
 
                     b.ToTable("Group");
                 });
@@ -100,10 +94,9 @@ namespace IotApi.Migrations.DB
 
                     b.HasIndex("DeletedAt");
 
-                    b.HasIndex("Status");
+                    b.HasIndex("Email");
 
-                    b.HasIndex("Email", "GroupId", "DeletedAt")
-                        .IsUnique();
+                    b.HasIndex("Status");
 
                     b.ToTable("Invitation");
                 });

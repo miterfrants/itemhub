@@ -58,6 +58,11 @@ namespace Homo.AuthApi
                 filePath = $"{staticPath}/email/offline-notification.html";
                 subject = "offlineNotificationSubject";
             }
+            else if (key == MAIL_TEMPLATE.INVITE_TO_JOIN_GROUP)
+            {
+                filePath = $"{staticPath}/email/invite-to-join-group.html";
+                subject = "invite to join group";
+            }
 
             string content = File.ReadAllText(filePath);
             return new MailTemplate()

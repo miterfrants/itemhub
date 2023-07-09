@@ -80,7 +80,8 @@ export const groupsSlice = createSlice({
 
             return {
                 ...state,
-                oauthClients: newList,
+                rowNum: state.rowNum - (groups.length - newList.length),
+                groups: newList,
             };
         },
     },

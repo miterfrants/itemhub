@@ -1,3 +1,4 @@
+import Invitation from '@/components/invitation/invitation';
 import PageTitle from '@/components/page-title/page-title';
 import Spinner from '@/components/spinner/spinner';
 import { RESPONSE_STATUS } from '@/constants/api';
@@ -8,7 +9,6 @@ import {
     useUpdateGroupApi,
 } from '@/hooks/apis/groups.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
-import { dialogActions } from '@/redux/reducers/dialog.reducer';
 import { selectGroups } from '@/redux/reducers/groups.reducer';
 import {
     ToasterTypeEnum,
@@ -122,6 +122,7 @@ const Group = () => {
 
         isCreateMode ? createGroup() : updateGroup();
     };
+
     return (
         <div className="group">
             <PageTitle
@@ -160,7 +161,8 @@ const Group = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="d-flex justify-content-end mt-5">
+
+                        <div className="d-flex flex-wrap justify-content-end mt-5">
                             <button
                                 className="btn btn-secondary me-3"
                                 onClick={back}
@@ -182,6 +184,7 @@ const Group = () => {
                     </>
                 )}
             </div>
+            {!isCreateMode && <Invitation groupId={id} />}
         </div>
     );
 };

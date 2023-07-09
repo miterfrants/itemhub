@@ -17,6 +17,7 @@ import offlineNotificationDialogReducer from './reducers/offline-notification-di
 import layoutReducer from './reducers/layout.reducer';
 import realtimeDeviceImageDialogReducer from './reducers/realtime-device-image-dialog.reducer';
 import groupsReducer from './reducers/groups.reducer';
+import invitationsReducer from './reducers/invitations.reducer';
 
 const store = configureStore({
     reducer: {
@@ -38,6 +39,7 @@ const store = configureStore({
         layout: layoutReducer,
         realtimeDeviceImageDialog: realtimeDeviceImageDialogReducer,
         groups: groupsReducer,
+        invitations: invitationsReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({
