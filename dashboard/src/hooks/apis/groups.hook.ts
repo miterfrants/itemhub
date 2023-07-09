@@ -161,7 +161,7 @@ export const useUpdateGroupApi = (data: GroupType) => {
 
 export const useJoinGroupApi = (data: JoinGroupType) => {
     let apiPath = `${API_URL}${END_POINT.JOIN_GROUP}`;
-    apiPath = apiPath.replace(':id', (data.id || 0).toString());
+    apiPath = apiPath.replace(':id', (data.groupId || 0).toString());
     apiPath = apiPath.replace(
         ':invitationId',
         (data.invitationId || 0).toString()
@@ -170,7 +170,7 @@ export const useJoinGroupApi = (data: JoinGroupType) => {
     return useFetchApi<ResponseOK>({
         apiPath,
         payload: {
-            id: data.id,
+            id: data.groupId,
             token: data.token,
         },
         method: HTTP_METHOD.POST,
