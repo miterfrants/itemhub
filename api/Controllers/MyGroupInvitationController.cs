@@ -62,7 +62,7 @@ namespace Homo.IotApi
                 template = MailTemplateHelper.ReplaceVariable(template, new
                 {
                     webSiteUrl = _websiteUrl,
-                    firstName = extraPayload.FirstName,
+                    firstName = extraPayload.FirstName == null ? extraPayload.Email : extraPayload.FirstName,
                     groupName = group.Name,
                     token = invitation.Token,
                     mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
