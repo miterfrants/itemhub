@@ -6,9 +6,7 @@ namespace Homo.AuthApi
 {
     public class RelationOfGroupAndUserDataservice
     {
-
-
-        public static List<ViewRelationOfGroupAndUser> GetRelationByUserId(DBContext dbContext, long userId)
+        public static List<ViewRelationOfGroupAndUser> GetAllByUserId(DBContext dbContext, long userId)
         {
             return dbContext.RelationOfGroupAndUser
                 .Where(x => x.DeletedAt == null && x.UserId == userId)
@@ -23,7 +21,7 @@ namespace Homo.AuthApi
                 .ToList();
         }
 
-        public static List<ViewRelationOfGroupAndUser> GetRelationByGroupId(DBContext dbContext, long userId, long groupId, string groupName)
+        public static List<ViewRelationOfGroupAndUser> GetAllByGroupId(DBContext dbContext, long userId, long groupId, string groupName)
         {
             return dbContext.RelationOfGroupAndUser
                 .Where(x => x.DeletedAt == null && x.GroupId == groupId && x.CreatedBy == userId)
@@ -57,7 +55,7 @@ namespace Homo.AuthApi
                 .ToList();
         }
 
-        public static void AddPermissionGroups(long createdBy, long userId, List<long> groupIds, DBContext dbContext)
+        public static void Add(long createdBy, long userId, List<long> groupIds, DBContext dbContext)
         {
             foreach (long groupId in groupIds)
             {
@@ -72,21 +70,9 @@ namespace Homo.AuthApi
             dbContext.SaveChanges();
         }
 
-        public static void DeletePermissionGroups(long editedBy, long userId, List<long> ids, DBContext dbContext)
-        {
-            foreach (long id in ids)
-            {
-                RelationOfGroupAndUser relation = new RelationOfGroupAndUser { Id = id };
-                dbContext.Attach<RelationOfGroupAndUser>(relation);
-                relation.DeletedAt = DateTime.Now;
-                relation.EditedBy = editedBy;
-            }
-            dbContext.SaveChanges();
-        }
-
         public static bool IsVIP(DBContext dbContext, long userId)
         {
-            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, userId);
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(dbContext, userId);
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
             bool isVIP = roles.Any(x => x == "VIP");
             return isVIP;
@@ -94,11 +80,15 @@ namespace Homo.AuthApi
 
         public static void BatchDelete(DBContext dbContext, long userId, List<long> ids)
         {
-            dbContext.RelationOfGroupAndUser.Where(x => ids.Contains(x.Id) && x.CreatedBy == userId).UpdateFromQuery(x => new RelationOfGroupAndUser()
-            {
-                DeletedAt = DateTime.Now,
-                EditedBy = userId
-            }); ;
+            dbContext.RelationOfGroupAndUser
+                .Where(x =>
+                    (ids == null || ids.Contains(x.Id))
+                    && x.CreatedBy == userId
+                ).UpdateFromQuery(x => new RelationOfGroupAndUser()
+                {
+                    DeletedAt = DateTime.Now,
+                    EditedBy = userId
+                }); ;
         }
     }
 

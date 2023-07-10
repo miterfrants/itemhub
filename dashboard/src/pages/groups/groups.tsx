@@ -19,6 +19,7 @@ import {
     ToasterTypeEnum,
     toasterActions,
 } from '@/redux/reducers/toaster.reducer';
+import { useDeleteInvitationsApi } from '@/hooks/apis/invitations.hook';
 
 const Groups = () => {
     const query = useQuery();
@@ -36,6 +37,10 @@ const Groups = () => {
 
     const { data: responseOfDelete, fetchApi: deleteGroup } =
         useDeleteGroupsApi([shouldBeDeleteId]);
+
+    const { fetchApi: deleteInvitations } = useDeleteInvitationsApi({
+        groupId: shouldBeDeleteId,
+    });
 
     const { isLoading: isGetting, fetchApi: getGroups } = useGetGroupsApi({
         limit: Number(query.get('limit') || 10),
@@ -67,6 +72,9 @@ const Groups = () => {
             return;
         }
         deleteGroup();
+        deleteInvitations();
+        // deleteGroupUsers();
+        // deleteGroupDevices();
         // eslint-disable-next-line
     }, [shouldBeDeleteId]);
 

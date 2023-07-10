@@ -76,6 +76,19 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
+                    Tags = new[] { "權限管理系統" },
+                    Summary = "群組使用者 - 刪除所有邀請的使用者",
+                    Description = ""
+                )]
+        [HttpDelete]
+        public ActionResult<dynamic> deleteByGroupId([FromRoute] long id, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long userId = extraPayload.Id;
+            InvitationDataservice.BatchDelete(_dbContext, userId, id, null);
+            return new { status = CUSTOM_RESPONSE.OK };
+        }
+
+        [SwaggerOperation(
             Tags = new[] { "權限管理系統" },
             Summary = "群組使用者 - 刪除邀請",
             Description = ""

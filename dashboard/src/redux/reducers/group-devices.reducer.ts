@@ -1,16 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
-import { InvitationType } from '@/types/invitation.type';
+import { GroupDevicesType } from '@/types/group-devices.type';
 
-export type InvitationState = InvitationType[];
+const initialState: GroupDevicesType[] = [];
 
-const initialState: InvitationState = [];
-
-export const invitationsSlice = createSlice({
-    name: 'invitations',
+export const groupDevicesSlice = createSlice({
+    name: 'groupDevices',
     initialState: initialState,
     reducers: {
-        append: (state, action: PayloadAction<InvitationState>) => {
+        append: (state, action: PayloadAction<GroupDevicesType[]>) => {
             const shouldBeAppendItems = action.payload.filter(
                 (item) => !state.find((oldItem) => oldItem.id === item.id)
             );
@@ -35,24 +33,11 @@ export const invitationsSlice = createSlice({
 
             return newList;
         },
-        deleteMultipleByGroupId: (
-            state,
-            action: PayloadAction<{ groupId: number }>
-        ) => {
-            const newState = state || [];
-            const deletePayload = action.payload;
-
-            const newList = newState.filter(
-                (item) => item.groupId !== deletePayload.groupId
-            );
-
-            return newList;
-        },
     },
 });
 
-export const invitationsActions = invitationsSlice.actions;
+export const groupDevicesActions = groupDevicesSlice.actions;
 
-export const selectInvitations = (state: RootState) => state.invitations;
+export const selectGroupDevices = (state: RootState) => state.groupDevices;
 
-export default invitationsSlice.reducer;
+export default groupDevicesSlice.reducer;

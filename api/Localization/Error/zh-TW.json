@@ -76,6 +76,6 @@
     "PIPELINE_INVALID_PAYLOAD": "自動化觸發流程設定資料發生錯誤: {reason}",
     "GROUP_EXISTS": "群組名稱已經存在，請重新命名",
     "INVITATION_EXPIRED": "邀請已經過期",
-    "INVITATION_NOT_FOUND": "找不到對應的邀請資料"
-
+    "INVITATION_NOT_FOUND": "找不到對應的邀請資料",
+    "GROUP_DEVICES_EXISTS": "裝置已經加入這個群組中"
 }

@@ -39,13 +39,18 @@ namespace Homo.AuthApi
 
         public static void BatchDelete(DBContext dbContext, long userId, long groupId, List<long> ids)
         {
-            var invitations = dbContext.Invitation.Where(x => x.CreatedBy == userId && x.GroupId == groupId && x.DeletedAt == null && ids.Contains(x.Id)).ToList();
-            invitations.ForEach(item =>
-            {
-                item.DeletedAt = System.DateTime.Now;
-            });
-            dbContext.SaveChanges();
+            var invitations = dbContext.Invitation
+                .Where(x =>
+                    x.CreatedBy == userId
+                    && x.GroupId == groupId
+                    && x.DeletedAt == null
+                    && (ids == null || ids.Contains(x.Id))
+                ).UpdateFromQuery(x => new Invitation()
+                {
+                    DeletedAt = System.DateTime.Now
+                });
         }
+
 
         public static Invitation GetAvaiableOne(DBContext dbContext, long groupId, long invitationId, string token)
         {
