@@ -3,7 +3,7 @@ import { Pins } from '@/types/universal.type';
 // import { Validation } from '@/types/helpers.type';
 
 export const ValidationHelpers = {
-    Require: (validation: string | number | null) => {
+    Require: (validation: string | number | null | undefined) => {
         if (
             (typeof validation === 'number' && isNaN(validation)) ||
             (typeof validation === 'string' && validation === '') ||
@@ -28,7 +28,7 @@ export const ValidationHelpers = {
         name: string | null,
         microcontroller: number | null,
         selectedPins: PinItem[] | null,
-        selectedProtocol: number | null
+        selectedProtocol?: number
     ) => {
         const result = {
             isValid: false,
