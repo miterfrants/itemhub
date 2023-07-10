@@ -10,7 +10,8 @@ import {
 } from '@/constants/api';
 import { GroupType } from '@/types/group.type';
 import { groupsActions } from '@/redux/reducers/groups.reducer';
-import { ResponseOK } from '@/types/response.type';
+import { ResponseError, ResponseOK } from '@/types/response.type';
+import { JoinGroupType } from '@/types/join-group.type';
 
 interface GetResponseData {
     groups: GroupType[];
@@ -155,5 +156,24 @@ export const useUpdateGroupApi = (data: GroupType) => {
         method: HTTP_METHOD.PATCH,
         initialData: null,
         callbackFunc: dispatchRefresh,
+    });
+};
+
+export const useJoinGroupApi = (data: JoinGroupType) => {
+    let apiPath = `${API_URL}${END_POINT.JOIN_GROUP}`;
+    apiPath = apiPath.replace(':id', (data.groupId || 0).toString());
+    apiPath = apiPath.replace(
+        ':invitationId',
+        (data.invitationId || 0).toString()
+    );
+
+    return useFetchApi<ResponseOK>({
+        apiPath,
+        payload: {
+            id: data.groupId,
+            token: data.token,
+        },
+        method: HTTP_METHOD.POST,
+        initialData: null,
     });
 };

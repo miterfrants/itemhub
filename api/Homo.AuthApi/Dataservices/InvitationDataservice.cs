@@ -46,5 +46,22 @@ namespace Homo.AuthApi
             });
             dbContext.SaveChanges();
         }
+
+        public static Invitation GetAvaiableOne(DBContext dbContext, long groupId, long invitationId, string token)
+        {
+            var expiration = System.DateTime.Now.AddHours(-1);
+            return dbContext.Invitation
+                .Where(x =>
+                    x.GroupId == groupId
+                    && x.DeletedAt == null
+                    && invitationId == x.Id)
+                .FirstOrDefault();
+        }
+
+        public static void DeleteWithTrack(DBContext dbContext, Invitation record)
+        {
+            record.DeletedAt = System.DateTime.Now;
+            dbContext.SaveChanges();
+        }
     }
 }

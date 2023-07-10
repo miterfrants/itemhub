@@ -12,5 +12,6 @@ namespace Homo.AuthApi
         public DateTime? DeletedAt { get; set; }
         public long UserId { get; set; }
         public long GroupId { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

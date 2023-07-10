@@ -62,14 +62,14 @@ namespace Homo.IotApi
                 template = MailTemplateHelper.ReplaceVariable(template, new
                 {
                     webSiteUrl = _websiteUrl,
-                    firstName = extraPayload.FirstName,
+                    firstName = extraPayload.FirstName == null ? extraPayload.Email : extraPayload.FirstName,
                     groupName = group.Name,
                     token = invitation.Token,
                     mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
                     adminEmail = _adminEmail
                 });
                 template.Subject = _commonLocalizer.Get(template.Subject);
-                // MailHelper.Send(MailProvider.SEND_GRID, template, _systemEmail, invitation.Email, _sendGridAPIKey);
+                MailHelper.Send(MailProvider.SEND_GRID, template, _systemEmail, invitation.Email, _sendGridAPIKey);
             });
 
             return results;

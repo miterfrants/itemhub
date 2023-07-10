@@ -24,7 +24,7 @@ export const useGetInvitationsApi = ({ groupId }: { groupId: number }) => {
     let apiPath = `${API_URL}${END_POINT.INVITATIONS}`;
     apiPath = apiPath.replace(':id', groupId.toString());
 
-    const { isLoading, error, fetchApi } = useFetchApi<InvitationType[]>({
+    const { isLoading, error, fetchApi, data } = useFetchApi<InvitationType[]>({
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,
@@ -32,6 +32,7 @@ export const useGetInvitationsApi = ({ groupId }: { groupId: number }) => {
     });
 
     return {
+        data,
         isLoading,
         error,
         fetchApi,

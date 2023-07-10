@@ -6,6 +6,8 @@ namespace Homo.AuthApi
 {
     public class RelationOfGroupAndUserDataservice
     {
+
+
         public static List<ViewRelationOfGroupAndUser> GetRelationByUserId(DBContext dbContext, long userId)
         {
             return dbContext.RelationOfGroupAndUser
@@ -38,9 +40,9 @@ namespace Homo.AuthApi
                     group = group
                 })
                 .Where(x =>
-                    x.user.DeletedAt != null
-                    && x.group.DeletedAt != null
-                    && x.group.Name.Contains(groupName)
+                    x.user.DeletedAt == null
+                    && x.group.DeletedAt == null
+                    && (groupName == null || x.group.Name.Contains(groupName))
                     && x.group.CreatedBy == userId
                 )
                 .Select(x => new ViewRelationOfGroupAndUser
@@ -88,6 +90,15 @@ namespace Homo.AuthApi
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
             bool isVIP = roles.Any(x => x == "VIP");
             return isVIP;
+        }
+
+        public static void BatchDelete(DBContext dbContext, long userId, List<long> ids)
+        {
+            dbContext.RelationOfGroupAndUser.Where(x => ids.Contains(x.Id) && x.CreatedBy == userId).UpdateFromQuery(x => new RelationOfGroupAndUser()
+            {
+                DeletedAt = DateTime.Now,
+                EditedBy = userId
+            }); ;
         }
     }
 

@@ -58,6 +58,26 @@ namespace Homo.AuthApi
                 entity.HasIndex(x => new { x.IsDeleted, x.Name }).IsUnique();
             });
 
+            modelBuilder.Entity<Invitation>(entity =>
+            {
+                entity.HasIndex(p => new { p.Status });
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(p => new { p.Email, p.GroupId, p.IsDeleted }).IsUnique();
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.CreatedBy });
+                entity.Property(b => b.Status).HasDefaultValue(INVITATION_STATUS.PENDING);
+            });
+
+            modelBuilder.Entity<RelationOfGroupAndUser>(entity =>
+            {
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(p => new { p.GroupId });
+                entity.HasIndex(p => new { p.UserId });
+                entity.HasIndex(p => new { p.GroupId, p.UserId, p.IsDeleted }).IsUnique();
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
 

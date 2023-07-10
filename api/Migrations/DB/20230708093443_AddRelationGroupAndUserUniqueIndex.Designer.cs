@@ -3,6 +3,7 @@ using System;
 using Homo.AuthApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations.DB
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20230708093443_AddRelationGroupAndUserUniqueIndex")]
+    partial class AddRelationGroupAndUserUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,11 +88,6 @@ namespace IotApi.Migrations.DB
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
 
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("tinyint(1)")
-                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
-
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -107,7 +104,7 @@ namespace IotApi.Migrations.DB
 
                     b.HasIndex("Status");
 
-                    b.HasIndex("Email", "GroupId", "IsDeleted")
+                    b.HasIndex("Email", "GroupId", "DeletedAt")
                         .IsUnique();
 
                     b.ToTable("Invitation");
@@ -137,11 +134,6 @@ namespace IotApi.Migrations.DB
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
 
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("tinyint(1)")
-                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
-
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
@@ -151,7 +143,7 @@ namespace IotApi.Migrations.DB
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("GroupId", "UserId", "IsDeleted")
+                    b.HasIndex("GroupId", "UserId", "DeletedAt")
                         .IsUnique();
 
                     b.ToTable("RelationOfGroupAndUser");

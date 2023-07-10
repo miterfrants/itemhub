@@ -12,18 +12,10 @@ namespace IotApi.Migrations.DB
                 name: "IX_Invitation_Email",
                 table: "Invitation");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Invitation_Email_GroupId_DeletedAt",
-                table: "Invitation",
-                columns: new[] { "Email", "GroupId", "DeletedAt" },
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Invitation_Email_GroupId_DeletedAt",
-                table: "Invitation");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitation_Email",
