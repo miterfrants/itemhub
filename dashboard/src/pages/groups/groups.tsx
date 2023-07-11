@@ -73,8 +73,6 @@ const Groups = () => {
         }
         deleteGroup();
         deleteInvitations();
-        // deleteGroupUsers();
-        // deleteGroupDevices();
         // eslint-disable-next-line
     }, [shouldBeDeleteId]);
 
