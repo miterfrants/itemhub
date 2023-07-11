@@ -21,7 +21,7 @@ export const groupDevicesSlice = createSlice({
                 }
                 item = { ...target };
             });
-            return [...state, ...shouldBeAppendItems];
+            return [...shouldBeAppendItems, ...state];
         },
         deleteMultiple: (state, action: PayloadAction<{ ids: number[] }>) => {
             const newState = state || [];
