@@ -152,9 +152,18 @@ $rounded: (
     pill: $border-radius-pill,
 );
 
+$width: (
+    200: 200%,
+);
+
 $utilities: map-merge(
     $utilities,
     (
+        'custom-width': (
+            property: 'width',
+            class: 'custom-width',
+            values: $width,
+        ),
         'color': (
             property: 'color',
             class: 'text',

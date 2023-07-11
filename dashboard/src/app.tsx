@@ -1,5 +1,5 @@
 import './app.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
@@ -20,6 +20,7 @@ import MonitorConfigDialog from './components/monitor-config-dialog/monitor-conf
 import OfflineNotificationDialog from './components/offline-notification-dialog/offline-notification-dialog';
 import RealtimeDeviceImageDialog from './components/realtime-device-image-dialog/realtime-device-image-dialog';
 import moment from 'moment';
+import { useGetGroupNamesApi } from './hooks/apis/groups.hook';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -48,9 +49,20 @@ const App = () => {
     const isInvitationUrl =
         /\/dashboard\/groups\/\d+\/invitations\/\d+\/join/gi.test(pathname);
     let isTokenExpired = false;
+    const groupIds = [];
+    let isGroupUser = false;
 
     if (token) {
-        const payload = jwt_decode<{ exp: number }>(token);
+        const payload = jwt_decode<{ exp: number; roles: string[] }>(token);
+        isGroupUser =
+            payload.roles.filter((item) => item.startsWith('group_')).length >=
+            1;
+        Array.prototype.push.apply(
+            groupIds,
+            payload.roles
+                .filter((item) => item.startsWith('group_'))
+                .map((item) => Number(item.replace('group_', '')))
+        );
         isTokenExpired = payload.exp <= moment().unix();
     }
 
@@ -85,22 +97,29 @@ const App = () => {
     }
 
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
+    const { getProtocols } = useGetProtocols();
     const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
     const { getDeviceModesApi } = useGetDeviceModesApi();
-    const { getProtocols } = useGetProtocols();
+    const { fetchApi: getGroupNames, data: groups } =
+        useGetGroupNamesApi(groupIds);
 
     useEffect(() => {
         getTriggerOperatorsApi();
         getMicrocontrollersApi();
         getDeviceModesApi();
         getProtocols();
+
+        if (isGroupUser) {
+            console.log('testing');
+            getGroupNames();
+        }
         // eslint-disable-next-line
     }, []);
 
     return token ? (
         <div className="dashboard" data-testid="Dashboard">
             <div className="d-md-flex">
-                <Header />
+                <Header groups={groups} />
                 <div className="position-relative container-fluid px-0 bg-grey-100 content">
                     <Outlet />
                     <Footer />

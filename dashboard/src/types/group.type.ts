@@ -7,3 +7,8 @@ export interface GroupType {
     deletedAt?: string;
     roles?: string;
 }
+
+export interface GroupNameType {
+    id: number;
+    name: string;
+}

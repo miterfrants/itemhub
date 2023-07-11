@@ -45,6 +45,7 @@ export const END_POINT = {
     INVITATION: 'my/groups/:id/invitations/:invitationId',
     JOIN_GROUP: 'groups/:id/invitations/:invitationId/join',
     MY_GROUP_USERS: 'my/groups/:id/users',
+    GROUP_NAMES: 'groups/name',
 };
 
 export const HTTP_METHOD = {

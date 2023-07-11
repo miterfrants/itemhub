@@ -8,7 +8,7 @@ import {
     HTTP_METHOD,
     RESPONSE_STATUS,
 } from '@/constants/api';
-import { GroupType } from '@/types/group.type';
+import { GroupNameType, GroupType } from '@/types/group.type';
 import { groupsActions } from '@/redux/reducers/groups.reducer';
 import { ResponseError, ResponseOK } from '@/types/response.type';
 import { JoinGroupType } from '@/types/join-group.type';
@@ -176,4 +176,23 @@ export const useJoinGroupApi = (data: JoinGroupType) => {
         method: HTTP_METHOD.POST,
         initialData: null,
     });
+};
+
+export const useGetGroupNamesApi = (groupIds: number[]) => {
+    const apiPath = `${API_URL}${END_POINT.GROUP_NAMES}?${groupIds
+        .map((item) => `groupIds=${item}`)
+        .join('&')}`;
+
+    const { isLoading, error, fetchApi, data } = useFetchApi<GroupNameType[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+        data,
+    };
 };
