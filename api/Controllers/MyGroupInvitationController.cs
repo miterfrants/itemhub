@@ -61,9 +61,11 @@ namespace Homo.IotApi
                 MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.INVITE_TO_JOIN_GROUP, _staticPath);
                 template = MailTemplateHelper.ReplaceVariable(template, new
                 {
-                    webSiteUrl = _websiteUrl,
+                    websiteUrl = _websiteUrl,
                     firstName = extraPayload.FirstName == null ? extraPayload.Email : extraPayload.FirstName,
                     groupName = group.Name,
+                    groupId = group.Id,
+                    invitationId = invitation.Id,
                     token = invitation.Token,
                     mailContentSystemAutoSendEmail = _commonLocalizer.Get("mailContentSystemAutoSendEmail"),
                     adminEmail = _adminEmail
