@@ -161,7 +161,7 @@ export const useUpdateGroupApi = (data: GroupType) => {
 
 export const useJoinGroupApi = (data: JoinGroupType) => {
     let apiPath = `${API_URL}${END_POINT.JOIN_GROUP}`;
-    apiPath = apiPath.replace(':id', (data.groupId || 0).toString());
+    apiPath = apiPath.replace(':groupId', (data.groupId || 0).toString());
     apiPath = apiPath.replace(
         ':invitationId',
         (data.invitationId || 0).toString()

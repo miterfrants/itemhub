@@ -18,7 +18,7 @@ const GroupsJoin = () => {
         data: responseOfJoinGroup,
         error: errorOfJoinGroup,
     } = useJoinGroupApi({
-        id: idFromUrl,
+        groupId: idFromUrl,
         token,
         invitationId: invitationIdFromUrl,
     } as JoinGroupType);
