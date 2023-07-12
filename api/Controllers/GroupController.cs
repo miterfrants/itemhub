@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Homo.Core.Constants;
 using Homo.AuthApi;
-using Homo.Api;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Linq;
 
 namespace Homo.IotApi
 {
@@ -15,6 +15,18 @@ namespace Homo.IotApi
         public GroupController(DBContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "權限管理系統" },
+            Summary = "群組 - 取得群組名稱",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("name")]
+        public ActionResult<dynamic> getNames([FromQuery] List<long> groupIds, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            return GroupDataservice.GetAll(_dbContext, groupIds).Select(x => new { Name = x.Name, Id = x.Id }).ToList();
         }
 
         [SwaggerOperation(

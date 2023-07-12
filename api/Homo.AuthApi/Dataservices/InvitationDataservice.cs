@@ -59,7 +59,7 @@ namespace Homo.AuthApi
                 .Where(x =>
                     x.GroupId == groupId
                     && x.DeletedAt == null
-                    && invitationId == x.Id)
+                    && x.Id == invitationId)
                 .FirstOrDefault();
         }
 

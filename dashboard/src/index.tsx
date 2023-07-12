@@ -33,6 +33,15 @@ ReactDOM.render(
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="dashboard/devices" element={<Devices />} />
 
+                <Route
+                    path="dashboard/groups/:groupId/monitors"
+                    element={<Dashboard />}
+                />
+                <Route
+                    path="dashboard/groups/:groupId/devices"
+                    element={<Devices />}
+                />
+
                 <Route path="dashboard/devices/:id" element={<Device />} />
                 <Route path="dashboard/groups" element={<Groups />} />
                 <Route path="dashboard/groups/create" element={<Group />} />
