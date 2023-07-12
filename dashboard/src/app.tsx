@@ -110,7 +110,6 @@ const App = () => {
         getProtocols();
 
         if (isGroupUser) {
-            console.log('testing');
             getGroupNames();
         }
         // eslint-disable-next-line
