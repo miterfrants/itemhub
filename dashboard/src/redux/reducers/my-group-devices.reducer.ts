@@ -4,8 +4,8 @@ import { GroupDevicesType } from '@/types/group-devices.type';
 
 const initialState: GroupDevicesType[] = [];
 
-export const groupDevicesSlice = createSlice({
-    name: 'groupDevices',
+export const myGroupDevicesSlice = createSlice({
+    name: 'myGroupDevices',
     initialState: initialState,
     reducers: {
         append: (state, action: PayloadAction<GroupDevicesType[]>) => {
@@ -36,8 +36,8 @@ export const groupDevicesSlice = createSlice({
     },
 });
 
-export const groupDevicesActions = groupDevicesSlice.actions;
+export const myGroupDevicesActions = myGroupDevicesSlice.actions;
 
-export const selectGroupDevices = (state: RootState) => state.groupDevices;
+export const selectMyGroupDevices = (state: RootState) => state.myGroupDevices;
 
-export default groupDevicesSlice.reducer;
+export default myGroupDevicesSlice.reducer;
