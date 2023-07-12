@@ -158,7 +158,7 @@ namespace Homo.IotApi
                 return Task.CompletedTask;
             }
 
-            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, client.OwnerId);
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(dbContext, client.OwnerId);
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
             bool isVIP = roles.Any(x => x == "VIP");
 

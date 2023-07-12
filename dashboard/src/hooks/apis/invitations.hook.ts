@@ -73,7 +73,7 @@ export const useCreateInvitationsApi = ({
     };
 };
 
-export const useDeleteInvitationsApi = ({
+export const useDeleteInvitationApi = ({
     groupId,
     id,
 }: {
@@ -93,6 +93,37 @@ export const useDeleteInvitationsApi = ({
     let apiPath = `${API_URL}${END_POINT.INVITATION}`;
     apiPath = apiPath.replace(':id', groupId.toString());
     apiPath = apiPath.replace(':invitationId', id.toString());
+
+    const { isLoading, error, fetchApi, data } = useFetchApi<ResponseOK>({
+        apiPath,
+        method: HTTP_METHOD.DELETE,
+        initialData: null,
+        callbackFunc: dispatchRefreshDevices,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+        data,
+    };
+};
+
+export const useDeleteInvitationsApi = ({ groupId }: { groupId: number }) => {
+    const dispatch = useAppDispatch();
+    const dispatchRefreshDevices = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(
+                    invitationsActions.deleteMultipleByGroupId({ groupId })
+                );
+            }
+        },
+        // eslint-disable-next-line
+        [dispatch, groupId]
+    );
+    let apiPath = `${API_URL}${END_POINT.INVITATIONS}`;
+    apiPath = apiPath.replace(':id', groupId.toString());
 
     const { isLoading, error, fetchApi, data } = useFetchApi<ResponseOK>({
         apiPath,

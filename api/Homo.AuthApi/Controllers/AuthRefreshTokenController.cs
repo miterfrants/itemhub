@@ -60,7 +60,7 @@ namespace Homo.AuthApi
         [HttpPost]
         public ActionResult<dynamic> refreshToken(DTOs.JwtExtraPayload extraPayload)
         {
-            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(_dbContext, extraPayload.Id);
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(_dbContext, extraPayload.Id);
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string token = JWTHelper.GenerateToken(_jwtKey, _jwtExpirationMonth * 30 * 24 * 60, extraPayload, roles);
@@ -91,7 +91,7 @@ namespace Homo.AuthApi
         [Validate]
         public dynamic refreshDashboardToken(DTOs.JwtExtraPayload extraPayload)
         {
-            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(_dbContext, extraPayload.Id);
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(_dbContext, extraPayload.Id);
             string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string dashboardToken = JWTHelper.GenerateToken(_dashboardJwtKey, 3 * 24 * 60, extraPayload, roles);

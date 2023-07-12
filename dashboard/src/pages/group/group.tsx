@@ -1,3 +1,4 @@
+import MyGroupDevices from '@/components/my-group-devices/my-group-devices';
 import GroupUsers from '@/components/group-users/group-users';
 import Invitation from '@/components/invitation/invitation';
 import PageTitle from '@/components/page-title/page-title';
@@ -186,6 +187,7 @@ const Group = () => {
             </div>
             {!isCreateMode && <Invitation groupId={id} />}
             {!isCreateMode && <GroupUsers groupId={id} />}
+            {!isCreateMode && <MyGroupDevices groupId={id} />}
         </div>
     );
 };
