@@ -10,7 +10,7 @@ import {
 } from '@/constants/api';
 import { GroupNameType, GroupType } from '@/types/group.type';
 import { groupsActions } from '@/redux/reducers/groups.reducer';
-import { ResponseError, ResponseOK } from '@/types/response.type';
+import { ResponseOK } from '@/types/response.type';
 import { JoinGroupType } from '@/types/join-group.type';
 
 interface GetResponseData {

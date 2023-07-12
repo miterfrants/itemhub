@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import closeIcon from '@/assets/images/dark-close.svg';
 import { RESPONSE_STATUS } from '@/constants/api';
 import {
-    useCreateGroupDeviceApi,
-    useDeleteGroupDevicesApi,
-    useGetGroupDevicesApi,
-} from '@/hooks/apis/group-devices.hook';
+    useCreateMyGroupDeviceApi,
+    useDeleteMyGroupDevicesApi,
+    useGetMyGroupDevicesApi,
+} from '@/hooks/apis/my-group-devices.hook';
 import { GroupDevicesType } from '@/types/group-devices.type';
 import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
 import Spinner from '../spinner/spinner';
@@ -15,7 +15,7 @@ import { KeyValuePair } from '@/types/common.type';
 import { DeviceItem } from '@/types/devices.type';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
-const GroupDevices = ({ groupId }: { groupId: number | undefined }) => {
+const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
     const [groupDevices, setGroupDevices] = useState<
         GroupDevicesType[] | undefined
     >(undefined);
@@ -36,17 +36,17 @@ const GroupDevices = ({ groupId }: { groupId: number | undefined }) => {
         isLoading: isGetting,
         fetchApi: getGroupDevices,
         data: responseOfGet,
-    } = useGetGroupDevicesApi({
+    } = useGetMyGroupDevicesApi({
         groupId: groupId || 0,
     });
     const { fetchApi: deleteGroupDevices, data: responseOfDelete } =
-        useDeleteGroupDevicesApi({
+        useDeleteMyGroupDevicesApi({
             groupId: groupId || 0,
             id: shouldBeDeleteDeviceId,
         });
 
     const { fetchApi: createGroupDevice, data: responseOfCreate } =
-        useCreateGroupDeviceApi({
+        useCreateMyGroupDeviceApi({
             groupId: groupId || 0,
             deviceId: shouldBeCreatedDeviceId,
         });
@@ -199,4 +199,4 @@ const GroupDevices = ({ groupId }: { groupId: number | undefined }) => {
         </div>
     );
 };
-export default GroupDevices;
+export default MyGroupDevices;
