@@ -11,7 +11,7 @@ import { ResponseOK } from '@/types/response.type';
 import { GroupDevicesType } from '@/types/group-devices.type';
 import { groupDevicesActions } from '@/redux/reducers/group-devices.reducer';
 
-export const useGetGroupDevicesApi = ({ groupId }: { groupId: number }) => {
+export const useGetMyGroupDevicesApi = ({ groupId }: { groupId: number }) => {
     const dispatch = useAppDispatch();
     const dispatchRefreshDevices = useCallback(
         (data: GroupDevicesType[]) => {
@@ -41,7 +41,7 @@ export const useGetGroupDevicesApi = ({ groupId }: { groupId: number }) => {
     };
 };
 
-export const useCreateGroupDeviceApi = ({
+export const useCreateMyGroupDeviceApi = ({
     groupId,
     deviceId,
 }: {
@@ -78,7 +78,7 @@ export const useCreateGroupDeviceApi = ({
     };
 };
 
-export const useDeleteGroupDevicesApi = ({
+export const useDeleteMyGroupDevicesApi = ({
     groupId,
     id,
 }: {
