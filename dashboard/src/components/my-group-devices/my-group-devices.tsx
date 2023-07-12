@@ -8,7 +8,7 @@ import {
     useGetMyGroupDevicesApi,
 } from '@/hooks/apis/my-group-devices.hook';
 import { GroupDevicesType } from '@/types/group-devices.type';
-import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
+import { selectMyGroupDevices } from '@/redux/reducers/my-group-devices.reducer';
 import Spinner from '../spinner/spinner';
 import AutocompletedSearch from '../inputs/autocompleted-search/autocompleted-search';
 import { KeyValuePair } from '@/types/common.type';
@@ -30,7 +30,7 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
     const [isDeviceInputError, setIsDeviceInputError] =
         useState<boolean>(false);
     const groupDevicesFromStore: GroupDevicesType[] =
-        useAppSelector(selectGroupDevices);
+        useAppSelector(selectMyGroupDevices);
 
     const {
         isLoading: isGetting,

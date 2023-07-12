@@ -9,14 +9,14 @@ import {
 } from '@/constants/api';
 import { ResponseOK } from '@/types/response.type';
 import { GroupDevicesType } from '@/types/group-devices.type';
-import { groupDevicesActions } from '@/redux/reducers/group-devices.reducer';
+import { myGroupDevicesActions } from '@/redux/reducers/my-group-devices.reducer';
 
 export const useGetMyGroupDevicesApi = ({ groupId }: { groupId: number }) => {
     const dispatch = useAppDispatch();
     const dispatchRefreshDevices = useCallback(
         (data: GroupDevicesType[]) => {
             if (data) {
-                dispatch(groupDevicesActions.append(data));
+                dispatch(myGroupDevicesActions.append(data));
             }
         },
         [dispatch]
@@ -52,7 +52,7 @@ export const useCreateMyGroupDeviceApi = ({
     const dispatchRefreshDevices = useCallback(
         (data: GroupDevicesType[]) => {
             if (data) {
-                dispatch(groupDevicesActions.append(data));
+                dispatch(myGroupDevicesActions.append(data));
             }
         },
         [dispatch]
@@ -89,7 +89,7 @@ export const useDeleteMyGroupDevicesApi = ({
     const dispatchRefreshDevices = useCallback(
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {
-                dispatch(groupDevicesActions.deleteMultiple({ ids: [id] }));
+                dispatch(myGroupDevicesActions.deleteMultiple({ ids: [id] }));
             }
         },
         // eslint-disable-next-line
