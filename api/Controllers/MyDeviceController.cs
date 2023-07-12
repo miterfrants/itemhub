@@ -338,12 +338,12 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 上傳檔案",
+            Summary = "裝置 - 取得最後上傳檔案",
             Description = ""
         )]
         [HttpGet]
         [Route("{deviceId}/read-last-file")]
-        public ActionResult<dynamic> readFile([FromRoute] long deviceId, dynamic extraPayload)
+        public ActionResult<dynamic> readLastFile([FromRoute] long deviceId, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
             DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_iotDbContext, ownerId, deviceId);
@@ -373,7 +373,7 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 上傳檔案",
+            Summary = "裝置 - 取得最後上傳檔案的縮圖",
             Description = ""
         )]
         [HttpGet]

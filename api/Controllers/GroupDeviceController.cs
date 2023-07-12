@@ -108,7 +108,7 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 上傳檔案",
+            Summary = "裝置 - 取得最後上傳檔案的縮圖",
             Description = ""
         )]
         [HttpGet]

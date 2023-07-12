@@ -18,7 +18,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "權限管理系統" },
+            Tags = new[] { "群組管理" },
             Summary = "群組 - 取得群組名稱",
             Description = ""
         )]
@@ -30,7 +30,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "權限管理系統" },
+            Tags = new[] { "群組管理" },
             Summary = "群組 - 加入",
             Description = ""
         )]
