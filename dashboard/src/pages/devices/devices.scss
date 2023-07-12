@@ -20,4 +20,13 @@
             border-top: 8px solid rgba(0, 0, 0, 0.8);
         }
     }
+    .devices-list {
+        .list:nth-child(odd) {
+            background-color: rgba($primary-100, 0.5);
+        }
+
+        .list:nth-child(even) {
+            background-color: rgba($primary-100, 0.3);
+        }
+    }
 }

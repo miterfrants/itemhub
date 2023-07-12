@@ -20,6 +20,7 @@ import groupsReducer from './reducers/groups.reducer';
 import invitationsReducer from './reducers/invitations.reducer';
 import groupUsersReducer from './reducers/group-users.reducer';
 import myGroupDevicesReducer from './reducers/my-group-devices.reducer';
+import groupDevicesReducer from './reducers/group-devices.reducer';
 
 const store = configureStore({
     reducer: {
@@ -44,6 +45,7 @@ const store = configureStore({
         invitations: invitationsReducer,
         groupUsers: groupUsersReducer,
         myGroupDevices: myGroupDevicesReducer,
+        groupDevices: groupDevicesReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({
