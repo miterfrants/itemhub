@@ -5,18 +5,24 @@ import { PinItem } from '@/types/devices.type';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import './current-value-monitor.scss';
 import debounce from 'lodash.debounce';
+import {
+    useGetGroupDevicePinApi,
+    useGetGroupSensorLogsApi,
+} from '@/hooks/apis/group-device-pin.hook';
 
 const CurrentValueMonitor = (props: {
     deviceId: number;
     pin: string;
     isLiveData: boolean;
     customTitle: string;
+    groupId?: number;
 }) => {
     const {
         deviceId,
         pin,
         isLiveData: isLiveDataFromProps,
         customTitle,
+        groupId,
     } = props;
     const [currentValue, setCurrentValue] = useState<number | null>(null);
 
@@ -35,6 +41,18 @@ const CurrentValueMonitor = (props: {
         page: 1,
         limit: 1,
     });
+
+    const {
+        data: responseOfGroupSensorLogs,
+        fetchApi: getGroupSensorLogs,
+        isLoading: isGettingGroupSensorLogs,
+    } = useGetGroupSensorLogsApi({
+        deviceId: deviceId,
+        pin: pin,
+        page: 1,
+        limit: 1,
+        groupId: groupId || 0,
+    });
     const elementContainerRef = useRef<HTMLDivElement>(null);
 
     const resizeHandler = useRef(
@@ -52,6 +70,12 @@ const CurrentValueMonitor = (props: {
 
     const { data: responseDevicePin, fetchApi: getDevicePin } =
         useGetDevicePinApi({ id: deviceId, pin: pin });
+    const { data: responseGroupDevicePin, fetchApi: getGroupDevicePin } =
+        useGetGroupDevicePinApi({
+            deviceId: deviceId,
+            pin: pin,
+            groupId: groupId || 0,
+        });
 
     const startPooling = useCallback(() => {
         if (!isLiveData) {
@@ -66,8 +90,14 @@ const CurrentValueMonitor = (props: {
     }, [isLiveDataFromProps]);
 
     useEffect(() => {
-        getSensorLogs();
-        getDevicePin();
+        if (groupId) {
+            getGroupSensorLogs();
+            getGroupDevicePin();
+        } else {
+            getSensorLogs();
+            getDevicePin();
+        }
+
         resizeHandler.current();
         window.addEventListener('resize', resizeHandler.current);
         return () => {
@@ -82,12 +112,34 @@ const CurrentValueMonitor = (props: {
         if (!responseOfSensorLogs || responseOfSensorLogs.length === 0) {
             return;
         }
+        if (groupId) {
+            return;
+        }
         setCurrentValue(responseOfSensorLogs[0].value);
+        //eslint-disable-next-line
     }, [responseOfSensorLogs]);
+
+    useEffect(() => {
+        if (
+            !responseOfGroupSensorLogs ||
+            responseOfGroupSensorLogs.length === 0
+        ) {
+            return;
+        }
+        if (!groupId) {
+            return;
+        }
+        setCurrentValue(responseOfGroupSensorLogs[0].value);
+        //eslint-disable-next-line
+    }, [responseOfGroupSensorLogs]);
 
     useEffect(() => {
         setDevicePin(responseDevicePin);
     }, [responseDevicePin]);
+
+    useEffect(() => {
+        setDevicePin(responseGroupDevicePin);
+    }, [responseGroupDevicePin]);
 
     useEffect(() => {
         if (isLiveData) {
@@ -107,7 +159,8 @@ const CurrentValueMonitor = (props: {
             ref={elementContainerRef}
             className="current-value-monitor w-100 h-100"
         >
-            {isLoading && !isLoaded ? (
+            {(isLoading && !isLoaded) ||
+            (isGettingGroupSensorLogs && !isLoaded) ? (
                 <div className="d-flex justify-content-center">
                     <Spinner />
                 </div>

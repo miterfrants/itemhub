@@ -9,13 +9,15 @@ import Spinner from '@/components/spinner/spinner';
 import debounce from 'lodash.debounce';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectLayout } from '@/redux/reducers/layout.reducer';
+import { useToggleGroupDeviceSwitchPinApi } from '@/hooks/apis/group-device-pin.hook';
 
 const SwitchMonitor = (props: {
     deviceId: number;
     pin: string;
     customTitle: string;
+    groupId?: number;
 }) => {
-    const { deviceId, pin, customTitle } = props;
+    const { deviceId, pin, customTitle, groupId } = props;
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [value, setValue] = useState<undefined | number>(undefined);
@@ -28,6 +30,15 @@ const SwitchMonitor = (props: {
         pin,
         value: value || 0,
     });
+
+    const { fetchApi: toggleGroupDevicePin } = useToggleGroupDeviceSwitchPinApi(
+        {
+            deviceId,
+            pin,
+            value: value || 0,
+            groupId: groupId || 0,
+        }
+    );
 
     const {
         fetchApi: getDevicePin,
@@ -91,7 +102,11 @@ const SwitchMonitor = (props: {
             // 還沒從 API 拿到資料
             return;
         }
-        updateDeviceSwitchPinApi();
+        if (groupId) {
+            toggleGroupDevicePin();
+        } else {
+            updateDeviceSwitchPinApi();
+        }
         // eslint-disable-next-line
     }, [value]);
 

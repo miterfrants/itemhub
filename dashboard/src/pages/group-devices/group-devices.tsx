@@ -166,7 +166,7 @@ const GroupDevices = () => {
             monitorConfigDialogActions.open({
                 callback: () => {},
                 deviceId: id,
-                // groupId: groupId ? Number(groupId) : undefined,
+                groupId: groupId ? Number(groupId) : undefined,
             })
         );
     };
