@@ -1,16 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
-import { InvitationType } from '@/types/invitation.type';
+import { GroupDevicesType } from '@/types/group-devices.type';
 
-export type InvitationState = InvitationType[];
+const initialState: GroupDevicesType[] = [];
 
-const initialState: InvitationState = [];
-
-export const invitationsSlice = createSlice({
-    name: 'invitations',
+export const myGroupDevicesSlice = createSlice({
+    name: 'myGroupDevices',
     initialState: initialState,
     reducers: {
-        append: (state, action: PayloadAction<InvitationState>) => {
+        append: (state, action: PayloadAction<GroupDevicesType[]>) => {
             const shouldBeAppendItems = action.payload.filter(
                 (item) => !state.find((oldItem) => oldItem.id === item.id)
             );
@@ -23,7 +21,7 @@ export const invitationsSlice = createSlice({
                 }
                 item = { ...target };
             });
-            return [...state, ...shouldBeAppendItems];
+            return [...shouldBeAppendItems, ...state];
         },
         deleteMultiple: (state, action: PayloadAction<{ ids: number[] }>) => {
             const newState = state || [];
@@ -35,24 +33,11 @@ export const invitationsSlice = createSlice({
 
             return newList;
         },
-        deleteMultipleByGroupId: (
-            state,
-            action: PayloadAction<{ groupId: number }>
-        ) => {
-            const newState = state || [];
-            const deletePayload = action.payload;
-
-            const newList = newState.filter(
-                (item) => item.groupId !== deletePayload.groupId
-            );
-
-            return newList;
-        },
     },
 });
 
-export const invitationsActions = invitationsSlice.actions;
+export const myGroupDevicesActions = myGroupDevicesSlice.actions;
 
-export const selectInvitations = (state: RootState) => state.invitations;
+export const selectMyGroupDevices = (state: RootState) => state.myGroupDevices;
 
-export default invitationsSlice.reducer;
+export default myGroupDevicesSlice.reducer;

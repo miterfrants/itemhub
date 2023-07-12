@@ -1,7 +1,7 @@
 import { ValidationHelpers } from '@/helpers/validation.helper';
 import {
     useCreateInvitationsApi,
-    useDeleteInvitationsApi,
+    useDeleteInvitationApi,
     useGetInvitationsApi,
 } from '@/hooks/apis/invitations.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
@@ -47,7 +47,7 @@ const Invitation = ({ groupId }: { groupId: number | undefined }) => {
     });
 
     const { fetchApi: deleteInvitation, data: responseOfDelete } =
-        useDeleteInvitationsApi({
+        useDeleteInvitationApi({
             groupId: groupId || 0,
             id: shouldBeDeleteId,
         });

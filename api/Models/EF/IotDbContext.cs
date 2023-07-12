@@ -36,6 +36,7 @@ namespace Homo.IotApi
         public virtual DbSet<PipelineConnector> PipelineConnector { get; set; }
         public virtual DbSet<PipelineExecuteLog> PipelineExecuteLog { get; set; }
         public virtual DbSet<DeviceUploadedImage> DeviceUploadedImage { get; set; }
+        public virtual DbSet<GroupDevice> GroupDevice { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -217,6 +218,18 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Filename });
                 entity.Property(p => p.CreatedAt)
                     .HasDefaultValue(System.DateTime.Now);
+            });
+
+            modelBuilder.Entity<GroupDevice>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.UserId });
+                entity.HasIndex(p => new { p.DeviceId });
+                entity.HasIndex(p => new { p.GroupId });
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(p => new { p.GroupId, p.UserId, p.DeviceId, p.IsDeleted }).IsUnique();
             });
 
             OnModelCreatingPartial(modelBuilder);

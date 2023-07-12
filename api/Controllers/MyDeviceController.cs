@@ -108,7 +108,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getAll(Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            return DeviceDataservice.GetAll(_iotDbContext, ownerId);
+            return DeviceDataservice.GetAll(_iotDbContext, ownerId, null);
         }
 
         [SwaggerOperation(

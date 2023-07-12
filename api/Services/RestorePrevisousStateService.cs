@@ -50,7 +50,7 @@ namespace Homo.IotApi
             var pipelines = PipelineDataservice.GetAll(iotDbContext, null, PIPELINE_ITEM_TYPE.SCHEDULE, null, null, true);
             pipelines.ForEach(pipeline =>
             {
-                List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetRelationByUserId(dbContext, pipeline.OwnerId);
+                List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(dbContext, pipeline.OwnerId);
                 string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
                 var isVIP = roles.Contains("VIP");
                 var pipelineItems = PipelineItemDataservice.GetAll(iotDbContext, pipeline.OwnerId, pipeline.Id, null);
