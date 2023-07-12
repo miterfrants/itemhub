@@ -66,5 +66,6 @@
     "PIPELINE_INVALID_PAYLOAD": "Invalid pipeline payload: {reason}",
     "GROUP_EXISTS": "The group name already exists. Please rename it.",
     "INVITATION_EXPIRED": "Invitation has expired",
-    "INVITATION_NOT_FOUND": "Invitation not found"
+    "INVITATION_NOT_FOUND": "Invitation not found",
+    "GROUP_DEVICES_EXISTS": "Device already exists in the group"
 }

@@ -49,7 +49,7 @@ namespace Homo.IotApi
                 throw new CustomException(ERROR_CODE.INVITATION_EXPIRED, System.Net.HttpStatusCode.Forbidden);
             }
 
-            RelationOfGroupAndUserDataservice.AddPermissionGroups(invitation.CreatedBy, extraPayload.Id, new List<long> { id }, _dbContext);
+            RelationOfGroupAndUserDataservice.Add(invitation.CreatedBy, extraPayload.Id, new List<long> { id }, _dbContext);
             InvitationDataservice.DeleteWithTrack(_dbContext, invitation);
 
             return new { status = CUSTOM_RESPONSE.OK };

@@ -26,7 +26,7 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getAll([FromRoute] long groupId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return RelationOfGroupAndUserDataservice.GetRelationByGroupId(_dbContext, extraPayload.Id, groupId, null);
+            return RelationOfGroupAndUserDataservice.GetAllByGroupId(_dbContext, extraPayload.Id, groupId, null);
         }
 
         [SwaggerOperation(
@@ -38,8 +38,7 @@ namespace Homo.IotApi
         [HttpDelete]
         public ActionResult<dynamic> batchDelete([FromBody] List<long> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            long userId = extraPayload.Id;
-            RelationOfGroupAndUserDataservice.BatchDelete(_dbContext, userId, ids);
+            RelationOfGroupAndUserDataservice.BatchDelete(_dbContext, extraPayload.Id, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
     }

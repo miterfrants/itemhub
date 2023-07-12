@@ -73,5 +73,6 @@ namespace Homo.IotApi
 
         public static string INVITATION_NOT_FOUND = "INVITATION_NOT_FOUND";
         public static string INVITATION_EXPIRED = "INVITATION_EXPIRED";
+        public static string GROUP_DEVICES_EXISTS = "GROUP_DEVICES_EXISTS";
     }
 }
