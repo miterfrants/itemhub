@@ -19,7 +19,7 @@ namespace Homo.IotApi
         [Required]
         public PIN_TYPE PinType { get; set; }
         public string Name { get; set; }
-        public decimal? Value { get; set; }
+        public decimal Value { get; set; }
         [Required]
         public long DeviceId { get; set; }
         public virtual Homo.IotApi.Device Device { get; set; }
