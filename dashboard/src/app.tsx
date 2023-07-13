@@ -124,6 +124,16 @@ const App = () => {
         // eslint-disable-next-line
     }, []);
 
+    useEffect(() => {
+        if (
+            pathname === '/dashboard/' ||
+            pathname.indexOf('/dashboard/groups/') === 0
+        ) {
+            getGroupNames();
+        }
+        // eslint-disable-next-line
+    }, [pathname]);
+
     return token ? (
         <div className="dashboard" data-testid="Dashboard">
             <div className="d-md-flex">
