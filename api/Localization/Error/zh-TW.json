@@ -77,5 +77,6 @@
     "GROUP_EXISTS": "群組名稱已經存在，請重新命名",
     "INVITATION_EXPIRED": "邀請已經過期",
     "INVITATION_NOT_FOUND": "找不到對應的邀請資料",
-    "GROUP_DEVICES_EXISTS": "裝置已經加入這個群組中"
+    "GROUP_DEVICES_EXISTS": "裝置已經加入這個群組中",
+    "COULD_NOT_FOUND_GROUP_ID_FROM_ROUTER": "找不到網址上的 group id 參數"
 }

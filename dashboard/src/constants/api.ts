@@ -48,6 +48,13 @@ export const END_POINT = {
     GROUP_NAMES: 'groups/name',
     MY_GROUP_DEVICES: 'my/groups/:groupId/devices',
     REFRESH_DASHBOARD_TOKEN: 'auth/refresh-dashboard-token',
+    GROUP_DEVICES: 'groups/:groupId/devices',
+    GROUP_DEVICE_LAST_ACTIVITY:
+        'groups/:groupId/devices/:deviceId/last-activity',
+    GROUP_DEVICE_LAST_DEVICE_IMAGE_THUMBNAIL:
+        'groups/:groupId/devices/:deviceId/read-last-file-thumbnail',
+    GROUP_DEVICE_LAST_DEVICE_IMAGE:
+        'groups/:groupId/devices/:deviceId/read-last-file',
 };
 
 export const HTTP_METHOD = {
