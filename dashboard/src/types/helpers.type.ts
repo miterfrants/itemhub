@@ -7,6 +7,7 @@ export interface SendRequestParams<T> {
     shouldDeleteContentType?: boolean;
     callbackFunc?: (result: FetchResult<T>) => null;
     skipErrorToaster?: boolean;
+    isRefreshToken?: boolean;
 }
 
 export interface FetchParams {

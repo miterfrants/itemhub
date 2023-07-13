@@ -13,6 +13,7 @@ namespace Homo.IotApi
                     x.DeletedAt == null
                     && x.UserId == userId
                     && x.GroupId == groupId
+
                 )
                 .Join(dbContext.Device, groupDevice => groupDevice.DeviceId, device => device.Id, (groupDevice, device) =>
                 new
@@ -20,7 +21,10 @@ namespace Homo.IotApi
                     groupDevice = groupDevice,
                     device = device
                 })
-                .Where(x => name == null || x.device.Name.Contains(name))
+                .Where(x =>
+                    x.device.DeletedAt == null
+                    && (name == null || x.device.Name.Contains(name))
+                )
                 .OrderByDescending(x => x.groupDevice.Id)
                 .Skip((page - 1) * limit)
                 .Take(limit)
@@ -41,7 +45,10 @@ namespace Homo.IotApi
                     groupDevice = groupDevice,
                     device = device
                 })
-                .Where(x => name == null || x.device.Name.Contains(name))
+                .Where(x =>
+                    x.device.DeletedAt == null
+                    && (name == null || x.device.Name.Contains(name))
+                )
                 .Count();
         }
 
