@@ -17,6 +17,7 @@ import Groups from './pages/groups/groups';
 import Group from './pages/group/group';
 import DevicePinStatistics from './pages/device-pin-statistics/device-pin-statistics';
 import GroupsJoin from './pages/groups/groups-join';
+import GroupDevices from './pages/group-devices/group-devices';
 
 ReactDOM.render(
     <BrowserRouter>
@@ -39,7 +40,7 @@ ReactDOM.render(
                 />
                 <Route
                     path="dashboard/groups/:groupId/devices"
-                    element={<Devices />}
+                    element={<GroupDevices />}
                 />
 
                 <Route path="dashboard/devices/:id" element={<Device />} />
