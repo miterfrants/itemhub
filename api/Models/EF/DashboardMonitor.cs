@@ -19,6 +19,7 @@ namespace Homo.IotApi
         public DASHBOARD_MONITOR_MODE Mode { get; set; }
         [Required]
         public long DeviceId { get; set; }
+        public long? GroupId { get; set; }
 
         [Required]
         public int Sort { get; set; }
