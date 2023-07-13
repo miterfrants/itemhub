@@ -12,6 +12,7 @@ export const useFetchApi = <T>({
     initialData,
     callbackFunc,
     skipErrorToaster,
+    isRefreshToken,
 }: {
     apiPath: string;
     method: string;
@@ -19,6 +20,7 @@ export const useFetchApi = <T>({
     initialData: T | null;
     callbackFunc?: (data: T) => void;
     skipErrorToaster?: boolean;
+    isRefreshToken?: boolean;
 }) => {
     const [data, setData] = useState<T | null>(initialData);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +39,7 @@ export const useFetchApi = <T>({
                 payload,
                 signal: controller.signal,
                 skipErrorToaster,
+                isRefreshToken,
             });
             const data = result.data;
 

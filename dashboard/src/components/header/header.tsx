@@ -38,6 +38,8 @@ const Header = (props: { groups: GroupNameType[] | null }) => {
         if (document.body.clientWidth <= 767) {
             dispatch(menuActions.close());
         }
+
+        // eslint-disable-next-line
     }, [location]);
 
     const closeMenu = () => {
@@ -103,7 +105,7 @@ const Header = (props: { groups: GroupNameType[] | null }) => {
                                         <div className="left-arrow" />
                                         {groupId && (
                                             <Link
-                                                to={`/dashboard`}
+                                                to={`/dashboard/`}
                                                 className="py-2 d-block text-white nav-item"
                                             >
                                                 回到個人管理介面
@@ -134,7 +136,7 @@ const Header = (props: { groups: GroupNameType[] | null }) => {
                         to={
                             groupId
                                 ? `/dashboard/groups/${groupId}/monitors`
-                                : `/dashboard`
+                                : `/dashboard/`
                         }
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                     >

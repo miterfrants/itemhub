@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using SixLabors.ImageSharp;
 using Microsoft.Extensions.Options;
+using Homo.AuthApi;
 
 namespace Homo.IotApi
 {
@@ -13,11 +14,13 @@ namespace Homo.IotApi
     [GroupAuthorizeFactory()]
     public class GroupDeviceController : ControllerBase
     {
-        private readonly IotDbContext _dbContext;
+        private readonly IotDbContext _iotDbContext;
+        private readonly DBContext _dbContext;
         private readonly string _staticPath;
 
-        public GroupDeviceController(IotDbContext dbContext, IOptions<AppSettings> appSettings)
+        public GroupDeviceController(IotDbContext iotDbContext, DBContext dbContext, IOptions<AppSettings> appSettings)
         {
+            _iotDbContext = iotDbContext;
             _dbContext = dbContext;
             _staticPath = appSettings.Value.Common.StaticPath;
         }
@@ -30,9 +33,11 @@ namespace Homo.IotApi
         [HttpGet]
         public ActionResult<dynamic> getList([FromRoute] long groupId, [FromQuery] int limit, [FromQuery] int page, [FromQuery] string name, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
+            long ownerId = extraPayload.Id;
+            var relation = RelationOfGroupAndUserDataservice.GetOne(_dbContext, ownerId, groupId);
             return new
             {
-                devices = GroupDeviceDataservice.GetList(_dbContext, extraPayload.Id, groupId, name, page, limit).Select(x =>
+                devices = GroupDeviceDataservice.GetList(_iotDbContext, relation.CreatedBy, groupId, name, page, limit).Select(x =>
                 new
                 {
                     x.CreatedAt,
@@ -48,7 +53,7 @@ namespace Homo.IotApi
                     x.OfflineNotificationTarget,
                     x.IsOfflineNotification
                 }),
-                rowNum = GroupDeviceDataservice.GetRowNums(_dbContext, extraPayload.Id, groupId, name)
+                rowNum = GroupDeviceDataservice.GetRowNums(_iotDbContext, relation.CreatedBy, groupId, name)
             }; ;
         }
 
@@ -62,8 +67,8 @@ namespace Homo.IotApi
         public ActionResult<dynamic> get([FromRoute] long groupId, [FromRoute] long deviceId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
-            DeviceActivityLog record = DeviceActivityLogDataservice.GetLast(_dbContext, groupDevice.UserId, deviceId);
+            var groupDevice = GroupDeviceDataservice.GetOne(_iotDbContext, groupId, deviceId);
+            DeviceActivityLog record = DeviceActivityLogDataservice.GetLast(_iotDbContext, groupDevice.UserId, deviceId);
             if (record == null)
             {
                 throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
@@ -81,7 +86,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> readLastFile([FromRoute] long deviceId, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_dbContext, ownerId, deviceId);
+            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_iotDbContext, ownerId, deviceId);
             if (record == null)
             {
                 throw new CustomException(ERROR_CODE.FILE_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
@@ -116,7 +121,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> readFileThumbnail([FromRoute] long deviceId, dynamic extraPayload)
         {
             long ownerId = extraPayload.Id;
-            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_dbContext, ownerId, deviceId);
+            DeviceUploadedImage record = DeviceUploadedImageDataservice.GetLastOne(_iotDbContext, ownerId, deviceId);
             if (record == null)
             {
                 throw new CustomException(ERROR_CODE.FILE_NOT_FOUND, System.Net.HttpStatusCode.NotFound);

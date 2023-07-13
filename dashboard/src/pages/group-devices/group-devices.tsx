@@ -1,117 +1,92 @@
 import { useRef, useEffect, useState } from 'react';
 import moment from 'moment';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@/hooks/query.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
-import {
-    useBundleFirmwareApi,
-    useGetDevicesApi,
-    useGetLastDeviceImageThumbnailApi,
-} from '@/hooks/apis/devices.hook';
-import { selectDevices } from '@/redux/reducers/devices.reducer';
-import Pins from '@/components/pins/pins';
 import PageTitle from '@/components/page-title/page-title';
-import pencilIcon from '@/assets/images/pencil.svg';
-import cloudIcon from '@/assets/images/cloud.svg';
-import trashIcon from '@/assets/images/trash.svg';
-import cameraIcon from '@/assets/images/camera.svg';
 import Pagination from '@/components/pagination/pagination';
 import SearchInput from '@/components/inputs/search-input/search-input';
 import EmptyDataToCreateItem from '@/components/empty-data-to-create-item/empty-data-to-create-item';
-import { useDeleteDevicesApi } from '@/hooks/apis/devices.hook';
-import { RESPONSE_STATUS } from '@/constants/api';
-import compassIcon from '@/assets/images/compass.svg';
-import stopIcon from '@/assets/images/stop.svg';
 import displayIcon from '@/assets/images/display.svg';
-import warnIcon from '@/assets/images/warning.svg';
-import colorWarnIcon from '@/assets/images/color-warning.svg';
 import { useDispatch } from 'react-redux';
-import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
 import ReactTooltip from 'react-tooltip';
 import OnlineStatusTag from '@/components/online-status-tag/online-status-tag';
 import Spinner from '@/components/spinner/spinner';
 import { monitorConfigDialogActions } from '@/redux/reducers/monitor-config-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
-import { DeviceItem } from '@/types/devices.type';
-import { offlineNotificationDialogActions } from '@/redux/reducers/offline-notification-dialog.reducer';
-import PseudoDeviceLastActivity from '@/components/pseudo-device-last-activity/pseudo-device-last-activity';
+import {
+    useGetGroupDevicesApi,
+    useGetGroupLastDeviceImageThumbnailApi,
+} from '@/hooks/apis/group-devices.hook';
+import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
+import PseudoGroupDeviceLastActivity from '@/components/pseudo-group-device-last-activity/pseudo-group-device-last-activity';
+// import GroupPins from '@/components/group-pins/group-pins';
+import cameraIcon from '@/assets/images/camera.svg';
 import { realtimeDeviceImageDialogActions } from '@/redux/reducers/realtime-device-image-dialog.reducer';
 import { ApiHelpers } from '@/helpers/api.helper';
 
-const Devices = () => {
+const GroupDevices = () => {
     const query = useQuery();
+    const { groupId } = useParams();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const limit = Number(query.get('limit') || 10);
     const [page, setPage] = useState(1);
-    const [deviceName, setDeviceName] = useState(query.get('deviceName') || '');
-    const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
-    const [shouldBeBundledId, setShouldBeBundledId] = useState(0);
     const [selectedDeviceId, setSelectedDeviceId] = useState(0);
-
-    const [refreshFlag, setRefreshFlag] = useState(false);
-    const [isFirmwarePrepare, setIsFirmwarePrepare] = useState(false);
-    const devicesState = useAppSelector(selectDevices);
-    const { protocols } = useAppSelector(selectUniversal);
-    const dispatch = useDispatch();
-    const { search } = useLocation();
-    const [
-        lastDeviceImageThumbnailPosition,
-        setLastDeviceImageThumbnailPosition,
-    ] = useState<any>({});
-    const hasDevicesRef = useRef(false);
-    const devices = devicesState.devices;
-    const rowNum = devicesState.rowNum;
-    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
-    const isFilter = !query.keys().next().done;
-
-    const [
-        lastDeviceImageThumbnailContainerShow,
-        setLastDeviceImageThumbnailContainerShow,
-    ] = useState(false);
-    const [lastDeviceImageThumbnail, setLastDeviceImageThumbnail] = useState<
-        null | string
-    >('');
-    const lastDeviceImageThumbnailContainerRef = useRef<null | HTMLDivElement>(
-        null
-    );
+    const [deviceName, setDeviceName] = useState(query.get('deviceName') || '');
+    const [isGetted, setIsGetted] = useState(false);
     const lastDeviceImageIconRef = useRef<null | HTMLDivElement>(null);
     const recursiveGetLastDeviceImageTimer = useRef<null | NodeJS.Timeout>(
         null
     );
     const [
+        lastDeviceImageThumbnailContainerShow,
+        setLastDeviceImageThumbnailContainerShow,
+    ] = useState(false);
+    const lastDeviceImageThumbnailContainerRef = useRef<null | HTMLDivElement>(
+        null
+    );
+    const [
+        lastDeviceImageThumbnailPosition,
+        setLastDeviceImageThumbnailPosition,
+    ] = useState<any>({});
+    const [
         recursiveGetLastDeviceImageStartFlag,
         setRecursiveGetUploadedImageStartFlag,
     ] = useState(false);
+    const [lastDeviceImageThumbnail, setLastDeviceImageThumbnail] = useState<
+        null | string
+    >('');
+    const devicesState = useAppSelector(selectGroupDevices);
+    const { protocols } = useAppSelector(selectUniversal);
 
-    const navigate = useNavigate();
-    const { isGetingDevices, getDevicesApi } = useGetDevicesApi({
+    const hasDevicesRef = useRef(false);
+    const howToUseLink = `${import.meta.env.VITE_WEBSITE_URL}/how/start/`;
+
+    const {
+        isLoading: isGetingDevices,
+        fetchApi: getDevicesApi,
+        data: responseOfGet,
+    } = useGetGroupDevicesApi({
+        groupId: Number(groupId || 0),
         page: Number(query.get('page') || 1),
         limit: Number(query.get('limit') || 10),
-        name: deviceName,
+        name: query.get('deviceName') || '',
     });
 
     const {
         fetchApi: getLastDeviceImageThumbnail,
         data: lastDeviceImageThumbnailBlob,
         error: lastDeviceImageThumbnailError,
-    } = useGetLastDeviceImageThumbnailApi(selectedDeviceId);
-
-    const { fetchApi: deleteMultipleApi, data: responseOfDelete } =
-        useDeleteDevicesApi([shouldBeDeleteId]);
-
-    const {
-        fetchApi: bundleFirmwareApi,
-        error: errorOfBundle,
-        data: responseOfBundle,
-    } = useBundleFirmwareApi({ id: shouldBeBundledId });
+    } = useGetGroupLastDeviceImageThumbnailApi(
+        Number(groupId || 0),
+        selectedDeviceId
+    );
 
     useEffect(() => {
-        document.title = 'ItemHub - 裝置列表';
+        document.title = 'ItemHub - 群組裝置列表';
         // eslint-disable-next-line
-        return () => {
-            if (recursiveGetLastDeviceImageTimer.current) {
-                clearTimeout(recursiveGetLastDeviceImageTimer.current);
-            }
-        };
+        return () => {};
     }, []);
 
     useEffect(() => {
@@ -125,41 +100,16 @@ const Devices = () => {
     }, [query.get('deviceName')]);
 
     useEffect(() => {
+        if (!responseOfGet) {
+            return;
+        }
+        setIsGetted(true);
+    }, [responseOfGet]);
+
+    useEffect(() => {
         getDevicesApi();
         // eslint-disable-next-line
-    }, [query, refreshFlag]);
-
-    useEffect(() => {
-        if (shouldBeDeleteId) {
-            deleteMultipleApi();
-        }
-        // eslint-disable-next-line
-    }, [shouldBeDeleteId]);
-
-    useEffect(() => {
-        if (responseOfDelete?.status === RESPONSE_STATUS.OK) {
-            setRefreshFlag(!refreshFlag);
-        }
-        // eslint-disable-next-line
-    }, [responseOfDelete]);
-
-    useEffect(() => {
-        if (shouldBeBundledId) {
-            setIsFirmwarePrepare(true);
-            bundleFirmwareApi();
-        }
-        // eslint-disable-next-line
-    }, [shouldBeBundledId]);
-
-    useEffect(() => {
-        setIsFirmwarePrepare(false);
-    }, [responseOfBundle, errorOfBundle]);
-
-    useEffect(() => {
-        if (devices && devices.length > 0) {
-            hasDevicesRef.current = true;
-        }
-    }, [devices]);
+    }, [query]);
 
     useEffect(() => {
         if (!lastDeviceImageThumbnailBlob) {
@@ -211,56 +161,12 @@ const Devices = () => {
         }, 5 * 1000);
     };
 
-    const deleteOne = (id: number) => {
-        const shouldBeDeleteDevice = (devices || []).find(
-            (item: DeviceItem) => item.id === id
-        );
-        if (!shouldBeDeleteDevice) {
-            return;
-        }
-        dispatch(
-            dialogActions.open({
-                message: `刪除後將無法復原, 請輸入 DELETE 完成刪除 ${shouldBeDeleteDevice.name}`,
-                title: '確認刪除裝置 ?',
-                type: DialogTypeEnum.PROMPT,
-                checkedMessage: 'DELETE',
-                callback: () => {
-                    setShouldBeDeleteId(() => {
-                        return id;
-                    });
-                },
-                promptInvalidMessage: '輸入錯誤',
-            })
-        );
-    };
-
-    const bundleFirmware = (id: number) => {
-        dispatch(
-            dialogActions.open({
-                message: `下載後舊有裝置將無法使用，請確認是否下載？`,
-                title: '下載範例程式碼',
-                type: DialogTypeEnum.CONFIRM,
-                callback: () => {
-                    setShouldBeBundledId(id);
-                },
-            })
-        );
-    };
-
     const popupMonitorConfig = (id: number) => {
         dispatch(
             monitorConfigDialogActions.open({
                 callback: () => {},
                 deviceId: id,
-            })
-        );
-    };
-
-    const popupOfflineNotification = (id: number) => {
-        dispatch(
-            offlineNotificationDialogActions.open({
-                callback: () => {},
-                deviceId: id,
+                // groupId: groupId ? Number(groupId) : undefined,
             })
         );
     };
@@ -297,8 +203,13 @@ const Devices = () => {
                 secondaryButtonCallback={getDevicesApi}
             />
             <div className="card">
-                {!hasDevicesRef.current && devices !== null && !isFilter ? (
-                    <EmptyDataToCreateItem itemName="裝置" />
+                {devicesState.devices !== null &&
+                devicesState.devices.length === 0 &&
+                isGetted ? (
+                    <EmptyDataToCreateItem
+                        itemName="裝置"
+                        isShowCreateButton={false}
+                    />
                 ) : (
                     <>
                         <SearchInput
@@ -309,7 +220,7 @@ const Devices = () => {
                             }}
                             onSearch={(deviceName) => {
                                 navigate(
-                                    `/dashboard/devices?${
+                                    `/dashboard/groups/${groupId}/devices?${
                                         deviceName
                                             ? `deviceName=${deviceName}`
                                             : ''
@@ -317,7 +228,7 @@ const Devices = () => {
                                 );
                             }}
                         />
-                        {isGetingDevices || devices === null ? (
+                        {isGetingDevices || devicesState.devices === null ? (
                             <div className="w-100 d-flex justify-content-center my-4">
                                 <Spinner />
                             </div>
@@ -343,14 +254,13 @@ const Devices = () => {
                                     <div className="col-12">Pins Data</div>
                                 </div>
                                 <div className="devices-list">
-                                    {devices.map(
+                                    {devicesState.devices.map(
                                         ({
                                             id,
                                             name,
                                             online,
                                             protocol,
                                             lastActivity,
-                                            isOfflineNotification,
                                         }) => {
                                             const targetProtocol =
                                                 protocols.find(
@@ -371,7 +281,10 @@ const Devices = () => {
                                                             : '目前沒有資料'
                                                     }`}
                                                 >
-                                                    <PseudoDeviceLastActivity
+                                                    <PseudoGroupDeviceLastActivity
+                                                        groupId={Number(
+                                                            groupId || 0
+                                                        )}
                                                         deviceId={id}
                                                     />
                                                     <div className="col-4 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
@@ -400,78 +313,6 @@ const Devices = () => {
                                                         操作
                                                     </div>
                                                     <div className="col-8 col-lg-5 p-3 p-lg-0 d-flex flex-wrap align-content-start">
-                                                        <Link
-                                                            className="me-4 mb-3"
-                                                            to={`/dashboard/devices/${id}${search}`}
-                                                            data-tip="編輯"
-                                                        >
-                                                            <img
-                                                                className="icon"
-                                                                src={pencilIcon}
-                                                            />
-                                                        </Link>
-                                                        <div
-                                                            className="me-4 mb-3"
-                                                            role="button"
-                                                            onClick={() => {
-                                                                if (
-                                                                    isFirmwarePrepare
-                                                                ) {
-                                                                    return;
-                                                                }
-                                                                bundleFirmware(
-                                                                    id
-                                                                );
-                                                            }}
-                                                            data-tip="下載範例程式碼"
-                                                        >
-                                                            {isFirmwarePrepare &&
-                                                            shouldBeBundledId ===
-                                                                id ? (
-                                                                <img
-                                                                    title="正在產生 firmware project"
-                                                                    className="icon"
-                                                                    src={
-                                                                        compassIcon
-                                                                    }
-                                                                />
-                                                            ) : (
-                                                                <div className="position-relative">
-                                                                    <img
-                                                                        className="icon"
-                                                                        src={
-                                                                            cloudIcon
-                                                                        }
-                                                                    />
-                                                                    <img
-                                                                        className={`icon position-absolute ${
-                                                                            isFirmwarePrepare &&
-                                                                            shouldBeBundledId !==
-                                                                                id
-                                                                                ? ''
-                                                                                : 'd-none'
-                                                                        }`}
-                                                                        src={
-                                                                            stopIcon
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                        <div
-                                                            className="me-4 mb-3"
-                                                            role="button"
-                                                            onClick={() => {
-                                                                deleteOne(id);
-                                                            }}
-                                                            data-tip="刪除"
-                                                        >
-                                                            <img
-                                                                className="icon"
-                                                                src={trashIcon}
-                                                            />
-                                                        </div>
-
                                                         <div
                                                             className="me-4 mb-3"
                                                             role="button"
@@ -486,26 +327,6 @@ const Devices = () => {
                                                                 className="icon"
                                                                 src={
                                                                     displayIcon
-                                                                }
-                                                            />
-                                                        </div>
-
-                                                        <div
-                                                            className="me-4 mb-3"
-                                                            role="button"
-                                                            onClick={() => {
-                                                                popupOfflineNotification(
-                                                                    id
-                                                                );
-                                                            }}
-                                                            data-tip="斷線通知"
-                                                        >
-                                                            <img
-                                                                className="icon"
-                                                                src={
-                                                                    isOfflineNotification
-                                                                        ? colorWarnIcon
-                                                                        : warnIcon
                                                                 }
                                                             />
                                                         </div>
@@ -614,13 +435,15 @@ const Devices = () => {
                                                         Pins Data
                                                     </div>
                                                     <div className="col-8 col-lg-12 p-3 p-lg-0">
-                                                        <Pins
+                                                        <hr className="border-grey-300" />
+                                                        {/* <GroupPins
+                                                            groupId={Number(
+                                                                groupId || 0
+                                                            )}
                                                             deviceId={Number(
                                                                 id
                                                             )}
-                                                            isEditMode={false}
-                                                            isList
-                                                        />
+                                                        /> */}
                                                     </div>
                                                 </div>
                                             );
@@ -651,11 +474,13 @@ const Devices = () => {
                                 </div>
                                 <div
                                     className={`${
-                                        devices.length > 0 ? 'd-flex' : 'd-none'
+                                        devicesState.devices.length > 0
+                                            ? 'd-flex'
+                                            : 'd-none'
                                     } justify-content-end w-100 mt-5`}
                                 >
                                     <Pagination
-                                        rowNum={rowNum}
+                                        rowNum={devicesState.rowNum}
                                         page={page}
                                         limit={limit}
                                     />
@@ -669,4 +494,4 @@ const Devices = () => {
     );
 };
 
-export default Devices;
+export default GroupDevices;
