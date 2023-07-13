@@ -38,6 +38,8 @@ const Header = (props: { groups: GroupNameType[] | null }) => {
         if (document.body.clientWidth <= 767) {
             dispatch(menuActions.close());
         }
+
+        // eslint-disable-next-line
     }, [location]);
 
     const closeMenu = () => {

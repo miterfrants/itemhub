@@ -47,6 +47,7 @@ export const END_POINT = {
     MY_GROUP_USERS: 'my/groups/:id/users',
     GROUP_NAMES: 'groups/name',
     MY_GROUP_DEVICES: 'my/groups/:groupId/devices',
+    REFRESH_DASHBOARD_TOKEN: 'auth/refresh-dashboard-token',
     GROUP_DEVICES: 'groups/:groupId/devices',
     GROUP_DEVICE_LAST_ACTIVITY:
         'groups/:groupId/devices/:deviceId/last-activity',

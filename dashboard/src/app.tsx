@@ -1,5 +1,5 @@
 import './app.scss';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
@@ -32,6 +32,9 @@ const App = () => {
     const dashboardTokenFromQueryString =
         query.get(COOKIE_KEY.DASHBOARD_TOKEN) || '';
 
+    const dashboardRefreshTokenFromQueryString =
+        query.get(COOKIE_KEY.DASHBOARD_REFRESH_TOKEN) || '';
+
     if (isDev && dashboardTokenFromQueryString) {
         const payload = jwt_decode<{ exp: number }>(
             dashboardTokenFromQueryString
@@ -39,6 +42,12 @@ const App = () => {
         CookieHelpers.SetCookie({
             name: COOKIE_KEY.DASHBOARD_TOKEN,
             value: dashboardTokenFromQueryString,
+            unixTimestamp: payload?.exp,
+        });
+
+        CookieHelpers.SetCookie({
+            name: COOKIE_KEY.DASHBOARD_REFRESH_TOKEN,
+            value: dashboardRefreshTokenFromQueryString,
             unixTimestamp: payload?.exp,
         });
     }
@@ -114,6 +123,16 @@ const App = () => {
         }
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (
+            pathname === '/dashboard/' ||
+            pathname.indexOf('/dashboard/groups/') === 0
+        ) {
+            getGroupNames();
+        }
+        // eslint-disable-next-line
+    }, [pathname]);
 
     return token ? (
         <div className="dashboard" data-testid="Dashboard">
