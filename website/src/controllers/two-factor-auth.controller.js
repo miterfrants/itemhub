@@ -53,7 +53,7 @@ export class TwoFactorAuthController extends RoutingController {
                 }
             } else if (jwtLifeHours >= 12) {
                 if (APP_CONFIG.ENV === 'dev') {
-                    location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${dashboardToken}`;
+                    location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${dashboardToken}&dashboardRefreshToken=${dashboardRefreshToken}`;
                 } else {
                     location.href = APP_CONFIG.DASHBOARD_URL;
                 }
@@ -137,7 +137,7 @@ export class TwoFactorAuthController extends RoutingController {
         if (APP_CONFIG.ENV === 'dev') {
             CookieUtil.setCookie('dashboardToken', resp.data.token, null, dashboardPayload.exp);
             CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, refreshPayload.exp);
-            location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${resp.data.token}`;
+            location.href = `${APP_CONFIG.DASHBOARD_URL}?dashboardToken=${resp.data.token}&dashboardRefreshToken=${resp.data.refreshToken}`;
         } else {
             CookieUtil.setCookie('dashboardToken', resp.data.token, null, dashboardPayload.exp);
             CookieUtil.setCookie('dashboardRefreshToken', resp.data.refreshToken, null, refreshPayload.exp);
