@@ -17,6 +17,5 @@ namespace Homo.IotApi
                 .OrderByDescending(x => x.Id)
                 .ToList();
         }
-
     }
 }
