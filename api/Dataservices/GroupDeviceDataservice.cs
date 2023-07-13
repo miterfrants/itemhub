@@ -6,7 +6,32 @@ namespace Homo.IotApi
 {
     public class GroupDeviceDataservice
     {
-        public static List<Device> GetList(IotDbContext dbContext, long userId, long groupId, int page, int limit)
+        public static List<Device> GetList(IotDbContext dbContext, long userId, long groupId, string name, int page, int limit)
+        {
+            return dbContext.GroupDevice
+                .Where(x =>
+                    x.DeletedAt == null
+                    && x.UserId == userId
+                    && x.GroupId == groupId
+
+                )
+                .Join(dbContext.Device, groupDevice => groupDevice.DeviceId, device => device.Id, (groupDevice, device) =>
+                new
+                {
+                    groupDevice = groupDevice,
+                    device = device
+                })
+                .Where(x =>
+                    x.device.DeletedAt == null
+                    && (name == null || x.device.Name.Contains(name))
+                )
+                .OrderByDescending(x => x.groupDevice.Id)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .Select(x => x.device)
+                .ToList();
+        }
+        public static int GetRowNums(IotDbContext dbContext, long userId, long groupId, string name)
         {
             return dbContext.GroupDevice
                 .Where(x =>
@@ -20,22 +45,23 @@ namespace Homo.IotApi
                     groupDevice = groupDevice,
                     device = device
                 })
-                .OrderByDescending(x => x.groupDevice.Id)
-                .Skip((page - 1) * limit)
-                .Take(limit)
-                .Select(x => x.device)
-                .ToList();
-        }
-        public static int GetRowNums(IotDbContext dbContext, long userId, long groupId)
-        {
-            return dbContext.GroupDevice
                 .Where(x =>
-                    x.DeletedAt == null
-                    && x.UserId == userId
-                    && x.GroupId == groupId
+                    x.device.DeletedAt == null
+                    && (name == null || x.device.Name.Contains(name))
                 )
                 .Count();
         }
+
+        public static GroupDevice GetOne(IotDbContext dbContext, long groupId, long deviceId)
+        {
+            return dbContext.GroupDevice
+                .Where(x => x.DeletedAt == null
+                    && x.DeviceId == deviceId
+                    && x.GroupId == groupId
+                )
+                .FirstOrDefault();
+        }
+
         public static List<ViewGroupDevice> GetAll(IotDbContext dbContext, long userId, long groupId, List<long> deviceIds)
         {
             return dbContext.GroupDevice
