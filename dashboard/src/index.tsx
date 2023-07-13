@@ -42,7 +42,10 @@ ReactDOM.render(
                     path="dashboard/groups/:groupId/devices"
                     element={<GroupDevices />}
                 />
-
+                <Route
+                    path="dashboard/groups/:groupId/devices/:id/:pin/statistics"
+                    element={<DevicePinStatistics />}
+                />
                 <Route path="dashboard/devices/:id" element={<Device />} />
                 <Route path="dashboard/groups" element={<Groups />} />
                 <Route path="dashboard/groups/create" element={<Group />} />

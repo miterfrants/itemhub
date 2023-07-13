@@ -6,7 +6,7 @@ import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -32,11 +32,14 @@ import moment from 'moment';
 import { useGetPipelineStaticMethods } from '@/hooks/apis/universal.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { UniversalOption } from '@/types/universal.type';
+import {
+    useGetGroupDevicePinApi,
+    useGetGroupSensorLogsAggregateApi,
+    useGetGroupSensorLogsApi,
+} from '@/hooks/apis/group-device-pin.hook';
 
 const DevicePinStatistics = () => {
-    const navigate = useNavigate();
-    const { search } = useLocation();
-    const { id: idFromUrl, pin } = useParams();
+    const { id: idFromUrl, pin, groupId } = useParams();
     const [device, setDevice] = useState<DeviceItem | null>(null);
     const devices = useAppSelector(selectDevices).devices;
     const [statisticalMethods, setstatisticalMethods] = useState<
@@ -54,8 +57,17 @@ const DevicePinStatistics = () => {
     const { isLoading: isGetting, fetchApi: getDeviceApi } = useGetDeviceApi(
         Number(idFromUrl)
     );
-    const { fetchApi: getSensorLogsAggregateApi, data: aggregateData } =
+    const { fetchApi: getSensorLogsAggregate, data: aggregateData } =
         useGetSensorLogsAggregateApi({
+            deviceId: Number(idFromUrl),
+            pin: pin || '',
+            startAt: startAt,
+            endAt: endAt,
+            statisticalMethods: statisticalMethods,
+        });
+    const { fetchApi: getGroupSensorLogsAggregate, data: groupAggregateData } =
+        useGetGroupSensorLogsAggregateApi({
+            groupId: Number(groupId || 0),
             deviceId: Number(idFromUrl),
             pin: pin || '',
             startAt: startAt,
@@ -66,23 +78,32 @@ const DevicePinStatistics = () => {
         id: Number(idFromUrl),
         pin: pin || '',
     });
+
+    const { fetchApi: getGroupDevicePin } = useGetGroupDevicePinApi({
+        deviceId: Number(idFromUrl),
+        groupId: Number(groupId || 0),
+        pin: pin || '',
+    });
     const [devicePin] = useState<PinItem | null>(null);
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [xAxisTicks, setXAxisTicks] = useState<any[]>([]);
     const [sensorLogIds, setSensorLogIds] = useState<number[]>([]);
 
-    // const [staticMethod, setStaticMethod] = useState<number | undefined>(0);
-
     const breadcrumbs = [
         {
             label: '裝置列表',
-            pathName: '/dashboard/devices',
-        },
-        {
-            label: '裝置詳細頁',
-            pathName: `/dashboard/devices/${idFromUrl}`,
+            pathName: groupId
+                ? `/dashboard/groups/${groupId}/devices`
+                : '/dashboard/devices',
         },
     ];
+
+    if (!groupId) {
+        breadcrumbs.push({
+            label: '裝置詳細頁',
+            pathName: `/dashboard/devices/${idFromUrl}`,
+        });
+    }
 
     ChartJS.register(
         CategoryScale,
@@ -102,6 +123,20 @@ const DevicePinStatistics = () => {
         fetchApi: getSensorLogs,
         isLoading,
     } = useGetSensorLogsApi({
+        deviceId: Number(idFromUrl),
+        pin: pin || '',
+        page: 1,
+        limit: 10000,
+        startAt: startAt,
+        endAt: endAt,
+    });
+
+    const {
+        data: responseOfGroupSensorLogs,
+        fetchApi: getGroupSensorLogs,
+        isLoading: isGettingGroupSesnorLogs,
+    } = useGetGroupSensorLogsApi({
+        groupId: Number(groupId || 0),
         deviceId: Number(idFromUrl),
         pin: pin || '',
         page: 1,
@@ -165,14 +200,24 @@ const DevicePinStatistics = () => {
     };
 
     useEffect(() => {
-        getDevicePin();
-        getSensorLogs();
+        if (groupId) {
+            getGroupDevicePin();
+            getGroupSensorLogs();
+        } else {
+            getDevicePin();
+            getSensorLogs();
+        }
+
         // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        setAggregateNumber(aggregateData || undefined);
-    }, [aggregateData]);
+        if (groupId) {
+            setAggregateNumber(groupAggregateData || undefined);
+        } else {
+            setAggregateNumber(aggregateData || undefined);
+        }
+    }, [aggregateData, groupAggregateData]);
 
     useEffect(() => {
         if (!responseOfSensorLogs) {
@@ -187,6 +232,20 @@ const DevicePinStatistics = () => {
             })
         );
     }, [responseOfSensorLogs]);
+
+    useEffect(() => {
+        if (!responseOfGroupSensorLogs) {
+            return;
+        }
+        responseOfGroupSensorLogs.reverse();
+        setLineChartData(responseOfGroupSensorLogs.map((item) => item.value));
+        setSensorLogIds(responseOfGroupSensorLogs.map((item) => item.id));
+        setXAxisTicks(
+            responseOfGroupSensorLogs.map((item) => {
+                return new Date(item.createdAt);
+            })
+        );
+    }, [responseOfGroupSensorLogs]);
 
     useEffect(() => {
         const device =
@@ -209,10 +268,23 @@ const DevicePinStatistics = () => {
     }, [pipelineDeviceStaticMethods]);
 
     useEffect(() => {
-        if (sensorLogIds.length === 0 && !responseOfSensorLogs) {
+        if (sensorLogIds.length === 0 && !responseOfSensorLogs && !groupId) {
             return;
         }
-        getSensorLogs();
+        if (
+            sensorLogIds.length === 0 &&
+            !responseOfGroupSensorLogs &&
+            groupId
+        ) {
+            return;
+        }
+
+        if (groupId) {
+            getGroupSensorLogs();
+        } else {
+            getSensorLogs();
+        }
+
         // eslint-disable-next-line
     }, [startAt, endAt]);
 
@@ -220,7 +292,12 @@ const DevicePinStatistics = () => {
         if (sensorLogIds.length === 0 && !responseOfSensorLogs) {
             return;
         }
-        getSensorLogsAggregateApi();
+        if (groupId) {
+            getGroupSensorLogsAggregate();
+        } else {
+            getSensorLogsAggregate();
+        }
+
         // eslint-disable-next-line
     }, [startAt, endAt, statisticalMethods]);
 
@@ -315,7 +392,8 @@ const DevicePinStatistics = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {isLoading ? (
+                                {(!groupId && isLoading) ||
+                                (groupId && isGettingGroupSesnorLogs) ? (
                                     <div className="w-100 d-flex align-items-center justify-content-center mt-5">
                                         <Spinner />
                                     </div>
