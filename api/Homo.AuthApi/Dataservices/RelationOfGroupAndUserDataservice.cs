@@ -55,6 +55,14 @@ namespace Homo.AuthApi
                 .ToList();
         }
 
+
+        public static RelationOfGroupAndUser GetOne(DBContext dbContext, long userId, long groupId)
+        {
+            return dbContext.RelationOfGroupAndUser
+                .Where(x => x.DeletedAt == null && x.GroupId == groupId && x.UserId == userId)
+                .FirstOrDefault();
+        }
+
         public static void Add(long createdBy, long userId, List<long> groupIds, DBContext dbContext)
         {
             foreach (long groupId in groupIds)
