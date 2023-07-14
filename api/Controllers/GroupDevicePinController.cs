@@ -144,5 +144,6 @@ namespace Homo.IotApi
             return SensorLogDataservice.GetAggregateValue(_dbContext, groupDevice.UserId, deviceId, pin, statisticalMethods, null, null, startAt, endAt).GetValueOrDefault(0);
         }
 
+
     }
 }
