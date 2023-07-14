@@ -21,6 +21,7 @@ import invitationsReducer from './reducers/invitations.reducer';
 import groupUsersReducer from './reducers/group-users.reducer';
 import myGroupDevicesReducer from './reducers/my-group-devices.reducer';
 import groupDevicesReducer from './reducers/group-devices.reducer';
+import groupDevicePinsReducer from './reducers/group-device-pins.reducer';
 
 const store = configureStore({
     reducer: {
@@ -46,6 +47,7 @@ const store = configureStore({
         groupUsers: groupUsersReducer,
         myGroupDevices: myGroupDevicesReducer,
         groupDevices: groupDevicesReducer,
+        groupDevicePins: groupDevicePinsReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

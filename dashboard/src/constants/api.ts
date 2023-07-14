@@ -51,10 +51,14 @@ export const END_POINT = {
     GROUP_DEVICES: 'groups/:groupId/devices',
     GROUP_DEVICE_LAST_ACTIVITY:
         'groups/:groupId/devices/:deviceId/last-activity',
+    GROUP_DEVICE_PINS: 'groups/:groupId/devices/:deviceId/pins',
+    GROUP_DEVICE_SWITCH_PIN: 'groups/:groupId/devices/:deviceId/switches/:pin',
     GROUP_DEVICE_LAST_DEVICE_IMAGE_THUMBNAIL:
         'groups/:groupId/devices/:deviceId/read-last-file-thumbnail',
     GROUP_DEVICE_LAST_DEVICE_IMAGE:
         'groups/:groupId/devices/:deviceId/read-last-file',
+    GROUP_DEVICE_SENSOR_LOGS: 'groups/:groupId/devices/:deviceId/sensors/:pin',
+    GROUP_DEVICE_PIN: 'groups/:groupId/devices/:deviceId/pins/:pin',
 };
 
 export const HTTP_METHOD = {

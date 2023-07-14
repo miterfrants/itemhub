@@ -10,9 +10,14 @@ import Toggle from '../toggle/toggle';
 import ReactTooltip from 'react-tooltip';
 import analyticsIcon from '@/assets/images/analytics.svg';
 import { Link, useLocation } from 'react-router-dom';
+import { useToggleGroupDeviceSwitchPinApi } from '@/hooks/apis/group-device-pin.hook';
 
-const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
-    const { isEditMode, pinItem } = props;
+const Pin = (props: {
+    pinItem: PinItem;
+    isEditMode: boolean;
+    groupId: number | undefined;
+}) => {
+    const { isEditMode, pinItem, groupId } = props;
     const { search } = useLocation();
     const {
         deviceId,
@@ -33,6 +38,14 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
         pin,
         value: value || 0,
     });
+    const { fetchApi: toggleGroupDevicePin } = useToggleGroupDeviceSwitchPinApi(
+        {
+            groupId: groupId || 0,
+            deviceId,
+            pin,
+            value: value || 0,
+        }
+    );
 
     const { updateDevicePinNameApi, isLoading: isNameUpdating } =
         useUpdateDevicePinNameApi({
@@ -63,7 +76,13 @@ const Pin = (props: { pinItem: PinItem; isEditMode: boolean }) => {
         if (!isInitialized || value === undefined || !isSwitch) {
             return;
         }
-        updateDeviceSwitchPinApi();
+
+        if (groupId) {
+            toggleGroupDevicePin();
+        } else {
+            updateDeviceSwitchPinApi();
+        }
+
         // eslint-disable-next-line
     }, [value, isSwitch]);
 

@@ -20,7 +20,7 @@ import {
 } from '@/hooks/apis/group-devices.hook';
 import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
 import PseudoGroupDeviceLastActivity from '@/components/pseudo-group-device-last-activity/pseudo-group-device-last-activity';
-// import GroupPins from '@/components/group-pins/group-pins';
+import GroupPins from '@/components/group-pins/group-pins';
 import cameraIcon from '@/assets/images/camera.svg';
 import { realtimeDeviceImageDialogActions } from '@/redux/reducers/realtime-device-image-dialog.reducer';
 import { ApiHelpers } from '@/helpers/api.helper';
@@ -436,14 +436,14 @@ const GroupDevices = () => {
                                                     </div>
                                                     <div className="col-8 col-lg-12 p-3 p-lg-0">
                                                         <hr className="border-grey-300" />
-                                                        {/* <GroupPins
+                                                        <GroupPins
                                                             groupId={Number(
                                                                 groupId || 0
                                                             )}
                                                             deviceId={Number(
                                                                 id
                                                             )}
-                                                        /> */}
+                                                        />
                                                     </div>
                                                 </div>
                                             );
