@@ -56,6 +56,42 @@ export const useGetGroupDevicesApi = ({
         data,
     };
 };
+export const useGetGroupDeviceApi = ({
+    groupId,
+    deviceId,
+}: {
+    groupId: number;
+    deviceId: number;
+}) => {
+    const dispatch = useAppDispatch();
+    const dispatchAction = useCallback(
+        (data: DeviceItem) => {
+            if (data) {
+                dispatch(groupDevicesActions.refreshOne(data));
+            }
+        },
+        // eslint-disable-next-line
+        [dispatch, groupId, deviceId]
+    );
+
+    const apiPath = `${API_URL}${END_POINT.GROUP_DEVICE}`
+        .replace(':groupId', groupId.toString())
+        .replace(':deviceId', deviceId.toString());
+
+    const { isLoading, error, fetchApi, data } = useFetchApi<DeviceItem>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchAction,
+    });
+
+    return {
+        isLoading,
+        error,
+        fetchApi,
+        data,
+    };
+};
 
 export const useGetLastGroupDeviceActivityApi = (
     groupId: number,

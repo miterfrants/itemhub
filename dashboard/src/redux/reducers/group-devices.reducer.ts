@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
 import { DeviceItem } from '@/types/devices.type';
+import { stat } from 'fs';
 
 type DeviceState = {
     devices: DeviceItem[];
@@ -64,7 +65,7 @@ export const groupDevicesSlice = createSlice({
 
             return {
                 ...state,
-                groupDevices: list,
+                devices: list,
             };
         },
         append: (state, action: PayloadAction<DeviceItem>) => {
@@ -83,7 +84,8 @@ export const groupDevicesSlice = createSlice({
             const newDevices = [...groupDevices];
             return {
                 ...state,
-                groupDevices: newDevices,
+                devices: newDevices,
+                rowNum: deviceInState ? state.rowNum : state.rowNum + 1,
             };
         },
         addOne: (state, action: PayloadAction<DeviceItem>) => {
@@ -96,7 +98,8 @@ export const groupDevicesSlice = createSlice({
 
             return {
                 ...state,
-                groupDevices: [newOne, ...list],
+                devices: [newOne, ...list],
+                rowNum: state.rowNum + 1,
             };
         },
         update: (state, action: PayloadAction<Partial<DeviceItem>>) => {
@@ -121,7 +124,7 @@ export const groupDevicesSlice = createSlice({
 
             return {
                 ...state,
-                groupDevices: newDevices,
+                devices: newDevices,
             };
         },
         deleteMultiple: (state, action: PayloadAction<{ ids: number[] }>) => {
