@@ -37,11 +37,15 @@ import {
     useGetGroupSensorLogsAggregateApi,
     useGetGroupSensorLogsApi,
 } from '@/hooks/apis/group-device-pin.hook';
+import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
+import { useGetGroupDeviceApi } from '@/hooks/apis/group-devices.hook';
 
 const DevicePinStatistics = () => {
     const { id: idFromUrl, pin, groupId } = useParams();
     const [device, setDevice] = useState<DeviceItem | null>(null);
-    const devices = useAppSelector(selectDevices).devices;
+    const devices = useAppSelector(
+        groupId ? selectGroupDevices : selectDevices
+    ).devices;
     const [statisticalMethods, setstatisticalMethods] = useState<
         number | undefined
     >(0);
@@ -57,6 +61,12 @@ const DevicePinStatistics = () => {
     const { isLoading: isGetting, fetchApi: getDeviceApi } = useGetDeviceApi(
         Number(idFromUrl)
     );
+
+    const { isLoading: isGettingGroupDevice, fetchApi: getGroupDeviceApi } =
+        useGetGroupDeviceApi({
+            deviceId: Number(idFromUrl),
+            groupId: Number(groupId || 0),
+        });
     const { fetchApi: getSensorLogsAggregate, data: aggregateData } =
         useGetSensorLogsAggregateApi({
             deviceId: Number(idFromUrl),
@@ -253,8 +263,10 @@ const DevicePinStatistics = () => {
                 (device: DeviceItem) => device.id === Number(idFromUrl)
             )[0] || null;
         setDevice(device);
-        if (device === null) {
+        if (device === null && !groupId) {
             getDeviceApi();
+        } else if (device === null && groupId) {
+            getGroupDeviceApi();
         }
         // eslint-disable-next-line
     }, [devices]);
@@ -309,7 +321,9 @@ const DevicePinStatistics = () => {
                 titleClickCallback={back}
                 title={`裝置 ${device ? device?.name : ''} ${pin} 統計`}
             />
-            {isGetting || device === null ? null : (
+            {isGetting || isGettingGroupDevice || device === null ? (
+                <div>test</div>
+            ) : (
                 <div className="card p-4">
                     <div className="row m-0">
                         <div className="col-12 d-flex p-0 item">
