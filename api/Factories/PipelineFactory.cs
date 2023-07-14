@@ -36,7 +36,7 @@ namespace Homo.IotApi
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.DELAY)
             {
-                return new DelayPipeline(id, ownerId, pipelineId, DBConnectionString, isHead, isEnd, isVIP, rawData);
+                return new DelayPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
             else if (pipelineItemType == PIPELINE_ITEM_TYPE.NETWORK)
             {
