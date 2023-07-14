@@ -59,6 +59,25 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "群組管理" },
+            Summary = "群組 - 取得單一裝置",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("{deviceId}")]
+        public ActionResult<dynamic> getOne([FromRoute] long groupId, [FromRoute] long deviceId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            var groupDevice = GroupDeviceDataservice.GetOne(_iotDbContext, groupId, deviceId);
+            Device record = DeviceDataservice.GetOne(_iotDbContext, groupDevice.UserId, deviceId);
+            if (record == null)
+            {
+                throw new CustomException(Homo.AuthApi.ERROR_CODE.DATA_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
+            }
+            return record;
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "群組管理" },
             Summary = "群組 - 取得單一裝置最後上線時間",
             Description = ""
         )]

@@ -175,3 +175,55 @@ export const useGetGroupSensorLogsApi = ({
         fetchApi,
     };
 };
+
+export const useGetGroupSensorLogsAggregateApi = ({
+    groupId,
+    deviceId,
+    pin,
+    page,
+    limit,
+    startAt,
+    endAt,
+    statisticalMethods,
+}: {
+    groupId: number;
+    deviceId: number;
+    pin: string;
+    page?: number;
+    limit?: number;
+    startAt?: string;
+    endAt?: string;
+    statisticalMethods?: number;
+}) => {
+    let apiPath = `${API_URL}${END_POINT.GROUP_DEVICE_SENSOR_LOGS_AGGREGATE}`;
+    apiPath = apiPath
+        .replace(':groupId', groupId.toString())
+        .replace(':deviceId', deviceId.toString())
+        .replace(':pin', pin);
+    apiPath = ApiHelpers.AppendQueryStrings({
+        basicPath: apiPath,
+        queryStrings: {
+            page: page,
+            limit: limit,
+            startAt: startAt,
+            endAt: endAt,
+            statisticalMethods: statisticalMethods,
+        },
+    });
+
+    const { isLoading, error, data, fetchApi } = useFetchApi<
+        number | undefined
+    >({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+    });
+
+    return {
+        isLoading,
+        error,
+        data,
+        fetchApi,
+    };
+};
+

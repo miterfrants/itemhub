@@ -136,7 +136,11 @@ const Pin = (props: {
                         : {value}
                         <div className="ms-4">
                             <Link
-                                to={`/dashboard/devices/${deviceId}/${pin}/statistics${search}`}
+                                to={
+                                    groupId
+                                        ? `/dashboard/groups/${groupId}/devices/${deviceId}/${pin}/statistics${search}`
+                                        : `/dashboard/devices/${deviceId}/${pin}/statistics${search}`
+                                }
                                 role="button"
                                 data-tip="查詢歷史統計資料"
                             >
