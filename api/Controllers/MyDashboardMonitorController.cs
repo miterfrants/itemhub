@@ -36,9 +36,9 @@ namespace Homo.IotApi
         )]
         [HttpGet]
         public ActionResult<dynamic> getAll(
-            Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+            [FromQuery] long? groupId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return DashboardMonitorDataservice.GetAll(_dbContext, extraPayload.Id);
+            return DashboardMonitorDataservice.GetAll(_dbContext, extraPayload.Id, groupId);
         }
 
         [SwaggerOperation(

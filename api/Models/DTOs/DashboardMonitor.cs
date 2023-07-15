@@ -12,6 +12,7 @@ namespace Homo.IotApi
             public string Pin { get; set; }
             public DASHBOARD_MONITOR_MODE Mode { get; set; }
             public long DeviceId { get; set; }
+            public long? GroupId { get; set; }
 
             public int Sort { get; set; }
 

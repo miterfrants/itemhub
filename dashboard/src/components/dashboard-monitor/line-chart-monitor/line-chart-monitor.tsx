@@ -22,6 +22,10 @@ import lineChartOption from '@/constants/line-chart-options';
 import moment from 'moment';
 import { InnerYAxesTicks } from '@/chart-plugins/inner-y-axes-ticks';
 import { InnerXAxesTicks } from '@/chart-plugins/inner-x-axes-ticks';
+import {
+    useGetGroupDevicePinApi,
+    useGetGroupSensorLogsApi,
+} from '@/hooks/apis/group-device-pin.hook';
 
 enum TIME_RANGE {
     NONE = 0,
@@ -37,12 +41,14 @@ const LineChartMonitor = (props: {
     pin: string;
     isLiveData: boolean;
     customTitle: string;
+    groupId?: number;
 }) => {
     const {
         deviceId,
         pin,
         isLiveData: isLiveDataFromProps,
         customTitle,
+        groupId,
     } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
@@ -69,7 +75,7 @@ const LineChartMonitor = (props: {
     );
 
     const {
-        data: responseOfSensorLogs,
+        data: responseOfGetSensorLogs,
         fetchApi: getSensorLogs,
         isLoading,
     } = useGetSensorLogsApi({
@@ -87,6 +93,30 @@ const LineChartMonitor = (props: {
             page: 1,
             limit: 1,
         });
+
+    const {
+        data: responseOfGetGroupSensorLogs,
+        fetchApi: getGroupSensorLogs,
+        isLoading: isGettingGroupSensorLogs,
+    } = useGetGroupSensorLogsApi({
+        deviceId: deviceId,
+        pin: pin,
+        page: 1,
+        limit: startAt == undefined ? 200 : 20000,
+        startAt: startAt,
+        groupId: groupId || 0,
+    });
+
+    const {
+        data: responseOfGetLastGroupSensorLogs,
+        fetchApi: getLastGroupSensorLogs,
+    } = useGetGroupSensorLogsApi({
+        deviceId: deviceId,
+        pin: pin,
+        page: 1,
+        limit: 1,
+        groupId: groupId || 0,
+    });
 
     const elementContainerRef = useRef<HTMLDivElement>(null);
 
@@ -150,20 +180,32 @@ const LineChartMonitor = (props: {
             id: deviceId,
             pin: pin,
         });
+    const { fetchApi: getGroupDevicePin, data: responseOfGetGroupDevicePin } =
+        useGetGroupDevicePinApi({
+            groupId: groupId || 0,
+            deviceId: deviceId,
+            pin: pin,
+        });
 
     const startPooling = useCallback(() => {
         if (!isLiveData) {
             return;
         }
-        getLastSensorLogs();
+        if (groupId) {
+            getLastGroupSensorLogs();
+        } else {
+            getLastSensorLogs();
+        }
+
         timer.current = setTimeout(startPooling, 5000);
-    }, [isLiveData, getLastSensorLogs]);
+    }, [isLiveData, getLastSensorLogs, getLastGroupSensorLogs]);
 
     useEffect(() => {
-        getSensorLogs();
-        getDevicePin();
-
-        // eslint-disable-next-line
+        if (groupId) {
+            getGroupDevicePin();
+        } else {
+            getDevicePin();
+        }
     }, []);
 
     useEffect(() => {
@@ -171,24 +213,48 @@ const LineChartMonitor = (props: {
     }, [isLiveDataFromProps]);
 
     useEffect(() => {
-        if (!responseOfSensorLogs) {
+        if (!responseOfGetSensorLogs) {
             return;
         }
-        responseOfSensorLogs.reverse();
-        setLineChartData(responseOfSensorLogs.map((item) => item.value));
-        setSensorLogIds(responseOfSensorLogs.map((item) => item.id));
+        if (groupId) {
+            return;
+        }
+
+        const data = [...responseOfGetSensorLogs].reverse();
+        setLineChartData(data.map((item) => item.value));
+        setSensorLogIds(data.map((item) => item.id));
         setXAxisTicks(
-            responseOfSensorLogs.map((item) => {
+            data.map((item) => {
                 return new Date(item.createdAt);
             })
         );
-    }, [responseOfSensorLogs]);
+        // eslint-disable-next-line
+    }, [responseOfGetSensorLogs]);
+
+    useEffect(() => {
+        if (!responseOfGetGroupSensorLogs) {
+            return;
+        }
+
+        const data = [...responseOfGetGroupSensorLogs].reverse();
+        setLineChartData(data.map((item) => item.value));
+        setSensorLogIds(data.map((item) => item.id));
+        setXAxisTicks(
+            data.map((item) => {
+                return new Date(item.createdAt);
+            })
+        );
+        // eslint-disable-next-line
+    }, [responseOfGetGroupSensorLogs]);
 
     useEffect(() => {
         if (
             !responseOfLastSensorLogs ||
             responseOfLastSensorLogs.length === 0
         ) {
+            return;
+        }
+        if (groupId) {
             return;
         }
         const newLog = responseOfLastSensorLogs[0];
@@ -204,11 +270,40 @@ const LineChartMonitor = (props: {
     }, [responseOfLastSensorLogs]);
 
     useEffect(() => {
+        if (
+            !responseOfGetLastGroupSensorLogs ||
+            responseOfGetLastGroupSensorLogs.length === 0
+        ) {
+            return;
+        }
+        if (!groupId) {
+            return;
+        }
+        const newLog = responseOfGetLastGroupSensorLogs[0];
+        const targetLog = sensorLogIds.find((id) => id === newLog.id);
+        if (targetLog) {
+            return;
+        }
+
+        setLineChartData([...lineChartData, newLog.value]);
+        setSensorLogIds([...sensorLogIds, newLog.id]);
+        setXAxisTicks([...xAxisTicks, new Date(newLog.createdAt)]);
+        // eslint-disable-next-line
+    }, [responseOfGetLastGroupSensorLogs]);
+
+    useEffect(() => {
         if (!responseOfGetDevicePin) {
             return;
         }
         setDevicePin(responseOfGetDevicePin as PinItem);
     }, [responseOfGetDevicePin]);
+
+    useEffect(() => {
+        if (!responseOfGetGroupDevicePin) {
+            return;
+        }
+        setDevicePin(responseOfGetGroupDevicePin as PinItem);
+    }, [responseOfGetGroupDevicePin]);
 
     useEffect(() => {
         if (isLiveData) {
@@ -219,7 +314,12 @@ const LineChartMonitor = (props: {
     }, [isLiveData, startPooling]);
 
     useEffect(() => {
-        getSensorLogs();
+        if (groupId) {
+            getGroupSensorLogs();
+        } else {
+            getSensorLogs();
+        }
+
         // eslint-disable-next-line
     }, [startAt]);
 
@@ -295,7 +395,7 @@ const LineChartMonitor = (props: {
                             近 30 天
                         </button>
                     </div>
-                    {isLoading ? (
+                    {isLoading || isGettingGroupSensorLogs ? (
                         <div className="w-100 d-flex align-items-center justify-content-center mt-5">
                             <Spinner />
                         </div>

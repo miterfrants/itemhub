@@ -25,9 +25,14 @@ import gearIcon from '@/assets/images/gear.svg';
 import Toggle from '@/components/toggle/toggle';
 import trashIcon from '@/assets/images/trash.svg';
 import displayIcon from '@/assets/images/display.svg';
+import { useLocation, useParams } from 'react-router-dom';
 
 const Dashboard = () => {
-    const { fetchApi: getDashboardMonitors } = useGetDashboardMonitorsApi();
+    const { groupId } = useParams();
+    const { pathname } = useLocation();
+    const { fetchApi: getDashboardMonitors } = useGetDashboardMonitorsApi(
+        groupId ? Number(groupId) : undefined
+    );
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState<number | null>(
         null
     );
@@ -35,7 +40,10 @@ const Dashboard = () => {
     const { fetchApi: deleteDashboardMonitors, data: responseOfDelete } =
         useDeleteDashboardMonitorsApi([shouldBeDeleteId || 0]);
 
-    const dashboardMonitors = useSelector(selectDashboardMonitors);
+    const dashboardMonitorsPool = useSelector(selectDashboardMonitors);
+    const dashboardMonitors = dashboardMonitorsPool.filter((item) =>
+        groupId ? item.groupId === Number(groupId) : item.groupId === null
+    );
     const [monitors, setMonitors] = useState<any[]>([]);
     const { fetchApi: updateDashboardMonitorSorting } =
         useUpdateDashboardMonitorSortingApi(
@@ -53,21 +61,28 @@ const Dashboard = () => {
 
     useEffect(() => {
         document.title = 'ItemHub - 監控中心';
-        if (dashboardMonitors.length > 0) {
-            return;
-        }
-        getDashboardMonitors();
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        const sortingDashboard = [...dashboardMonitors].sort((prev, next) => {
-            if (prev.sort > next.sort) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
+        getDashboardMonitors();
+        // eslint-disable-next-line
+    }, [pathname]);
 
+    useEffect(() => {
+        const sortingDashboard = dashboardMonitorsPool
+            .filter((item) =>
+                groupId
+                    ? item.groupId === Number(groupId)
+                    : item.groupId === null
+            )
+            .sort((prev, next) => {
+                if (prev.sort > next.sort) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
         setMonitors(
             sortingDashboard.map((item) => {
                 const oldData = monitors.find(
@@ -80,7 +95,8 @@ const Dashboard = () => {
                 };
             })
         );
-    }, [dashboardMonitors]);
+        // eslint-disable-next-line
+    }, [dashboardMonitorsPool]);
 
     useEffect(() => {
         if (
@@ -91,17 +107,29 @@ const Dashboard = () => {
         ) {
             return;
         }
-        const sortedDashboardMonitors = [...dashboardMonitors].sort(
-            (item) => item.sort
-        );
+        const sortedDashboardMonitors = dashboardMonitorsPool
+            .filter((item) =>
+                groupId
+                    ? item.groupId === Number(groupId)
+                    : item.groupId === null
+            )
+            .sort((item) => item.sort);
         const originSorting = sortedDashboardMonitors.map((item) => item.id);
 
-        const sortedMonitors = [...monitors].sort((item) => item.sort);
+        const sortedMonitors = [...monitors]
+            .filter((item) =>
+                groupId
+                    ? item.groupId === Number(groupId)
+                    : item.groupId === null
+            )
+            .sort((item) => item.sort);
         const sorting = sortedMonitors.map((item) => item.id);
         if (JSON.stringify(originSorting) === JSON.stringify(sorting)) {
             return;
         }
+
         updateDashboardMonitorSorting();
+        // eslint-disable-next-line
     }, [monitors]);
 
     useEffect(() => {
@@ -217,6 +245,9 @@ const Dashboard = () => {
                                                                     pin={
                                                                         item.pin
                                                                     }
+                                                                    groupId={
+                                                                        item.groupId
+                                                                    }
                                                                 />
                                                             ) : item.mode ===
                                                               1 ? (
@@ -234,6 +265,9 @@ const Dashboard = () => {
                                                                     pin={
                                                                         item.pin
                                                                     }
+                                                                    groupId={
+                                                                        item.groupId
+                                                                    }
                                                                 />
                                                             ) : (
                                                                 <SwitchMonitor
@@ -245,6 +279,9 @@ const Dashboard = () => {
                                                                     }
                                                                     pin={
                                                                         item.pin
+                                                                    }
+                                                                    groupId={
+                                                                        item.groupId
                                                                     }
                                                                 />
                                                             )}
