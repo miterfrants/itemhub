@@ -33,7 +33,7 @@ namespace Homo.IotApi
 
 
         [SwaggerOperation(
-                    Tags = new[] { "權限管理系統" },
+                    Tags = new[] { "群組管理" },
                     Summary = "群組使用者 - 取得邀請的使用者",
                     Description = ""
                 )]
@@ -45,7 +45,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "權限管理系統" },
+            Tags = new[] { "群組管理" },
             Summary = "群組使用者 - 邀請使用者",
             Description = ""
         )]
@@ -78,7 +78,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-                    Tags = new[] { "權限管理系統" },
+                    Tags = new[] { "群組管理" },
                     Summary = "群組使用者 - 刪除所有邀請的使用者",
                     Description = ""
                 )]
@@ -91,7 +91,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "權限管理系統" },
+            Tags = new[] { "群組管理" },
             Summary = "群組使用者 - 刪除邀請",
             Description = ""
         )]

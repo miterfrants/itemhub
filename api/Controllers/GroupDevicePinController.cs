@@ -44,8 +44,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 取得裝置所有腳位",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置腳位 - 取得裝置所有腳位",
             Description = ""
         )]
         [Route("{deviceId}/pins")]
@@ -58,8 +58,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 取得裝置單一腳位",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置腳位 - 取得裝置單一腳位",
             Description = ""
         )]
         [Route("{deviceId}/pins/{pin}")]
@@ -72,8 +72,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 切換開關",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置腳位 - 切換開關",
             Description = ""
         )]
         [Route("{deviceId}/switches/{pin}")]
@@ -117,8 +117,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-                    Tags = new[] { "群組管理" },
-                    Summary = "群組 - 取得感測資料分頁列表",
+                    Tags = new[] { "群組相關" },
+                    Summary = "群組裝置腳位 - 取得感測資料分頁列表",
                     Description = ""
                 )]
         [Route("{deviceId}/sensors/{pin}")]
@@ -131,8 +131,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-                    Tags = new[] { "群組管理" },
-                    Summary = "群組 - 感測器統計資料",
+                    Tags = new[] { "群組相關" },
+                    Summary = "群組裝置腳位 - 感測器統計資料",
                     Description = ""
                 )]
         [HttpGet]
