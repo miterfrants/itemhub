@@ -11,6 +11,7 @@ export type MonitorConfigDialogState = {
     row: number | null | undefined;
     column: number | null | undefined;
     pin: string | null | undefined;
+    groupId?: number;
 };
 const initMonnitorConfigDialogState = {
     isOpen: false,
@@ -21,6 +22,7 @@ const initMonnitorConfigDialogState = {
     row: null,
     column: null,
     pin: null,
+    groupId: undefined,
     callback: () => {},
 } as MonitorConfigDialogState;
 
@@ -41,6 +43,7 @@ export const monitorConfigDialogSlice = createSlice({
                 pin,
                 mode,
                 customTitle,
+                groupId,
             } = action.payload;
             return {
                 isOpen: true,
@@ -51,6 +54,7 @@ export const monitorConfigDialogSlice = createSlice({
                 pin,
                 mode,
                 customTitle,
+                groupId: groupId || undefined,
                 callback: callback ? callback : () => {},
             };
         },
@@ -63,6 +67,7 @@ export const monitorConfigDialogSlice = createSlice({
             state.pin = '';
             state.mode = null;
             state.customTitle = '';
+            state.groupId = undefined;
             return state;
         },
     },

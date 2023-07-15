@@ -5,8 +5,12 @@ import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevicePins } from '@/redux/reducers/pins.reducer';
 import { PinItem } from '@/types/devices.type';
 
-const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
-    const { deviceId, isEditMode } = props;
+const Pins = (props: {
+    deviceId: number;
+    isEditMode: boolean;
+    isList?: boolean;
+}) => {
+    const { deviceId, isEditMode, isList } = props;
     const {
         isLoading,
         getDevicePinsApi,
@@ -43,28 +47,39 @@ const Pins = (props: { deviceId: number; isEditMode: boolean }) => {
             {isLoading || devicePins === null ? (
                 <div>Loading</div>
             ) : (
-                <div className="row">
-                    {devicePins
-                        .sort((curr, next) =>
-                            curr.pinType == 1 && next.pinType == 0
-                                ? -1
-                                : curr.pinType == 1 && next.pinType == 1
-                                ? 0
-                                : 1
-                        )
-                        .map((item) => (
-                            <div
-                                className={`${
-                                    item.pinType === 0
-                                        ? 'col-12'
-                                        : 'col-12 col-md-3'
-                                }`}
-                                key={`${item.deviceId}-${item.pin}`}
-                            >
-                                <Pin pinItem={item} isEditMode={isEditMode} />
-                            </div>
-                        ))}
-                </div>
+                <>
+                    {devicePins.length > 0 && isList && (
+                        <hr className="border-grey-300" />
+                    )}
+                    <div className="row">
+                        {devicePins
+                            .sort((curr, next) =>
+                                curr.pinType == 1 && next.pinType == 0
+                                    ? -1
+                                    : curr.pinType == 1 && next.pinType == 1
+                                    ? 0
+                                    : 1
+                            )
+                            .map((item) => (
+                                <div
+                                    className={`${
+                                        isList
+                                            ? item.pinType === 0
+                                                ? 'col-12'
+                                                : 'col-12 col-md-3'
+                                            : 'col-6'
+                                    }`}
+                                    key={`${item.deviceId}-${item.pin}`}
+                                >
+                                    <Pin
+                                        groupId={undefined}
+                                        pinItem={item}
+                                        isEditMode={isEditMode}
+                                    />
+                                </div>
+                            ))}
+                    </div>
+                </>
             )}
         </div>
     );

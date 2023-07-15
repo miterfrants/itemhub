@@ -20,12 +20,11 @@ import {
     ToasterTypeEnum,
 } from '@/redux/reducers/toaster.reducer';
 import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
+import { useGetGroupDevicePinsApi } from '@/hooks/apis/group-device-pin.hook';
+import { selectGroupDevicePins } from '@/redux/reducers/group-device-pins.reducer';
 
 const MonitorConfigDialog = () => {
     const dialog = useAppSelector(selectMonitorConfigDialog);
-    const devicePinsPool: PinItem[] | null = useAppSelector(selectDevicePins);
-    const { deviceModes, dashboardMonitorModes } =
-        useAppSelector(selectUniversal);
     const {
         isOpen,
         deviceId,
@@ -35,7 +34,14 @@ const MonitorConfigDialog = () => {
         customTitle: customTitleDefaultValue,
         mode,
         pin: pinDefaultValue,
+        groupId,
     } = dialog;
+
+    const devicePinsPool: PinItem[] | null = useAppSelector(
+        groupId ? selectGroupDevicePins : selectDevicePins
+    );
+    const { deviceModes, dashboardMonitorModes } =
+        useAppSelector(selectUniversal);
 
     const dispatch = useDispatch();
     const defaultSwitchModeValue = 2;
@@ -72,6 +78,7 @@ const MonitorConfigDialog = () => {
     } = useCreateDashboardMonitorApi({
         deviceId: deviceId || 0,
         pin: pin || '',
+        groupId: groupId,
         mode:
             dashboardMonitorMode === null
                 ? switchModeValue
@@ -86,6 +93,11 @@ const MonitorConfigDialog = () => {
         pinType: undefined,
     });
 
+    const { fetchApi: getGroupDevicePins } = useGetGroupDevicePinsApi({
+        deviceId: deviceId || 0,
+        groupId: groupId || 0,
+    });
+
     const {
         fetchApi: updateDashboardMonitorApi,
         data: responseOfUpdateDashboardMonitor,
@@ -93,6 +105,7 @@ const MonitorConfigDialog = () => {
         deviceId: deviceId || 0,
         id: id || 0,
         pin: pin || '',
+        groupId: groupId,
         mode:
             dashboardMonitorMode === null
                 ? switchModeValue
@@ -111,11 +124,20 @@ const MonitorConfigDialog = () => {
             { id: 2, selected: (columnDefaultValue || 1) >= 2 },
         ]);
 
-        if (deviceId) {
-            getDevicePins();
-        }
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (!deviceId) {
+            return;
+        }
+        if (!groupId) {
+            getDevicePins();
+        } else {
+            getGroupDevicePins();
+        }
+        // eslint-disable-next-line
+    }, [deviceId, groupId]);
 
     useEffect(() => {
         if (layouts.length === 0) {
