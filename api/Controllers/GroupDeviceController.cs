@@ -26,8 +26,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 取得群組裝置列表",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 取得群組裝置列表",
             Description = ""
         )]
         [HttpGet]
@@ -58,8 +58,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 取得單一裝置",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 取得單一裝置",
             Description = ""
         )]
         [HttpGet]
@@ -77,8 +77,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "群組管理" },
-            Summary = "群組 - 取得單一裝置最後上線時間",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 取得單一裝置最後上線時間",
             Description = ""
         )]
         [Route("{deviceId}/last-activity")]
@@ -96,8 +96,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 取得最後上傳檔案",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 取得最後上傳檔案",
             Description = ""
         )]
         [HttpGet]
@@ -131,8 +131,8 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "裝置相關" },
-            Summary = "裝置 - 取得最後上傳檔案的縮圖",
+            Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 上傳檔案",
             Description = ""
         )]
         [HttpGet]
