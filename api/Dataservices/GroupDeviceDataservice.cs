@@ -13,7 +13,6 @@ namespace Homo.IotApi
                     x.DeletedAt == null
                     && x.UserId == userId
                     && x.GroupId == groupId
-
                 )
                 .Join(dbContext.Device, groupDevice => groupDevice.DeviceId, device => device.Id, (groupDevice, device) =>
                 new
@@ -31,11 +30,11 @@ namespace Homo.IotApi
                 .Select(x => x.device)
                 .ToList();
         }
-        public static int GetRowNums(IotDbContext dbContext, long userId, long groupId, string name)
+        public static int GetRowNums(IotDbContext dbContext, long userId, long groupId, string name, bool isShowDeleted = false)
         {
             return dbContext.GroupDevice
                 .Where(x =>
-                    x.DeletedAt == null
+                    ((isShowDeleted == false && x.DeletedAt == null) || (isShowDeleted && x.DeletedAt != null))
                     && x.UserId == userId
                     && x.GroupId == groupId
                 )
@@ -62,11 +61,11 @@ namespace Homo.IotApi
                 .FirstOrDefault();
         }
 
-        public static List<ViewGroupDevice> GetAll(IotDbContext dbContext, long userId, long groupId, List<long> deviceIds)
+        public static List<ViewGroupDevice> GetAll(IotDbContext dbContext, long userId, long groupId, List<long> deviceIds, bool onlyDeleted = false)
         {
             return dbContext.GroupDevice
                 .Where(x =>
-                    x.DeletedAt == null
+                    (!onlyDeleted && x.DeletedAt == null || onlyDeleted && x.DeletedAt != null)
                     && x.UserId == userId
                     && x.GroupId == groupId
                     && (deviceIds == null || deviceIds.Contains(x.DeviceId))

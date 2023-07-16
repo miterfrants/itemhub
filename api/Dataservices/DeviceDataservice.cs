@@ -25,11 +25,11 @@ namespace Homo.IotApi
                 .ToList();
         }
 
-        public static List<Device> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds)
+        public static List<Device> GetAll(IotDbContext dbContext, long ownerId, List<long> deviceIds, bool onlyDeleted = false)
         {
             return dbContext.Device
                 .Where(x =>
-                    x.DeletedAt == null
+                    ((onlyDeleted && x.DeletedAt == null) || (!onlyDeleted && x.DeletedAt != null))
                     && x.OwnerId == ownerId
                     && (deviceIds == null || deviceIds.Contains(x.Id))
                 )

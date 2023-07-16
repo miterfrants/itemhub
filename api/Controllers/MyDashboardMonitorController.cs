@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Homo.Api;
 using Homo.Core.Constants;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Linq;
 
 namespace Homo.IotApi
 {
@@ -38,7 +39,20 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getAll(
             [FromQuery] long? groupId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return DashboardMonitorDataservice.GetAll(_dbContext, extraPayload.Id, groupId);
+            List<long> excludeDeviceIds = new List<long>();
+            if (groupId != null)
+            {
+                var groupDevices = GroupDeviceDataservice.GetAll(_dbContext, extraPayload.Id, groupId.GetValueOrDefault(), null, true);
+                groupDevices.Select(x => x.DeviceId).ToList().ForEach(deviceId =>
+                {
+                    excludeDeviceIds.Add(deviceId);
+                });
+            }
+            DeviceDataservice.GetAll(_dbContext, extraPayload.Id, null, true).Select(x => x.Id).ToList().ForEach(deviceId =>
+            {
+                excludeDeviceIds.Add(deviceId);
+            });
+            return DashboardMonitorDataservice.GetAll(_dbContext, extraPayload.Id, groupId, excludeDeviceIds);
         }
 
         [SwaggerOperation(
