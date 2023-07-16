@@ -43,6 +43,9 @@ namespace IotApi.Migrations
                     b.Property<DateTime?>("EditedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<long?>("GroupId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Mode")
                         .HasColumnType("int");
 
@@ -220,7 +223,7 @@ namespace IotApi.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("0");
 
-                    b.Property<decimal?>("Value")
+                    b.Property<decimal>("Value")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(65,30)")
                         .HasDefaultValueSql("0");
@@ -253,7 +256,7 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2023, 6, 29, 22, 46, 35, 862, DateTimeKind.Local).AddTicks(2140));
+                        .HasDefaultValue(new DateTime(2023, 7, 13, 2, 33, 57, 219, DateTimeKind.Local).AddTicks(5610));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
@@ -334,6 +337,56 @@ namespace IotApi.Migrations
                         .IsUnique();
 
                     b.ToTable("FirmwareBundleLog");
+                });
+
+            modelBuilder.Entity("Homo.IotApi.GroupDevice", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("DeviceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("EditedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long?>("EditedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tinyint(1)")
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("GroupId", "UserId", "DeviceId", "IsDeleted")
+                        .IsUnique();
+
+                    b.ToTable("GroupDevice");
                 });
 
             modelBuilder.Entity("Homo.IotApi.Log", b =>
@@ -646,7 +699,7 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValue(new DateTime(2023, 6, 29, 22, 46, 35, 862, DateTimeKind.Local).AddTicks(90));
+                        .HasDefaultValue(new DateTime(2023, 7, 13, 2, 33, 57, 219, DateTimeKind.Local).AddTicks(4040));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");

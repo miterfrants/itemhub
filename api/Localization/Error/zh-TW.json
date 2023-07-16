@@ -73,5 +73,10 @@
     "INVALID_FILE_EXT": "無效的檔案副檔名",
     "CAN_UPLOAD_ONLY_ONE_FILE": "這個 API 僅能上傳一個檔案",
     "FILE_NOT_FOUND": "找不到檔案",
-    "PIPELINE_INVALID_PAYLOAD": "自動化觸發流程設定資料發生錯誤: {reason}"
+    "PIPELINE_INVALID_PAYLOAD": "自動化觸發流程設定資料發生錯誤: {reason}",
+    "GROUP_EXISTS": "群組名稱已經存在，請重新命名",
+    "INVITATION_EXPIRED": "邀請已經過期",
+    "INVITATION_NOT_FOUND": "找不到對應的邀請資料",
+    "GROUP_DEVICES_EXISTS": "裝置已經加入這個群組中",
+    "COULD_NOT_FOUND_GROUP_ID_FROM_ROUTER": "找不到網址上的 group id 參數"
 }

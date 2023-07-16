@@ -12,5 +12,6 @@ export interface DashboardMonitorItem {
     row: number;
     column: number;
     isLiveData?: boolean;
+    groupId?: number;
     customTitle: string;
 }

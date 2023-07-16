@@ -102,7 +102,7 @@ namespace Homo.IotApi
                 ).UpdateFromQuery(x => new DevicePin()
                 {
                     Name = item.Name,
-                    Value = item.Value,
+                    Value = item.Value ?? 0,
                     PinType = item.PinType,
                     EditedBy = ownerId,
                     EditedAt = DateTime.Now

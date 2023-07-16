@@ -40,6 +40,11 @@ namespace IotApi.Migrations.DB
                     b.Property<long?>("EditedBy")
                         .HasColumnType("bigint");
 
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tinyint(1)")
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -52,7 +57,60 @@ namespace IotApi.Migrations.DB
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IsDeleted", "Name")
+                        .IsUnique();
+
                     b.ToTable("Group");
+                });
+
+            modelBuilder.Entity("Homo.AuthApi.Invitation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tinyint(1)")
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Token")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("DeletedAt");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Email", "GroupId", "IsDeleted")
+                        .IsUnique();
+
+                    b.ToTable("Invitation");
                 });
 
             modelBuilder.Entity("Homo.AuthApi.RelationOfGroupAndUser", b =>
@@ -79,10 +137,22 @@ namespace IotApi.Migrations.DB
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint");
 
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tinyint(1)")
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("GroupId", "UserId", "IsDeleted")
+                        .IsUnique();
 
                     b.ToTable("RelationOfGroupAndUser");
                 });

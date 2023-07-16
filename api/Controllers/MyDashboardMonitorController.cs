@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Homo.Api;
 using Homo.Core.Constants;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Linq;
+using Homo.AuthApi;
 
 namespace Homo.IotApi
 {
@@ -11,9 +13,11 @@ namespace Homo.IotApi
     [Validate]
     public class MyDashboardMonitorController : ControllerBase
     {
-        private readonly IotDbContext _dbContext;
-        public MyDashboardMonitorController(IotDbContext dbContext)
+        private readonly IotDbContext _iotDbContext;
+        private readonly DBContext _dbContext;
+        public MyDashboardMonitorController(IotDbContext iotDbContext, DBContext dbContext)
         {
+            _iotDbContext = iotDbContext;
             _dbContext = dbContext;
         }
 
@@ -25,7 +29,7 @@ namespace Homo.IotApi
         [HttpPost]
         public ActionResult<dynamic> create([FromBody] DTOs.DashboardMonitor dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            DashboardMonitor rewRecord = DashboardMonitorDataservice.Create(_dbContext, extraPayload.Id, dto);
+            DashboardMonitor rewRecord = DashboardMonitorDataservice.Create(_iotDbContext, extraPayload.Id, dto);
             return rewRecord;
         }
 
@@ -36,9 +40,23 @@ namespace Homo.IotApi
         )]
         [HttpGet]
         public ActionResult<dynamic> getAll(
-            Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+            [FromQuery] long? groupId, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return DashboardMonitorDataservice.GetAll(_dbContext, extraPayload.Id);
+            List<long> deviceIds = new List<long>();
+            if (groupId != null)
+            {
+                var group = GroupDataservice.GetAll(_dbContext, new List<long> { groupId.GetValueOrDefault() }).FirstOrDefault();
+                var groupDevices = GroupDeviceDataservice.GetAll(_iotDbContext, group.CreatedBy, groupId.GetValueOrDefault(), null);
+                groupDevices.Select(x => x.DeviceId).ToList().ForEach(deviceId =>
+                {
+                    deviceIds.Add(deviceId);
+                });
+            }
+            DeviceDataservice.GetAll(_iotDbContext, extraPayload.Id, null).Select(x => x.Id).ToList().ForEach(deviceId =>
+            {
+                deviceIds.Add(deviceId);
+            });
+            return DashboardMonitorDataservice.GetAll(_iotDbContext, extraPayload.Id, groupId, deviceIds);
         }
 
         [SwaggerOperation(
@@ -52,7 +70,7 @@ namespace Homo.IotApi
                     [FromBody] List<DTOs.DashboardMonitorSorting> dto,
                     Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            DashboardMonitorDataservice.UpdateSort(_dbContext, extraPayload.Id, dto);
+            DashboardMonitorDataservice.UpdateSort(_iotDbContext, extraPayload.Id, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -67,7 +85,7 @@ namespace Homo.IotApi
             [FromBody] DTOs.DashboardMonitor dto,
             Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            DashboardMonitorDataservice.Update(_dbContext, extraPayload.Id, id, dto);
+            DashboardMonitorDataservice.Update(_iotDbContext, extraPayload.Id, id, dto);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 
@@ -79,7 +97,7 @@ namespace Homo.IotApi
         [HttpDelete]
         public ActionResult<dynamic> batchDelete([FromBody] List<long> ids, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            DashboardMonitorDataservice.BatchDelete(_dbContext, extraPayload.Id, ids);
+            DashboardMonitorDataservice.BatchDelete(_iotDbContext, extraPayload.Id, ids);
             return new { status = CUSTOM_RESPONSE.OK };
         }
 

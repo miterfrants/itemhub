@@ -31,12 +31,14 @@ const DevicePins = ({
     const [isEditPinNameOpen, setIsEditPinNameOpen] = useState(false);
     const pinNameInputRef = useRef<HTMLInputElement>(null);
     const [originalPin, setOriginalPin] = useState('');
+    const [pinCustomName, setPinCustomName] = useState<string>('');
     const [switchMode, setSwitchMode] = useState(1);
     const [sensorMode, setSensorMode] = useState(0);
+    const [isComposing, setIsComposing] = useState<boolean>(false);
     const [microcontrollerPins, setMicrocontrollerPins] = useState<Pins[]>([]);
-
     const editPinName = (name: string) => {
         setOriginalPin(name);
+        setPinCustomName(getFullPinName(name));
         setIsEditPinNameOpen(true);
     };
 
@@ -60,7 +62,7 @@ const DevicePins = ({
         })?.name;
 
         if (!newPinName) {
-            return;
+            return '';
         }
 
         return newPinName;
@@ -84,14 +86,12 @@ const DevicePins = ({
             pin: pinData.pin || '',
             pinNumber: pinData.pinNumber || '',
             pinType: pinData.pinType,
-            name: pinNameInputRef.current?.value || '',
+            name: pinCustomName || '',
             value: null,
         };
 
-        if (pinNameInputRef.current) {
-            updateSelectedPins(newPinData);
-            pinNameInputRef.current.value = '';
-        }
+        updateSelectedPins(newPinData);
+        setPinCustomName('');
         setIsEditPinNameOpen(false);
     };
 
@@ -279,6 +279,17 @@ const DevicePins = ({
                             className="form-control"
                             type="text"
                             ref={pinNameInputRef}
+                            onKeyDown={(
+                                event: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                                setIsComposing(event.nativeEvent.isComposing);
+                            }}
+                            onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                setPinCustomName(event.currentTarget.value);
+                            }}
+                            value={pinCustomName}
                             onKeyUp={(
                                 event: React.KeyboardEvent<HTMLInputElement>
                             ) => {
@@ -289,6 +300,10 @@ const DevicePins = ({
                                     !event.nativeEvent.isComposing &&
                                     event.key === 'Enter'
                                 ) {
+                                    if (isComposing) {
+                                        setIsComposing(false);
+                                        return;
+                                    }
                                     updatePinName();
                                 }
                             }}

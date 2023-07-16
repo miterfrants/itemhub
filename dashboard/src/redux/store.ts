@@ -16,6 +16,12 @@ import pipelineConnectorsReducer from './reducers/pipeline-connectors.reducer';
 import offlineNotificationDialogReducer from './reducers/offline-notification-dialog.reducer';
 import layoutReducer from './reducers/layout.reducer';
 import realtimeDeviceImageDialogReducer from './reducers/realtime-device-image-dialog.reducer';
+import groupsReducer from './reducers/groups.reducer';
+import invitationsReducer from './reducers/invitations.reducer';
+import groupUsersReducer from './reducers/group-users.reducer';
+import myGroupDevicesReducer from './reducers/my-group-devices.reducer';
+import groupDevicesReducer from './reducers/group-devices.reducer';
+import groupDevicePinsReducer from './reducers/group-device-pins.reducer';
 
 const store = configureStore({
     reducer: {
@@ -36,6 +42,12 @@ const store = configureStore({
         pipelineConnectors: pipelineConnectorsReducer,
         layout: layoutReducer,
         realtimeDeviceImageDialog: realtimeDeviceImageDialogReducer,
+        groups: groupsReducer,
+        invitations: invitationsReducer,
+        groupUsers: groupUsersReducer,
+        myGroupDevices: myGroupDevicesReducer,
+        groupDevices: groupDevicesReducer,
+        groupDevicePins: groupDevicePinsReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

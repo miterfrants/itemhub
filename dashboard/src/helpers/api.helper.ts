@@ -11,9 +11,7 @@ import {
     toasterActions,
     ToasterTypeEnum,
 } from '@/redux/reducers/toaster.reducer';
-import { useDispatch } from 'react-redux';
-import store, { AppDispatch } from '@/redux/store';
-import { configureStore } from '@reduxjs/toolkit';
+import store from '@/redux/store';
 
 export const ApiHelpers = {
     SendRequestWithToken: <T>({
@@ -25,9 +23,15 @@ export const ApiHelpers = {
         shouldDeleteContentType = false,
         callbackFunc,
         skipErrorToaster = false,
+        isRefreshToken = false,
     }: SendRequestParams<T>) => {
         const token =
-            CookieHelpers.GetCookie({ name: COOKIE_KEY.DASHBOARD_TOKEN }) || '';
+            CookieHelpers.GetCookie({
+                name:
+                    isRefreshToken === false
+                        ? COOKIE_KEY.DASHBOARD_TOKEN
+                        : COOKIE_KEY.DASHBOARD_REFRESH_TOKEN,
+            }) || '';
         return ApiHelpers.SendRequest<T>({
             apiPath,
             method,

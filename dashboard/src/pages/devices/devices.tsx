@@ -614,12 +614,12 @@ const Devices = () => {
                                                         Pins Data
                                                     </div>
                                                     <div className="col-8 col-lg-12 p-3 p-lg-0">
-                                                        <hr className="border-grey-300" />
                                                         <Pins
                                                             deviceId={Number(
                                                                 id
                                                             )}
                                                             isEditMode={false}
+                                                            isList
                                                         />
                                                     </div>
                                                 </div>

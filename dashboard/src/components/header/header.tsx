@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/hooks/redux.hook';
 import { menuActions, selectMenu } from '@/redux/reducers/menu.reducer';
 import chartIcon from '@/assets/images/chart.svg';
@@ -8,15 +8,21 @@ import logoWordingIcon from '@/assets/images/logo-wording.svg';
 import shieldIcon from '@/assets/images/shield.svg';
 import docIcon from '@/assets/images/doc.svg';
 import pipelineIcon from '@/assets/images/pipeline.svg';
+import groupIcon from '@/assets/images/group.svg';
 import lineUs from '@/assets/images/icon-line.png';
+import refreshIcon from '@/assets/images/refresh.png';
 import { useState, useEffect } from 'react';
 import { layoutActions } from '@/redux/reducers/layout.reducer';
+import { GroupNameType } from '@/types/group.type';
 
-const Header = () => {
+const Header = (props: { groups?: GroupNameType[] | null }) => {
+    const { groups } = props;
+    const { groupId } = useParams();
     const isOpen = useAppSelector(selectMenu).isOpen;
     const dispatch = useAppDispatch();
     const [menuBlockClassName, setMenuBlockClassName] = useState('d-none');
     const location = useLocation();
+    const [showGroupMenu, setShowGroupMenu] = useState<boolean>(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -32,6 +38,8 @@ const Header = () => {
         if (document.body.clientWidth <= 767) {
             dispatch(menuActions.close());
         }
+
+        // eslint-disable-next-line
     }, [location]);
 
     const closeMenu = () => {
@@ -75,9 +83,63 @@ const Header = () => {
                         <div className="bg-white w-100 rounded-pill" />
                     </div>
                 </div>
+
                 <div className={`${menuBlockClassName} menu-block py-2`}>
+                    {groups && (
+                        <div
+                            onMouseEnter={() => {
+                                setShowGroupMenu(true);
+                            }}
+                            onMouseLeave={() => {
+                                setShowGroupMenu(false);
+                            }}
+                            role="button"
+                            className="position-relative nav-item d-flex align-items-center justify-content-start text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                        >
+                            <img src={refreshIcon} />
+                            <span className="text-block text-nowrap overflow-hidden">
+                                <div className="mx-3">切換群組</div>
+                            </span>
+                            {showGroupMenu && (
+                                <div className="position-absolute d-flex custom-width-200 mx-n3 text-white top-0">
+                                    <div className="w-50" />
+                                    <div className="bg-primary-800 px-4 rounded-1 position-relative">
+                                        <div className="left-arrow" />
+                                        {groupId && (
+                                            <Link
+                                                to={`/dashboard/`}
+                                                className="py-2 d-block text-white nav-item"
+                                            >
+                                                回到個人管理介面
+                                            </Link>
+                                        )}
+                                        {groups
+                                            .filter(
+                                                (group) =>
+                                                    group.id.toString() !==
+                                                    groupId
+                                            )
+                                            .map((group) => (
+                                                <Link
+                                                    to={`/dashboard/groups/${group.id}/monitors`}
+                                                    className="py-2 d-block text-white nav-item"
+                                                    key={`group-${group.id}`}
+                                                >
+                                                    {group.name}
+                                                </Link>
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <Link
-                        to="/dashboard/"
+                        to={
+                            groupId
+                                ? `/dashboard/groups/${groupId}/monitors`
+                                : `/dashboard/`
+                        }
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                     >
                         <img src={chartIcon} />
@@ -86,7 +148,11 @@ const Header = () => {
                         </span>
                     </Link>
                     <Link
-                        to="/dashboard/devices"
+                        to={
+                            groupId
+                                ? `/dashboard/groups/${groupId}/devices`
+                                : `/dashboard/devices`
+                        }
                         className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                     >
                         <img src={deviceIcon} />
@@ -95,25 +161,39 @@ const Header = () => {
                         </span>
                     </Link>
 
-                    <Link
-                        to="/dashboard/oauth-clients"
-                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
-                    >
-                        <img src={shieldIcon} />
-                        <span className="text-block text-nowrap overflow-hidden">
-                            <div className="mx-3">oAuthClient</div>
-                        </span>
-                    </Link>
+                    {!groupId && (
+                        <>
+                            <Link
+                                to="/dashboard/oauth-clients"
+                                className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                            >
+                                <img src={shieldIcon} />
+                                <span className="text-block text-nowrap overflow-hidden">
+                                    <div className="mx-3">oAuthClient</div>
+                                </span>
+                            </Link>
 
-                    <Link
-                        to="/dashboard/pipelines"
-                        className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
-                    >
-                        <img src={pipelineIcon} />
-                        <span className="text-block text-nowrap overflow-hidden">
-                            <div className="mx-3">自動化觸發流程</div>
-                        </span>
-                    </Link>
+                            <Link
+                                to="/dashboard/pipelines"
+                                className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                            >
+                                <img src={pipelineIcon} />
+                                <span className="text-block text-nowrap overflow-hidden">
+                                    <div className="mx-3">自動化觸發流程</div>
+                                </span>
+                            </Link>
+
+                            <Link
+                                to="/dashboard/groups"
+                                className="nav-item d-flex align-items-center justify-content-start justify-content-md-center text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
+                            >
+                                <img src={groupIcon} />
+                                <span className="text-block text-nowrap overflow-hidden">
+                                    <div className="mx-3">群組權限</div>
+                                </span>
+                            </Link>
+                        </>
+                    )}
 
                     <a
                         href={`${import.meta.env.VITE_WEBSITE_URL}/swagger/`}

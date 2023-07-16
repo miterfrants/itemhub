@@ -49,7 +49,7 @@ const DeviceForm = () => {
     const [customPinNumber, setCustomPinValue] = useState('');
     const customPinNameRef = useRef<HTMLInputElement>(null);
     const customPinNumberRef = useRef<HTMLInputElement>(null);
-    const [protocol, setProtocol] = useState<number | null>(null);
+    const [protocol, setProtocol] = useState<number | undefined>(undefined);
     const [microcontrollerId, setMicrocontrollerId] = useState<number | null>(
         null
     );
@@ -612,7 +612,12 @@ const DeviceForm = () => {
                                             });
                                             setProtocol(Number(e.target.value));
                                         }}
-                                        defaultValue={device?.protocol || ''}
+                                        value={
+                                            protocol === undefined ||
+                                            isNaN(protocol)
+                                                ? ''
+                                                : protocol
+                                        }
                                     >
                                         <option>請選擇通訊方式</option>
                                         {protocols.map(
