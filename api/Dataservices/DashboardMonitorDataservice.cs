@@ -7,14 +7,14 @@ namespace Homo.IotApi
 {
     public class DashboardMonitorDataservice
     {
-        public static List<DashboardMonitor> GetAll(IotDbContext dbContext, long ownerId, long? groupId, List<long> excludeDeviceIds)
+        public static List<DashboardMonitor> GetAll(IotDbContext dbContext, long ownerId, long? groupId, List<long> deviceIds)
         {
             return dbContext.DashboardMonitor
                 .Where(x =>
                     x.DeletedAt == null
                     && x.OwnerId == ownerId
                     && x.GroupId == groupId
-                    && !excludeDeviceIds.Contains(x.DeviceId)
+                    && deviceIds.Contains(x.DeviceId)
                 )
                 .OrderBy(x => x.Sort)
                 .ToList();

@@ -61,11 +61,11 @@ namespace Homo.IotApi
                 .FirstOrDefault();
         }
 
-        public static List<ViewGroupDevice> GetAll(IotDbContext dbContext, long userId, long groupId, List<long> deviceIds, bool onlyDeleted = false)
+        public static List<ViewGroupDevice> GetAll(IotDbContext dbContext, long userId, long groupId, List<long> deviceIds)
         {
             return dbContext.GroupDevice
                 .Where(x =>
-                    (!onlyDeleted && x.DeletedAt == null || onlyDeleted && x.DeletedAt != null)
+                    x.DeletedAt == null
                     && x.UserId == userId
                     && x.GroupId == groupId
                     && (deviceIds == null || deviceIds.Contains(x.DeviceId))
