@@ -97,7 +97,9 @@ const Header = (props: { groups?: GroupNameType[] | null }) => {
                             className="position-relative nav-item d-flex align-items-center justify-content-start text-white text-opacity-85 rounded-1 py-2 px-3 my-2 mx-3"
                         >
                             <img src={refreshIcon} />
-                            <div className="mx-3">切換群組</div>
+                            <span className="text-block text-nowrap overflow-hidden">
+                                <div className="mx-3">切換群組</div>
+                            </span>
                             {showGroupMenu && (
                                 <div className="position-absolute d-flex custom-width-200 mx-n3 text-white top-0">
                                     <div className="w-50" />
