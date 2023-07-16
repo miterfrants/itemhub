@@ -408,8 +408,5 @@ namespace Homo.IotApi
             }
             return File(outputStream, "image/*");
         }
-
     }
 }
-
-
