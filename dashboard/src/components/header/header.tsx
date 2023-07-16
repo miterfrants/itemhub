@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
 import { layoutActions } from '@/redux/reducers/layout.reducer';
 import { GroupNameType } from '@/types/group.type';
 
-const Header = (props: { groups: GroupNameType[] | null }) => {
+const Header = (props: { groups?: GroupNameType[] | null }) => {
     const { groups } = props;
     const { groupId } = useParams();
     const isOpen = useAppSelector(selectMenu).isOpen;
