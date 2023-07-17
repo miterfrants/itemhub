@@ -62,7 +62,6 @@ export const END_POINT = {
     GROUP_DEVICE_PIN: 'groups/:groupId/devices/:deviceId/pins/:pin',
     GROUP_DEVICE_SENSOR_LOGS_AGGREGATE:
         'groups/:groupId/devices/:deviceId/sensors/:pin/aggregate',
-
 };
 
 export const HTTP_METHOD = {

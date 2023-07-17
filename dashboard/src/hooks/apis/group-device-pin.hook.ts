@@ -50,10 +50,12 @@ export const useGetGroupDevicePinApi = ({
     groupId,
     deviceId,
     pin,
+    skipErrorToaster,
 }: {
     groupId: number;
     deviceId: number;
     pin: string;
+    skipErrorToaster?: boolean;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchAppendPins = useCallback(
@@ -74,6 +76,7 @@ export const useGetGroupDevicePinApi = ({
         method: HTTP_METHOD.GET,
         initialData: null,
         callbackFunc: dispatchAppendPins,
+        skipErrorToaster,
     });
 
     return {
@@ -138,6 +141,7 @@ export const useGetGroupSensorLogsApi = ({
     startAt,
     endAt,
     groupId,
+    skipErrorToaster,
 }: {
     deviceId: number;
     pin: string;
@@ -146,6 +150,7 @@ export const useGetGroupSensorLogsApi = ({
     startAt?: string;
     endAt?: string;
     groupId: number;
+    skipErrorToaster?: boolean;
 }) => {
     let apiPath = `${API_URL}${END_POINT.GROUP_DEVICE_SENSOR_LOGS}`;
     apiPath = apiPath
@@ -166,6 +171,7 @@ export const useGetGroupSensorLogsApi = ({
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,
+        skipErrorToaster: skipErrorToaster,
     });
 
     return {
@@ -226,4 +232,3 @@ export const useGetGroupSensorLogsAggregateApi = ({
         fetchApi,
     };
 };
-

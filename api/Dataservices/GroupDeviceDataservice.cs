@@ -54,7 +54,8 @@ namespace Homo.IotApi
         public static GroupDevice GetOne(IotDbContext dbContext, long groupId, long deviceId)
         {
             return dbContext.GroupDevice
-                .Where(x => x.DeletedAt == null
+                .Where(x =>
+                    x.DeletedAt == null
                     && x.DeviceId == deviceId
                     && x.GroupId == groupId
                 )

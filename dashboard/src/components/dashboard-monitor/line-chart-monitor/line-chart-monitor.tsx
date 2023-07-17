@@ -26,6 +26,8 @@ import {
     useGetGroupDevicePinApi,
     useGetGroupSensorLogsApi,
 } from '@/hooks/apis/group-device-pin.hook';
+import { ERROR_KEY } from '@/constants/error-key';
+import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
 
 enum TIME_RANGE {
     NONE = 0,
@@ -98,6 +100,7 @@ const LineChartMonitor = (props: {
         data: responseOfGetGroupSensorLogs,
         fetchApi: getGroupSensorLogs,
         isLoading: isGettingGroupSensorLogs,
+        error: errorOfGetGroupSensorLogs,
     } = useGetGroupSensorLogsApi({
         deviceId: deviceId,
         pin: pin,
@@ -110,12 +113,14 @@ const LineChartMonitor = (props: {
     const {
         data: responseOfGetLastGroupSensorLogs,
         fetchApi: getLastGroupSensorLogs,
+        error: errorOfGetLastGroupSensorLogs,
     } = useGetGroupSensorLogsApi({
         deviceId: deviceId,
         pin: pin,
         page: 1,
         limit: 1,
         groupId: groupId || 0,
+        skipErrorToaster: true,
     });
 
     const elementContainerRef = useRef<HTMLDivElement>(null);
@@ -186,6 +191,8 @@ const LineChartMonitor = (props: {
             deviceId: deviceId,
             pin: pin,
         });
+    const { fetchApi: getDashboardMonitors } =
+        useGetDashboardMonitorsApi(groupId);
 
     const startPooling = useCallback(() => {
         if (!isLiveData) {
@@ -198,6 +205,7 @@ const LineChartMonitor = (props: {
         }
 
         timer.current = setTimeout(startPooling, 5000);
+        // eslint-disable-next-line
     }, [isLiveData, getLastSensorLogs, getLastGroupSensorLogs]);
 
     useEffect(() => {
@@ -206,7 +214,26 @@ const LineChartMonitor = (props: {
         } else {
             getDevicePin();
         }
+        // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        if (!errorOfGetGroupSensorLogs && !errorOfGetLastGroupSensorLogs) {
+            return;
+        }
+
+        // 這個狀況應該只有在 group device 被 owner 拿掉了
+        if (
+            errorOfGetGroupSensorLogs?.errorKey ===
+                ERROR_KEY.GROUP_DEVICE_HAS_REMOVED ||
+            errorOfGetLastGroupSensorLogs?.errorKey ===
+                ERROR_KEY.GROUP_DEVICE_HAS_REMOVED
+        ) {
+            // restore group dashboard monitors store
+            getDashboardMonitors();
+        }
+        // eslint-disable-next-line
+    }, [errorOfGetGroupSensorLogs, errorOfGetLastGroupSensorLogs]);
 
     useEffect(() => {
         setIsLiveData(isLiveDataFromProps);

@@ -9,7 +9,12 @@ import Spinner from '@/components/spinner/spinner';
 import debounce from 'lodash.debounce';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectLayout } from '@/redux/reducers/layout.reducer';
-import { useToggleGroupDeviceSwitchPinApi } from '@/hooks/apis/group-device-pin.hook';
+import {
+    useGetGroupDevicePinApi,
+    useToggleGroupDeviceSwitchPinApi,
+} from '@/hooks/apis/group-device-pin.hook';
+import { ERROR_KEY } from '@/constants/error-key';
+import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
 
 const SwitchMonitor = (props: {
     deviceId: number;
@@ -40,6 +45,9 @@ const SwitchMonitor = (props: {
         }
     );
 
+    const { fetchApi: getDashboardMonitors } =
+        useGetDashboardMonitorsApi(groupId);
+
     const {
         fetchApi: getDevicePin,
         data: responseOfGetDevicePin,
@@ -47,6 +55,18 @@ const SwitchMonitor = (props: {
     } = useGetDevicePinApi({
         id: deviceId,
         pin,
+    });
+
+    const {
+        fetchApi: getGroupDevicePin,
+        data: responseOfGetGroupDevicePin,
+        isLoading: isGettingGroupDevicePin,
+        error: errorOfGetGroupDevicePin,
+    } = useGetGroupDevicePinApi({
+        deviceId: deviceId,
+        groupId: groupId || 0,
+        pin,
+        skipErrorToaster: true,
     });
 
     const elementContainerRef = useRef<HTMLDivElement>(null);
@@ -84,7 +104,12 @@ const SwitchMonitor = (props: {
     );
 
     useEffect(() => {
-        getDevicePin();
+        if (groupId) {
+            getGroupDevicePin();
+        } else {
+            getDevicePin();
+        }
+
         resizeHandler.current();
         window.addEventListener('resize', resizeHandler.current);
         return () => {
@@ -118,6 +143,30 @@ const SwitchMonitor = (props: {
         setDefaultValue(responseOfGetDevicePin.value || 0);
     }, [responseOfGetDevicePin]);
 
+    useEffect(() => {
+        if (!responseOfGetGroupDevicePin) {
+            return;
+        }
+        setDevicePin(responseOfGetGroupDevicePin as PinItem);
+        setDefaultValue(responseOfGetGroupDevicePin.value || 0);
+    }, [responseOfGetGroupDevicePin]);
+
+    useEffect(() => {
+        if (!errorOfGetGroupDevicePin) {
+            return;
+        }
+
+        // 這個狀況應該只有在 group device 被 owner 拿掉了
+        if (
+            errorOfGetGroupDevicePin.errorKey ===
+            ERROR_KEY.GROUP_DEVICE_HAS_REMOVED
+        ) {
+            // restore group dashboard monitors store
+            getDashboardMonitors();
+        }
+        // eslint-disable-next-line
+    }, [errorOfGetGroupDevicePin]);
+
     return (
         <div
             ref={elementContainerRef}
@@ -132,7 +181,7 @@ const SwitchMonitor = (props: {
                 setValue(result);
             }}
         >
-            {isLoading ? (
+            {isLoading || isGettingGroupDevicePin ? (
                 <div className="w-100 d-flex align-items-center justify-content-center mt-5">
                     <Spinner />
                 </div>

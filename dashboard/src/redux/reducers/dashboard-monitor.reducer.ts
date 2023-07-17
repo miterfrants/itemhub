@@ -10,32 +10,7 @@ export const dashboardMonitorsSlice = createSlice({
     reducers: {
         update: (state, action: PayloadAction<DashboardMonitorItem[]>) => {
             const newRecords = action.payload;
-            const oldRecords: DashboardMonitorItem[] = (
-                state ? [...state] : []
-            ) as DashboardMonitorItem[];
-
-            // update exists data
-            const updatedOldPins = oldRecords.map(
-                (oldPin: DashboardMonitorItem) => {
-                    const existsInPayload = newRecords.find(
-                        (pin) => pin.id === oldPin.id && oldPin.id && pin.id
-                    );
-
-                    if (existsInPayload) {
-                        return { ...oldPin, ...existsInPayload };
-                    } else {
-                        return oldPin;
-                    }
-                }
-            );
-
-            // filter exists data
-            const newPinsExcludedExists = newRecords.filter(
-                (item) =>
-                    !oldRecords.map((oldPin) => oldPin.id).includes(item.id)
-            );
-
-            return [...updatedOldPins, ...newPinsExcludedExists];
+            return newRecords;
         },
         updateSorting: (
             state,

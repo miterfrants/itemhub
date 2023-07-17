@@ -54,6 +54,10 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
+            if (groupDevice == null)
+            {
+                throw new CustomException(ERROR_CODE.GROUP_DEVICE_HAS_REMOVED, System.Net.HttpStatusCode.Forbidden);
+            }
             return DevicePinDataservice.GetAll(_dbContext, groupDevice.UserId, new List<long>() { deviceId }, null, null);
         }
 
@@ -68,7 +72,12 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
-            return DevicePinDataservice.GetOne(_dbContext, groupDevice.UserId, deviceId, null, pin);
+            if (groupDevice == null)
+            {
+                throw new CustomException(ERROR_CODE.GROUP_DEVICE_HAS_REMOVED, System.Net.HttpStatusCode.Forbidden);
+            }
+            var devicePin = DevicePinDataservice.GetOne(_dbContext, groupDevice.UserId, deviceId, null, pin);
+            return devicePin;
         }
 
         [SwaggerOperation(
@@ -83,6 +92,10 @@ namespace Homo.IotApi
             SystemConfig localMqttPublisherEndpoints = SystemConfigDataservice.GetOne(_dbContext, SYSTEM_CONFIG.LOCAL_MQTT_PUBLISHER_ENDPOINTS);
             MqttPublisherHelper.Connect(localMqttPublisherEndpoints.Value, _localMqttPublishers, _mqttUsername, _mqttPassword);
             var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
+            if (groupDevice.DeletedAt != null)
+            {
+                throw new CustomException(ERROR_CODE.GROUP_DEVICE_HAS_REMOVED, System.Net.HttpStatusCode.Forbidden);
+            }
             var ownerId = groupDevice.UserId;
             DeviceSwitchHelper.Update(_dbContext, groupDevice.UserId, deviceId, pin, dto, _localMqttPublishers);
 
@@ -127,6 +140,10 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
+            if (groupDevice == null)
+            {
+                throw new CustomException(ERROR_CODE.GROUP_DEVICE_HAS_REMOVED, System.Net.HttpStatusCode.Forbidden);
+            }
             return SensorLogDataservice.GetList(_dbContext, groupDevice.UserId, new List<long>() { deviceId }, pin, page, limit, startAt, endAt);
         }
 
@@ -141,6 +158,10 @@ namespace Homo.IotApi
         {
             long ownerId = extraPayload.Id;
             var groupDevice = GroupDeviceDataservice.GetOne(_dbContext, groupId, deviceId);
+            if (groupDevice == null)
+            {
+                throw new CustomException(ERROR_CODE.GROUP_DEVICE_HAS_REMOVED, System.Net.HttpStatusCode.Forbidden);
+            }
             return SensorLogDataservice.GetAggregateValue(_dbContext, groupDevice.UserId, deviceId, pin, statisticalMethods, null, null, startAt, endAt).GetValueOrDefault(0);
         }
 
