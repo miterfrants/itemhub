@@ -296,7 +296,7 @@ const Devices = () => {
                 secondaryButtonWording="重新整理"
                 secondaryButtonCallback={getDevicesApi}
             />
-            <div className="card">
+            <div className="card mx-0 mx-sm-3 mx-md-5">
                 {!hasDevicesRef.current && devices !== null && !isFilter ? (
                     <EmptyDataToCreateItem itemName="裝置" />
                 ) : (
