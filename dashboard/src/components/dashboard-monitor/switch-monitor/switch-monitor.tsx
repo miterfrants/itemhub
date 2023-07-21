@@ -42,6 +42,7 @@ const SwitchMonitor = (props: {
             pin,
             value: value || 0,
             groupId: groupId || 0,
+            skipErrorToaster: true,
         }
     );
 

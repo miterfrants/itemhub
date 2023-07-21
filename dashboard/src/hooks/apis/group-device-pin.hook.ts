@@ -92,11 +92,13 @@ export const useToggleGroupDeviceSwitchPinApi = ({
     deviceId,
     pin,
     value,
+    skipErrorToaster,
 }: {
     groupId: number;
     deviceId: number;
     pin: string;
     value: number;
+    skipErrorToaster?: boolean;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchUpdatePin = useCallback(
@@ -124,6 +126,7 @@ export const useToggleGroupDeviceSwitchPinApi = ({
         },
         initialData: null,
         callbackFunc: dispatchUpdatePin,
+        skipErrorToaster,
     });
 
     return {

@@ -108,6 +108,7 @@ const LineChartMonitor = (props: {
         limit: startAt == undefined ? 200 : 20000,
         startAt: startAt,
         groupId: groupId || 0,
+        skipErrorToaster: true,
     });
 
     const {
@@ -190,6 +191,7 @@ const LineChartMonitor = (props: {
             groupId: groupId || 0,
             deviceId: deviceId,
             pin: pin,
+            skipErrorToaster: true,
         });
     const { fetchApi: getDashboardMonitors } =
         useGetDashboardMonitorsApi(groupId);

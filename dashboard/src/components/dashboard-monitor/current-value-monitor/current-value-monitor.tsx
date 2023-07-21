@@ -54,6 +54,7 @@ const CurrentValueMonitor = (props: {
         page: 1,
         limit: 1,
         groupId: groupId || 0,
+        skipErrorToaster: true,
     });
 
     const { fetchApi: getDashboardMonitors } =
