@@ -52,10 +52,14 @@ namespace Homo.IotApi
                     deviceIds.Add(deviceId);
                 });
             }
-            DeviceDataservice.GetAll(_iotDbContext, extraPayload.Id, null).Select(x => x.Id).ToList().ForEach(deviceId =>
+            else
             {
-                deviceIds.Add(deviceId);
-            });
+                DeviceDataservice.GetAll(_iotDbContext, extraPayload.Id, null).Select(x => x.Id).ToList().ForEach(deviceId =>
+                {
+                    deviceIds.Add(deviceId);
+                });
+            }
+
             return DashboardMonitorDataservice.GetAll(_iotDbContext, extraPayload.Id, groupId, deviceIds);
         }
 

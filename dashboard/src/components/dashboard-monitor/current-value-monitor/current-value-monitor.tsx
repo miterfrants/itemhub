@@ -9,6 +9,8 @@ import {
     useGetGroupDevicePinApi,
     useGetGroupSensorLogsApi,
 } from '@/hooks/apis/group-device-pin.hook';
+import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
+import { ERROR_KEY } from '@/constants/error-key';
 
 const CurrentValueMonitor = (props: {
     deviceId: number;
@@ -52,7 +54,11 @@ const CurrentValueMonitor = (props: {
         page: 1,
         limit: 1,
         groupId: groupId || 0,
+        skipErrorToaster: true,
     });
+
+    const { fetchApi: getDashboardMonitors } =
+        useGetDashboardMonitorsApi(groupId);
     const elementContainerRef = useRef<HTMLDivElement>(null);
 
     const resizeHandler = useRef(
@@ -70,12 +76,16 @@ const CurrentValueMonitor = (props: {
 
     const { data: responseDevicePin, fetchApi: getDevicePin } =
         useGetDevicePinApi({ id: deviceId, pin: pin });
-    const { data: responseGroupDevicePin, fetchApi: getGroupDevicePin } =
-        useGetGroupDevicePinApi({
-            deviceId: deviceId,
-            pin: pin,
-            groupId: groupId || 0,
-        });
+    const {
+        data: responseGroupDevicePin,
+        fetchApi: getGroupDevicePin,
+        error: errorOfGetGroupDevicePin,
+    } = useGetGroupDevicePinApi({
+        deviceId: deviceId,
+        pin: pin,
+        groupId: groupId || 0,
+        skipErrorToaster: true,
+    });
 
     const startPooling = useCallback(() => {
         if (!isLiveData) {
@@ -154,6 +164,22 @@ const CurrentValueMonitor = (props: {
             setIsLoaded(true);
         }
     }, [isLoading]);
+
+    useEffect(() => {
+        if (!errorOfGetGroupDevicePin) {
+            return;
+        }
+
+        // 這個狀況應該只有在 group device 被 owner 拿掉了
+        if (
+            errorOfGetGroupDevicePin.errorKey ===
+            ERROR_KEY.GROUP_DEVICE_HAS_REMOVED
+        ) {
+            // restore group dashboard monitors store
+            getDashboardMonitors();
+        }
+        // eslint-disable-next-line
+    }, [errorOfGetGroupDevicePin]);
     return (
         <div
             ref={elementContainerRef}
