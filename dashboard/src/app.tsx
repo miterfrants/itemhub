@@ -118,7 +118,7 @@ const App = () => {
         getDeviceModesApi();
         getProtocols();
 
-        if (isGroupUser) {
+        if (isGroupUser && groupIds.length > 0) {
             getGroupNames();
         }
         // eslint-disable-next-line

@@ -76,5 +76,6 @@ namespace Homo.IotApi
         public static string GROUP_DEVICES_EXISTS = "GROUP_DEVICES_EXISTS";
 
         public static string COULD_NOT_FOUND_GROUP_ID_FROM_ROUTER = "COULD_NOT_FOUND_GROUP_ID_FROM_ROUTER";
+        public static string GROUP_DEVICE_HAS_REMOVED = "GROUP_DEVICE_HAS_REMOVED";
     }
 }
