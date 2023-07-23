@@ -377,7 +377,6 @@ const DevicePinStatistics = () => {
                                                 );
                                             }}
                                         >
-                                            <option />
                                             {pipelineDeviceStaticMethods.map(
                                                 (item: UniversalOption) => {
                                                     return (
