@@ -60,6 +60,9 @@ const AutocompletedSearch = ({
             return;
         }
         setInputValue('');
+        setTimeout(() => {
+            inputRef.current?.focus();
+        });
     }, [clearInputFlag]);
 
     useEffect(() => {
