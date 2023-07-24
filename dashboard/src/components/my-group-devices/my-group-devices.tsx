@@ -41,17 +41,35 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
     } = useGetMyGroupDevicesApi({
         groupId: groupId || 0,
     });
-    const { fetchApi: deleteGroupDevices, data: responseOfDelete } =
-        useDeleteMyGroupDevicesApi({
-            groupId: groupId || 0,
-            id: shouldBeDeleteDeviceId,
-        });
+    const {
+        isLoading: isDeleteing,
+        fetchApi: deleteGroupDevices,
+        data: responseOfDelete,
+    } = useDeleteMyGroupDevicesApi({
+        groupId: groupId || 0,
+        id: shouldBeDeleteDeviceId,
+    });
 
-    const { fetchApi: createGroupDevice, data: responseOfCreate } =
-        useCreateMyGroupDeviceApi({
-            groupId: groupId || 0,
-            deviceId: shouldBeCreatedDeviceId,
-        });
+    const {
+        isLoading: isCreating,
+        fetchApi: createGroupDevice,
+        data: responseOfCreate,
+    } = useCreateMyGroupDeviceApi({
+        groupId: groupId || 0,
+        deviceId: shouldBeCreatedDeviceId,
+    });
+
+    const validateAndSetup = (newValue, isCreate) => {
+        if (!newValue || isNaN(Number(newValue))) {
+            setIsDeviceInputError(true);
+            return;
+        }
+        setIsDeviceInputError(false);
+        setShouldBeCreatedDeviceId(Number(newValue));
+        if (isCreate) {
+            createGroupDevice();
+        }
+    };
 
     useEffect(() => {
         getGroupDevices();
@@ -122,23 +140,15 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                     datalistId="裝置"
                                     placeholder="請輸入裝置名稱搜尋"
                                     isError={isDeviceInputError}
-                                    errorMessage="找不到對應的裝置名稱"
+                                    isDisabled={isCreating}
+                                    errorMessage={'找不到對應的裝置名稱'}
                                     defaultValue={''}
                                     clearInputFlag={clearDeviceNameInputFlag}
                                     onValueChanged={(
-                                        newValue: number | string | undefined
+                                        newValue: number | string | undefined,
+                                        isTypeEnter: boolean | undefined
                                     ) => {
-                                        if (
-                                            !newValue ||
-                                            isNaN(Number(newValue))
-                                        ) {
-                                            setIsDeviceInputError(true);
-                                            return;
-                                        }
-                                        setIsDeviceInputError(false);
-                                        setShouldBeCreatedDeviceId(
-                                            Number(newValue)
-                                        );
+                                        validateAndSetup(newValue, isTypeEnter);
                                     }}
                                     allSuggestions={(allDevices || [])
                                         .filter(
@@ -158,6 +168,9 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                             </div>
                             <button
                                 className="btn btn-primary"
+                                disabled={
+                                    isCreating || !shouldBeCreatedDeviceId
+                                }
                                 onClick={() => {
                                     if (
                                         !shouldBeCreatedDeviceId ||
@@ -165,7 +178,6 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                     ) {
                                         return;
                                     }
-
                                     createGroupDevice();
                                 }}
                             >
@@ -179,7 +191,12 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                 return (
                                     <div
                                         className={`px-3 py-1 border border-1 me-3 rounded-2 d-flex align-items-center mb-3 ${
-                                            !item.id
+                                            (item.id ===
+                                                shouldBeCreatedDeviceId &&
+                                                isCreating) ||
+                                            (item.id ===
+                                                shouldBeDeleteDeviceId &&
+                                                isDeleteing)
                                                 ? 'border-warn bg-warn bg-opacity-30'
                                                 : 'border-gray-400'
                                         }`}

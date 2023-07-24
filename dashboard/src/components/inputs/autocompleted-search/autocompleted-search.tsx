@@ -6,24 +6,27 @@ const AutocompletedSearch = ({
     isDisabled = false,
     isError = false,
     errorMessage = '請輸入正確的內容',
+    multipleErrorMessage,
     datalistId,
     placeholder,
     allSuggestions,
     defaultValue,
     onValueChanged,
-    onEnterKeyUp,
     onClickOption,
     clearInputFlag,
 }: {
     isDisabled?: boolean;
     isError?: boolean;
     errorMessage?: string;
+    multipleErrorMessage?: string;
     datalistId: string;
     placeholder: string;
     allSuggestions: KeyValuePair[];
     defaultValue: string | number | undefined;
-    onValueChanged: (newValue: string | number | undefined) => void;
-    onEnterKeyUp?: (newValue?: string) => void;
+    onValueChanged: (
+        newValue: string | number | undefined,
+        isTypeEnter?: boolean
+    ) => void;
     onClickOption?: (newValue?: string) => void;
     clearInputFlag?: boolean;
 }) => {
@@ -34,7 +37,6 @@ const AutocompletedSearch = ({
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const isTriggerOnClickOption = useRef(false);
-    const [isTriggerOnEnterKeyUp, setIsTriggerOnEnterKeyUp] = useState(false);
     const defaultItem = allSuggestions.find((item) => {
         return item.value === defaultValue;
     });
@@ -50,13 +52,6 @@ const AutocompletedSearch = ({
     }, [inputRef.current?.value, onClickOption]);
 
     useEffect(() => {
-        if (isTriggerOnEnterKeyUp && onEnterKeyUp) {
-            onEnterKeyUp(inputRef.current?.value);
-            setIsTriggerOnEnterKeyUp(false);
-        }
-    }, [inputRef.current?.value, isTriggerOnEnterKeyUp, onEnterKeyUp]);
-
-    useEffect(() => {
         setFilteredSuggestions(allSuggestions);
     }, [allSuggestions]);
 
@@ -64,7 +59,6 @@ const AutocompletedSearch = ({
         if (clearInputFlag === undefined) {
             return;
         }
-        console.log('clearDeviceNameInputFlag', clearInputFlag);
         setInputValue('');
     }, [clearInputFlag]);
 
@@ -73,6 +67,7 @@ const AutocompletedSearch = ({
             return item.value === defaultValue;
         });
         setInputValue(defaultItem ? defaultItem.key : '');
+        // eslint-disable-next-line
     }, [defaultValue]);
 
     const handleChangeValue = ({
@@ -80,14 +75,13 @@ const AutocompletedSearch = ({
         nativeEvent,
     }: {
         currentValue: string | number | undefined;
-        nativeEvent: InputEvent;
+        nativeEvent: InputEvent | React.KeyboardEvent<HTMLInputElement>;
     }) => {
         const isClickOption = !('inputType' in nativeEvent);
         if (isClickOption) {
             isTriggerOnClickOption.current = true;
         }
-
-        onValueChanged(currentValue || '');
+        onValueChanged(currentValue || '', nativeEvent.type === 'keyup');
         const newFilteredOptions = allSuggestions.filter((suggestion) => {
             return (
                 suggestion.key
@@ -101,7 +95,21 @@ const AutocompletedSearch = ({
 
     const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            setIsTriggerOnEnterKeyUp(true);
+            const filteredResult = allSuggestions.filter(
+                (item) => item.key === e.currentTarget.value
+            );
+            if (filteredResult.length === 0) {
+                isError = true;
+                return;
+            }
+            if (filteredResult.length > 1) {
+                isError = true;
+                return;
+            }
+            handleChangeValue({
+                currentValue: filteredResult[0].value,
+                nativeEvent: e,
+            });
         }
     };
 
@@ -113,7 +121,6 @@ const AutocompletedSearch = ({
                 placeholder={placeholder}
                 ref={inputRef}
                 disabled={isDisabled}
-                defaultValue={inputValue || ''}
                 value={inputValue || ''}
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
