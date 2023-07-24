@@ -141,7 +141,9 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                     placeholder="請輸入裝置名稱搜尋"
                                     isError={isDeviceInputError}
                                     isDisabled={isCreating}
-                                    errorMessage={'找不到對應的裝置名稱'}
+                                    multipleErrorMessage={
+                                        '預期找到一個裝置，但搜尋出多個裝置名稱'
+                                    }
                                     defaultValue={''}
                                     clearInputFlag={clearDeviceNameInputFlag}
                                     onValueChanged={(

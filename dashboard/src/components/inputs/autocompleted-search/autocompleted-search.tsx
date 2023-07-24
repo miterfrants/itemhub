@@ -37,6 +37,7 @@ const AutocompletedSearch = ({
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const isTriggerOnClickOption = useRef(false);
+    const [isMultiple, setIsMultiple] = useState(false);
     const defaultItem = allSuggestions.find((item) => {
         return item.value === defaultValue;
     });
@@ -102,13 +103,16 @@ const AutocompletedSearch = ({
                 (item) => item.key === e.currentTarget.value
             );
             if (filteredResult.length === 0) {
+                setIsMultiple(false);
                 isError = true;
                 return;
             }
             if (filteredResult.length > 1) {
+                setIsMultiple(true);
                 isError = true;
                 return;
             }
+            setIsMultiple(false);
             handleChangeValue({
                 currentValue: filteredResult[0].value,
                 nativeEvent: e,
@@ -161,7 +165,9 @@ const AutocompletedSearch = ({
                 })}
             </datalist>
             {isError && (
-                <div className="text-danger mt-1 fs-5">{errorMessage}</div>
+                <div className="text-danger mt-1 fs-5">
+                    {isMultiple ? multipleErrorMessage : errorMessage}
+                </div>
             )}
         </div>
     );
