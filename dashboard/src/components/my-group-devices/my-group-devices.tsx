@@ -29,6 +29,8 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
         useState<number>(0);
     const [isDeviceInputError, setIsDeviceInputError] =
         useState<boolean>(false);
+    const [clearDeviceNameInputFlag, setClearDeviceNameInputFlag] =
+        useState<boolean>(false);
     const groupDevicesFromStore: GroupDevicesType[] =
         useAppSelector(selectMyGroupDevices);
 
@@ -96,6 +98,8 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
             return;
         }
         setShouldBeCreatedDeviceId(0);
+        setClearDeviceNameInputFlag(!clearDeviceNameInputFlag);
+        // eslint-disable-next-line
     }, [responseOfCreate]);
 
     return (
@@ -120,6 +124,7 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                     isError={isDeviceInputError}
                                     errorMessage="找不到對應的裝置名稱"
                                     defaultValue={''}
+                                    clearInputFlag={clearDeviceNameInputFlag}
                                     onValueChanged={(
                                         newValue: number | string | undefined
                                     ) => {
@@ -160,6 +165,7 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
                                     ) {
                                         return;
                                     }
+
                                     createGroupDevice();
                                 }}
                             >

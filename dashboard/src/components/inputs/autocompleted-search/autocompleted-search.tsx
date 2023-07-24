@@ -13,6 +13,7 @@ const AutocompletedSearch = ({
     onValueChanged,
     onEnterKeyUp,
     onClickOption,
+    clearInputFlag,
 }: {
     isDisabled?: boolean;
     isError?: boolean;
@@ -24,6 +25,7 @@ const AutocompletedSearch = ({
     onValueChanged: (newValue: string | number | undefined) => void;
     onEnterKeyUp?: (newValue?: string) => void;
     onClickOption?: (newValue?: string) => void;
+    clearInputFlag?: boolean;
 }) => {
     const [filteredSuggestions, setFilteredSuggestions] =
         useState<KeyValuePair[]>(allSuggestions);
@@ -59,11 +61,19 @@ const AutocompletedSearch = ({
     }, [allSuggestions]);
 
     useEffect(() => {
+        if (clearInputFlag === undefined) {
+            return;
+        }
+        console.log('clearDeviceNameInputFlag', clearInputFlag);
+        setInputValue('');
+    }, [clearInputFlag]);
+
+    useEffect(() => {
         const defaultItem = allSuggestions.find((item) => {
             return item.value === defaultValue;
         });
         setInputValue(defaultItem ? defaultItem.key : '');
-    }, [defaultValue, allSuggestions]);
+    }, [defaultValue]);
 
     const handleChangeValue = ({
         currentValue,
@@ -104,6 +114,7 @@ const AutocompletedSearch = ({
                 ref={inputRef}
                 disabled={isDisabled}
                 defaultValue={inputValue || ''}
+                value={inputValue || ''}
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
                     const nativeEvent = e.nativeEvent as InputEvent;
