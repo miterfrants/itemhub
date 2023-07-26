@@ -28,19 +28,21 @@ const CheckLastOnlinePipelineItem = ({
             errorMessage: '',
             invalid: false,
         },
+        operator: {
+            errorMessage: '',
+            invalid: false,
+        },
+        minutes: {
+            errorMessage: '',
+            invalid: false,
+        },
     });
 
     const [state, setState] = useState<PipelineCheckLastActivity | null>(null);
     const allDevices: DeviceItem[] = useAppSelector(selectDevices).devices;
     const { getAllDevicesApi } = useGetAllDevicesApi();
-    const { triggerOperators, pipelineDeviceStaticMethods } =
-        useAppSelector(selectUniversal);
+    const { triggerOperators } = useAppSelector(selectUniversal);
     const { getTriggerOperatorsApi } = useGetTriggerOperatorsApi();
-
-    useEffect(() => {
-        getAllDevicesApi();
-        // eslint-disable-next-line
-    }, []);
 
     const validate = (state: PipelineCheckLastActivity) => {
         let result = true;
@@ -53,9 +55,32 @@ const CheckLastOnlinePipelineItem = ({
             newValidation.deviceId.errorMessage = '';
             newValidation.deviceId.invalid = false;
         }
+
+        if (state.operator === undefined) {
+            result = false;
+            newValidation.operator.errorMessage = '最後一次上線時間比較';
+            newValidation.operator.invalid = true;
+        } else {
+            newValidation.operator.errorMessage = '';
+            newValidation.operator.invalid = false;
+        }
+
+        if (state.minutes === undefined) {
+            result = false;
+            newValidation.minutes.errorMessage = '最後一次上線時間分鐘';
+            newValidation.minutes.invalid = true;
+        } else {
+            newValidation.minutes.errorMessage = '';
+            newValidation.minutes.invalid = false;
+        }
         setValidation(newValidation);
         return result;
     };
+
+    useEffect(() => {
+        getAllDevicesApi();
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         if (!triggerOperators) {
@@ -69,7 +94,10 @@ const CheckLastOnlinePipelineItem = ({
         if (!pipelineItem || !pipelineItem.value) {
             return;
         }
-        setState(JSON.parse(pipelineItem.value) as PipelineCheckLastActivity);
+        const pipelineItemObject = JSON.parse(
+            pipelineItem.value
+        ) as PipelineCheckLastActivity;
+        setState(pipelineItemObject);
     }, [pipelineItem]);
 
     useEffect(() => {
@@ -93,6 +121,9 @@ const CheckLastOnlinePipelineItem = ({
                     placeholder="請輸入裝置名稱搜尋"
                     isError={validation.deviceId.invalid}
                     errorMessage="請輸入裝置名稱"
+                    multipleErrorMessage={
+                        '預期找到一個裝置，但搜尋出多個裝置名稱'
+                    }
                     defaultValue={state?.deviceId}
                     isDisabled={pipelineItem?.isRun || false}
                     onValueChanged={(newValue: number | string | undefined) => {
@@ -183,6 +214,18 @@ const CheckLastOnlinePipelineItem = ({
                     />
                 </div>
             </label>
+
+            {validation.operator.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.operator.errorMessage}
+                </div>
+            )}
+
+            {validation.minutes.invalid && (
+                <div className="text-danger mt-15 fs-5">
+                    {validation.minutes.errorMessage}
+                </div>
+            )}
         </div>
     );
 };

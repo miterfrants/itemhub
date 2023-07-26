@@ -27,8 +27,7 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
     const [groupDeviceIds, setGroupDeviceIds] = useState<number[]>([]);
     const [shouldBeCreatedDeviceId, setShouldBeCreatedDeviceId] =
         useState<number>(0);
-    const [isDeviceInputError, setIsDeviceInputError] =
-        useState<boolean>(false);
+    const [isDeviceInputError] = useState<boolean>(false);
     const [clearDeviceNameInputFlag, setClearDeviceNameInputFlag] =
         useState<boolean>(false);
     const groupDevicesFromStore: GroupDevicesType[] =
@@ -60,11 +59,6 @@ const MyGroupDevices = ({ groupId }: { groupId: number | undefined }) => {
     });
 
     const validateAndSetup = (newValue, isCreate) => {
-        if (!newValue || isNaN(Number(newValue))) {
-            setIsDeviceInputError(true);
-            return;
-        }
-        setIsDeviceInputError(false);
         setShouldBeCreatedDeviceId(Number(newValue));
         if (isCreate) {
             createGroupDevice();

@@ -38,12 +38,8 @@ const AutocompletedSearch = ({
 
     const isTriggerOnClickOption = useRef(false);
     const [isMultiple, setIsMultiple] = useState(false);
-    const defaultItem = allSuggestions.find((item) => {
-        return item.value === defaultValue;
-    });
-    const [inputValue, setInputValue] = useState(
-        defaultItem ? defaultItem.key : null
-    );
+    const [isErrorState, setIsErrorState] = useState<boolean>(isError);
+    const [inputValue, setInputValue] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if (isTriggerOnClickOption.current && onClickOption) {
@@ -72,7 +68,11 @@ const AutocompletedSearch = ({
         });
         setInputValue(defaultItem ? defaultItem.key : '');
         // eslint-disable-next-line
-    }, [defaultValue]);
+    }, [defaultValue, JSON.stringify(allSuggestions)]);
+
+    useEffect(() => {
+        setIsErrorState(isError);
+    }, [isError]);
 
     const handleChangeValue = ({
         currentValue,
@@ -85,7 +85,6 @@ const AutocompletedSearch = ({
         if (isClickOption) {
             isTriggerOnClickOption.current = true;
         }
-        onValueChanged(currentValue || '', nativeEvent.type === 'keyup');
         const newFilteredOptions = allSuggestions.filter((suggestion) => {
             return (
                 suggestion.key
@@ -94,27 +93,33 @@ const AutocompletedSearch = ({
             );
         });
         setFilteredSuggestions(newFilteredOptions);
+        const filteredResult = allSuggestions.filter(
+            (item) => item.key === currentValue
+        );
+        if (filteredResult.length === 0) {
+            setIsMultiple(false);
+            setIsErrorState(true);
+            return;
+        }
+        if (filteredResult.length > 1) {
+            setIsMultiple(true);
+            setIsErrorState(true);
+            return;
+        }
+
+        setIsMultiple(false);
+        setIsErrorState(false);
+        onValueChanged(
+            filteredResult[0].value || undefined,
+            nativeEvent.type === 'keyup'
+        );
     };
     const handleChangeValueWithDebounce = debounce(handleChangeValue, 300);
 
     const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            const filteredResult = allSuggestions.filter(
-                (item) => item.key === e.currentTarget.value
-            );
-            if (filteredResult.length === 0) {
-                setIsMultiple(false);
-                isError = true;
-                return;
-            }
-            if (filteredResult.length > 1) {
-                setIsMultiple(true);
-                isError = true;
-                return;
-            }
-            setIsMultiple(false);
             handleChangeValue({
-                currentValue: filteredResult[0].value,
+                currentValue: e.currentTarget.value,
                 nativeEvent: e,
             });
         }
@@ -132,20 +137,8 @@ const AutocompletedSearch = ({
                 onKeyUp={handleKeyUp}
                 onChange={(e) => {
                     const nativeEvent = e.nativeEvent as InputEvent;
-                    const selectedDeviceName = e.currentTarget.value;
-                    const selectedDatasetItem =
-                        e.currentTarget.parentElement?.querySelector(
-                            `datalist>option[value="${selectedDeviceName}"]`
-                        );
-
-                    const rawId: string | undefined = selectedDatasetItem
-                        ? (selectedDatasetItem as HTMLElement).dataset['id']
-                        : '';
-
-                    const id = rawId ? Number(rawId) : '';
-
                     handleChangeValueWithDebounce({
-                        currentValue: id,
+                        currentValue: e.target.value,
                         nativeEvent,
                     });
                     setInputValue(e.target.value);
@@ -164,7 +157,7 @@ const AutocompletedSearch = ({
                     );
                 })}
             </datalist>
-            {isError && (
+            {isErrorState && (
                 <div className="text-danger mt-1 fs-5">
                     {isMultiple ? multipleErrorMessage : errorMessage}
                 </div>
