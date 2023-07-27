@@ -118,21 +118,15 @@ const App = () => {
         getDeviceModesApi();
         getProtocols();
 
-        if (isGroupUser && groupIds.length > 0) {
-            getGroupNames();
-        }
         // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        if (
-            pathname === '/dashboard/' ||
-            pathname.indexOf('/dashboard/groups/') === 0
-        ) {
+        if (isGroupUser && groupIds.length > 0) {
             getGroupNames();
         }
         // eslint-disable-next-line
-    }, [pathname]);
+    }, [isGroupUser, groupIds]);
 
     return token ? (
         <div className="dashboard" data-testid="Dashboard">
