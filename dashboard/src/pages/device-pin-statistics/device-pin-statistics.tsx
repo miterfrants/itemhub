@@ -301,9 +301,6 @@ const DevicePinStatistics = () => {
     }, [startAt, endAt]);
 
     useEffect(() => {
-        if (sensorLogIds.length === 0 && !responseOfSensorLogs) {
-            return;
-        }
         if (groupId) {
             getGroupSensorLogsAggregate();
         } else {
@@ -322,7 +319,7 @@ const DevicePinStatistics = () => {
                 title={`裝置 ${device ? device?.name : ''} ${pin} 統計`}
             />
             {isGetting || isGettingGroupDevice || device === null ? (
-                <div>test</div>
+                <div />
             ) : (
                 <div className="card p-4">
                     <div className="row m-0">
@@ -380,7 +377,6 @@ const DevicePinStatistics = () => {
                                                 );
                                             }}
                                         >
-                                            <option />
                                             {pipelineDeviceStaticMethods.map(
                                                 (item: UniversalOption) => {
                                                     return (
