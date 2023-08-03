@@ -23,7 +23,8 @@ export class SmartAgricultureController extends RoutingController {
 
         await super.render({
             farmCheck: '',
-            farmResumeCheck: ''
+            farmResumeCheck: '',
+            farmHydroponicsCheck: ''
         }, this.scrollAndCheckedToType());
     }
 
@@ -41,6 +42,11 @@ export class SmartAgricultureController extends RoutingController {
                 scrollEl = document.querySelector('#farm-resume');
                 scrollEl.scrollIntoView({ behavior: 'smooth' });
                 this.pageVariable.farmResumeCheck = 'checked';
+            }
+            if (type === 'farm-hydroponics') {
+                scrollEl = document.querySelector('#farm-hydroponics');
+                scrollEl.scrollIntoView({ behavior: 'smooth' });
+                this.pageVariable.farmHydroponicsCheck = 'checked';
             }
         }, 500);
     }
