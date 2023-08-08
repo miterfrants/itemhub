@@ -25,7 +25,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "Pipeline 連線" },
+            Tags = new[] { "Pipeline" },
             Summary = "Pipeline 連線 - 取得某 Pipeline 所有連線",
             Description = ""
         )]

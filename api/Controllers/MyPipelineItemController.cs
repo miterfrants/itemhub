@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Homo.Api;
 using Homo.Core.Constants;
-using Homo.AuthApi;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq;
 
 namespace Homo.IotApi
 {
@@ -25,7 +23,7 @@ namespace Homo.IotApi
         }
 
         [SwaggerOperation(
-            Tags = new[] { "Pipeline 單元" },
+            Tags = new[] { "Pipeline" },
             Summary = "Pipeline 單元 - 取得某 Pipeline 所有單元",
             Description = ""
         )]
