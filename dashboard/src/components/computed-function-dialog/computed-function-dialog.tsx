@@ -64,11 +64,13 @@ const ComputedFunctionDialog = () => {
                 type: ToasterTypeEnum.INFO,
             })
         );
+        setComputedFunc('');
         dispatch(computedFunctionDialogActions.close());
         // eslint-disable-next-line
     }, [respOfUpdateComputedFunction, respOfCreateComputedFunction]);
 
     const close = () => {
+        setComputedFunc('');
         dispatch(computedFunctionDialogActions.close());
     };
 

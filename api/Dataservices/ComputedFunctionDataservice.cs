@@ -5,11 +5,12 @@ namespace Homo.IotApi
 {
     public class ComputedFunctionDataservice
     {
-        public static List<ComputedFunction> GetAll(IotDbContext dbContext, long userId, List<DTOs.ComputedFunctionFilterByDevicePin> filterByDevicePins, List<long> monitorIds)
+        public static List<ComputedFunction> GetAll(IotDbContext dbContext, long userId, long? groupId, List<DTOs.ComputedFunctionFilterByDevicePin> filterByDevicePins, List<long> monitorIds)
         {
             var deviceIds = filterByDevicePins.Select(x => x.deviceId).ToList();
             return dbContext.ComputedFunction.Where(x => x.DeletedAt == null
                 && x.UserId == userId
+                && (groupId == null || x.GroupId == groupId)
                 && (
                     (filterByDevicePins.Count > 0 && x.Target == COMPUTED_TARGET.SENSOR_PIN && deviceIds.Contains(x.DeviceId))
                     || (monitorIds != null && x.Target == COMPUTED_TARGET.DASHBOARD_MONITOR && x.MonitorId != null && monitorIds.Contains(x.MonitorId.GetValueOrDefault()))
@@ -30,6 +31,7 @@ namespace Homo.IotApi
             newOne.Func = dto.func;
             newOne.UserId = userId;
             newOne.Target = dto.target;
+            newOne.GroupId = dto.groupId;
             dbContext.ComputedFunction.Add(newOne);
             dbContext.SaveChanges();
             return newOne;

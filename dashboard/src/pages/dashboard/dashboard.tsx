@@ -217,7 +217,9 @@ const Dashboard = () => {
                             (item: DashboardMonitorItem, index: number) => {
                                 const targetComputedFunction =
                                     computedFunctions.find(
-                                        (func) => func.monitorId === item.id
+                                        (func) =>
+                                            func.monitorId === item.id &&
+                                            func.groupId === item.groupId
                                     );
                                 return (
                                     <div
@@ -464,6 +466,8 @@ const Dashboard = () => {
                                                                             monitorId:
                                                                                 item.id,
                                                                             target: 1,
+                                                                            groupId:
+                                                                                item.groupId,
                                                                             func: targetComputedFunction?.func,
                                                                         }
                                                                     )
