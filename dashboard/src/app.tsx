@@ -1,5 +1,5 @@
 import './app.scss';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from './hooks/query.hook';
 import {
@@ -58,7 +58,7 @@ const App = () => {
     const isInvitationUrl =
         /\/dashboard\/groups\/\d+\/invitations\/\d+\/join/gi.test(pathname);
     let isTokenExpired = false;
-    const groupIds = [];
+    const groupIds = useRef([]);
     let isGroupUser = false;
 
     if (token) {
@@ -67,7 +67,7 @@ const App = () => {
             payload.roles.filter((item) => item.startsWith('group_')).length >=
             1;
         Array.prototype.push.apply(
-            groupIds,
+            groupIds.current,
             payload.roles
                 .filter((item) => item.startsWith('group_'))
                 .map((item) => Number(item.replace('group_', '')))
@@ -109,8 +109,9 @@ const App = () => {
     const { getProtocols } = useGetProtocols();
     const { getMicrocontrollersApi } = useGetMicrocontrollersApi();
     const { getDeviceModesApi } = useGetDeviceModesApi();
-    const { fetchApi: getGroupNames, data: groups } =
-        useGetGroupNamesApi(groupIds);
+    const { fetchApi: getGroupNames, data: groups } = useGetGroupNamesApi(
+        groupIds.current
+    );
 
     useEffect(() => {
         getTriggerOperatorsApi();
@@ -122,7 +123,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if (isGroupUser && groupIds.length > 0) {
+        if (isGroupUser && groupIds.current.length > 0) {
             getGroupNames();
         }
         // eslint-disable-next-line
