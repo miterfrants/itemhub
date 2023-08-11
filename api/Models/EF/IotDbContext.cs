@@ -207,7 +207,7 @@ namespace Homo.IotApi
                 entity.Property(p => p.IsHead).HasDefaultValueSql("0");
                 entity.Property(p => p.IsEnd).HasDefaultValueSql("0");
                 entity.Property(p => p.CreatedAt)
-                    .HasDefaultValue(System.DateTime.Now);
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
             });
 
             modelBuilder.Entity<DeviceUploadedImage>(entity =>
@@ -218,7 +218,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.Filename });
                 entity.Property(p => p.CreatedAt)
-                    .HasDefaultValue(System.DateTime.Now);
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
             });
 
             modelBuilder.Entity<GroupDevice>(entity =>
@@ -243,6 +243,8 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Pin });
                 entity.HasIndex(p => new { p.Target });
                 entity.HasIndex(p => new { p.MonitorId });
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
                 entity.Property(e => e.IsDeleted)
                         .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
                 entity.HasIndex(p => new { p.UserId, p.GroupId, p.DeviceId, p.Pin, p.Target, p.IsDeleted }).IsUnique();

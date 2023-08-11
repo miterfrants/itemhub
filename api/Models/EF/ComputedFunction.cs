@@ -12,11 +12,9 @@ namespace Homo.IotApi
         [Required]
         public long UserId { get; set; }
         public DateTime? DeletedAt { get; set; }
-        [Required]
         [MaxLength(5)]
         public string Pin { get; set; }
-        [Required]
-        public long DeviceId { get; set; }
+        public long? DeviceId { get; set; }
         public long? GroupId { get; set; }
         public long? MonitorId { get; set; }
         public string Func { get; set; }
