@@ -11,6 +11,13 @@ import ReactTooltip from 'react-tooltip';
 import analyticsIcon from '@/assets/images/analytics.svg';
 import { Link, useLocation } from 'react-router-dom';
 import { useToggleGroupDeviceSwitchPinApi } from '@/hooks/apis/group-device-pin.hook';
+import { useGetComputedFunctions } from '@/hooks/apis/computed-functions.hook';
+import { useAppSelector } from '@/hooks/redux.hook';
+import { selectComputedFunctions } from '@/redux/reducers/computed-functions.reducer';
+import { useDispatch } from 'react-redux';
+import { computedFunctionDialogActions } from '@/redux/reducers/computed-function-dialog.reducer';
+import { ComputedFunctions } from '@/types/computed-functions.type';
+import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
 
 const Pin = (props: {
     pinItem: PinItem;
@@ -29,7 +36,12 @@ const Pin = (props: {
     } = pinItem;
     const [value, setValue] = useState(0);
     const [name, setName] = useState('');
+    const dispatch = useDispatch();
     const [isInitialized, setIsInitialized] = useState(false);
+    const [computedFunc, setComputedFunc] = useState<
+        ComputedFunctions | undefined
+    >(undefined);
+    const [sensorComputedValue, setSensorComputedValue] = useState('');
     const isNameChangedRef = useRef(false);
     const isSwitch = pinType === 1;
 
@@ -38,6 +50,18 @@ const Pin = (props: {
         pin,
         value: value || 0,
     });
+
+    const { fetchApi: getComputedFunctions } = useGetComputedFunctions({
+        devicePins: [
+            {
+                deviceId,
+                pin,
+            },
+        ],
+    });
+
+    const computedFunctionsPool = useAppSelector(selectComputedFunctions);
+
     const { fetchApi: toggleGroupDevicePin } = useToggleGroupDeviceSwitchPinApi(
         {
             groupId: groupId || 0,
@@ -60,16 +84,6 @@ const Pin = (props: {
 
     const toggleSwitch = () => {
         setValue(value === 1 ? 0 : 1);
-    };
-
-    const computedFunc = (sensorData) => {
-        try {
-            const func = eval('(sensorData) => { return `${sensorData*2}%` }');
-            const result = func(sensorData);
-            return result;
-        } catch (error) {
-            return null;
-        }
     };
 
     const updateLocalPinName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +117,50 @@ const Pin = (props: {
     useEffect(() => {
         setValue(valueFromPorps || 0);
     }, [valueFromPorps]);
+
+    useEffect(() => {
+        if (isSwitch) {
+            return;
+        }
+        getComputedFunctions();
+        // eslint-disable-next-line
+    }, [isSwitch]);
+
+    useEffect(() => {
+        if (
+            isSwitch ||
+            isSwitch === undefined ||
+            !valueFromPorps ||
+            !computedFunc ||
+            !computedFunc.func
+        ) {
+            setSensorComputedValue(`${valueFromPorps?.toString() || ''}`);
+            return;
+        }
+
+        const func = ComputedFunctionHelpers.Eval(computedFunc.func);
+
+        if (func === null) {
+            setSensorComputedValue(`${valueFromPorps?.toString() || ''}`);
+            return;
+        }
+        setSensorComputedValue(
+            `${valueFromPorps?.toString() || ''} -> ${func(valueFromPorps)}`
+        );
+
+        // eslint-disable-next-line
+    }, [isSwitch, valueFromPorps, computedFunc]);
+
+    useEffect(() => {
+        if (computedFunctionsPool.length === 0 || isSwitch) {
+            return;
+        }
+        const computedFunc = computedFunctionsPool.find(
+            (item) => item.deviceId === deviceId && item.pin === pin
+        );
+        setComputedFunc(computedFunc);
+        // eslint-disable-next-line
+    }, [computedFunctionsPool]);
 
     return (
         <div
@@ -143,7 +201,27 @@ const Pin = (props: {
             ) : (
                 <>
                     <div className="text-black text-opacity-65 mb-2 d-flex align-items-center">
-                        : {computedFunc(value) || value}
+                        : {sensorComputedValue}
+                        <div
+                            onClick={() => {
+                                dispatch(
+                                    computedFunctionDialogActions.open({
+                                        id: computedFunc?.id,
+                                        deviceId,
+                                        pin,
+                                        groupId,
+                                        func: computedFunc?.func,
+                                    })
+                                );
+                            }}
+                            className="ms-3"
+                            role="button"
+                            data-tip="轉換公式"
+                        >
+                            <span>
+                                <i>f</i>(x)
+                            </span>
+                        </div>
                         <div className="ms-4">
                             <Link
                                 to={
@@ -156,8 +234,8 @@ const Pin = (props: {
                             >
                                 <img src={analyticsIcon} />
                             </Link>
-                            <ReactTooltip effect="solid" />
                         </div>
+                        <ReactTooltip effect="solid" />
                     </div>
                     <div className="fs-5 mb-0 text-black text-opacity-45 fw-normal w-100">
                         最後回傳時間

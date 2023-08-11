@@ -28,6 +28,7 @@ import {
 } from '@/hooks/apis/group-device-pin.hook';
 import { ERROR_KEY } from '@/constants/error-key';
 import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
+import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
 
 enum TIME_RANGE {
     NONE = 0,
@@ -44,6 +45,7 @@ const LineChartMonitor = (props: {
     isLiveData: boolean;
     customTitle: string;
     groupId?: number;
+    computedFunctionRaw?: string | null;
 }) => {
     const {
         deviceId,
@@ -51,6 +53,7 @@ const LineChartMonitor = (props: {
         isLiveData: isLiveDataFromProps,
         customTitle,
         groupId,
+        computedFunctionRaw,
     } = props;
 
     const [lineChartData, setLineChartData] = useState<any[]>([]);
@@ -60,8 +63,23 @@ const LineChartMonitor = (props: {
     const [sensorLogIds, setSensorLogIds] = useState<number[]>([]);
     const [startAt, setStartAt] = useState<string | undefined>(undefined);
     const timer: any = useRef(null);
+    const [computedFunction, setComputedFunction] = useState<any | null>(null);
 
     const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
+
+    const execComputedFunction = useCallback(
+        (value) => {
+            const func = ComputedFunctionHelpers.Eval(
+                computedFunctionRaw || ''
+            );
+            if (func) {
+                return func(value);
+            } else {
+                return value;
+            }
+        },
+        [computedFunctionRaw]
+    );
 
     ChartJS.register(
         CategoryScale,
@@ -211,6 +229,18 @@ const LineChartMonitor = (props: {
     }, [isLiveData, getLastSensorLogs, getLastGroupSensorLogs]);
 
     useEffect(() => {
+        if (!computedFunctionRaw) {
+            return;
+        }
+
+        const func = ComputedFunctionHelpers.Eval(computedFunctionRaw);
+        if (func) {
+            setComputedFunction(func);
+        }
+        // eslint-disable-next-line
+    }, [computedFunctionRaw]);
+
+    useEffect(() => {
         if (groupId) {
             getGroupDevicePin();
         } else {
@@ -250,7 +280,7 @@ const LineChartMonitor = (props: {
         }
 
         const data = [...responseOfGetSensorLogs].reverse();
-        setLineChartData(data.map((item) => item.value));
+        setLineChartData(data.map((item) => execComputedFunction(item.value)));
         setSensorLogIds(data.map((item) => item.id));
         setXAxisTicks(
             data.map((item) => {
@@ -258,7 +288,7 @@ const LineChartMonitor = (props: {
             })
         );
         // eslint-disable-next-line
-    }, [responseOfGetSensorLogs]);
+    }, [responseOfGetSensorLogs, computedFunction]);
 
     useEffect(() => {
         if (!responseOfGetGroupSensorLogs) {
@@ -266,7 +296,7 @@ const LineChartMonitor = (props: {
         }
 
         const data = [...responseOfGetGroupSensorLogs].reverse();
-        setLineChartData(data.map((item) => item.value));
+        setLineChartData(data.map((item) => execComputedFunction(item.value)));
         setSensorLogIds(data.map((item) => item.id));
         setXAxisTicks(
             data.map((item) => {
@@ -274,7 +304,7 @@ const LineChartMonitor = (props: {
             })
         );
         // eslint-disable-next-line
-    }, [responseOfGetGroupSensorLogs]);
+    }, [responseOfGetGroupSensorLogs, computedFunction]);
 
     useEffect(() => {
         if (

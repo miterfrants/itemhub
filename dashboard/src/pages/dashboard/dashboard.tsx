@@ -26,6 +26,11 @@ import Toggle from '@/components/toggle/toggle';
 import trashIcon from '@/assets/images/trash.svg';
 import displayIcon from '@/assets/images/display.svg';
 import { useLocation, useParams } from 'react-router-dom';
+import { useGetComputedFunctions } from '@/hooks/apis/computed-functions.hook';
+import { useAppSelector } from '@/hooks/redux.hook';
+import { selectComputedFunctions } from '@/redux/reducers/computed-functions.reducer';
+import { ComputedFunctions } from '@/types/computed-functions.type';
+import { computedFunctionDialogActions } from '@/redux/reducers/computed-function-dialog.reducer';
 
 const Dashboard = () => {
     const { groupId } = useParams();
@@ -40,15 +45,28 @@ const Dashboard = () => {
     const { fetchApi: deleteDashboardMonitors, data: responseOfDelete } =
         useDeleteDashboardMonitorsApi([shouldBeDeleteId || 0]);
 
+    const computedFunctionsPool = useAppSelector(selectComputedFunctions);
     const dashboardMonitorsPool = useSelector(selectDashboardMonitors);
-    const dashboardMonitors = dashboardMonitorsPool.filter((item) =>
-        groupId ? item.groupId === Number(groupId) : item.groupId === null
-    );
+    const dashboardMonitors = useRef<DashboardMonitorItem[]>([]);
+    const [computedFunctions, setComputedFunctions] = useState<
+        ComputedFunctions[]
+    >([]);
     const [monitors, setMonitors] = useState<any[]>([]);
     const { fetchApi: updateDashboardMonitorSorting } =
         useUpdateDashboardMonitorSortingApi(
             monitors.map((item, index) => ({ id: item.id, sort: index + 1 }))
         );
+    const { fetchApi: getComputedFunctions } = useGetComputedFunctions({
+        monitorIds: dashboardMonitorsPool
+            .filter(
+                (item) =>
+                    [0, 1].includes(item.mode) &&
+                    (groupId
+                        ? item.groupId === Number(groupId)
+                        : item.groupId === null)
+            )
+            .map((item) => item.id),
+    });
     const dispatch = useDispatch();
     const popupMonitorConfig = (monitorItem: DashboardMonitorItem) => {
         dispatch(
@@ -83,6 +101,14 @@ const Dashboard = () => {
                     return -1;
                 }
             });
+        dashboardMonitors.current = dashboardMonitorsPool.filter((item) =>
+            groupId ? item.groupId === Number(groupId) : item.groupId === null
+        );
+
+        if (dashboardMonitors.current.length > 0) {
+            getComputedFunctions();
+        }
+
         setMonitors(
             sortingDashboard.map((item) => {
                 const oldData = monitors.find(
@@ -99,10 +125,22 @@ const Dashboard = () => {
     }, [dashboardMonitorsPool]);
 
     useEffect(() => {
+        if (computedFunctionsPool.length === 0) {
+            return;
+        }
+        const monitorIds = dashboardMonitors.current.map((item) => item.id);
+        setComputedFunctions(
+            computedFunctionsPool.filter(
+                (item) => item.monitorId && monitorIds.includes(item.monitorId)
+            )
+        );
+    }, [computedFunctionsPool]);
+
+    useEffect(() => {
         if (
             !dashboardMonitors ||
             !monitors ||
-            dashboardMonitors.length === 0 ||
+            dashboardMonitors.current.length === 0 ||
             monitors.length === 0
         ) {
             return;
@@ -130,7 +168,7 @@ const Dashboard = () => {
 
         updateDashboardMonitorSorting();
         // eslint-disable-next-line
-    }, [monitors]);
+    }, []);
 
     useEffect(() => {
         if (shouldBeDeleteId) {
@@ -177,6 +215,10 @@ const Dashboard = () => {
                     >
                         {monitors.map(
                             (item: DashboardMonitorItem, index: number) => {
+                                const targetComputedFunction =
+                                    computedFunctions.find(
+                                        (func) => func.monitorId === item.id
+                                    );
                                 return (
                                     <div
                                         key={item.id}
@@ -248,6 +290,9 @@ const Dashboard = () => {
                                                                     groupId={
                                                                         item.groupId
                                                                     }
+                                                                    computedFunctionRaw={
+                                                                        targetComputedFunction?.func
+                                                                    }
                                                                 />
                                                             ) : item.mode ===
                                                               1 ? (
@@ -267,6 +312,9 @@ const Dashboard = () => {
                                                                     }
                                                                     groupId={
                                                                         item.groupId
+                                                                    }
+                                                                    computedFunctionRaw={
+                                                                        targetComputedFunction?.func
                                                                     }
                                                                 />
                                                             ) : (
@@ -313,9 +361,9 @@ const Dashboard = () => {
                                                             }}
                                                         />
                                                     </div>
-                                                    <div className="d-flex flex-column justify-content-center h-100 align-items-center">
+                                                    <div className="row justify-content-center align-content-start overflow-y-scroll h-100 align-items-center p-0 p-md-4">
                                                         <div
-                                                            className={`cursor-point d-flex flex-row align-items-center w-100 justify-content-center mb-2 ${
+                                                            className={`col-12 cursor-point d-flex flex-row align-items-center w-100 justify-content-center mb-2 mt-3 ${
                                                                 item.mode ===
                                                                     2 &&
                                                                 'd-none'
@@ -357,44 +405,91 @@ const Dashboard = () => {
                                                                     : 'static'}
                                                             </div>
                                                         </div>
-                                                        <div className="d-flex justify-content-center">
-                                                            <button
-                                                                onClick={() =>
-                                                                    setShouldBeDeleteId(
-                                                                        item.id
-                                                                    )
+                                                        <button
+                                                            onClick={() =>
+                                                                setShouldBeDeleteId(
+                                                                    item.id
+                                                                )
+                                                            }
+                                                            className={`${
+                                                                item.column ===
+                                                                1
+                                                                    ? 'col-md-12 col-5 mx-3'
+                                                                    : item.column ===
+                                                                      2
+                                                                    ? 'col-6'
+                                                                    : 'col-3 mx-3'
+                                                            } d-flex justify-content-center btn btn-secondary mb-3`}
+                                                        >
+                                                            <img
+                                                                className="me-0 me-sm-2"
+                                                                src={trashIcon}
+                                                            />
+                                                            <span className="d-none d-sm-inline">
+                                                                刪除
+                                                            </span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                popupMonitorConfig(
+                                                                    item
+                                                                )
+                                                            }
+                                                            className={`${
+                                                                item.column ===
+                                                                1
+                                                                    ? 'col-md-12 col-5 mx-3'
+                                                                    : item.column ===
+                                                                      2
+                                                                    ? 'col-6 mx-3'
+                                                                    : 'col-3 mx-3'
+                                                            } d-flex justify-content-center btn btn-secondary mb-3`}
+                                                        >
+                                                            <img
+                                                                className="me-0 me-sm-2"
+                                                                src={
+                                                                    displayIcon
                                                                 }
-                                                                className="btn btn-secondary mx-1 mx-sm-3"
-                                                            >
-                                                                <img
-                                                                    className="me-0 me-sm-2"
-                                                                    src={
-                                                                        trashIcon
-                                                                    }
-                                                                />
-                                                                <span className="d-none d-sm-inline">
-                                                                    刪除
-                                                                </span>
-                                                            </button>
-                                                            <button
-                                                                onClick={() =>
-                                                                    popupMonitorConfig(
-                                                                        item
+                                                            />
+                                                            <span className="d-none d-sm-inline">
+                                                                版面
+                                                            </span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                dispatch(
+                                                                    computedFunctionDialogActions.open(
+                                                                        {
+                                                                            id: targetComputedFunction?.id,
+                                                                            monitorId:
+                                                                                item.id,
+                                                                            target: 1,
+                                                                            func: targetComputedFunction?.func,
+                                                                        }
                                                                     )
-                                                                }
-                                                                className="btn btn-secondary mx-1 mx-sm-3"
-                                                            >
-                                                                <img
-                                                                    className="me-0 me-sm-2"
-                                                                    src={
-                                                                        displayIcon
-                                                                    }
-                                                                />
-                                                                <span className="d-none d-sm-inline">
-                                                                    版面
-                                                                </span>
-                                                            </button>
-                                                        </div>
+                                                                )
+                                                            }
+                                                            className={`${
+                                                                item.column ===
+                                                                1
+                                                                    ? 'col-md-12 col-5 mx-3'
+                                                                    : item.column ===
+                                                                      2
+                                                                    ? 'col-6'
+                                                                    : 'col-3 mx-3'
+                                                            } ${
+                                                                item.mode === 2
+                                                                    ? 'd-none'
+                                                                    : ''
+                                                            } d-flex justify-content-center btn btn-secondary mb-3`}
+                                                        >
+                                                            <span className="me-0 me-sm-2">
+                                                                <i>f</i>(x)
+                                                            </span>
+                                                            <span className="d-none d-sm-inline">
+                                                                轉換公式
+                                                            </span>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </BackSide>
