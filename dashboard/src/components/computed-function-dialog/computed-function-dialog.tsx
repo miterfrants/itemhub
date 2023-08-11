@@ -59,7 +59,7 @@ const ComputedFunctionDialog = () => {
         }
         dispatch(
             toasterActions.pushOne({
-                message: '成功新增轉換公式',
+                message: '成功更新轉換公式',
                 duration: 5,
                 type: ToasterTypeEnum.INFO,
             })
