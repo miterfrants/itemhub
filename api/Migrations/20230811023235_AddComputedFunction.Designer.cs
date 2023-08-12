@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230811023235_AddComputedFunction")]
+    partial class AddComputedFunction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,14 +28,12 @@ namespace IotApi.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long?>("DeviceId")
+                    b.Property<long>("DeviceId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("EditedAt")
@@ -54,6 +54,7 @@ namespace IotApi.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Pin")
+                        .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
@@ -327,7 +328,7 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                        .HasDefaultValue(new DateTime(2023, 8, 11, 10, 32, 35, 264, DateTimeKind.Local).AddTicks(9770));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
@@ -770,7 +771,7 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                        .HasDefaultValue(new DateTime(2023, 8, 11, 10, 32, 35, 264, DateTimeKind.Local).AddTicks(7930));
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");

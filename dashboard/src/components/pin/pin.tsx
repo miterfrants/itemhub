@@ -62,6 +62,16 @@ const Pin = (props: {
         setValue(value === 1 ? 0 : 1);
     };
 
+    const computedFunc = (sensorData) => {
+        try {
+            const func = eval('(sensorData) => { return `${sensorData*2}%` }');
+            const result = func(sensorData);
+            return result;
+        } catch (error) {
+            return null;
+        }
+    };
+
     const updateLocalPinName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
         isNameChangedRef.current = true;
@@ -133,7 +143,7 @@ const Pin = (props: {
             ) : (
                 <>
                     <div className="text-black text-opacity-65 mb-2 d-flex align-items-center">
-                        : {value}
+                        : {computedFunc(value) || value}
                         <div className="ms-4">
                             <Link
                                 to={
