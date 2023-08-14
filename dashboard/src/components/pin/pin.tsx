@@ -188,7 +188,7 @@ const Pin = (props: {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-black text-opacity-65 me-2 mb-2">
+                    <div className="text-black text-opacity-65 me-2 mb-2 text-nowrap">
                         {' '}
                         {name || pin}
                     </div>
