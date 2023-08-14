@@ -20,5 +20,32 @@ namespace Homo.IotApi
                 || filterByDevicePins.Count == 0
             ).ToList();
         }
+
+        public static ComputedFunction Create(IotDbContext dbContext, long userId, DTOs.CreateComputedFunction dto)
+        {
+            var newOne = new ComputedFunction();
+            newOne.DeviceId = dto.deviceId;
+            newOne.Pin = dto.pin;
+            newOne.MonitorId = dto.monitorId;
+            newOne.Func = dto.func;
+            newOne.UserId = userId;
+            newOne.Target = dto.target;
+            dbContext.ComputedFunction.Add(newOne);
+            dbContext.SaveChanges();
+            return newOne;
+        }
+
+        public static void Update(IotDbContext dbContext, long userId, long id, DTOs.UpdateComputedFunction dto)
+        {
+
+            dbContext.ComputedFunction.Where(x =>
+                x.Id == id
+                && x.UserId == userId
+                && x.DeletedAt == null
+            ).UpdateFromQuery(x => new ComputedFunction()
+            {
+                Func = dto.func
+            });
+        }
     }
 }
