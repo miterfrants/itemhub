@@ -220,7 +220,15 @@ const Pin = (props: {
                             role="button"
                             data-tip="轉換公式"
                         >
-                            <span>
+                            <span
+                                className={
+                                    computedFunc &&
+                                    computedFunc.func &&
+                                    computedFunc.func.trim().length > 0
+                                        ? 'text-warn'
+                                        : ''
+                                }
+                            >
                                 <i>f</i>(x)
                             </span>
                         </div>

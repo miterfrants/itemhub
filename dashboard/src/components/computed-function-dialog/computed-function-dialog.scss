@@ -18,6 +18,10 @@
     .btn-close {
         z-index: 1;
     }
+    .rounded-circle {
+        width: 30px;
+        height: 30px;
+    }
 
     @include media-breakpoint-down(sm) {
         .card {
