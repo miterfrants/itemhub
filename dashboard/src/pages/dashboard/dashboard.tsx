@@ -483,7 +483,17 @@ const Dashboard = () => {
                                                                     : ''
                                                             } d-flex justify-content-center btn btn-secondary mb-3`}
                                                         >
-                                                            <span className="me-0 me-sm-2">
+                                                            <span
+                                                                className={`me-0 me-sm-2 ${
+                                                                    targetComputedFunction &&
+                                                                    targetComputedFunction.func &&
+                                                                    targetComputedFunction.func.trim()
+                                                                        .length >
+                                                                        0
+                                                                        ? 'text-warn'
+                                                                        : ''
+                                                                }`}
+                                                            >
                                                                 <i>f</i>(x)
                                                             </span>
                                                             <span className="d-none d-sm-inline">
