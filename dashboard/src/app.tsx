@@ -21,6 +21,7 @@ import OfflineNotificationDialog from './components/offline-notification-dialog/
 import RealtimeDeviceImageDialog from './components/realtime-device-image-dialog/realtime-device-image-dialog';
 import moment from 'moment';
 import { useGetGroupNamesApi } from './hooks/apis/groups.hook';
+import ComputedFunctionDialog from './components/computed-function-dialog/computed-function-dialog';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -142,6 +143,7 @@ const App = () => {
             <MonitorConfigDialog />
             <RealtimeDeviceImageDialog />
             <OfflineNotificationDialog />
+            <ComputedFunctionDialog />
             <Toaster />
         </div>
     ) : (

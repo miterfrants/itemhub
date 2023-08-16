@@ -37,6 +37,7 @@ namespace Homo.IotApi
         public virtual DbSet<PipelineExecuteLog> PipelineExecuteLog { get; set; }
         public virtual DbSet<DeviceUploadedImage> DeviceUploadedImage { get; set; }
         public virtual DbSet<GroupDevice> GroupDevice { get; set; }
+        public virtual DbSet<ComputedFunction> ComputedFunction { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -206,7 +207,7 @@ namespace Homo.IotApi
                 entity.Property(p => p.IsHead).HasDefaultValueSql("0");
                 entity.Property(p => p.IsEnd).HasDefaultValueSql("0");
                 entity.Property(p => p.CreatedAt)
-                    .HasDefaultValue(System.DateTime.Now);
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
             });
 
             modelBuilder.Entity<DeviceUploadedImage>(entity =>
@@ -217,7 +218,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.Filename });
                 entity.Property(p => p.CreatedAt)
-                    .HasDefaultValue(System.DateTime.Now);
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
             });
 
             modelBuilder.Entity<GroupDevice>(entity =>
@@ -230,6 +231,24 @@ namespace Homo.IotApi
                 entity.Property(e => e.IsDeleted)
                         .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
                 entity.HasIndex(p => new { p.GroupId, p.UserId, p.DeviceId, p.IsDeleted }).IsUnique();
+            });
+
+            modelBuilder.Entity<ComputedFunction>(entity =>
+            {
+                entity.HasIndex(p => new { p.CreatedAt });
+                entity.HasIndex(p => new { p.DeletedAt });
+                entity.HasIndex(p => new { p.UserId });
+                entity.HasIndex(p => new { p.DeviceId });
+                entity.HasIndex(p => new { p.GroupId });
+                entity.HasIndex(p => new { p.Pin });
+                entity.HasIndex(p => new { p.Target });
+                entity.HasIndex(p => new { p.MonitorId });
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+                entity.Property(e => e.IsDeleted)
+                        .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.HasIndex(p => new { p.UserId, p.GroupId, p.DeviceId, p.Pin, p.Target, p.IsDeleted }).IsUnique();
+                entity.HasIndex(p => new { p.UserId, p.GroupId, p.MonitorId, p.Target, p.IsDeleted }).IsUnique();
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -22,6 +22,8 @@ import groupUsersReducer from './reducers/group-users.reducer';
 import myGroupDevicesReducer from './reducers/my-group-devices.reducer';
 import groupDevicesReducer from './reducers/group-devices.reducer';
 import groupDevicePinsReducer from './reducers/group-device-pins.reducer';
+import computedFunctionsReducer from './reducers/computed-functions.reducer';
+import computedFunctionDialogReducer from './reducers/computed-function-dialog.reducer';
 
 const store = configureStore({
     reducer: {
@@ -48,6 +50,8 @@ const store = configureStore({
         myGroupDevices: myGroupDevicesReducer,
         groupDevices: groupDevicesReducer,
         groupDevicePins: groupDevicePinsReducer,
+        computedFunctions: computedFunctionsReducer,
+        computedFunctionDialog: computedFunctionDialogReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

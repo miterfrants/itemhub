@@ -11,6 +11,7 @@ import {
 } from '@/hooks/apis/group-device-pin.hook';
 import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
 import { ERROR_KEY } from '@/constants/error-key';
+import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
 
 const CurrentValueMonitor = (props: {
     deviceId: number;
@@ -18,6 +19,7 @@ const CurrentValueMonitor = (props: {
     isLiveData: boolean;
     customTitle: string;
     groupId?: number;
+    computedFunctionRaw?: string | null;
 }) => {
     const {
         deviceId,
@@ -25,6 +27,7 @@ const CurrentValueMonitor = (props: {
         isLiveData: isLiveDataFromProps,
         customTitle,
         groupId,
+        computedFunctionRaw,
     } = props;
     const [currentValue, setCurrentValue] = useState<number | null>(null);
 
@@ -32,6 +35,20 @@ const CurrentValueMonitor = (props: {
     const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     const [pointer, setPointer] = useState<number>(4);
+    const execComputedFunction = useCallback(
+        (value) => {
+            const func = ComputedFunctionHelpers.Eval(
+                computedFunctionRaw || ''
+            );
+            if (func) {
+                return func(value);
+            } else {
+                return value.toFixed(pointer);
+            }
+        },
+        [computedFunctionRaw, pointer]
+    );
+
     const timer: any = useRef(null);
     const {
         data: responseOfSensorLogs,
@@ -180,6 +197,7 @@ const CurrentValueMonitor = (props: {
         }
         // eslint-disable-next-line
     }, [errorOfGetGroupDevicePin]);
+
     return (
         <div
             ref={elementContainerRef}
@@ -195,7 +213,7 @@ const CurrentValueMonitor = (props: {
                     <div className="d-flex align-items-center justify-content-center flex-column h-100">
                         <h1 className="text-center mb-0 current-value">
                             {currentValue
-                                ? currentValue.toFixed(pointer)
+                                ? execComputedFunction(currentValue)
                                 : '暫無資料'}
                         </h1>
                         <div className="device-name">
