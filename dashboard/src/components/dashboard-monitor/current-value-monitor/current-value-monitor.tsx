@@ -37,6 +37,9 @@ const CurrentValueMonitor = (props: {
     const [pointer, setPointer] = useState<number>(4);
     const execComputedFunction = useCallback(
         (value) => {
+            if (!computedFunctionRaw) {
+                return value;
+            }
             const func = ComputedFunctionHelpers.Eval(
                 computedFunctionRaw || ''
             );

@@ -69,6 +69,9 @@ const LineChartMonitor = (props: {
 
     const execComputedFunction = useCallback(
         (value) => {
+            if (!computedFunctionRaw) {
+                return value;
+            }
             const func = ComputedFunctionHelpers.Eval(
                 computedFunctionRaw || ''
             );
