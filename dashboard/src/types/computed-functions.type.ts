@@ -7,5 +7,6 @@ export interface ComputedFunctions {
     deviceId?: null | number;
     pin?: null | string;
     monitorId?: null | number;
+    groupId?: null | number;
     func: null | string;
 }

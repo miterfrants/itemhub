@@ -20,9 +20,9 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpGet]
-        public ActionResult<dynamic> getAllByKey([FromQuery] List<DTOs.ComputedFunctionFilterByDevicePin> devicePins, [FromQuery] List<long> monitorIds, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> getAllByKey([FromQuery] long? groupId, [FromQuery] List<DTOs.ComputedFunctionFilterByDevicePin> devicePins, [FromQuery] List<long> monitorIds, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
-            return ComputedFunctionDataservice.GetAll(_dbContext, extraPayload.Id, devicePins, monitorIds);
+            return ComputedFunctionDataservice.GetAll(_dbContext, extraPayload.Id, groupId, devicePins, monitorIds);
         }
 
         [SwaggerOperation(
