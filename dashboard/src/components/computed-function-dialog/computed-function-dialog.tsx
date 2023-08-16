@@ -123,7 +123,7 @@ const ComputedFunctionDialog = () => {
                 <div className="row">
                     <div className="col-12 px-0 d-flex justify-content-center">
                         <button
-                            className="btn btn-lg btn-primary rounded-pill mt-3 py-3 border-1 border-grey-300 mx-0"
+                            className="btn btn-primary rounded-pill mt-3 mx-0"
                             onClick={() => {
                                 submit();
                             }}
