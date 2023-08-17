@@ -5,4 +5,10 @@ namespace Homo.IotApi
         SENSOR_PIN,
         DASHBOARD_MONITOR
     }
+
+    public enum COMPUTED_SOURCE
+    {
+        SELF,
+        SENSOR_PIN
+    }
 }
