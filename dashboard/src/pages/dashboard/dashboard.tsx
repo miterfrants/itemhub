@@ -227,6 +227,7 @@ const Dashboard = () => {
                                         className={`mb-4 col-${
                                             item.column * 4
                                         } position-relative`}
+                                        style={{ zIndex: 0 }}
                                     >
                                         <Flippy
                                             flipOnClick={false}
