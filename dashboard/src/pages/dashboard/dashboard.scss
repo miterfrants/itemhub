@@ -55,6 +55,14 @@
         background-color: white;
     }
 
+    .flippy-back {
+        visibility: hidden;
+    }
+
+    .isActive .flippy-back {
+        visibility: visible;
+    }
+
     @include media-breakpoint-down(sm) {
         .monitor-container {
             background-color: $transparent;
