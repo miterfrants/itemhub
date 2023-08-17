@@ -7,6 +7,7 @@ import { CheckoutController } from './controllers/checkout.controller.js';
 import { CooperationController } from './controllers/cooperation.controller.js';
 import { FeatureController } from './controllers/feature.controller.js';
 import { SmartAgricultureController } from './controllers/smart-agriculture.controller.js';
+import { SolutionController } from './controllers/solution.controller.js';
 import { MainController } from './controllers/main.controller.js';
 import { MasterController } from './controllers/master.controller.js';
 import { MeController } from './controllers/me.controller.js';
@@ -266,6 +267,10 @@ export const RoutingRule = [{
                 path: 'smart-agriculture/',
                 controller: SmartAgricultureController,
                 html: '/template/smart-agriculture.html'
+            }, {
+                path: 'solution/',
+                controller: SolutionController,
+                html: '/template/solution.html'
             }]
         }]
     }]
