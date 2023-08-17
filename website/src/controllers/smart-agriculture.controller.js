@@ -51,7 +51,7 @@ export class SmartAgricultureController extends RoutingController {
         }, 500);
     }
 
-    async sendContactUs (event) {
+    async contactUs (event) {
         const elButton = event.currentTarget;
         elButton.setAttribute('disabled', 'disabled');
         elButton.innerHTML = '資料送出中...';
