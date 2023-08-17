@@ -15,8 +15,7 @@ namespace Homo.IotApi
             public long? monitorId { get; set; }
             public long? groupId { get; set; }
             public string func { get; set; }
-            public COMPUTED_TARGET target { get; set; }
-            public COMPUTED_SOURCE source { get; set; }
+
             public long? sourceDeviceId { get; set; }
             public string sourcePin { get; set; }
         }
