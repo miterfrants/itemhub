@@ -17,8 +17,7 @@ import {
 
 const ComputedFunctionDialog = () => {
     const dialog = useAppSelector(selectComputedFunctionDialog);
-    const { id, isOpen, deviceId, pin, groupId, monitorId, func, target } =
-        dialog;
+    const { id, isOpen, deviceId, pin, groupId, monitorId, func } = dialog;
 
     const dispatch = useDispatch();
     const refFuncInput = useRef<HTMLInputElement | null>(null);
@@ -40,7 +39,6 @@ const ComputedFunctionDialog = () => {
         monitorId,
         groupId,
         func: computedFunc,
-        target: target || 0,
     });
 
     useEffect(() => {

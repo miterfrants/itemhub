@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
+using Homo.Core.Constants;
 
 namespace Homo.IotApi
 {
@@ -33,6 +34,11 @@ namespace Homo.IotApi
         [HttpPost]
         public ActionResult<dynamic> add([FromBody] DTOs.CreateComputedFunction dto, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
+            if (dto.monitorId == null && (dto.deviceId == null || dto.pin == null))
+            {
+                throw new CustomException(ERROR_CODE.COMPUTED_FUNCTION_TARGET_ONE_OF_WITCH_IS_REQUIRED, System.Net.HttpStatusCode.BadRequest);
+            }
+
             return ComputedFunctionDataservice.Create(_dbContext, extraPayload.Id, dto);
         }
 

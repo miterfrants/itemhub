@@ -211,7 +211,6 @@ const Pin = (props: {
                                         deviceId,
                                         pin,
                                         groupId,
-                                        target: 0,
                                         func: computedFunc?.func,
                                     })
                                 );

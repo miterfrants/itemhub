@@ -30,23 +30,6 @@ namespace Homo.IotApi
             newOne.MonitorId = dto.monitorId;
             newOne.Func = dto.func;
             newOne.UserId = userId;
-            if (dto.monitorId != null)
-            {
-                newOne.Target = COMPUTED_TARGET.DASHBOARD_MONITOR;
-            }
-            else if (dto.deviceId != null)
-            {
-                newOne.Target = COMPUTED_TARGET.SENSOR_PIN;
-            }
-            newOne.GroupId = dto.groupId;
-            if (dto.sourceDeviceId == null && dto.sourcePin == null)
-            {
-                newOne.Source = COMPUTED_SOURCE.SELF;
-            }
-            else if (dto.sourceDeviceId != null && dto.sourcePin != null)
-            {
-                newOne.Source = COMPUTED_SOURCE.SENSOR_PIN;
-            }
             newOne.SourceDeviceId = dto.sourceDeviceId;
             newOne.SourcePin = dto.sourcePin;
             dbContext.ComputedFunction.Add(newOne);
