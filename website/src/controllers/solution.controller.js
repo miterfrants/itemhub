@@ -30,7 +30,7 @@ export class SolutionController extends RoutingController {
     scrollAndCheckedToType () {
         setTimeout(() => {
             const searchParams = new URLSearchParams(location.search);
-            const type = searchParams.get('Type');
+            const type = searchParams.get('type');
             let scrollEl;
             if (type === 'basic') {
                 scrollEl = document.querySelector('#basic');
