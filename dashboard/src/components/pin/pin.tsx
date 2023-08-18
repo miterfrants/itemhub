@@ -212,6 +212,9 @@ const Pin = (props: {
                                         pin,
                                         groupId,
                                         func: computedFunc?.func,
+                                        sourceDeviceId:
+                                            computedFunc?.sourceDeviceId,
+                                        sourcePin: computedFunc?.sourcePin,
                                     })
                                 );
                             }}

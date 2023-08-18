@@ -10,7 +10,7 @@ namespace Homo.IotApi
             var deviceIds = filterByDevicePins.Select(x => x.deviceId).ToList();
             return dbContext.ComputedFunction.Where(x => x.DeletedAt == null
                 && x.UserId == userId
-                && (groupId == null || x.GroupId == groupId)
+                && x.GroupId == groupId
                 && (
                     (filterByDevicePins.Count > 0 && x.Target == COMPUTED_TARGET.SENSOR_PIN && deviceIds.Contains(x.DeviceId))
                     || (monitorIds != null && x.Target == COMPUTED_TARGET.DASHBOARD_MONITOR && x.MonitorId != null && monitorIds.Contains(x.MonitorId.GetValueOrDefault()))
@@ -46,7 +46,9 @@ namespace Homo.IotApi
                 && x.DeletedAt == null
             ).UpdateFromQuery(x => new ComputedFunction()
             {
-                Func = dto.func
+                Func = dto.func,
+                SourceDeviceId = dto.sourceDeviceId,
+                SourcePin = dto.sourcePin,
             });
         }
     }

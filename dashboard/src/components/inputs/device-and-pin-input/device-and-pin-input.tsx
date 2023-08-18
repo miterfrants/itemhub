@@ -94,9 +94,7 @@ const DeviceAndPinInputs = ({
                 )}
             </div>
             <div className="form-group w-100 ps-md-3">
-                <label className="mb-1">
-                    {pinLabel} {defaultPinValue}
-                </label>
+                <label className="mb-1">{pinLabel}</label>
                 <select
                     className={`form-select ${isPinError && 'border-danger'}`}
                     value={defaultPinValue}

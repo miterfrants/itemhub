@@ -14,13 +14,38 @@ import {
     ToasterTypeEnum,
     toasterActions,
 } from '@/redux/reducers/toaster.reducer';
+import DeviceAndPinInputs from '../inputs/device-and-pin-input/device-and-pin-input';
 
 const ComputedFunctionDialog = () => {
     const dialog = useAppSelector(selectComputedFunctionDialog);
-    const { id, isOpen, deviceId, pin, groupId, monitorId, func } = dialog;
+    const {
+        id,
+        isOpen,
+        deviceId,
+        pin,
+        groupId,
+        monitorId,
+        func,
+        sourceDeviceId,
+        sourcePin,
+    } = dialog;
 
     const dispatch = useDispatch();
     const refFuncInput = useRef<HTMLInputElement | null>(null);
+    const [state, setState] = useState<{
+        sourceDeviceId?: number | null;
+        sourcePin?: string | null;
+    }>({ sourceDeviceId, sourcePin });
+    const [validation, setValidation] = useState({
+        sourceDeviceId: {
+            errorMessage: '',
+            invalid: false,
+        },
+        sourcePin: {
+            errorMessage: '',
+            invalid: false,
+        },
+    });
     const [computedFunc, setComputedFunc] = useState<string>('');
     const {
         fetchApi: updateComputedFunction,
@@ -28,6 +53,8 @@ const ComputedFunctionDialog = () => {
     } = useUpdateComputedFunction({
         id,
         func: computedFunc,
+        sourceDeviceId: state?.sourceDeviceId || undefined,
+        sourcePin: state?.sourcePin || undefined,
     });
 
     const {
@@ -39,11 +66,20 @@ const ComputedFunctionDialog = () => {
         monitorId,
         groupId,
         func: computedFunc,
+        sourceDeviceId: state?.sourceDeviceId,
+        sourcePin: state?.sourcePin,
     });
 
     useEffect(() => {
         setComputedFunc(func || '');
     }, [func]);
+
+    useEffect(() => {
+        setState({
+            sourceDeviceId,
+            sourcePin,
+        });
+    }, [sourceDeviceId, sourcePin]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -90,7 +126,7 @@ const ComputedFunctionDialog = () => {
                 <h3 className="mb-0">轉換公式</h3>
                 <hr />
                 <div className="mt-3">
-                    <div className="px-0">
+                    <div>
                         <input
                             className="form-control"
                             type="text"
@@ -105,6 +141,33 @@ const ComputedFunctionDialog = () => {
                             }}
                             ref={refFuncInput}
                             placeholder="data*2 - 5"
+                        />
+                    </div>
+                    <div className="mt-3">
+                        <DeviceAndPinInputs
+                            isDeviceNameError={
+                                validation.sourceDeviceId.invalid
+                            }
+                            deviceNameLabel="裝置"
+                            isPinError={validation.sourcePin.invalid}
+                            pinLabel="Pin"
+                            defaultPinValue={state?.sourcePin || ''}
+                            defaultDeviceId={state?.sourceDeviceId || 0}
+                            isDisabled={false}
+                            sensorOnly
+                            updatePin={(newPin) => {
+                                setState({
+                                    ...state,
+                                    sourcePin: newPin,
+                                });
+                            }}
+                            updateDeviceId={(newDeviceId) => {
+                                setState({
+                                    ...state,
+                                    sourceDeviceId: newDeviceId,
+                                    sourcePin: undefined,
+                                });
+                            }}
                         />
                     </div>
                     <div className="text-warn mt-3 mb-4 d-flex align-items-top">
