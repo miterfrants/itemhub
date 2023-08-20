@@ -20,6 +20,8 @@ const CurrentValueMonitor = (props: {
     customTitle: string;
     groupId?: number;
     computedFunctionRaw?: string | null;
+    computedSourceDeviceId?: number | null;
+    computedSourcePin?: string | null;
 }) => {
     const {
         deviceId,
@@ -28,29 +30,17 @@ const CurrentValueMonitor = (props: {
         customTitle,
         groupId,
         computedFunctionRaw,
+        computedSourceDeviceId,
+        computedSourcePin,
     } = props;
-    const [currentValue, setCurrentValue] = useState<number | null>(null);
+    const [currentValue, setCurrentValue] = useState<number | undefined>(
+        undefined
+    );
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     const [pointer, setPointer] = useState<number>(4);
-    const execComputedFunction = useCallback(
-        (value) => {
-            if (!computedFunctionRaw) {
-                return value;
-            }
-            const func = ComputedFunctionHelpers.Eval(
-                computedFunctionRaw || ''
-            );
-            if (func) {
-                return func(value);
-            } else {
-                return value.toFixed(pointer);
-            }
-        },
-        [computedFunctionRaw, pointer]
-    );
 
     const timer: any = useRef(null);
     const {
@@ -107,6 +97,62 @@ const CurrentValueMonitor = (props: {
         skipErrorToaster: true,
     });
 
+    const {
+        fetchApi: getComputedSourceSensorLogs,
+        data: respOfComputedSourceSensorLogs,
+    } = useGetSensorLogsApi({
+        deviceId: computedSourceDeviceId || 0,
+        pin: computedSourcePin || '',
+        limit: 1,
+        page: 1,
+        endAt:
+            responseOfSensorLogs && responseOfSensorLogs.length > 0
+                ? responseOfSensorLogs[0].createdAt
+                : undefined,
+    });
+
+    const {
+        fetchApi: getComputedSourceGroupSensorLogs,
+        data: respOfComputedSourceGroupSensorLogs,
+    } = useGetGroupSensorLogsApi({
+        deviceId: computedSourceDeviceId || 0,
+        pin: computedSourcePin || '',
+        groupId: groupId || 0,
+        limit: 1,
+        page: 1,
+        endAt:
+            responseOfSensorLogs && responseOfSensorLogs.length > 0
+                ? responseOfSensorLogs[0].createdAt
+                : undefined,
+    });
+
+    const execComputedFunction = useCallback(
+        (value) => {
+            if (!computedFunctionRaw) {
+                return value;
+            }
+            const sourceData = respOfComputedSourceSensorLogs
+                ? respOfComputedSourceSensorLogs[0].value
+                : respOfComputedSourceGroupSensorLogs
+                ? respOfComputedSourceGroupSensorLogs[0].value
+                : null;
+            const func = ComputedFunctionHelpers.Eval(
+                computedFunctionRaw || ''
+            );
+            if (func) {
+                return func(value, sourceData);
+            } else {
+                return value.toFixed(pointer);
+            }
+        },
+        [
+            computedFunctionRaw,
+            pointer,
+            respOfComputedSourceGroupSensorLogs,
+            respOfComputedSourceSensorLogs,
+        ]
+    );
+
     const startPooling = useCallback(() => {
         if (!isLiveData) {
             return;
@@ -134,42 +180,38 @@ const CurrentValueMonitor = (props: {
             clearTimeout(timer.current);
             window.removeEventListener('resize', resizeHandler.current);
         };
-
         //eslint-disable-next-line
     }, []);
 
     useEffect(() => {
-        if (!responseOfSensorLogs || responseOfSensorLogs.length === 0) {
-            return;
+        if (computedSourceDeviceId && computedSourcePin && groupId) {
+            getComputedSourceGroupSensorLogs();
+        } else if (computedSourceDeviceId && computedSourcePin) {
+            getComputedSourceSensorLogs();
         }
-        if (groupId) {
-            return;
-        }
-        setCurrentValue(responseOfSensorLogs[0].value);
         //eslint-disable-next-line
-    }, [responseOfSensorLogs]);
+    }, [computedSourceDeviceId, computedSourcePin]);
 
     useEffect(() => {
-        if (
-            !responseOfGroupSensorLogs ||
-            responseOfGroupSensorLogs.length === 0
+        if (responseOfSensorLogs && responseOfSensorLogs.length > 0) {
+            setCurrentValue(responseOfSensorLogs[0].value);
+        } else if (
+            responseOfGroupSensorLogs &&
+            responseOfGroupSensorLogs.length > 0
         ) {
-            return;
+            setCurrentValue(responseOfGroupSensorLogs[0].value);
         }
-        if (!groupId) {
-            return;
-        }
-        setCurrentValue(responseOfGroupSensorLogs[0].value);
+
         //eslint-disable-next-line
-    }, [responseOfGroupSensorLogs]);
+    }, [responseOfSensorLogs, responseOfGroupSensorLogs]);
 
     useEffect(() => {
-        setDevicePin(responseDevicePin);
-    }, [responseDevicePin]);
-
-    useEffect(() => {
-        setDevicePin(responseGroupDevicePin);
-    }, [responseGroupDevicePin]);
+        if (responseDevicePin) {
+            setDevicePin(responseDevicePin);
+        } else if (responseGroupDevicePin) {
+            setDevicePin(responseGroupDevicePin);
+        }
+    }, [responseDevicePin, responseGroupDevicePin]);
 
     useEffect(() => {
         if (isLiveData) {

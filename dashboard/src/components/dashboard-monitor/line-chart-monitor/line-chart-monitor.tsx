@@ -29,6 +29,7 @@ import {
 import { ERROR_KEY } from '@/constants/error-key';
 import { useGetDashboardMonitorsApi } from '@/hooks/apis/dashboard-monitor.hook';
 import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
+import { SensorLogType } from '@/types/sensor-log.type';
 
 enum TIME_RANGE {
     NONE = 0,
@@ -46,6 +47,8 @@ const LineChartMonitor = (props: {
     customTitle: string;
     groupId?: number;
     computedFunctionRaw?: string | null;
+    computedSourceDeviceId?: number | null;
+    computedSourcePin?: string | null;
 }) => {
     const {
         deviceId,
@@ -54,8 +57,13 @@ const LineChartMonitor = (props: {
         customTitle,
         groupId,
         computedFunctionRaw,
+        computedSourceDeviceId,
+        computedSourcePin,
     } = props;
-
+    const [data, setData] = useState<SensorLogType[]>([]);
+    const [computedSourceData, setComputedSourceData] = useState<
+        SensorLogType[]
+    >([]);
     const [lineChartData, setLineChartData] = useState<any[]>([]);
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
     const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
@@ -68,7 +76,7 @@ const LineChartMonitor = (props: {
     const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
 
     const execComputedFunction = useCallback(
-        (value) => {
+        (value, sourceValue) => {
             if (!computedFunctionRaw) {
                 return value;
             }
@@ -76,7 +84,7 @@ const LineChartMonitor = (props: {
                 computedFunctionRaw || ''
             );
             if (func) {
-                return func(value);
+                return func(value, sourceValue);
             } else {
                 return value;
             }
@@ -143,6 +151,47 @@ const LineChartMonitor = (props: {
         limit: 1,
         groupId: groupId || 0,
         skipErrorToaster: true,
+    });
+
+    const {
+        fetchApi: getComputedSourceSensorLogs,
+        data: respOfComputedSourceSensorLogs,
+    } = useGetSensorLogsApi({
+        deviceId: computedSourceDeviceId || 0,
+        pin: computedSourcePin || '',
+        page: 1,
+        limit: 2000,
+        endAt:
+            responseOfGetSensorLogs && responseOfGetSensorLogs.length > 0
+                ? responseOfGetSensorLogs[0].createdAt
+                : undefined,
+        startAt:
+            responseOfGetSensorLogs && responseOfGetSensorLogs.length > 1
+                ? responseOfGetSensorLogs[responseOfGetSensorLogs.length - 1]
+                      .createdAt
+                : undefined,
+    });
+
+    const {
+        fetchApi: getComputedSourceGroupSensorLogs,
+        data: respOfComputedSourceGroupSensorLogs,
+    } = useGetSensorLogsApi({
+        deviceId: computedSourceDeviceId || 0,
+        pin: computedSourcePin || '',
+        page: 1,
+        limit: 2000,
+        endAt:
+            responseOfGetGroupSensorLogs &&
+            responseOfGetGroupSensorLogs.length > 0
+                ? responseOfGetGroupSensorLogs[0].createdAt
+                : null,
+        startAt:
+            responseOfGetGroupSensorLogs &&
+            responseOfGetGroupSensorLogs.length > 0
+                ? responseOfGetGroupSensorLogs[
+                      responseOfGetGroupSensorLogs.length - 1
+                  ].createdAt
+                : null,
     });
 
     const elementContainerRef = useRef<HTMLDivElement>(null);
@@ -232,10 +281,25 @@ const LineChartMonitor = (props: {
     }, [isLiveData, getLastSensorLogs, getLastGroupSensorLogs]);
 
     useEffect(() => {
+        if (responseOfGetSensorLogs) {
+            setData(responseOfGetSensorLogs);
+        } else if (responseOfGetGroupSensorLogs) {
+            setData(responseOfGetGroupSensorLogs);
+        }
+    }, [responseOfGetSensorLogs, responseOfGetGroupSensorLogs]);
+
+    useEffect(() => {
+        if (respOfComputedSourceSensorLogs) {
+            setComputedSourceData(respOfComputedSourceSensorLogs);
+        } else if (respOfComputedSourceGroupSensorLogs) {
+            setComputedSourceData(respOfComputedSourceGroupSensorLogs);
+        }
+    }, [respOfComputedSourceSensorLogs, respOfComputedSourceGroupSensorLogs]);
+
+    useEffect(() => {
         if (!computedFunctionRaw) {
             return;
         }
-
         const func = ComputedFunctionHelpers.Eval(computedFunctionRaw);
         if (func) {
             setComputedFunction(func);
@@ -275,39 +339,45 @@ const LineChartMonitor = (props: {
     }, [isLiveDataFromProps]);
 
     useEffect(() => {
-        if (!responseOfGetSensorLogs) {
-            return;
-        }
-        if (groupId) {
-            return;
-        }
+        const scorpData = [...data].reverse();
+        setLineChartData(
+            scorpData.map((item) => {
+                // default sorting createdAt desc
+                const previousSource = computedSourceData.find(
+                    (source) => source.createdAt <= item.createdAt
+                );
+                const nextSource = computedSourceData.find(
+                    (source) => source.createdAt >= item.createdAt
+                );
+                const createdAt = moment(item.createdAt);
+                const previousSourceCreatedAt = previousSource
+                    ? moment(previousSource.createdAt)
+                    : null;
+                const nextSourceCreatedAt = nextSource
+                    ? moment(nextSource.createdAt)
+                    : null;
 
-        const data = [...responseOfGetSensorLogs].reverse();
-        setLineChartData(data.map((item) => execComputedFunction(item.value)));
-        setSensorLogIds(data.map((item) => item.id));
+                const sourceValue =
+                    (previousSourceCreatedAt !== null &&
+                        nextSourceCreatedAt !== null &&
+                        previousSourceCreatedAt.diff(createdAt) >
+                            nextSourceCreatedAt.diff(createdAt)) ||
+                    previousSource === undefined
+                        ? nextSource?.value
+                        : previousSource !== undefined
+                        ? previousSource.value
+                        : 0;
+                return execComputedFunction(item.value, sourceValue);
+            })
+        );
+        setSensorLogIds(scorpData.map((item) => item.id));
         setXAxisTicks(
-            data.map((item) => {
+            scorpData.map((item) => {
                 return new Date(item.createdAt);
             })
         );
         // eslint-disable-next-line
-    }, [responseOfGetSensorLogs, computedFunction]);
-
-    useEffect(() => {
-        if (!responseOfGetGroupSensorLogs) {
-            return;
-        }
-
-        const data = [...responseOfGetGroupSensorLogs].reverse();
-        setLineChartData(data.map((item) => execComputedFunction(item.value)));
-        setSensorLogIds(data.map((item) => item.id));
-        setXAxisTicks(
-            data.map((item) => {
-                return new Date(item.createdAt);
-            })
-        );
-        // eslint-disable-next-line
-    }, [responseOfGetGroupSensorLogs, computedFunction]);
+    }, [data, computedSourceData, computedFunction]);
 
     useEffect(() => {
         if (
@@ -332,40 +402,24 @@ const LineChartMonitor = (props: {
     }, [responseOfLastSensorLogs]);
 
     useEffect(() => {
-        if (
-            !responseOfGetLastGroupSensorLogs ||
-            responseOfGetLastGroupSensorLogs.length === 0
+        if (responseOfLastSensorLogs && responseOfLastSensorLogs.length > 0) {
+            setData([responseOfLastSensorLogs[0], ...data]);
+        } else if (
+            responseOfGetLastGroupSensorLogs &&
+            responseOfGetLastGroupSensorLogs.length > 0
         ) {
-            return;
+            setData([responseOfGetLastGroupSensorLogs[0], ...data]);
         }
-        if (!groupId) {
-            return;
-        }
-        const newLog = responseOfGetLastGroupSensorLogs[0];
-        const targetLog = sensorLogIds.find((id) => id === newLog.id);
-        if (targetLog) {
-            return;
-        }
-
-        setLineChartData([...lineChartData, newLog.value]);
-        setSensorLogIds([...sensorLogIds, newLog.id]);
-        setXAxisTicks([...xAxisTicks, new Date(newLog.createdAt)]);
         // eslint-disable-next-line
-    }, [responseOfGetLastGroupSensorLogs]);
+    }, [responseOfGetLastGroupSensorLogs, responseOfLastSensorLogs]);
 
     useEffect(() => {
-        if (!responseOfGetDevicePin) {
-            return;
+        if (responseOfGetDevicePin) {
+            setDevicePin(responseOfGetDevicePin as PinItem);
+        } else if (responseOfGetGroupDevicePin) {
+            setDevicePin(responseOfGetGroupDevicePin as PinItem);
         }
-        setDevicePin(responseOfGetDevicePin as PinItem);
-    }, [responseOfGetDevicePin]);
-
-    useEffect(() => {
-        if (!responseOfGetGroupDevicePin) {
-            return;
-        }
-        setDevicePin(responseOfGetGroupDevicePin as PinItem);
-    }, [responseOfGetGroupDevicePin]);
+    }, [responseOfGetDevicePin, responseOfGetGroupDevicePin]);
 
     useEffect(() => {
         if (isLiveData) {
@@ -402,6 +456,24 @@ const LineChartMonitor = (props: {
             );
         }
     }, [timeRange]);
+
+    useEffect(() => {
+        if (computedSourceDeviceId && computedSourcePin) {
+            getComputedSourceSensorLogs();
+        }
+        // eslint-disable-next-line
+    }, [responseOfGetSensorLogs, computedSourceDeviceId, computedSourcePin]);
+
+    useEffect(() => {
+        if (computedSourceDeviceId && computedSourcePin && groupId) {
+            getComputedSourceGroupSensorLogs();
+        }
+        // eslint-disable-next-line
+    }, [
+        responseOfGetGroupSensorLogs,
+        computedSourceDeviceId,
+        computedSourcePin,
+    ]);
 
     return (
         <div

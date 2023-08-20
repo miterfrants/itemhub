@@ -176,7 +176,12 @@ const ComputedFunctionDialog = () => {
                         </div>
                         <div>
                             感測器回傳資料參數為 data，可根據回傳數字設定算式，
-                            如: data*2+5， 系統會依照算式計算回傳資料
+                            如: data*2+5，系統會依照算式計算回傳資料，
+                            <br />
+                            <br />
+                            可另外設定其他設備的感測資料，參數為
+                            sourceSensorData，抓取離目前裝置最近的一筆資料 如:
+                            data*2+5+sourceSensorData
                         </div>
                     </div>
                 </div>

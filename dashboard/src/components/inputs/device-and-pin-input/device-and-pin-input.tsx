@@ -22,6 +22,7 @@ const DeviceAndPinInputs = ({
     isDisabled,
     sensorOnly,
     switchOnly,
+    excludeDeviceIds,
 }: {
     isDeviceNameError: boolean;
     defaultDeviceId: number;
@@ -35,9 +36,13 @@ const DeviceAndPinInputs = ({
     isDisabled: boolean;
     sensorOnly?: boolean;
     switchOnly?: boolean;
+    excludeDeviceIds?: number[];
 }) => {
     const { getAllDevicesApi } = useGetAllDevicesApi();
     const allDevices: DeviceItem[] = useAppSelector(selectDevices).devices;
+    const [filteredDevices, setFilteredDevice] = useState<DeviceItem[]>(
+        [] as DeviceItem[]
+    );
     const { deviceModes } = useAppSelector(selectUniversal);
     const sensorPinType = deviceModes.find(
         (item) => item.key === PIN_TYPES.SENSOR
@@ -62,14 +67,25 @@ const DeviceAndPinInputs = ({
     }, [allDevices, deviceId]);
 
     useEffect(() => {
+        setFilteredDevice(
+            allDevices.filter((device) => {
+                if (!excludeDeviceIds) {
+                    return true;
+                }
+                return !excludeDeviceIds.includes(device.id);
+            })
+        );
+    }, [allDevices, excludeDeviceIds]);
+
+    useEffect(() => {
         setDeviceId(defaultDeviceId);
     }, [defaultDeviceId]);
 
-    return allDevices.length > 0 ? (
+    return filteredDevices.length > 0 ? (
         <div className="d-flex flex-column flex-md-row w-100 mb-3">
             <div className="form-group w-100 pe-md-3 mb-3 mb-md-0">
                 <label className="mb-1">{deviceNameLabel}</label>
-                {allDevices.length > 0 && (
+                {filteredDevices.length > 0 && (
                     <AutocompletedSearch
                         datalistId={deviceNameLabel}
                         placeholder="請輸入裝置名稱搜尋"
@@ -83,7 +99,7 @@ const DeviceAndPinInputs = ({
                             setDeviceId(Number(newValue));
                             updateDeviceId(Number(newValue));
                         }}
-                        allSuggestions={(allDevices || []).map(
+                        allSuggestions={(filteredDevices || []).map(
                             ({ name, id }) =>
                                 ({
                                     key: name,
