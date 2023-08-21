@@ -29,6 +29,8 @@ const CurrentValueMonitor = (props: {
         groupId,
         computedFunctionRaw,
     } = props;
+
+    console.log('groupId', groupId);
     const [currentValue, setCurrentValue] = useState<number | null>(null);
 
     const [devicePin, setDevicePin] = useState<PinItem | null>(null);
