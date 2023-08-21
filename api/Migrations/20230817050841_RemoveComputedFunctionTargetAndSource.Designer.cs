@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230817050841_RemoveComputedFunctionTargetAndSource")]
+    partial class RemoveComputedFunctionTargetAndSource
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,22 +59,12 @@ namespace IotApi.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int>("Source")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("IF(`SourceDeviceId` IS NULL, 0, 1)");
-
                     b.Property<long?>("SourceDeviceId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("SourcePin")
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
-
-                    b.Property<int>("Target")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("IF(`MonitorId` IS NULL, 0, 1)");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -91,19 +83,9 @@ namespace IotApi.Migrations
 
                     b.HasIndex("Pin");
 
-                    b.HasIndex("Source");
-
-                    b.HasIndex("Target");
-
                     b.HasIndex("UserId");
 
                     b.HasIndex("SourceDeviceId", "SourcePin");
-
-                    b.HasIndex("UserId", "GroupId", "MonitorId", "Target", "IsDeleted")
-                        .IsUnique();
-
-                    b.HasIndex("UserId", "GroupId", "DeviceId", "Pin", "Target", "IsDeleted")
-                        .IsUnique();
 
                     b.ToTable("ComputedFunction");
                 });

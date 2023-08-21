@@ -65,14 +65,12 @@ export const useCreateComputedFunction = ({
     pin,
     monitorId,
     groupId,
-    target,
     func,
 }: {
     deviceId?: number | null;
     pin?: string | null;
     monitorId?: number | null;
     groupId?: number | null;
-    target: number;
     func?: string | null;
 }) => {
     const dispatch = useAppDispatch();
@@ -92,7 +90,6 @@ export const useCreateComputedFunction = ({
                 pin,
                 monitorId,
                 groupId,
-                target,
                 func,
             },
             method: HTTP_METHOD.POST,

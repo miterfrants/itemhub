@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230817051555_RemoveComputedFunctionSource")]
+    partial class RemoveComputedFunctionSource
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,11 +59,6 @@ namespace IotApi.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int>("Source")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("IF(`SourceDeviceId` IS NULL, 0, 1)");
-
                     b.Property<long?>("SourceDeviceId")
                         .HasColumnType("bigint");
 
@@ -90,8 +87,6 @@ namespace IotApi.Migrations
                     b.HasIndex("MonitorId");
 
                     b.HasIndex("Pin");
-
-                    b.HasIndex("Source");
 
                     b.HasIndex("Target");
 

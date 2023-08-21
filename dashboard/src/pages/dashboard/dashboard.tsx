@@ -465,7 +465,6 @@ const Dashboard = () => {
                                                                             id: targetComputedFunction?.id,
                                                                             monitorId:
                                                                                 item.id,
-                                                                            target: 1,
                                                                             groupId:
                                                                                 item.groupId,
                                                                             func: targetComputedFunction?.func,

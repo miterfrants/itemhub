@@ -10,7 +10,7 @@ namespace Homo.IotApi
             var deviceIds = filterByDevicePins.Select(x => x.deviceId).ToList();
             return dbContext.ComputedFunction.Where(x => x.DeletedAt == null
                 && x.UserId == userId
-                && (groupId == null || x.GroupId == groupId)
+                && x.GroupId == groupId
                 && (
                     (filterByDevicePins.Count > 0 && x.Target == COMPUTED_TARGET.SENSOR_PIN && deviceIds.Contains(x.DeviceId))
                     || (monitorIds != null && x.Target == COMPUTED_TARGET.DASHBOARD_MONITOR && x.MonitorId != null && monitorIds.Contains(x.MonitorId.GetValueOrDefault()))
@@ -30,25 +30,9 @@ namespace Homo.IotApi
             newOne.MonitorId = dto.monitorId;
             newOne.Func = dto.func;
             newOne.UserId = userId;
-            if (dto.monitorId != null)
-            {
-                newOne.Target = COMPUTED_TARGET.DASHBOARD_MONITOR;
-            }
-            else if (dto.deviceId != null)
-            {
-                newOne.Target = COMPUTED_TARGET.SENSOR_PIN;
-            }
-            newOne.GroupId = dto.groupId;
-            if (dto.sourceDeviceId == null && dto.sourcePin == null)
-            {
-                newOne.Source = COMPUTED_SOURCE.SELF;
-            }
-            else if (dto.sourceDeviceId != null && dto.sourcePin != null)
-            {
-                newOne.Source = COMPUTED_SOURCE.SENSOR_PIN;
-            }
             newOne.SourceDeviceId = dto.sourceDeviceId;
             newOne.SourcePin = dto.sourcePin;
+            newOne.GroupId = dto.groupId;
             dbContext.ComputedFunction.Add(newOne);
             dbContext.SaveChanges();
             return newOne;
@@ -60,6 +44,7 @@ namespace Homo.IotApi
             dbContext.ComputedFunction.Where(x =>
                 x.Id == id
                 && x.UserId == userId
+                && x.GroupId == dto.groupId
                 && x.DeletedAt == null
             ).UpdateFromQuery(x => new ComputedFunction()
             {

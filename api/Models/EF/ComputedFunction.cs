@@ -20,7 +20,7 @@ namespace Homo.IotApi
         public long? MonitorId { get; set; }
         public string Func { get; set; }
         public COMPUTED_TARGET Target { get; set; }
-        public COMPUTED_SOURCE? Source { get; set; }
+        public COMPUTED_SOURCE Source { get; set; }
         public long? SourceDeviceId { get; set; }
         [MaxLength(5)]
         public string SourcePin { get; set; }
