@@ -1,3 +1,5 @@
+$enable-negative-margins: true !default;
+
 @import 'bootstrap/scss/_functions.scss';
 @import 'bootstrap/scss/_variables.scss';
 @import 'bootstrap/scss/_mixins.scss';
@@ -77,7 +79,6 @@ $grey-200: #dcdff0;
 $grey-100: #f8f9fa;
 
 $bg-blue2green: linear-gradient(135deg, #0048ff 0%, #14ffca 100%);
-$enable-negative-margins: true;
 
 $theme-colors: (
     'black': black,
