@@ -23,6 +23,7 @@ namespace Homo.IotApi
 
         public partial class UpdateComputedFunction : DTOs
         {
+            public long? groupId { get; set; }
             public string func { get; set; }
             public long? sourceDeviceId { get; set; }
             public string sourcePin { get; set; }

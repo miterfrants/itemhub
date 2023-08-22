@@ -32,6 +32,7 @@ namespace Homo.IotApi
             newOne.UserId = userId;
             newOne.SourceDeviceId = dto.sourceDeviceId;
             newOne.SourcePin = dto.sourcePin;
+            newOne.GroupId = dto.groupId;
             dbContext.ComputedFunction.Add(newOne);
             dbContext.SaveChanges();
             return newOne;
@@ -43,6 +44,7 @@ namespace Homo.IotApi
             dbContext.ComputedFunction.Where(x =>
                 x.Id == id
                 && x.UserId == userId
+                && x.GroupId == dto.groupId
                 && x.DeletedAt == null
             ).UpdateFromQuery(x => new ComputedFunction()
             {
