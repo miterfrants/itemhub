@@ -4,6 +4,11 @@ $enable-negative-margins: true !default;
 @import 'bootstrap/scss/_variables.scss';
 @import 'bootstrap/scss/_mixins.scss';
 
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+}
+
 $spacers: (
     0: 0,
     1: $spacer * 0.25,
