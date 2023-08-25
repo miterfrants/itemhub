@@ -118,9 +118,7 @@ const Dashboard = () => {
     useEffect(() => {
         const sortingDashboard = dashboardMonitorsPool
             .filter((item) =>
-                groupId
-                    ? item.groupId === Number(groupId)
-                    : item.groupId === null
+                groupId ? item.groupId === Number(groupId) : !item.groupId
             )
             .sort((prev, next) => {
                 if (prev.sort > next.sort) {
