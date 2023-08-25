@@ -36,6 +36,21 @@ header {
         }
     }
 
+    .sub-menu {
+        .detail {
+            display: none;
+            width: calc(100% + 2em);
+            left: -1em;
+        }
+
+        &:hover {
+            border: none;
+            .detail {
+                display: block;
+            }
+        }
+    }
+
     .mobile-nav {
         backdrop-filter: blur(24px) contrast(0.6);
         -webkit-backdrop-filter: blur(24px) contrast(0.6);

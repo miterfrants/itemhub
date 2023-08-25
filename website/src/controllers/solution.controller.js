@@ -7,24 +7,23 @@ import {
 import { Toaster } from '../util/toaster.js';
 import { Validate } from '../util/validate.js';
 
-export class SmartAgricultureController extends RoutingController {
+export class SolutionController extends RoutingController {
     static get id () {
-        return 'SmartAgricultureController';
+        return 'SolutionController';
     }
 
     async render () {
         this.meta = {
-            title: '智慧農業 - ItemHub',
-            'og:title': '智慧農業 - ItemHub',
-            description: '透過輕量化的建置方式，大幅降低導入智慧農業的設備成本，減輕農民的負擔並減少生產中的資源浪費，更提供產銷覆歷自動化服務，提升農業生產管理的效能，實現永續發展。讓我們一起攜手使作物生生不息',
+            title: '解決方案 - ItemHub',
+            'og:title': '解決方案 - ItemHub',
+            description: '透過輕量化的建置，大幅降低物聯網導入成本，減輕企業的負擔，輕鬆實現自動化與高效運作，讓您的企業保持卓越效能',
             image: `${APP_CONFIG.FRONT_END_URL}/assets/images/share.png`,
-            keywords: 'ItemHub,智慧農業,輕量化智慧農業,產銷覆歷自動化,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
+            keywords: 'ItemHub,智慧控制,輕量化物聯網,智慧監測碳排放,物聯網,iot,串聯裝置,連結裝置,low-code,no-code,iot platform,iot,internet of thing,iot data center'
         };
 
         await super.render({
-            farmCheck: '',
-            farmResumeCheck: '',
-            farmHydroponicsCheck: ''
+            basicCheck: '',
+            carbonCheck: ''
         }, this.scrollAndCheckedToType());
     }
 
@@ -33,20 +32,15 @@ export class SmartAgricultureController extends RoutingController {
             const searchParams = new URLSearchParams(location.search);
             const type = searchParams.get('type');
             let scrollEl;
-            if (type === 'farm') {
-                scrollEl = document.querySelector('#farm');
+            if (type === 'basic') {
+                scrollEl = document.querySelector('#basic');
                 scrollEl.scrollIntoView({ behavior: 'smooth' });
-                this.pageVariable.farmCheck = 'checked';
+                this.pageVariable.basicCheck = 'checked';
             }
-            if (type === 'farm-resume') {
-                scrollEl = document.querySelector('#farm-resume');
+            if (type === 'carbon') {
+                scrollEl = document.querySelector('#carbon');
                 scrollEl.scrollIntoView({ behavior: 'smooth' });
-                this.pageVariable.farmResumeCheck = 'checked';
-            }
-            if (type === 'farm-hydroponics') {
-                scrollEl = document.querySelector('#farm-hydroponics');
-                scrollEl.scrollIntoView({ behavior: 'smooth' });
-                this.pageVariable.farmHydroponicsCheck = 'checked';
+                this.pageVariable.carbonCheck = 'checked';
             }
         }, 500);
     }

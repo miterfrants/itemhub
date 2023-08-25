@@ -13,8 +13,16 @@
             <div class="menu d-none d-lg-flex">
                 <a class="d-block ms-4 nav-link" href="/feature/easy-connectivity/">特色</a>
                 <a class="d-block ms-4 nav-link" href="/how/">如何使用</a>
-                <a class="d-block ms-4 nav-link" href="/smart-agriculture/">智慧農業</a>
-                <a class="d-block ms-4 nav-link" href="/pricing/">方案</a>
+                <div class="d-block ms-4 nav-link position-relative sub-menu" role="button">
+                    <div>解決方案</div>
+                    <div class="position-absolute text-center detail pt-2 pb-3 bg-dark-blue">
+                        <div class="px-4">
+                            <a class="p-2 bg-dark-blue nav-link" href="/solution/">輕量導入</a>
+                            <a class="p-2 bg-dark-blue nav-link" href="/smart-agriculture/">智慧農業</a>
+                        </div>
+                    </div>
+                </div>
+                <a class="d-block ms-4 nav-link" href="/pricing/">定價</a>
                 <a class="d-block ms-4 nav-link skip-swim-router" target="_blank"
                     href="{FRONT_END_URL}/swagger/">API</a>
                 <button class="d-block ms-4 nav-link" onclick="controller.redirectToDashboard">裝置中心</button>
@@ -57,9 +65,15 @@
                 <a class="d-block py-3 py-lg-0 ps-2 nav-link" onclick="controller.collapse"
                     href="/feature/easy-connectivity/">特色</a>
                 <a class="d-block py-3 py-lg-0 ps-2 nav-link" onclick="controller.collapse" href="/how/">如何使用</a>
-                <a class="d-block py-3 py-lg-0 ps-2 nav-link" onclick="controller.collapse"
-                    href="/smart-agriculture/">智慧農業</a>
-                <a class="d-block py-3 py-lg-0 ps-2 nav-link" onclick="controller.collapse" href="/pricing/">方案</a>
+                <div class="d-block  position-relative sub-menu">
+                    <div class="py-3 py-lg-0 ps-2 nav-link">解決方案</div>
+                    <div class="position-relative detail">
+                        <a class="d-block p-2 nav-link " onclick="controller.collapse" href="/solution/">輕量導入</a>
+                        <a class="d-block p-2 nav-link" onclick="controller.collapse"
+                            href="/smart-agriculture/">智慧農業</a>
+                    </div>
+                </div>
+                <a class="d-block py-3 py-lg-0 ps-2 nav-link" onclick="controller.collapse" href="/pricing/">定價</a>
                 <a class="d-block py-3 py-lg-0 ps-2 nav-link" target="_blank" href="{API_ENDPOINT}swagger">API</a>
                 <button class="d-block ms-0 ms-lg-5 ps-2 px-lg-3 nav-link w-100 py-3 py-lg-0 text-start"
                     onclick="controller.redirectToDashboard">裝置中心</button>
