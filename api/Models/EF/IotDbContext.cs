@@ -243,10 +243,16 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.Pin });
                 entity.HasIndex(p => new { p.Target });
                 entity.HasIndex(p => new { p.MonitorId });
+                entity.HasIndex(p => new { p.Source });
+                entity.HasIndex(p => new { p.SourceDeviceId, p.SourcePin });
                 entity.Property(p => p.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
                 entity.Property(e => e.IsDeleted)
                         .HasComputedColumnSql("IF(`DeletedAt` IS NULL, 0, NULL)");
+                entity.Property(e => e.Target)
+                        .HasComputedColumnSql($"IF(`MonitorId` IS NULL, {(int)COMPUTED_TARGET.SENSOR_PIN}, {(int)COMPUTED_TARGET.DASHBOARD_MONITOR})");
+                entity.Property(e => e.Source)
+                        .HasComputedColumnSql($"IF(`SourceDeviceId` IS NULL, {(int)COMPUTED_SOURCE.SELF}, {(int)COMPUTED_SOURCE.SENSOR_PIN})");
                 entity.HasIndex(p => new { p.UserId, p.GroupId, p.DeviceId, p.Pin, p.Target, p.IsDeleted }).IsUnique();
                 entity.HasIndex(p => new { p.UserId, p.GroupId, p.MonitorId, p.Target, p.IsDeleted }).IsUnique();
             });

@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230817032154_UpdateComputedFunctionSchema")]
+    partial class UpdateComputedFunctionSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,10 +59,10 @@ namespace IotApi.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int>("Source")
-                        .ValueGeneratedOnAddOrUpdate()
+                    b.Property<int?>("Source")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasComputedColumnSql("IF(`SourceDeviceId` IS NULL, 0, 1)");
+                        .HasDefaultValueSql("0");
 
                     b.Property<long?>("SourceDeviceId")
                         .HasColumnType("bigint");
@@ -70,9 +72,7 @@ namespace IotApi.Migrations
                         .HasColumnType("varchar(5)");
 
                     b.Property<int>("Target")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("IF(`MonitorId` IS NULL, 0, 1)");
+                        .HasColumnType("int");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
