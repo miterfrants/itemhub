@@ -158,7 +158,7 @@ const MonitorConfigDialog = () => {
     }, [pinDefaultValue]);
 
     useEffect(() => {
-        setDashboardMonitorMode(mode || null);
+        setDashboardMonitorMode(mode === undefined ? null : mode);
     }, [mode]);
 
     useEffect(() => {

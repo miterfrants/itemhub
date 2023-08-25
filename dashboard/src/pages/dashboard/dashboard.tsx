@@ -47,7 +47,6 @@ const Dashboard = () => {
 
     const computedFunctionsPool = useAppSelector(selectComputedFunctions);
     const dashboardMonitorsPool = useSelector(selectDashboardMonitors);
-    const dashboardMonitors = useRef<DashboardMonitorItem[]>([]);
     const [computedFunctions, setComputedFunctions] = useState<
         ComputedFunctions[]
     >([]);
@@ -88,63 +87,10 @@ const Dashboard = () => {
     }, [pathname]);
 
     useEffect(() => {
-        const sortingDashboard = dashboardMonitorsPool
-            .filter((item) =>
-                groupId
-                    ? item.groupId === Number(groupId)
-                    : item.groupId === null
-            )
-            .sort((prev, next) => {
-                if (prev.sort > next.sort) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            });
-        dashboardMonitors.current = dashboardMonitorsPool.filter((item) =>
-            groupId ? item.groupId === Number(groupId) : item.groupId === null
-        );
-
-        if (dashboardMonitors.current.length > 0) {
-            getComputedFunctions();
-        }
-
-        setMonitors(
-            sortingDashboard.map((item) => {
-                const oldData = monitors.find(
-                    (monitor) => monitor.id === item.id
-                );
-                return {
-                    ...item,
-                    chosen: true,
-                    isLiveData: oldData ? oldData.isLiveData : false,
-                };
-            })
-        );
-        // eslint-disable-next-line
-    }, [dashboardMonitorsPool]);
-
-    useEffect(() => {
-        if (computedFunctionsPool.length === 0) {
+        if (!monitors || monitors.length === 0) {
             return;
         }
-        const monitorIds = dashboardMonitors.current.map((item) => item.id);
-        setComputedFunctions(
-            computedFunctionsPool.filter(
-                (item) => item.monitorId && monitorIds.includes(item.monitorId)
-            )
-        );
-    }, [computedFunctionsPool]);
 
-    useEffect(() => {
-        if (
-            !dashboardMonitors ||
-            !monitors ||
-            dashboardMonitors.current.length === 0 ||
-            monitors.length === 0
-        ) {
-            return;
-        }
         const sortedDashboardMonitors = dashboardMonitorsPool
             .filter((item) =>
                 groupId
@@ -165,10 +111,49 @@ const Dashboard = () => {
         if (JSON.stringify(originSorting) === JSON.stringify(sorting)) {
             return;
         }
-
         updateDashboardMonitorSorting();
         // eslint-disable-next-line
-    }, []);
+    }, [monitors, dashboardMonitorsPool]);
+
+    useEffect(() => {
+        const sortingDashboard = dashboardMonitorsPool
+            .filter((item) =>
+                groupId ? item.groupId === Number(groupId) : !item.groupId
+            )
+            .sort((prev, next) => {
+                if (prev.sort > next.sort) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+        const newMonitors = sortingDashboard.map((item) => {
+            const oldData = monitors.find((monitor) => monitor.id === item.id);
+            return {
+                ...item,
+                chosen: true,
+                isLiveData: oldData ? oldData.isLiveData : false,
+            };
+        });
+        setMonitors(newMonitors);
+
+        if (newMonitors.length > 0) {
+            getComputedFunctions();
+        }
+        // eslint-disable-next-line
+    }, [dashboardMonitorsPool]);
+
+    useEffect(() => {
+        if (computedFunctionsPool.length === 0 || monitors.length === 0) {
+            return;
+        }
+        const monitorIds = monitors.map((item) => item.id);
+        setComputedFunctions(
+            computedFunctionsPool.filter(
+                (item) => item.monitorId && monitorIds.includes(item.monitorId)
+            )
+        );
+    }, [computedFunctionsPool, monitors]);
 
     useEffect(() => {
         if (shouldBeDeleteId) {

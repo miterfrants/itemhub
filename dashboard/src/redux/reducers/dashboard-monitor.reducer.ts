@@ -9,8 +9,18 @@ export const dashboardMonitorsSlice = createSlice({
     initialState,
     reducers: {
         update: (state, action: PayloadAction<DashboardMonitorItem[]>) => {
-            const newRecords = action.payload;
-            return newRecords;
+            const existsIds = state.map((item) => item.id);
+            const beAdded = action.payload.filter(
+                (item) => !existsIds.includes(item.id)
+            );
+            const newState = [...state, ...beAdded].map((item) => {
+                const beUpdatedTarget = action.payload.find(
+                    (newItem) => newItem.id === item.id
+                );
+                return { ...item, ...beUpdatedTarget } || item;
+            });
+
+            return newState;
         },
         updateSorting: (
             state,
