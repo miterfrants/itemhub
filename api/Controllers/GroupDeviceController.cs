@@ -59,6 +59,21 @@ namespace Homo.IotApi
 
         [SwaggerOperation(
             Tags = new[] { "群組相關" },
+            Summary = "群組裝置 - 取得群組裝置列表",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("all")]
+        public ActionResult<dynamic> getAll([FromRoute] long groupId, [FromQuery] string name, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            var relation = RelationOfGroupAndUserDataservice.GetOne(_dbContext, ownerId, groupId);
+            var groupDeviceIds = GroupDeviceDataservice.GetAll(_iotDbContext, relation.CreatedBy, groupId, null).Select(x => x.DeviceId).ToList();
+            return DeviceDataservice.GetAll(_iotDbContext, relation.CreatedBy, groupDeviceIds);
+        }
+
+        [SwaggerOperation(
+            Tags = new[] { "群組相關" },
             Summary = "群組裝置 - 取得單一裝置",
             Description = ""
         )]

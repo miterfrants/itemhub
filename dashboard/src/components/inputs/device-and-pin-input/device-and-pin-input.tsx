@@ -5,9 +5,12 @@ import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
 import { KeyValuePair } from '@/types/common.type';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectDevices } from '@/redux/reducers/devices.reducer';
-import { DeviceItem } from '@/types/devices.type';
+import { DeviceItem, PinItem } from '@/types/devices.type';
 import { PIN_TYPES } from '@/constants/pin-type';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
+import { useGetGroupAllDevicesApi } from '@/hooks/apis/group-devices.hook';
+import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
+import { useGetGroupDevicePinsApi } from '@/hooks/apis/group-device-pin.hook';
 
 const DeviceAndPinInputs = ({
     isDeviceNameError,
@@ -23,23 +26,34 @@ const DeviceAndPinInputs = ({
     sensorOnly,
     switchOnly,
     excludeDeviceIds,
+    groupId,
+    allowNullableDeviceId,
 }: {
     isDeviceNameError: boolean;
-    defaultDeviceId: number;
+    defaultDeviceId?: number;
     deviceNameLabel: string;
     isPinError: boolean;
     pinType?: number | undefined;
     pinLabel: string;
     defaultPinValue: string;
     updatePin: (pin: string) => void;
-    updateDeviceId: (id: number) => void;
+    updateDeviceId: (id: number | undefined) => void;
     isDisabled: boolean;
     sensorOnly?: boolean;
     switchOnly?: boolean;
     excludeDeviceIds?: number[];
+    groupId?: number;
+    allowNullableDeviceId?: boolean;
 }) => {
     const { getAllDevicesApi } = useGetAllDevicesApi();
-    const allDevices: DeviceItem[] = useAppSelector(selectDevices).devices;
+    const { fetchApi: getGroupAllDevicesApi } = useGetGroupAllDevicesApi(
+        groupId || 0
+    );
+    const [allDevices, setAllDevices] = useState<DeviceItem[]>([]);
+    const [devicePins, setDevicePins] = useState<PinItem[]>();
+
+    const devicesFromPerson = useAppSelector(selectDevices).devices;
+    const devicesFromGroup = useAppSelector(selectGroupDevices).devices;
     const [filteredDevices, setFilteredDevice] = useState<DeviceItem[]>(
         [] as DeviceItem[]
     );
@@ -50,21 +64,54 @@ const DeviceAndPinInputs = ({
     const switchPinType = deviceModes.find(
         (item) => item.key === PIN_TYPES.SWITCH
     );
-    const [deviceId, setDeviceId] = useState(defaultDeviceId);
-    const { devicePins, getDevicePinsApi } = useGetDevicePinsApi({
-        id: deviceId,
-        pinType,
-    });
+    const [deviceId, setDeviceId] = useState<undefined | number>(
+        defaultDeviceId
+    );
+
+    const { devicePins: devicePinsFromPerson, getDevicePinsApi } =
+        useGetDevicePinsApi({
+            id: deviceId || 0,
+            pinType,
+        });
+
+    const { data: devicePinsFromGroup, fetchApi: getGroupDevicePins } =
+        useGetGroupDevicePinsApi({
+            deviceId: deviceId || 0,
+            groupId: groupId || 0,
+        });
 
     useEffect(() => {
-        getAllDevicesApi();
+        if (groupId) {
+            getGroupAllDevicesApi();
+        } else {
+            getAllDevicesApi();
+        }
         // eslint-disable-next-line
-    }, []);
+    }, [groupId]);
 
     useEffect(() => {
-        getDevicePinsApi();
+        setAllDevices(devicesFromGroup || devicesFromPerson);
+    }, [devicesFromGroup, devicesFromPerson]);
+
+    useEffect(() => {
+        if (devicePinsFromGroup && devicePinsFromGroup.length > 0) {
+            setDevicePins(devicePinsFromGroup);
+        } else if (devicePinsFromPerson && devicePinsFromPerson.length > 0) {
+            setDevicePins(devicePinsFromPerson);
+        }
+    }, [devicePinsFromPerson, devicePinsFromGroup]);
+
+    useEffect(() => {
+        if (!deviceId) {
+            return;
+        }
+        if (groupId) {
+            getGroupDevicePins();
+        } else {
+            getDevicePinsApi();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allDevices, deviceId]);
+    }, [allDevices, deviceId, groupId]);
 
     useEffect(() => {
         setFilteredDevice(
@@ -93,11 +140,20 @@ const DeviceAndPinInputs = ({
                         isDisabled={isDisabled}
                         isError={isDeviceNameError}
                         errorMessage="請輸入裝置名稱"
+                        allowNullable={allowNullableDeviceId}
                         onValueChanged={(
                             newValue: number | string | undefined
                         ) => {
-                            setDeviceId(Number(newValue));
-                            updateDeviceId(Number(newValue));
+                            setDeviceId(
+                                newValue === undefined
+                                    ? undefined
+                                    : Number(newValue)
+                            );
+                            updateDeviceId(
+                                newValue === undefined
+                                    ? undefined
+                                    : Number(newValue)
+                            );
                         }}
                         allSuggestions={(filteredDevices || []).map(
                             ({ name, id }) =>
@@ -120,7 +176,7 @@ const DeviceAndPinInputs = ({
                         updatePin(newSourcePin);
                     }}
                 >
-                    {devicePins === null ? (
+                    {!devicePins ? (
                         <option key="not-yet-fetch-pins" value="" />
                     ) : devicePins.length === 0 ? (
                         <option key="no-pins-data" value="">

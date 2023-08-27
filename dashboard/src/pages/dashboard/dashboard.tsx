@@ -66,6 +66,7 @@ const Dashboard = () => {
                         : item.groupId === null)
             )
             .map((item) => item.id),
+        groupId: groupId ? Number(groupId) : undefined,
     });
     const dispatch = useDispatch();
     const popupMonitorConfig = (monitorItem: DashboardMonitorItem) => {

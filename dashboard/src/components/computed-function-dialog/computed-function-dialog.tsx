@@ -36,7 +36,7 @@ const ComputedFunctionDialog = () => {
         sourceDeviceId?: number | null;
         sourcePin?: string | null;
     }>({ sourceDeviceId, sourcePin });
-    const [validation, setValidation] = useState({
+    const [validation] = useState({
         sourceDeviceId: {
             errorMessage: '',
             invalid: false,
@@ -55,6 +55,7 @@ const ComputedFunctionDialog = () => {
         func: computedFunc,
         sourceDeviceId: state?.sourceDeviceId || undefined,
         sourcePin: state?.sourcePin || undefined,
+        groupId: groupId || undefined,
     });
 
     const {
@@ -161,6 +162,7 @@ const ComputedFunctionDialog = () => {
                                     sourcePin: newPin,
                                 });
                             }}
+                            allowNullableDeviceId
                             updateDeviceId={(newDeviceId) => {
                                 setState({
                                     ...state,
@@ -168,6 +170,7 @@ const ComputedFunctionDialog = () => {
                                     sourcePin: undefined,
                                 });
                             }}
+                            groupId={groupId}
                         />
                     </div>
                     <div className="text-warn mt-3 mb-4 d-flex align-items-top">

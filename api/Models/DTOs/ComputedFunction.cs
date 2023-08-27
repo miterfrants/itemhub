@@ -27,6 +27,7 @@ namespace Homo.IotApi
             public string func { get; set; }
             public long? sourceDeviceId { get; set; }
             public string sourcePin { get; set; }
+            public long? monitorId { get; set; }
         }
     }
 }

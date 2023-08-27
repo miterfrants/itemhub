@@ -117,11 +117,13 @@ export const useUpdateComputedFunction = ({
     func,
     sourceDeviceId,
     sourcePin,
+    groupId,
 }: {
     id?: number | null;
     func?: string | null;
     sourceDeviceId?: number;
     sourcePin?: string;
+    groupId?: number;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchRefresh = useCallback(() => {
@@ -146,6 +148,7 @@ export const useUpdateComputedFunction = ({
                 func,
                 sourceDeviceId,
                 sourcePin,
+                groupId,
             },
             method: HTTP_METHOD.PATCH,
             initialData: null,
