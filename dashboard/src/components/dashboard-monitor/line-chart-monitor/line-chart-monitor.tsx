@@ -71,6 +71,12 @@ const LineChartMonitor = (props: {
     const [startAt, setStartAt] = useState<string | undefined>(undefined);
     const timer: any = useRef(null);
     const [timeRange, setTimeRange] = useState<TIME_RANGE>(TIME_RANGE.NONE);
+    const [lastDataCreatedAt, setLastDataCreatedAt] = useState<
+        undefined | string
+    >();
+    const [firstDataCreatedAt, setFirstDataCreatedAt] = useState<
+        undefined | string
+    >();
 
     const execComputedFunction = useCallback(
         (value, sourceValue) => {
@@ -158,15 +164,8 @@ const LineChartMonitor = (props: {
         pin: computedSourcePin || '',
         page: 1,
         limit: 2000,
-        endAt:
-            responseOfGetSensorLogs && responseOfGetSensorLogs.length > 0
-                ? responseOfGetSensorLogs[0].createdAt
-                : undefined,
-        startAt:
-            responseOfGetSensorLogs && responseOfGetSensorLogs.length > 1
-                ? responseOfGetSensorLogs[responseOfGetSensorLogs.length - 1]
-                      .createdAt
-                : undefined,
+        endAt: lastDataCreatedAt,
+        startAt: firstDataCreatedAt,
     });
 
     const {
@@ -177,18 +176,8 @@ const LineChartMonitor = (props: {
         pin: computedSourcePin || '',
         page: 1,
         limit: 2000,
-        endAt:
-            responseOfGetGroupSensorLogs &&
-            responseOfGetGroupSensorLogs.length > 0
-                ? responseOfGetGroupSensorLogs[0].createdAt
-                : null,
-        startAt:
-            responseOfGetGroupSensorLogs &&
-            responseOfGetGroupSensorLogs.length > 0
-                ? responseOfGetGroupSensorLogs[
-                      responseOfGetGroupSensorLogs.length - 1
-                  ].createdAt
-                : null,
+        endAt: lastDataCreatedAt,
+        startAt: firstDataCreatedAt,
         groupId: groupId || 0,
     });
 
@@ -272,7 +261,7 @@ const LineChartMonitor = (props: {
         pin: computedSourcePin || '',
         limit: 1,
         page: 1,
-        endAt: data && data.length > 0 ? data[0].createdAt : undefined,
+        endAt: lastDataCreatedAt,
     });
 
     const {
@@ -284,7 +273,7 @@ const LineChartMonitor = (props: {
         groupId: groupId || 0,
         limit: 1,
         page: 1,
-        endAt: data && data.length > 0 ? data[0].createdAt : undefined,
+        endAt: lastDataCreatedAt,
     });
 
     const startPooling = useCallback(() => {
@@ -305,7 +294,7 @@ const LineChartMonitor = (props: {
 
         timer.current = setTimeout(startPooling, 5000);
         // eslint-disable-next-line
-    }, [isLiveData, getLastSensorLogs, getLastGroupSensorLogs]);
+    }, [data, isLiveData, getLastComputedSourceGroupSensorLogs, getLastComputedSourceSensorLogs, getLastSensorLogs, getLastGroupSensorLogs]);
 
     useEffect(() => {
         if (groupId) {
@@ -406,6 +395,10 @@ const LineChartMonitor = (props: {
 
     useEffect(() => {
         const scopedData = [...data].reverse();
+        if (data.length > 0) {
+            setLastDataCreatedAt(data[0].createdAt);
+        }
+
         setLineChartData(
             scopedData.map((item) => {
                 // default sorting createdAt desc
@@ -454,6 +447,7 @@ const LineChartMonitor = (props: {
 
     useEffect(() => {
         if (isLiveData) {
+            clearTimeout(timer.current);
             startPooling();
         } else {
             clearTimeout(timer.current);
