@@ -272,10 +272,7 @@ const LineChartMonitor = (props: {
         pin: computedSourcePin || '',
         limit: 1,
         page: 1,
-        endAt:
-            responseOfGetSensorLogs && responseOfGetSensorLogs.length > 0
-                ? responseOfGetSensorLogs[0].createdAt
-                : undefined,
+        endAt: data && data.length > 0 ? data[0].createdAt : undefined,
     });
 
     const {
@@ -287,10 +284,7 @@ const LineChartMonitor = (props: {
         groupId: groupId || 0,
         limit: 1,
         page: 1,
-        endAt:
-            getLastGroupSensorLogs && getLastGroupSensorLogs.length > 0
-                ? getLastGroupSensorLogs[0].createdAt
-                : undefined,
+        endAt: data && data.length > 0 ? data[0].createdAt : undefined,
     });
 
     const startPooling = useCallback(() => {
