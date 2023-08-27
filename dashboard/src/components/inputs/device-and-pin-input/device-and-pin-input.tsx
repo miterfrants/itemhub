@@ -49,12 +49,11 @@ const DeviceAndPinInputs = ({
     const { fetchApi: getGroupAllDevicesApi } = useGetGroupAllDevicesApi(
         groupId || 0
     );
-    const [allDevices, setAllDevices] = useState<DeviceItem[]>([]);
     const [devicePins, setDevicePins] = useState<PinItem[]>();
 
     const devicesFromPerson = useAppSelector(selectDevices).devices;
     const devicesFromGroup = useAppSelector(selectGroupDevices).devices;
-    const [filteredDevices, setFilteredDevice] = useState<DeviceItem[]>(
+    const [filteredDevices, setFilteredDevices] = useState<DeviceItem[]>(
         [] as DeviceItem[]
     );
     const { deviceModes } = useAppSelector(selectUniversal);
@@ -90,8 +89,17 @@ const DeviceAndPinInputs = ({
     }, [groupId]);
 
     useEffect(() => {
-        setAllDevices(devicesFromGroup || devicesFromPerson);
-    }, [devicesFromGroup, devicesFromPerson]);
+        const devices = groupId ? devicesFromGroup : devicesFromPerson;
+
+        setFilteredDevices(
+            devices.filter((device) => {
+                if (!excludeDeviceIds) {
+                    return true;
+                }
+                return !excludeDeviceIds.includes(device.id);
+            })
+        );
+    }, [devicesFromGroup, devicesFromPerson, excludeDeviceIds, groupId]);
 
     useEffect(() => {
         if (devicePinsFromGroup && devicePinsFromGroup.length > 0) {
@@ -111,18 +119,7 @@ const DeviceAndPinInputs = ({
             getDevicePinsApi();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allDevices, deviceId, groupId]);
-
-    useEffect(() => {
-        setFilteredDevice(
-            allDevices.filter((device) => {
-                if (!excludeDeviceIds) {
-                    return true;
-                }
-                return !excludeDeviceIds.includes(device.id);
-            })
-        );
-    }, [allDevices, excludeDeviceIds]);
+    }, [deviceId, groupId]);
 
     useEffect(() => {
         setDeviceId(defaultDeviceId);
