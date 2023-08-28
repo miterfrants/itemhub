@@ -157,9 +157,26 @@ const CurrentValueMonitor = (props: {
         if (!isLiveData) {
             return;
         }
-        getSensorLogs();
+        if (groupId) {
+            getGroupSensorLogs();
+        } else {
+            getSensorLogs();
+        }
+
+        if (groupId && computedSourceDeviceId && computedSourcePin) {
+            getComputedSourceGroupSensorLogs();
+        } else if (computedSourceDeviceId && computedSourcePin) {
+            getComputedSourceSensorLogs();
+        }
         timer.current = setTimeout(startPooling, 5000);
-    }, [isLiveData, getSensorLogs]);
+        // eslint-disable-next-line
+    }, [
+        isLiveData,
+        getSensorLogs,
+        getGroupSensorLogs,
+        getComputedSourceGroupSensorLogs,
+        getComputedSourceSensorLogs,
+    ]);
 
     useEffect(() => {
         setIsLiveData(isLiveDataFromProps);
