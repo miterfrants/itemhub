@@ -397,6 +397,7 @@ const LineChartMonitor = (props: {
         const scopedData = [...data].reverse();
         if (data.length > 0) {
             setLastDataCreatedAt(data[0].createdAt);
+            setFirstDataCreatedAt(data[data.length - 1].createdAt);
         }
 
         setLineChartData(

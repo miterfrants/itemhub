@@ -41,6 +41,9 @@ const CurrentValueMonitor = (props: {
     const [isLiveData, setIsLiveData] = useState<boolean>(isLiveDataFromProps);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     const [pointer, setPointer] = useState<number>(4);
+    const [lastDataCreatedAt, setLastDataCreatedAt] = useState<
+        undefined | string
+    >();
 
     const timer: any = useRef(null);
     const {
@@ -120,10 +123,7 @@ const CurrentValueMonitor = (props: {
         groupId: groupId || 0,
         limit: 1,
         page: 1,
-        endAt:
-            responseOfSensorLogs && responseOfSensorLogs.length > 0
-                ? responseOfSensorLogs[0].createdAt
-                : undefined,
+        endAt: lastDataCreatedAt,
     });
 
     const execComputedFunction = useCallback(
@@ -145,7 +145,9 @@ const CurrentValueMonitor = (props: {
                 return value.toFixed(pointer);
             }
         },
+        // eslint-disable-next-line
         [
+            lastDataCreatedAt,
             computedFunctionRaw,
             pointer,
             respOfComputedSourceGroupSensorLogs,
@@ -154,6 +156,7 @@ const CurrentValueMonitor = (props: {
     );
 
     const startPooling = useCallback(() => {
+        clearTimeout(timer.current);
         if (!isLiveData) {
             return;
         }
@@ -176,6 +179,7 @@ const CurrentValueMonitor = (props: {
         getGroupSensorLogs,
         getComputedSourceGroupSensorLogs,
         getComputedSourceSensorLogs,
+        lastDataCreatedAt,
     ]);
 
     useEffect(() => {
@@ -212,11 +216,13 @@ const CurrentValueMonitor = (props: {
     useEffect(() => {
         if (responseOfSensorLogs && responseOfSensorLogs.length > 0) {
             setCurrentValue(responseOfSensorLogs[0].value);
+            setLastDataCreatedAt(responseOfSensorLogs[0].createdAt);
         } else if (
             responseOfGroupSensorLogs &&
             responseOfGroupSensorLogs.length > 0
         ) {
             setCurrentValue(responseOfGroupSensorLogs[0].value);
+            setLastDataCreatedAt(responseOfGroupSensorLogs[0].createdAt);
         }
 
         //eslint-disable-next-line
