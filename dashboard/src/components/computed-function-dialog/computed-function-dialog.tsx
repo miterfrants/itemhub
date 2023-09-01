@@ -15,6 +15,7 @@ import {
     toasterActions,
 } from '@/redux/reducers/toaster.reducer';
 import DeviceAndPinInputs from '../inputs/device-and-pin-input/device-and-pin-input';
+import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
 
 const ComputedFunctionDialog = () => {
     const dialog = useAppSelector(selectComputedFunctionDialog);
@@ -47,6 +48,7 @@ const ComputedFunctionDialog = () => {
         },
     });
     const [computedFunc, setComputedFunc] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const {
         fetchApi: updateComputedFunction,
         data: respOfUpdateComputedFunction,
@@ -117,6 +119,30 @@ const ComputedFunctionDialog = () => {
         }
     };
 
+    const validate = (value): { isValid: boolean; message: string } => {
+        try {
+            const func = ComputedFunctionHelpers.Eval(value);
+            if (!func) {
+                return {
+                    isValid: false,
+                    message: '輸入的值無法驗證',
+                };
+            }
+            const testValue = 0;
+            const testSensorData = 0;
+            func(testValue, testSensorData);
+        } catch (error) {
+            return {
+                isValid: false,
+                message: '輸入的值無法驗證',
+            };
+        }
+        return {
+            isValid: true,
+            message: '',
+        };
+    };
+
     return (
         <div
             className={`computed-function-dialog dialog position-fixed top-0 w-100 h-100 d-flex align-items-center justify-content-center p-2 ${
@@ -133,7 +159,13 @@ const ComputedFunctionDialog = () => {
                             type="text"
                             value={computedFunc}
                             onChange={(event) => {
+                                setErrorMessage('');
+                                const result = validate(
+                                    event.currentTarget.value
+                                );
+
                                 setComputedFunc(event.currentTarget.value);
+                                setErrorMessage(result.message);
                             }}
                             onKeyUp={(event) => {
                                 if (event.key.toLowerCase() === 'enter') {
@@ -143,6 +175,11 @@ const ComputedFunctionDialog = () => {
                             ref={refFuncInput}
                             placeholder="data*2 - 5"
                         />
+                        {errorMessage && errorMessage.length > 0 && (
+                            <div className="text-danger mt-15">
+                                {errorMessage}
+                            </div>
+                        )}
                     </div>
                     <div className="mt-3">
                         <DeviceAndPinInputs
@@ -196,6 +233,9 @@ const ComputedFunctionDialog = () => {
                             onClick={() => {
                                 submit();
                             }}
+                            disabled={
+                                !!(errorMessage && errorMessage.length > 0)
+                            }
                         >
                             {id ? '修改' : '新增'}
                         </button>
