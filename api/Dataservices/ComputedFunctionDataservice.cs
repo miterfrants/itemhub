@@ -48,7 +48,9 @@ namespace Homo.IotApi
                 && x.DeletedAt == null
             ).UpdateFromQuery(x => new ComputedFunction()
             {
-                Func = dto.func
+                Func = dto.func,
+                SourceDeviceId = dto.sourceDeviceId,
+                SourcePin = dto.sourcePin,
             });
         }
     }

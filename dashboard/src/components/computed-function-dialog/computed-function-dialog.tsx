@@ -14,13 +14,38 @@ import {
     ToasterTypeEnum,
     toasterActions,
 } from '@/redux/reducers/toaster.reducer';
+import DeviceAndPinInputs from '../inputs/device-and-pin-input/device-and-pin-input';
 
 const ComputedFunctionDialog = () => {
     const dialog = useAppSelector(selectComputedFunctionDialog);
-    const { id, isOpen, deviceId, pin, groupId, monitorId, func } = dialog;
+    const {
+        id,
+        isOpen,
+        deviceId,
+        pin,
+        groupId,
+        monitorId,
+        func,
+        sourceDeviceId,
+        sourcePin,
+    } = dialog;
 
     const dispatch = useDispatch();
     const refFuncInput = useRef<HTMLInputElement | null>(null);
+    const [state, setState] = useState<{
+        sourceDeviceId?: number | null;
+        sourcePin?: string | null;
+    }>({ sourceDeviceId, sourcePin });
+    const [validation] = useState({
+        sourceDeviceId: {
+            errorMessage: '',
+            invalid: false,
+        },
+        sourcePin: {
+            errorMessage: '',
+            invalid: false,
+        },
+    });
     const [computedFunc, setComputedFunc] = useState<string>('');
     const {
         fetchApi: updateComputedFunction,
@@ -28,6 +53,9 @@ const ComputedFunctionDialog = () => {
     } = useUpdateComputedFunction({
         id,
         func: computedFunc,
+        sourceDeviceId: state?.sourceDeviceId || undefined,
+        sourcePin: state?.sourcePin || undefined,
+        groupId: groupId || undefined,
     });
 
     const {
@@ -39,11 +67,20 @@ const ComputedFunctionDialog = () => {
         monitorId,
         groupId,
         func: computedFunc,
+        sourceDeviceId: state?.sourceDeviceId,
+        sourcePin: state?.sourcePin,
     });
 
     useEffect(() => {
         setComputedFunc(func || '');
     }, [func]);
+
+    useEffect(() => {
+        setState({
+            sourceDeviceId,
+            sourcePin,
+        });
+    }, [sourceDeviceId, sourcePin]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -90,7 +127,7 @@ const ComputedFunctionDialog = () => {
                 <h3 className="mb-0">轉換公式</h3>
                 <hr />
                 <div className="mt-3">
-                    <div className="px-0">
+                    <div>
                         <input
                             className="form-control"
                             type="text"
@@ -107,13 +144,47 @@ const ComputedFunctionDialog = () => {
                             placeholder="data*2 - 5"
                         />
                     </div>
+                    <div className="mt-3">
+                        <DeviceAndPinInputs
+                            isDeviceNameError={
+                                validation.sourceDeviceId.invalid
+                            }
+                            deviceNameLabel="裝置"
+                            isPinError={validation.sourcePin.invalid}
+                            pinLabel="Pin"
+                            defaultPinValue={state?.sourcePin || ''}
+                            defaultDeviceId={state?.sourceDeviceId || 0}
+                            isDisabled={false}
+                            sensorOnly
+                            updatePin={(newPin) => {
+                                setState({
+                                    ...state,
+                                    sourcePin: newPin,
+                                });
+                            }}
+                            allowNullableDeviceId
+                            updateDeviceId={(newDeviceId) => {
+                                setState({
+                                    ...state,
+                                    sourceDeviceId: newDeviceId,
+                                    sourcePin: undefined,
+                                });
+                            }}
+                            groupId={groupId}
+                        />
+                    </div>
                     <div className="text-warn mt-3 mb-4 d-flex align-items-top">
                         <div className="mt-1 me-2 bg-warn text-white rounded-circle align-items-center text-center fw-bold flex-shrink-0">
                             !
                         </div>
                         <div>
                             感測器回傳資料參數為 data，可根據回傳數字設定算式，
-                            如: data*2+5， 系統會依照算式計算回傳資料
+                            如: data*2+5，系統會依照算式計算回傳資料，
+                            <br />
+                            <br />
+                            可另外設定其他設備的感測資料，參數為
+                            sourceSensorData，抓取離目前裝置最近的一筆資料 如:
+                            data*2+5+sourceSensorData
                         </div>
                     </div>
                 </div>

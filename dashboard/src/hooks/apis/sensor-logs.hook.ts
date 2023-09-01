@@ -1,6 +1,7 @@
 import { useFetchApi } from '@/hooks/apis/fetch.hook';
 import { API_URL, END_POINT, HTTP_METHOD } from '@/constants/api';
 import { ApiHelpers } from '@/helpers/api.helper';
+import { SensorLogType } from '@/types/sensor-log.type';
 
 export const useGetSensorLogsApi = ({
     deviceId,
@@ -29,7 +30,7 @@ export const useGetSensorLogsApi = ({
         },
     });
 
-    const { isLoading, error, data, fetchApi } = useFetchApi<any[]>({
+    const { isLoading, error, data, fetchApi } = useFetchApi<SensorLogType[]>({
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,

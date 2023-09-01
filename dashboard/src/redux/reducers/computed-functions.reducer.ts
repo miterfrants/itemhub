@@ -15,14 +15,25 @@ export const computedFunctionsSlice = createSlice({
         },
         updateFunc: (
             state,
-            action: PayloadAction<{ id: number; func: string }>
+            action: PayloadAction<{
+                id: number;
+                func: string;
+                sourceDeviceId?: number;
+                sourcePin?: string;
+            }>
         ) => {
             const record = state.find((item) => item.id === action.payload.id);
             if (!record) {
                 return state;
             }
-            // console.log(action.payload.func);
-            const newRecord = { ...record, func: action.payload.func };
+
+            const { func, sourceDeviceId, sourcePin } = action.payload;
+            const newRecord = {
+                ...record,
+                func,
+                sourceDeviceId,
+                sourcePin,
+            };
             return [
                 ...state.filter((item) => item.id !== newRecord.id),
                 newRecord,

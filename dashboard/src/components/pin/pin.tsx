@@ -10,7 +10,10 @@ import Toggle from '../toggle/toggle';
 import ReactTooltip from 'react-tooltip';
 import analyticsIcon from '@/assets/images/analytics.svg';
 import { Link, useLocation } from 'react-router-dom';
-import { useToggleGroupDeviceSwitchPinApi } from '@/hooks/apis/group-device-pin.hook';
+import {
+    useGetGroupSensorLogsApi,
+    useToggleGroupDeviceSwitchPinApi,
+} from '@/hooks/apis/group-device-pin.hook';
 import { useGetComputedFunctions } from '@/hooks/apis/computed-functions.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { selectComputedFunctions } from '@/redux/reducers/computed-functions.reducer';
@@ -18,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { computedFunctionDialogActions } from '@/redux/reducers/computed-function-dialog.reducer';
 import { ComputedFunctions } from '@/types/computed-functions.type';
 import { ComputedFunctionHelpers } from '@/helpers/computed-function.helper';
+import { useGetSensorLogsApi } from '@/hooks/apis/sensor-logs.hook';
 
 const Pin = (props: {
     pinItem: PinItem;
@@ -59,6 +63,29 @@ const Pin = (props: {
             },
         ],
         groupId,
+    });
+
+    const {
+        fetchApi: getComputedSourceSensorLog,
+        data: respOfComputedSourceSensorLog,
+    } = useGetSensorLogsApi({
+        deviceId: computedFunc?.sourceDeviceId || 0,
+        pin: computedFunc?.sourcePin || '',
+        page: 1,
+        limit: 1,
+        endAt: createdAt,
+    });
+
+    const {
+        fetchApi: getComputedSourceGroupSensorLog,
+        data: respOfComputedSourceGroupSensorLog,
+    } = useGetGroupSensorLogsApi({
+        deviceId: computedFunc?.sourceDeviceId || 0,
+        pin: computedFunc?.sourcePin || '',
+        page: 1,
+        limit: 1,
+        endAt: createdAt,
+        groupId: groupId || 0,
     });
 
     const computedFunctionsPool = useAppSelector(selectComputedFunctions);
@@ -145,12 +172,21 @@ const Pin = (props: {
             setSensorComputedValue(`${valueFromPorps?.toString() || ''}`);
             return;
         }
+
+        const sourceData = respOfComputedSourceSensorLog
+            ? respOfComputedSourceSensorLog[0].value
+            : respOfComputedSourceGroupSensorLog
+            ? respOfComputedSourceGroupSensorLog[0].value
+            : null;
         setSensorComputedValue(
-            `${valueFromPorps?.toString() || ''} -> ${func(valueFromPorps)}`
+            `${valueFromPorps?.toString() || ''} -> ${func(
+                valueFromPorps,
+                sourceData
+            )}`
         );
 
         // eslint-disable-next-line
-    }, [isSwitch, valueFromPorps, computedFunc]);
+    }, [isSwitch, valueFromPorps, computedFunc, respOfComputedSourceSensorLog, respOfComputedSourceGroupSensorLog]);
 
     useEffect(() => {
         if (computedFunctionsPool.length === 0 || isSwitch) {
@@ -162,6 +198,19 @@ const Pin = (props: {
         setComputedFunc(computedFunc);
         // eslint-disable-next-line
     }, [computedFunctionsPool]);
+
+    useEffect(() => {
+        if (
+            computedFunc?.sourceDeviceId &&
+            computedFunc?.sourcePin &&
+            groupId
+        ) {
+            getComputedSourceGroupSensorLog();
+        } else if (computedFunc?.sourceDeviceId && computedFunc?.sourcePin) {
+            getComputedSourceSensorLog();
+        }
+        // eslint-disable-next-line
+    }, [computedFunc]);
 
     return (
         <div
@@ -212,6 +261,9 @@ const Pin = (props: {
                                         pin,
                                         groupId,
                                         func: computedFunc?.func,
+                                        sourceDeviceId:
+                                            computedFunc?.sourceDeviceId,
+                                        sourcePin: computedFunc?.sourcePin,
                                     })
                                 );
                             }}

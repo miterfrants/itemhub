@@ -2,7 +2,7 @@ export const ComputedFunctionHelpers = {
     Eval: (funcRaw: string): ComputedFunctionType | null => {
         try {
             const evalResult = eval(
-                `(data) => { return ${funcRaw
+                `(data, sourceSensorData) => { return ${funcRaw
                     .replace(/document/gi, '')
                     .replace(/eval/gi, '')} }`
             );
@@ -13,4 +13,7 @@ export const ComputedFunctionHelpers = {
     },
 };
 
-export type ComputedFunctionType = (data: number) => void;
+export type ComputedFunctionType = (
+    data: number,
+    sourceSensorData?: number | null
+) => void;
