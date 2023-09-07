@@ -85,6 +85,13 @@ const ComputedFunctionDialog = () => {
     }, [sourceDeviceId, sourcePin]);
 
     useEffect(() => {
+        setErrorMessage('');
+        const result = validate(computedFunc);
+        setErrorMessage(result.message);
+        // eslint-disable-next-line
+    }, [computedFunc, state]);
+
+    useEffect(() => {
         setTimeout(() => {
             refFuncInput.current?.focus();
         });
@@ -137,6 +144,28 @@ const ComputedFunctionDialog = () => {
                 message: '輸入的值無法驗證',
             };
         }
+
+        if (
+            value.includes('sourceSensorData') &&
+            (!state.sourceDeviceId || !state.sourcePin)
+        ) {
+            return {
+                isValid: false,
+                message: '公式中有填寫其他感測資料，但未選擇感測裝置',
+            };
+        }
+
+        if (
+            state.sourceDeviceId &&
+            state.sourcePin &&
+            !value.includes('sourceSensorData')
+        ) {
+            return {
+                isValid: false,
+                message: '選擇了感測裝置，但公式未包含 sourceSensorData 變數',
+            };
+        }
+
         return {
             isValid: true,
             message: '',
@@ -159,15 +188,12 @@ const ComputedFunctionDialog = () => {
                             type="text"
                             value={computedFunc}
                             onChange={(event) => {
-                                setErrorMessage('');
-                                const result = validate(
-                                    event.currentTarget.value
-                                );
-
                                 setComputedFunc(event.currentTarget.value);
-                                setErrorMessage(result.message);
                             }}
                             onKeyUp={(event) => {
+                                if (errorMessage) {
+                                    return;
+                                }
                                 if (event.key.toLowerCase() === 'enter') {
                                     submit();
                                 }
