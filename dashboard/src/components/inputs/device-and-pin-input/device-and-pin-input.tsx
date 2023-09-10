@@ -111,6 +111,7 @@ const DeviceAndPinInputs = ({
 
     useEffect(() => {
         if (!deviceId) {
+            setDevicePins([]);
             return;
         }
         if (groupId) {
