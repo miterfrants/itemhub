@@ -14,6 +14,7 @@ const AutocompletedSearch = ({
     onValueChanged,
     onClickOption,
     clearInputFlag,
+    allowNullable,
 }: {
     isDisabled?: boolean;
     isError?: boolean;
@@ -29,6 +30,7 @@ const AutocompletedSearch = ({
     ) => void;
     onClickOption?: (newValue?: string) => void;
     clearInputFlag?: boolean;
+    allowNullable?: boolean;
 }) => {
     const [filteredSuggestions, setFilteredSuggestions] =
         useState<KeyValuePair[]>(allSuggestions);
@@ -96,7 +98,7 @@ const AutocompletedSearch = ({
         const filteredResult = allSuggestions.filter(
             (item) => item.key === currentValue
         );
-        if (filteredResult.length === 0) {
+        if (filteredResult.length === 0 && !allowNullable) {
             setIsMultiple(false);
             setIsErrorState(true);
             return;
@@ -110,7 +112,7 @@ const AutocompletedSearch = ({
         setIsMultiple(false);
         setIsErrorState(false);
         onValueChanged(
-            filteredResult[0].value || undefined,
+            filteredResult.length > 0 ? filteredResult[0].value : undefined,
             nativeEvent.type === 'keyup'
         );
     };

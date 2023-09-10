@@ -66,12 +66,16 @@ export const useCreateComputedFunction = ({
     monitorId,
     groupId,
     func,
+    sourceDeviceId,
+    sourcePin,
 }: {
     deviceId?: number | null;
     pin?: string | null;
     monitorId?: number | null;
     groupId?: number | null;
     func?: string | null;
+    sourceDeviceId?: null | number;
+    sourcePin?: null | string;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchRefresh = useCallback(
@@ -91,6 +95,8 @@ export const useCreateComputedFunction = ({
                 monitorId,
                 groupId,
                 func,
+                sourceDeviceId,
+                sourcePin,
             },
             method: HTTP_METHOD.POST,
             initialData: null,
@@ -109,9 +115,15 @@ export const useCreateComputedFunction = ({
 export const useUpdateComputedFunction = ({
     id,
     func,
+    sourceDeviceId,
+    sourcePin,
+    groupId,
 }: {
     id?: number | null;
     func?: string | null;
+    sourceDeviceId?: number;
+    sourcePin?: string;
+    groupId?: number;
 }) => {
     const dispatch = useAppDispatch();
     const dispatchRefresh = useCallback(() => {
@@ -119,9 +131,11 @@ export const useUpdateComputedFunction = ({
             computedFunctionsActions.updateFunc({
                 id: id || 0,
                 func: func || '',
+                sourceDeviceId,
+                sourcePin,
             })
         );
-    }, [id, func, dispatch]);
+    }, [id, func, sourceDeviceId, sourcePin, dispatch]);
     const apiPath = `${API_URL}${END_POINT.MY_COMPUTED_FUNCTION}`.replace(
         ':id',
         (id || 0).toString()
@@ -132,6 +146,9 @@ export const useUpdateComputedFunction = ({
             payload: {
                 id,
                 func,
+                sourceDeviceId,
+                sourcePin,
+                groupId,
             },
             method: HTTP_METHOD.PATCH,
             initialData: null,

@@ -25,5 +25,6 @@ namespace Homo.IotApi
         [MaxLength(5)]
         public string SourcePin { get; set; }
         public bool? IsDeleted { get; set; }
+        public bool? IsGroup { get; set; }
     }
 }

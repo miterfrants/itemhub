@@ -65,6 +65,7 @@ const Dashboard = () => {
                         : item.groupId === null)
             )
             .map((item) => item.id),
+        groupId: groupId ? Number(groupId) : undefined,
     });
     const dispatch = useDispatch();
     const popupMonitorConfig = (monitorItem: DashboardMonitorItem) => {
@@ -280,6 +281,12 @@ const Dashboard = () => {
                                                                     computedFunctionRaw={
                                                                         targetComputedFunction?.func
                                                                     }
+                                                                    computedSourceDeviceId={
+                                                                        targetComputedFunction?.sourceDeviceId
+                                                                    }
+                                                                    computedSourcePin={
+                                                                        targetComputedFunction?.sourcePin
+                                                                    }
                                                                 />
                                                             ) : item.mode ===
                                                               1 ? (
@@ -302,6 +309,12 @@ const Dashboard = () => {
                                                                     }
                                                                     computedFunctionRaw={
                                                                         targetComputedFunction?.func
+                                                                    }
+                                                                    computedSourceDeviceId={
+                                                                        targetComputedFunction?.sourceDeviceId
+                                                                    }
+                                                                    computedSourcePin={
+                                                                        targetComputedFunction?.sourcePin
                                                                     }
                                                                 />
                                                             ) : (
@@ -453,6 +466,10 @@ const Dashboard = () => {
                                                                             groupId:
                                                                                 item.groupId,
                                                                             func: targetComputedFunction?.func,
+                                                                            sourceDeviceId:
+                                                                                targetComputedFunction?.sourceDeviceId,
+                                                                            sourcePin:
+                                                                                targetComputedFunction?.sourcePin,
                                                                         }
                                                                     )
                                                                 )

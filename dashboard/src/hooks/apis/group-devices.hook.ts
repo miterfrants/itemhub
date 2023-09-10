@@ -11,6 +11,41 @@ interface GetDevicesResponseData {
     rowNum: number;
 }
 
+export const useGetGroupAllDevicesApi = (groupId: number) => {
+    const apiPath = `${API_URL}${END_POINT.GROUP_ALL_DEVICES}`.replace(
+        ':groupId',
+        groupId.toString()
+    );
+
+    const dispatch = useAppDispatch();
+    const dispatchRefreshDevices = useCallback(
+        (data: DeviceItem[]) => {
+            if (data) {
+                dispatch(
+                    groupDevicesActions.refresh({
+                        devices: data,
+                        rowNum: data.length,
+                    })
+                );
+            }
+        },
+        [dispatch]
+    );
+    const { isLoading, data, error, fetchApi } = useFetchApi<DeviceItem[]>({
+        apiPath,
+        method: HTTP_METHOD.GET,
+        initialData: null,
+        callbackFunc: dispatchRefreshDevices,
+    });
+
+    return {
+        isLoading,
+        error,
+        data,
+        fetchApi,
+    };
+};
+
 export const useGetGroupDevicesApi = ({
     groupId,
     page,

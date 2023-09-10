@@ -9,6 +9,8 @@ export type ComputedFunctionDialogState = {
     monitorId?: number | null;
     groupId?: number;
     func?: string | null;
+    sourceDeviceId?: number | null;
+    sourcePin?: string | null;
 };
 const initComputedFunctionDialogState = {
     id: undefined,
@@ -18,6 +20,8 @@ const initComputedFunctionDialogState = {
     monitorId: undefined,
     groupId: undefined,
     func: undefined,
+    sourceDeviceId: undefined,
+    sourcePin: undefined,
 } as ComputedFunctionDialogState;
 
 export const computedFunctionDialogSlice = createSlice({
