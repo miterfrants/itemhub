@@ -1,0 +1,8 @@
+@import '../../css/zindex.scss';
+.pipeline-execute-log-dialog {
+    z-index: $dialog-index;
+    .card {
+        width: 600px;
+        max-width: none;
+    }
+}

@@ -1,3 +1,4 @@
+import './pipelines.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import PageTitle from '@/components/page-title/page-title';
 import pencilIcon from '@/assets/images/pencil.svg';
@@ -13,7 +14,7 @@ import {
     useRunOrStopPipelineApi,
 } from '@/hooks/apis/pipelines.hook';
 import { useQuery } from '@/hooks/query.hook';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
     PipelineState,
@@ -24,6 +25,12 @@ import { RESPONSE_STATUS } from '@/constants/api';
 import { useDispatch } from 'react-redux';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
 import { PipelineType } from '@/types/pipeline.type';
+import { useGetPipelineLastExecuteLogs } from '@/hooks/apis/pipeline-execute-logs.hook';
+import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
+import moment from 'moment';
+import { selectUniversal } from '@/redux/reducers/universal.reducer';
+import historyIcon from '@/assets/images/history.png';
+import { pipelineExecuteLogDialogActions } from '@/redux/reducers/pipeline-execute-log-dialog.reducer';
 
 const Pipelines = () => {
     const query = useQuery();
@@ -37,6 +44,7 @@ const Pipelines = () => {
     const [pipelines, setPipelines] = useState(state.pipelines || []);
     const [rowNum, setRowNum] = useState(state.rowNum || 0);
     const [shouldBeDeleteId, setShouldBeDeleteId] = useState(0);
+    const pipelineIds = useRef<number[]>([]);
     const [shouldBeTogglePipeline, setShouldBeTogglePipeline] = useState<
         PipelineType | undefined
     >(undefined);
@@ -47,6 +55,15 @@ const Pipelines = () => {
             title: searchTitle,
         }
     );
+
+    const { fetchApi: getPipelineItemTypes } = useGetPipelineItemTypes();
+
+    const { pipelineItemTypes } = useAppSelector(selectUniversal);
+
+    const { fetchApi: getLastExecuteLogs, data: logs } =
+        useGetPipelineLastExecuteLogs({
+            pipelineIds: pipelineIds.current,
+        });
 
     const { data: responseOfDelete, fetchApi: deletePipeline } =
         useDeletePipelinesApi([shouldBeDeleteId]);
@@ -63,6 +80,9 @@ const Pipelines = () => {
 
     useEffect(() => {
         document.title = 'ItemHub - 自動化觸發流程列表';
+        if (!pipelineItemTypes || pipelineItemTypes.length === 0) {
+            getPipelineItemTypes();
+        }
         // eslint-disable-next-line
     }, []);
 
@@ -94,8 +114,18 @@ const Pipelines = () => {
 
     useEffect(() => {
         setPipelines(state.pipelines || []);
+        pipelineIds.current = state?.pipelines
+            ? state?.pipelines.map((item) => item.id)
+            : [];
         setRowNum(state.rowNum || 0);
     }, [state]);
+
+    useEffect(() => {
+        if (pipelineIds.current.length > 0) {
+            getLastExecuteLogs();
+        }
+        // eslint-disable-next-line
+    }, [pipelineIds.current]);
 
     useEffect(() => {
         if (!shouldBeDeleteId) {
@@ -140,7 +170,7 @@ const Pipelines = () => {
     };
 
     return (
-        <div className="devices">
+        <div className="pipelines">
             <PageTitle
                 title="自動化觸發流程列表"
                 primaryButtonWording="新增 自動化觸發流程"
@@ -162,24 +192,67 @@ const Pipelines = () => {
                         ) : (
                             <div className="mt-3 mt-lg-45">
                                 <div className="row bg-black bg-opacity-5 text-black text-opacity-45 fs-5 py-25 px-3 m-0 d-none d-lg-flex">
-                                    <div className="col-8">名稱</div>
+                                    <div className="col-3">名稱</div>
+                                    <div className="col-5">執行紀錄</div>
                                     <div className="col-2">狀態</div>
                                     <div className="col-2">操作</div>
                                 </div>
                                 <div className="pipeline-list">
                                     {pipelines.map(({ id, title, isRun }) => {
+                                        const log = logs?.find(
+                                            (item) => item.pipelineId === id
+                                        );
+                                        const itemType = pipelineItemTypes.find(
+                                            (item) =>
+                                                item.value ===
+                                                log?.item.itemType
+                                        );
                                         return (
                                             <div
-                                                className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0"
+                                                className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0 align-items-center"
                                                 key={id}
                                             >
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     名稱
                                                 </div>
-                                                <div className="col-10 col-lg-8 p-3 p-lg-0">
+                                                <div className="col-10 col-lg-3 p-3 p-lg-0">
                                                     <div className="fw-bold lh-base mb-2 mb-lg-0">
                                                         {title}
                                                     </div>
+                                                </div>
+                                                <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
+                                                    執行紀錄
+                                                </div>
+                                                <div className="col-10 col-lg-5 p-3 p-lg-0">
+                                                    {`${
+                                                        !log
+                                                            ? '--'
+                                                            : `${moment(
+                                                                  log.createdAt
+                                                              ).format(
+                                                                  'yyyy-MM-DD HH:mm:ss'
+                                                              )} ${
+                                                                  itemType
+                                                                      ? itemType.label
+                                                                      : ''
+                                                              }`
+                                                    }`}
+
+                                                    <img
+                                                        src={historyIcon}
+                                                        role="button"
+                                                        onClick={() => {
+                                                            dispatch(
+                                                                pipelineExecuteLogDialogActions.open(
+                                                                    {
+                                                                        pipelineId:
+                                                                            id,
+                                                                    }
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="ms-2 opacity-75 btn-history"
+                                                    />
                                                 </div>
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     狀態
@@ -187,12 +260,13 @@ const Pipelines = () => {
                                                 <div className="col-10 col-lg-2 p-3 p-lg-0">
                                                     {isRun ? '執行中' : '暫停'}
                                                 </div>
+
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     操作
                                                 </div>
                                                 <div className="col-10 col-lg-2 p-3 p-lg-25 d-flex flex-wrap">
                                                     <div
-                                                        className="me-4 mb-3"
+                                                        className="me-4"
                                                         role="button"
                                                         data-tip={
                                                             isRun
@@ -219,7 +293,7 @@ const Pipelines = () => {
                                                         />
                                                     </div>
                                                     <Link
-                                                        className="me-4 mb-3"
+                                                        className="me-4"
                                                         to={`/dashboard/pipelines/${id}?title=${searchTitle}`}
                                                         data-tip="編輯"
                                                     >
@@ -229,7 +303,7 @@ const Pipelines = () => {
                                                         />
                                                     </Link>
                                                     <div
-                                                        className="me-4 mb-3"
+                                                        className="me-4"
                                                         role="button"
                                                         onClick={() => {
                                                             deleteOne(id);

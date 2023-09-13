@@ -3,10 +3,11 @@ using Microsoft.Extensions.Options;
 using Homo.Api;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 
 namespace Homo.IotApi
 {
-    [Route("v1/my/pipelines/{id}/execute-logs")]
+    [Route("v1/my/pipeline-execute-logs")]
     [IotDashboardAuthorizeFactory]
     [Validate]
     public class MyPipelineExecuteLogController : ControllerBase
@@ -25,16 +26,31 @@ namespace Homo.IotApi
             Description = ""
         )]
         [HttpGet]
-        public ActionResult<dynamic> getList([FromRoute] long id, [FromQuery] int limit, [FromQuery] int page, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        public ActionResult<dynamic> getList([FromQuery] long pipelineId, [FromQuery] int limit, [FromQuery] int page, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            var records = PipelineExecuteLogDataservice.GetList(_dbContext, ownerId, id, null, startAt, endAt);
+            var records = PipelineExecuteLogDataservice.GetList(_dbContext, ownerId, pipelineId, null, startAt, endAt);
             return new
             {
                 pipelineExecuteLogs = records,
-                rowNum = PipelineExecuteLogDataservice.GetCount(_dbContext, ownerId, id, null, startAt, endAt)
+                rowNum = PipelineExecuteLogDataservice.GetCount(_dbContext, ownerId, pipelineId, null, startAt, endAt)
             };
         }
 
+        [SwaggerOperation(
+            Tags = new[] { "Pipeline" },
+            Summary = "Pipeline 執行紀錄 - 取得最後一次執行紀錄",
+            Description = ""
+        )]
+        [HttpGet]
+        [Route("last")]
+        public ActionResult<dynamic> getLastList([FromQuery] List<long> pipelineIds, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            return PipelineExecuteLogDataservice.GetLastItems(_dbContext, ownerId, pipelineIds);
+        }
+
     }
+
+
 }
