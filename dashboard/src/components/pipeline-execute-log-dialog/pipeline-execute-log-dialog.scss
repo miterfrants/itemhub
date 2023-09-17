@@ -4,5 +4,6 @@
     .card {
         width: 600px;
         max-width: none;
+        max-height: calc(100vh - 2em);
     }
 }

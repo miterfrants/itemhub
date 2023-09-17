@@ -46,7 +46,7 @@ const PipelineExecuteLogDialog = () => {
                 isOpen ? '' : 'd-none'
             }`}
         >
-            <div className="container-fluid text-black bg-white card">
+            <div className="container-fluid text-black bg-white card overflow-y-scroll my-3">
                 {paginationLogs?.pipelineExecuteLogs.map((log) => {
                     const itemType = pipelineItemTypes?.find(
                         (item) => item.value === log?.item.itemType
@@ -55,7 +55,7 @@ const PipelineExecuteLogDialog = () => {
                         <div key={log.id} className="row">
                             <div className="col-5">
                                 {moment(log.createdAt).format(
-                                    'yyyy-MM-dd hh:mm:ss'
+                                    'yyyy-MM-DD hh:mm:ss'
                                 )}
                             </div>
                             <div className="col-3">{itemType?.label}</div>

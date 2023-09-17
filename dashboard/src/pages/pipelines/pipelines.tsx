@@ -224,20 +224,6 @@ const Pipelines = () => {
                                                     執行紀錄
                                                 </div>
                                                 <div className="col-10 col-lg-5 p-3 p-lg-0">
-                                                    {`${
-                                                        !log
-                                                            ? '--'
-                                                            : `${moment(
-                                                                  log.createdAt
-                                                              ).format(
-                                                                  'yyyy-MM-DD HH:mm:ss'
-                                                              )} ${
-                                                                  itemType
-                                                                      ? itemType.label
-                                                                      : ''
-                                                              }`
-                                                    }`}
-
                                                     <img
                                                         src={historyIcon}
                                                         role="button"
@@ -251,8 +237,21 @@ const Pipelines = () => {
                                                                 )
                                                             );
                                                         }}
-                                                        className="ms-2 opacity-75 btn-history"
+                                                        className="me-2 opacity-75 btn-history"
                                                     />
+                                                    {`${
+                                                        !log
+                                                            ? '無執行記錄'
+                                                            : `${moment(
+                                                                  log.createdAt
+                                                              ).format(
+                                                                  'yyyy-MM-DD HH:mm:ss'
+                                                              )} ${
+                                                                  itemType
+                                                                      ? itemType.label
+                                                                      : ''
+                                                              }`
+                                                    }`}
                                                 </div>
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     狀態

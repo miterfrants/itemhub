@@ -32,7 +32,9 @@ namespace Homo.IotApi
                 && (isHead == null || x.IsHead == isHead)
                 && (startAt == null || x.CreatedAt >= startAt)
                 && (endAt == null || x.CreatedAt <= endAt)
-            ).ToList();
+            )
+            .OrderByDescending(x => x.Id)
+            .ToList();
         }
 
         public static int GetCount(IotDbContext dbContext, long ownerId, long pipelineId, long? itemId, DateTime? startAt, DateTime? endAt)
