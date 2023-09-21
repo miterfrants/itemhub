@@ -1,7 +1,5 @@
 using System;
-using Homo.Api;
-using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Homo.IotApi
 {
@@ -18,5 +16,7 @@ namespace Homo.IotApi
         public bool IsHead { get; set; }
         public bool IsEnd { get; set; }
         public string Message { get; set; }
+        [ForeignKey("ItemId")]
+        public virtual PipelineItem Item { get; set; }
     }
 }
