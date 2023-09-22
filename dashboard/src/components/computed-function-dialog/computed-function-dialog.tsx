@@ -137,7 +137,13 @@ const ComputedFunctionDialog = () => {
             }
             const testValue = 0;
             const testSensorData = 0;
-            func(testValue, testSensorData);
+            const testResult = func(testValue, testSensorData);
+            if (testResult === undefined) {
+                return {
+                    isValid: false,
+                    message: '輸入的值無法驗證',
+                };
+            }
         } catch (error) {
             return {
                 isValid: false,
