@@ -23,9 +23,9 @@ namespace Homo.IotApi
             return record;
         }
 
-        public static List<PipelineExecuteLog> GetList(IotDbContext dbContext, long ownerId, long pipelineId, bool? isHead, DateTime? startAt, DateTime? endAt)
+        public static List<PipelineExecuteLog> GetList(IotDbContext dbContext, long ownerId, long pipelineId, bool? isHead, DateTime? startAt, DateTime? endAt, int? page = null, int? limit = null)
         {
-            return dbContext.PipelineExecuteLog.Include(x => x.Item).Where(x =>
+            IQueryable<PipelineExecuteLog> orderedPipelineExecuteLog = dbContext.PipelineExecuteLog.Include(x => x.Item).Where(x =>
                 x.DeletedAt == null
                 && x.PipelineId == pipelineId
                 && x.OwnerId == ownerId
@@ -33,8 +33,12 @@ namespace Homo.IotApi
                 && (startAt == null || x.CreatedAt >= startAt)
                 && (endAt == null || x.CreatedAt <= endAt)
             )
-            .OrderByDescending(x => x.Id)
-            .ToList();
+            .OrderByDescending(x => x.Id);
+            if (page != null && limit != null)
+            {
+                orderedPipelineExecuteLog = orderedPipelineExecuteLog.Skip((page.GetValueOrDefault() - 1) * limit.GetValueOrDefault()).Take(limit.GetValueOrDefault());
+            }
+            return orderedPipelineExecuteLog.ToList();
         }
 
         public static int GetCount(IotDbContext dbContext, long ownerId, long pipelineId, long? itemId, DateTime? startAt, DateTime? endAt)
