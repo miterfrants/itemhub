@@ -51,11 +51,12 @@ namespace Homo.IotApi
 
         public static List<PipelineExecuteLog> GetLastItems(IotDbContext dbContext, long ownerId, List<long> pipelineIds)
         {
-            return dbContext.PipelineExecuteLog.Where(x =>
+            var lastItemIds = dbContext.PipelineExecuteLog.Where(x =>
                 x.DeletedAt == null
                 && pipelineIds.Contains(x.PipelineId)
                 && x.OwnerId == ownerId
-            ).Include(x => x.Item).GroupBy(x => x.PipelineId).Select(g => g.OrderByDescending(x => x.CreatedAt).FirstOrDefault()).ToList();
+            ).GroupBy(x => x.PipelineId).Select(g => g.OrderByDescending(x => x.CreatedAt).FirstOrDefault()).Select(x => x.Id).ToList();
+            return dbContext.PipelineExecuteLog.Where(x => lastItemIds.Contains(x.Id)).ToList();
         }
     }
 }
