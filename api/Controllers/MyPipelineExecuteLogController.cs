@@ -29,7 +29,7 @@ namespace Homo.IotApi
         public ActionResult<dynamic> getList([FromQuery] long pipelineId, [FromQuery] int limit, [FromQuery] int page, [FromQuery] DateTime? startAt, [FromQuery] DateTime? endAt, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
         {
             long ownerId = extraPayload.Id;
-            var records = PipelineExecuteLogDataservice.GetList(_dbContext, ownerId, pipelineId, null, startAt, endAt);
+            var records = PipelineExecuteLogDataservice.GetList(_dbContext, ownerId, pipelineId, null, startAt, endAt, page, limit);
             return new
             {
                 pipelineExecuteLogs = records,
