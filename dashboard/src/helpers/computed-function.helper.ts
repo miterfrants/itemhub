@@ -5,6 +5,9 @@ export const ComputedFunctionHelpers = {
         try {
             math.evaluate(
                 funcRaw
+                    .replace(/`/gi, '')
+                    .replace(/\${sourceSensorData}/gi, '1')
+                    .replace(/\${data}/gi, '1')
                     .replace(/sourceSensorData/gi, '1')
                     .replace(/data/gi, '1')
             );

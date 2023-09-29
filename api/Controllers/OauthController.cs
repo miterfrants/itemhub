@@ -172,13 +172,15 @@ namespace Homo.IotApi
             }
 
             Subscription subscrioption = SubscriptionDataservice.GetCurrnetOne(_iotDbContext, client.OwnerId);
+            List<ViewRelationOfGroupAndUser> permissions = RelationOfGroupAndUserDataservice.GetAllByUserId(_dbContext, user.Id);
+            string[] roles = permissions.SelectMany(x => Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(x.Roles)).ToArray();
 
             string token = JWTHelper.GenerateToken(_jwtKey, 24 * 30 * 24 * 60, new
             {
                 pricingPlan = subscrioption?.PricingPlan,
                 Id = user.Id,
                 IsDevice = true
-            }, null);
+            }, roles);
 
             return new
             {
