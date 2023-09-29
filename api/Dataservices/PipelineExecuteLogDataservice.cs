@@ -59,8 +59,8 @@ namespace Homo.IotApi
                 x.DeletedAt == null
                 && pipelineIds.Contains(x.PipelineId)
                 && x.OwnerId == ownerId
-            ).GroupBy(x => x.PipelineId).Select(g => g.OrderByDescending(x => x.CreatedAt).FirstOrDefault()).Select(x => x.Id).ToList();
-            return dbContext.PipelineExecuteLog.Where(x => lastItemIds.Contains(x.Id)).ToList();
+            ).GroupBy(x => x.PipelineId).Select(g => g.OrderByDescending(x => x.CreatedAt).FirstOrDefault()).ToList().Select(x => x.Id);
+            return dbContext.PipelineExecuteLog.Include(x => x.Item).Where(x => lastItemIds.Contains(x.Id)).ToList();
         }
     }
 }
