@@ -127,6 +127,13 @@ const ComputedFunctionDialog = () => {
     };
 
     const validate = (value): { isValid: boolean; message: string } => {
+        if (!value.includes('data')) {
+            return {
+                isValid: false,
+                message: '公式中 data 為必填寫',
+            };
+        }
+
         try {
             const func = ComputedFunctionHelpers.Eval(value);
             if (!func) {

@@ -2,6 +2,9 @@ import * as math from 'mathjs';
 
 export const ComputedFunctionHelpers = {
     Eval: (funcRaw: string): ComputedFunctionType | null => {
+        if (!funcRaw.includes('data')) {
+            return null;
+        }
         try {
             const templateStingRegExp = /^`.+`$/gm;
             const matchedTemplateString = templateStingRegExp.test(funcRaw);
