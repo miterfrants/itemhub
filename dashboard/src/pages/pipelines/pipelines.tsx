@@ -35,7 +35,7 @@ import { pipelineExecuteLogDialogActions } from '@/redux/reducers/pipeline-execu
 const Pipelines = () => {
     const query = useQuery();
     const dispatch = useDispatch();
-    const limit = Number(query.get('limit') || 10);
+    const limit = Number(query.get('limit') || 60);
     const page = Number(query.get('page') || 1);
     const [searchTitle, setSearchTitle] = useState(query.get('title') || '');
     const navigate = useNavigate();
@@ -50,8 +50,8 @@ const Pipelines = () => {
     >(undefined);
     const { isLoading: isGetting, fetchApi: getPipelines } = useGetPipelinesApi(
         {
-            limit: Number(query.get('limit') || 10),
-            page: Number(query.get('page') || 1),
+            limit,
+            page,
             title: searchTitle,
         }
     );
@@ -217,7 +217,7 @@ const Pipelines = () => {
                                                 </div>
                                                 <div className="col-10 col-lg-3 p-3 p-lg-0">
                                                     <div className="fw-bold lh-base mb-2 mb-lg-0">
-                                                        {title}
+                                                        {id} {title}
                                                     </div>
                                                 </div>
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">

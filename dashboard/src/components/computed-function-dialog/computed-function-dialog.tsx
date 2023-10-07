@@ -127,6 +127,13 @@ const ComputedFunctionDialog = () => {
     };
 
     const validate = (value): { isValid: boolean; message: string } => {
+        if (!value.includes('data')) {
+            return {
+                isValid: false,
+                message: '公式中 data 為必填寫',
+            };
+        }
+
         try {
             const func = ComputedFunctionHelpers.Eval(value);
             if (!func) {
@@ -137,7 +144,13 @@ const ComputedFunctionDialog = () => {
             }
             const testValue = 0;
             const testSensorData = 0;
-            func(testValue, testSensorData);
+            const testResult = func(testValue, testSensorData);
+            if (testResult === undefined) {
+                return {
+                    isValid: false,
+                    message: '輸入的值無法驗證',
+                };
+            }
         } catch (error) {
             return {
                 isValid: false,
