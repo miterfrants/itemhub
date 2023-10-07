@@ -13,7 +13,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "bootstrap": "^5.1.3",
+        "bootstrap": "5.1.3",
         "esm": "^3.2.25",
         "swim": "git+https://github.com/miterfrants/swim.git#v1.0.3"
     },
