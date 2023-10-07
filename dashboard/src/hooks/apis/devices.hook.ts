@@ -65,25 +65,10 @@ export const useGetDevicesApi = ({
 export const useGetAllDevicesApi = () => {
     const apiPath = `${API_URL}${END_POINT.All_DEVICES}`;
 
-    const dispatch = useAppDispatch();
-    const dispatchRefreshDevices = useCallback(
-        (data: DeviceItem[]) => {
-            if (data) {
-                dispatch(
-                    devicesActions.refresh({
-                        devices: data,
-                        rowNum: data.length,
-                    })
-                );
-            }
-        },
-        [dispatch]
-    );
     const { isLoading, data, error, fetchApi } = useFetchApi<DeviceItem[]>({
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,
-        callbackFunc: dispatchRefreshDevices,
     });
 
     return {
