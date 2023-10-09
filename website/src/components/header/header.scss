@@ -37,6 +37,8 @@ header {
     }
 
     .sub-menu {
+        z-index: 1;
+
         .detail {
             display: none;
             width: calc(100% + 2em);
