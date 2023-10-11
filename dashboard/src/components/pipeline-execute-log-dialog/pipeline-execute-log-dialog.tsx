@@ -54,6 +54,7 @@ const PipelineExecuteLogDialog = () => {
         }
         if (!isOpen) {
             setLogs([]);
+            setIsEnd(false);
             return;
         }
         setLogs([...logs, ...(paginationLogs?.pipelineExecuteLogs || [])]);
