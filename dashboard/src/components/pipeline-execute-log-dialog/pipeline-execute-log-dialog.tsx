@@ -10,7 +10,7 @@ import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { PipelineExecuteLogType } from '@/types/pipeline-execute-log.type';
 import debounce from 'lodash.debounce';
 import moment from 'moment';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 const PipelineExecuteLogDialog = () => {
@@ -52,9 +52,13 @@ const PipelineExecuteLogDialog = () => {
             setIsEnd(true);
             return;
         }
+        if (!isOpen) {
+            setLogs([]);
+            return;
+        }
         setLogs([...logs, ...(paginationLogs?.pipelineExecuteLogs || [])]);
         // eslint-disable-next-line
-    }, [paginationLogs]);
+    }, [paginationLogs, isOpen]);
 
     useEffect(() => {
         if (!pipelineItemTypes || pipelineItemTypes.length === 0) {
