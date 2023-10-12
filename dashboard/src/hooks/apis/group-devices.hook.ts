@@ -5,6 +5,7 @@ import { ApiHelpers } from '@/helpers/api.helper';
 import { DeviceItem, DeviceLastActivityLog } from '@/types/devices.type';
 import { API_URL, END_POINT, HTTP_METHOD } from '@/constants/api';
 import { groupDevicesActions } from '@/redux/reducers/group-devices.reducer';
+import { groupDeviceSummariesActions } from '@/redux/reducers/group-device-summaries.reducer';
 
 interface GetDevicesResponseData {
     devices: DeviceItem[];
@@ -21,12 +22,7 @@ export const useGetGroupAllDevicesApi = (groupId: number) => {
     const dispatchRefreshDevices = useCallback(
         (data: DeviceItem[]) => {
             if (data) {
-                dispatch(
-                    groupDevicesActions.refresh({
-                        devices: data,
-                        rowNum: data.length,
-                    })
-                );
+                dispatch(groupDeviceSummariesActions.update(data));
             }
         },
         [dispatch]

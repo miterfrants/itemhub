@@ -127,7 +127,13 @@ const ComputedFunctionDialog = () => {
     };
 
     const validate = (value): { isValid: boolean; message: string } => {
-        if (!value.includes('data')) {
+        if (value.length === 0) {
+            return {
+                isValid: true,
+                message: '',
+            };
+        }
+        if (value.length > 0 && !value.includes('data')) {
             return {
                 isValid: false,
                 message: '公式中 data 為必填寫',
@@ -202,6 +208,13 @@ const ComputedFunctionDialog = () => {
                             value={computedFunc}
                             onChange={(event) => {
                                 setComputedFunc(event.currentTarget.value);
+                                if (event.currentTarget.value.length === 0) {
+                                    setState({
+                                        ...state,
+                                        sourceDeviceId: undefined,
+                                        sourcePin: undefined,
+                                    });
+                                }
                             }}
                             onKeyUp={(event) => {
                                 if (errorMessage) {
@@ -221,35 +234,33 @@ const ComputedFunctionDialog = () => {
                         )}
                     </div>
                     <div className="mt-3">
-                        {id && (
-                            <DeviceAndPinInputs
-                                isDeviceNameError={
-                                    validation.sourceDeviceId.invalid
-                                }
-                                deviceNameLabel="裝置"
-                                isPinError={validation.sourcePin.invalid}
-                                pinLabel="Pin"
-                                defaultPinValue={state?.sourcePin || ''}
-                                defaultDeviceId={state?.sourceDeviceId || 0}
-                                isDisabled={false}
-                                sensorOnly
-                                updatePin={(newPin) => {
-                                    setState({
-                                        ...state,
-                                        sourcePin: newPin,
-                                    });
-                                }}
-                                allowNullableDeviceId
-                                updateDeviceId={(newDeviceId) => {
-                                    setState({
-                                        ...state,
-                                        sourceDeviceId: newDeviceId,
-                                        sourcePin: undefined,
-                                    });
-                                }}
-                                groupId={groupId}
-                            />
-                        )}
+                        <DeviceAndPinInputs
+                            isDeviceNameError={
+                                validation.sourceDeviceId.invalid
+                            }
+                            deviceNameLabel="裝置"
+                            isPinError={validation.sourcePin.invalid}
+                            pinLabel="Pin"
+                            defaultPinValue={state?.sourcePin || ''}
+                            defaultDeviceId={state?.sourceDeviceId || 0}
+                            isDisabled={false}
+                            sensorOnly
+                            updatePin={(newPin) => {
+                                setState({
+                                    ...state,
+                                    sourcePin: newPin,
+                                });
+                            }}
+                            allowNullableDeviceId
+                            updateDeviceId={(newDeviceId) => {
+                                setState({
+                                    ...state,
+                                    sourceDeviceId: newDeviceId,
+                                    sourcePin: undefined,
+                                });
+                            }}
+                            groupId={groupId}
+                        />
                     </div>
                     <div className="text-warn mt-3 mb-4 d-flex align-items-top">
                         <div className="mt-1 me-2 bg-warn text-white rounded-circle align-items-center text-center fw-bold flex-shrink-0">

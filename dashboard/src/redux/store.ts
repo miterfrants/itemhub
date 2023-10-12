@@ -25,12 +25,15 @@ import groupDevicePinsReducer from './reducers/group-device-pins.reducer';
 import computedFunctionsReducer from './reducers/computed-functions.reducer';
 import computedFunctionDialogReducer from './reducers/computed-function-dialog.reducer';
 import pipelineExecuteLogDialogReducer from './reducers/pipeline-execute-log-dialog.reducer';
+import deviceSummariesReducer from './reducers/device-summaries.reducer';
+import groupDeviceSummariesReducer from './reducers/group-device-summaries.reducer';
 
 const store = configureStore({
     reducer: {
         universal: universalReducer,
         devices: devicesReducer,
         deviceLastActivityLogs: deviceLastActivityReducer,
+        deviceSummaries: deviceSummariesReducer,
         oauthClients: oauthClientsReducer,
         pins: pinsReducer,
         menu: menuReducer,
@@ -50,6 +53,7 @@ const store = configureStore({
         groupUsers: groupUsersReducer,
         myGroupDevices: myGroupDevicesReducer,
         groupDevices: groupDevicesReducer,
+        groupDeviceSummaries: groupDeviceSummariesReducer,
         groupDevicePins: groupDevicePinsReducer,
         computedFunctions: computedFunctionsReducer,
         computedFunctionDialog: computedFunctionDialogReducer,

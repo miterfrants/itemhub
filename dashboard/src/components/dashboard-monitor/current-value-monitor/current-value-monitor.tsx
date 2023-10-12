@@ -131,11 +131,14 @@ const CurrentValueMonitor = (props: {
             if (!computedFunctionRaw) {
                 return value;
             }
-            const sourceData = respOfComputedSourceSensorLogs
-                ? respOfComputedSourceSensorLogs[0].value
-                : respOfComputedSourceGroupSensorLogs
-                ? respOfComputedSourceGroupSensorLogs[0].value
-                : null;
+            const sourceData =
+                respOfComputedSourceSensorLogs &&
+                respOfComputedSourceSensorLogs.length > 0
+                    ? respOfComputedSourceSensorLogs[0].value
+                    : respOfComputedSourceGroupSensorLogs &&
+                      respOfComputedSourceGroupSensorLogs.length > 0
+                    ? respOfComputedSourceGroupSensorLogs[0].value
+                    : null;
             const func = ComputedFunctionHelpers.Eval(
                 computedFunctionRaw || ''
             );

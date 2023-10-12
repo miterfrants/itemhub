@@ -173,11 +173,14 @@ const Pin = (props: {
             return;
         }
 
-        const sourceData = respOfComputedSourceSensorLog
-            ? respOfComputedSourceSensorLog[0].value
-            : respOfComputedSourceGroupSensorLog
-            ? respOfComputedSourceGroupSensorLog[0].value
-            : null;
+        const sourceData =
+            respOfComputedSourceSensorLog &&
+            respOfComputedSourceSensorLog.length > 0
+                ? respOfComputedSourceSensorLog[0].value
+                : respOfComputedSourceGroupSensorLog &&
+                  respOfComputedSourceGroupSensorLog.length > 0
+                ? respOfComputedSourceGroupSensorLog[0].value
+                : null;
         setSensorComputedValue(
             `${valueFromPorps?.toString() || ''} -> ${func(
                 valueFromPorps,
