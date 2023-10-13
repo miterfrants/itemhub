@@ -103,6 +103,7 @@ const CurrentValueMonitor = (props: {
         skipErrorToaster: true,
     });
 
+    const getComputedSourceSensorLogsRef = useRef<() => void>(); // for pooling
     const {
         fetchApi: getComputedSourceSensorLogs,
         data: respOfComputedSourceSensorLogs,
@@ -113,7 +114,7 @@ const CurrentValueMonitor = (props: {
         page: 1,
         endAt: lastDataCreatedAt,
     });
-
+    const getComputedSourceGroupSensorLogsRef = useRef<() => void>(); // for pooling
     const {
         fetchApi: getComputedSourceGroupSensorLogs,
         data: respOfComputedSourceGroupSensorLogs,
@@ -144,11 +145,8 @@ const CurrentValueMonitor = (props: {
         // eslint-disable-next-line
         [lastDataCreatedAt, computedFunctionRaw, pointer, sourceSensorData]
     );
-    useEffect(() => {
-        console.log('lastDataCreatedAt changed:', lastDataCreatedAt);
-    }, [lastDataCreatedAt]);
 
-    const startPooling = useCallback(() => {
+    const startPooling = () => {
         clearTimeout(timer.current);
         if (!isLiveData) {
             return;
@@ -159,24 +157,25 @@ const CurrentValueMonitor = (props: {
             getSensorLogs();
         }
 
-        if (groupId && computedSourceDeviceId && computedSourcePin) {
-            getComputedSourceGroupSensorLogs();
-        } else if (computedSourceDeviceId && computedSourcePin) {
-            getComputedSourceSensorLogs();
+        if (
+            groupId &&
+            computedSourceDeviceId &&
+            computedSourcePin &&
+            getComputedSourceGroupSensorLogsRef.current
+        ) {
+            getComputedSourceGroupSensorLogsRef.current();
+        } else if (
+            computedSourceDeviceId &&
+            computedSourcePin &&
+            getComputedSourceSensorLogsRef.current
+        ) {
+            getComputedSourceSensorLogsRef.current();
         }
         timer.current = setTimeout(() => {
-            console.log(lastDataCreatedAt);
             startPooling();
         }, 5000);
         // eslint-disable-next-line
-    }, [
-        isLiveData,
-        getSensorLogs,
-        getGroupSensorLogs,
-        getComputedSourceGroupSensorLogs,
-        getComputedSourceSensorLogs,
-        lastDataCreatedAt,
-    ]);
+    };
 
     useEffect(() => {
         setIsLiveData(isLiveDataFromProps);
@@ -216,6 +215,10 @@ const CurrentValueMonitor = (props: {
         };
         //eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        getComputedSourceSensorLogsRef.current = getComputedSourceSensorLogs;
+    }, [getComputedSourceSensorLogs]);
 
     useEffect(() => {
         if (computedSourceDeviceId && computedSourcePin && groupId) {

@@ -175,7 +175,6 @@ export const useUpdateDeviceApi = ({
         payload: editedData,
         initialData: null,
         callbackFunc: (data) => {
-            console.log(data);
             dispatchUpdate(data);
             dispatchUpdateSumamries(data);
         },
