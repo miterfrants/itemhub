@@ -4,13 +4,13 @@ import { useGetAllDevicesApi } from '@/hooks/apis/devices.hook';
 import { useGetDevicePinsApi } from '@/hooks/apis/device-pin.hook';
 import { KeyValuePair } from '@/types/common.type';
 import { useAppSelector } from '@/hooks/redux.hook';
-import { selectDevices } from '@/redux/reducers/devices.reducer';
 import { DeviceItem, PinItem } from '@/types/devices.type';
 import { PIN_TYPES } from '@/constants/pin-type';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import { useGetGroupAllDevicesApi } from '@/hooks/apis/group-devices.hook';
-import { selectGroupDevices } from '@/redux/reducers/group-devices.reducer';
 import { useGetGroupDevicePinsApi } from '@/hooks/apis/group-device-pin.hook';
+import { selectDeviceSummaries } from '@/redux/reducers/device-summaries.reducer';
+import { selectGroupDeviceSummaries } from '@/redux/reducers/group-device-summaries.reducer';
 
 const DeviceAndPinInputs = ({
     isDeviceNameError,
@@ -51,8 +51,8 @@ const DeviceAndPinInputs = ({
     );
     const [devicePins, setDevicePins] = useState<PinItem[]>();
 
-    const devicesFromPerson = useAppSelector(selectDevices).devices;
-    const devicesFromGroup = useAppSelector(selectGroupDevices).devices;
+    const devicesFromPerson = useAppSelector(selectDeviceSummaries);
+    const devicesFromGroup = useAppSelector(selectGroupDeviceSummaries);
     const [filteredDevices, setFilteredDevices] = useState<DeviceItem[]>(
         [] as DeviceItem[]
     );

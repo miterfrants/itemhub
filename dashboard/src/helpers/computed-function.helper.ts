@@ -51,7 +51,7 @@ export const ComputedFunctionHelpers = {
         const testCode = testNode.compile();
         testCode.evaluate(testScope);
         return (data, sourceSensorData) => {
-            const scope = { data, sourceSensorData };
+            const scope = { data, sourceSensorData: sourceSensorData || 0 };
             const node = math.parse(funcRaw);
             const code = node.compile();
             return code.evaluate(scope);
