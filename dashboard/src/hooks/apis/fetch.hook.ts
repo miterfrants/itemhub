@@ -32,6 +32,7 @@ export const useFetchApi = <T>({
     const fetchApi = useCallback(async () => {
         try {
             setIsLoading(true);
+            setData(null);
             setError(null);
             const result = await ApiHelpers.SendRequestWithToken<T>({
                 apiPath,

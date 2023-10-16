@@ -57,7 +57,16 @@ const PipelineExecuteLogDialog = () => {
             setIsEnd(false);
             return;
         }
-        setLogs([...logs, ...(paginationLogs?.pipelineExecuteLogs || [])]);
+        const filteredLogs = logs.filter(
+            (log) =>
+                !paginationLogs?.pipelineExecuteLogs
+                    .map((item) => item.id)
+                    .includes(log.id)
+        );
+        setLogs([
+            ...filteredLogs,
+            ...(paginationLogs?.pipelineExecuteLogs || []),
+        ]);
         // eslint-disable-next-line
     }, [paginationLogs, isOpen]);
 

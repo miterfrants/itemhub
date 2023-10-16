@@ -3,11 +3,7 @@ import { useAppDispatch } from '@/hooks/redux.hook';
 import { useFetchApi } from '@/hooks/apis/fetch.hook';
 import { devicesActions } from '@/redux/reducers/devices.reducer';
 import { ApiHelpers } from '@/helpers/api.helper';
-import {
-    DeviceItem,
-    DeviceLastActivityLog,
-    PinItem,
-} from '@/types/devices.type';
+import { DeviceItem, DeviceLastActivityLog } from '@/types/devices.type';
 import {
     API_URL,
     END_POINT,
@@ -15,6 +11,7 @@ import {
     RESPONSE_STATUS,
 } from '@/constants/api';
 import { ResponseOK } from '@/types/response.type';
+import { deviceSummariesActions } from '@/redux/reducers/device-summaries.reducer';
 
 interface GetDevicesResponseData {
     devices: DeviceItem[];
@@ -64,11 +61,21 @@ export const useGetDevicesApi = ({
 
 export const useGetAllDevicesApi = () => {
     const apiPath = `${API_URL}${END_POINT.All_DEVICES}`;
+    const dispatch = useAppDispatch();
+    const dispatchRefreshDeviceSummaries = useCallback(
+        (data: DeviceItem[]) => {
+            if (data) {
+                dispatch(deviceSummariesActions.update(data));
+            }
+        },
+        [dispatch]
+    );
 
     const { isLoading, data, error, fetchApi } = useFetchApi<DeviceItem[]>({
         apiPath,
         method: HTTP_METHOD.GET,
         initialData: null,
+        callbackFunc: dispatchRefreshDeviceSummaries,
     });
 
     return {
@@ -146,6 +153,19 @@ export const useUpdateDeviceApi = ({
         [editedData, id, dispatch]
     );
 
+    const dispatchUpdateSumamries = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(
+                    deviceSummariesActions.update([
+                        { ...editedData, id } as DeviceItem,
+                    ])
+                );
+            }
+        },
+        [editedData, id, dispatch]
+    );
+
     let apiPath = `${API_URL}${END_POINT.DEVICE}`;
     apiPath = apiPath.replace(':id', id.toString());
 
@@ -154,7 +174,10 @@ export const useUpdateDeviceApi = ({
         method: HTTP_METHOD.PATCH,
         payload: editedData,
         initialData: null,
-        callbackFunc: dispatchUpdate,
+        callbackFunc: (data) => {
+            dispatchUpdate(data);
+            dispatchUpdateSumamries(data);
+        },
     });
 
     return {
@@ -167,10 +190,19 @@ export const useUpdateDeviceApi = ({
 
 export const useDeleteDevicesApi = (ids: number[]) => {
     const dispatch = useAppDispatch();
-    const dispatchDeleteDeivce = useCallback(
+    const dispatchDeleteDevice = useCallback(
         (data: ResponseOK) => {
             if (data.status === RESPONSE_STATUS.OK) {
                 dispatch(devicesActions.deleteMultiple({ ids }));
+            }
+        },
+        [ids, dispatch]
+    );
+
+    const dispatchDeleteDeviceSummary = useCallback(
+        (data: ResponseOK) => {
+            if (data.status === RESPONSE_STATUS.OK) {
+                dispatch(deviceSummariesActions.delete(ids));
             }
         },
         [ids, dispatch]
@@ -183,7 +215,10 @@ export const useDeleteDevicesApi = (ids: number[]) => {
         method: HTTP_METHOD.DELETE,
         payload: ids,
         initialData: null,
-        callbackFunc: dispatchDeleteDeivce,
+        callbackFunc: (data) => {
+            dispatchDeleteDevice(data);
+            dispatchDeleteDeviceSummary(data);
+        },
     });
 
     return {
@@ -227,6 +262,12 @@ export const useCreateDeviceApi = (
         },
         [dispatch]
     );
+    const dispatchUpdateSummaries = useCallback(
+        (response: DeviceItem) => {
+            dispatch(deviceSummariesActions.update([response]));
+        },
+        [dispatch]
+    );
 
     const apiPath = `${API_URL}${END_POINT.DEVICES}`;
 
@@ -239,7 +280,10 @@ export const useCreateDeviceApi = (
             protocol,
         },
         initialData: null,
-        callbackFunc: dispatchRefresh,
+        callbackFunc: (data) => {
+            dispatchRefresh(data);
+            dispatchUpdateSummaries(data);
+        },
     });
 };
 
