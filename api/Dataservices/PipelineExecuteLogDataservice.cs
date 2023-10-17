@@ -7,6 +7,47 @@ namespace Homo.IotApi
 {
     public class PipelineExecuteLogDataservice
     {
+        public static long? DeleteExpiredDataAndGetLatestItemId(IotDbContext dbContext, int page = 1, int limit = 50, long? latestItemId = null)
+        {
+            List<PipelineExecuteLog> data = dbContext.PipelineExecuteLog
+                .Where(x =>
+                    x.DeletedAt == null
+                    && (latestItemId == null || x.Id < latestItemId)
+                )
+                .OrderByDescending(x => x.Id)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToList();
+
+            long? latestId = data.LastOrDefault()?.Id;
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<long> shouldBeDeletedIds = data.GroupJoin(dbContext.Subscription, x => x.OwnerId, y => y.OwnerId, (x, y) => new
+            {
+                x.Id,
+                x.CreatedAt,
+            })
+            .Select(x => new
+            {
+                x.Id,
+                x.CreatedAt,
+                SavingSeconds = 24 * 60 * 60
+            })
+            .Where(x => x.CreatedAt.AddSeconds(x.SavingSeconds) < DateTime.Now)
+            .Select(x => x.Id)
+            .ToList<long>();
+
+            dbContext.PipelineExecuteLog.Where(x => shouldBeDeletedIds.Contains(x.Id)).DeleteFromQuery();
+            dbContext.SaveChanges();
+
+
+            return latestId;
+        }
+
         public static PipelineExecuteLog Create(IotDbContext dbContext, long ownerId, DTOs.PipelineExecuteLog dto)
         {
             PipelineExecuteLog record = new PipelineExecuteLog();
