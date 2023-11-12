@@ -13,6 +13,7 @@ namespace Homo.IotApi
                 .Where(x =>
                     x.DeletedAt == null
                     && (latestItemId == null || x.Id < latestItemId)
+                    && (x.CreatedAt.AddSeconds(24 * 60 * 60) < DateTime.Now)
                 )
                 .OrderByDescending(x => x.Id)
                 .Skip((page - 1) * limit)

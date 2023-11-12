@@ -166,6 +166,7 @@ namespace Homo.IotApi
                 entity.HasIndex(p => new { p.CreatedAt });
                 entity.HasIndex(p => new { p.DeviceId });
                 entity.HasIndex(p => new { p.Pin });
+                entity.HasIndex(p => new { p.LogType });
             });
 
             modelBuilder.Entity<Pipeline>(entity =>

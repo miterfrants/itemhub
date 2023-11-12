@@ -25,19 +25,18 @@ import { RESPONSE_STATUS } from '@/constants/api';
 import { useDispatch } from 'react-redux';
 import { dialogActions, DialogTypeEnum } from '@/redux/reducers/dialog.reducer';
 import { PipelineType } from '@/types/pipeline.type';
-import { useGetPipelineLastExecuteLogs } from '@/hooks/apis/pipeline-execute-logs.hook';
 import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
-import moment from 'moment';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import historyIcon from '@/assets/images/history.png';
 import { pipelineExecuteLogDialogActions } from '@/redux/reducers/pipeline-execute-log-dialog.reducer';
+import LastPipelineLog from '@/components/logs/last-pipeline-log';
 
 const Pipelines = () => {
     const query = useQuery();
     const dispatch = useDispatch();
     const limit = Number(query.get('limit') || 60);
     const page = Number(query.get('page') || 1);
-    const [searchTitle, setSearchTitle] = useState(query.get('title') || '');
+    const searchTitle = query.get('title') || '';
     const navigate = useNavigate();
     const [refreshFlag, setRefreshFlag] = useState(false);
     const state: PipelineState = useAppSelector(selectPipelines);
@@ -59,11 +58,6 @@ const Pipelines = () => {
     const { fetchApi: getPipelineItemTypes } = useGetPipelineItemTypes();
 
     const { pipelineItemTypes } = useAppSelector(selectUniversal);
-
-    const { fetchApi: getLastExecuteLogs, data: logs } =
-        useGetPipelineLastExecuteLogs({
-            pipelineIds: pipelineIds.current,
-        });
 
     const { data: responseOfDelete, fetchApi: deletePipeline } =
         useDeletePipelinesApi([shouldBeDeleteId]);
@@ -119,13 +113,6 @@ const Pipelines = () => {
             : [];
         setRowNum(state.rowNum || 0);
     }, [state]);
-
-    useEffect(() => {
-        if (pipelineIds.current.length > 0) {
-            getLastExecuteLogs();
-        }
-        // eslint-disable-next-line
-    }, [pipelineIds.current]);
 
     useEffect(() => {
         if (!shouldBeDeleteId) {
@@ -199,14 +186,6 @@ const Pipelines = () => {
                                 </div>
                                 <div className="pipeline-list">
                                     {pipelines.map(({ id, title, isRun }) => {
-                                        const log = logs?.find(
-                                            (item) => item.pipelineId === id
-                                        );
-                                        const itemType = pipelineItemTypes.find(
-                                            (item) =>
-                                                item.value ===
-                                                log?.item.itemType
-                                        );
                                         return (
                                             <div
                                                 className="row list border-bottom border-black border-opacity-10 p-0 py-lg-4 px-lg-3 mx-0 align-items-center"
@@ -239,19 +218,9 @@ const Pipelines = () => {
                                                         }}
                                                         className="me-2 opacity-75 btn-history"
                                                     />
-                                                    {`${
-                                                        !log
-                                                            ? '無執行記錄'
-                                                            : `${moment(
-                                                                  log.createdAt
-                                                              ).format(
-                                                                  'yyyy-MM-DD HH:mm:ss'
-                                                              )} ${
-                                                                  itemType
-                                                                      ? itemType.label
-                                                                      : ''
-                                                              }`
-                                                    }`}
+                                                    <LastPipelineLog
+                                                        pipelineId={id}
+                                                    />
                                                 </div>
                                                 <div className="col-2 d-lg-none bg-black bg-opacity-5 text-black text-opacity-45 p-3">
                                                     狀態

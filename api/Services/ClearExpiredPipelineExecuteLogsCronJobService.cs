@@ -30,10 +30,10 @@ namespace Homo.IotApi
             iotBuilder.UseMySql(_dbc, serverVersion);
             IotDbContext _iotDbContext = new IotDbContext(iotBuilder.Options);
             string lockerKey = CryptographicHelper.GetSpecificLengthRandomString(12, true);
-            SystemConfigDataservice.OccupeLocker(_iotDbContext, SYSTEM_CONFIG.CLEAR_EXPIRED_PIN_DATA_LOCKER, lockerKey);
+            SystemConfigDataservice.OccupeLocker(_iotDbContext, SYSTEM_CONFIG.CLEAR_EXPIRED_EXECUTE_LOG_LOCKER, lockerKey);
 
             await Task.Delay(5000);
-            SystemConfig locker = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.CLEAR_EXPIRED_PIN_DATA_LOCKER);
+            SystemConfig locker = SystemConfigDataservice.GetOne(_iotDbContext, SYSTEM_CONFIG.CLEAR_EXPIRED_EXECUTE_LOG_LOCKER);
             if (locker.Value != lockerKey)
             {
                 return Task.CompletedTask;
@@ -62,7 +62,6 @@ namespace Homo.IotApi
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("ClearExpiredPipelineExecuteLogsCronJobService is stopping.");
             return base.StopAsync(cancellationToken);
         }
     }
