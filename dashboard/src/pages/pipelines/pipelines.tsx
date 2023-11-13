@@ -28,7 +28,7 @@ import { PipelineType } from '@/types/pipeline.type';
 import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
 import historyIcon from '@/assets/images/history.png';
-import { pipelineExecuteLogDialogActions } from '@/redux/reducers/pipeline-execute-log-dialog.reducer';
+import { pipelineLogDialogActions } from '@/redux/reducers/pipeline-log-dialog.reducer';
 import LastPipelineLog from '@/components/logs/last-pipeline-log';
 
 const Pipelines = () => {
@@ -208,7 +208,7 @@ const Pipelines = () => {
                                                         role="button"
                                                         onClick={() => {
                                                             dispatch(
-                                                                pipelineExecuteLogDialogActions.open(
+                                                                pipelineLogDialogActions.open(
                                                                     {
                                                                         pipelineId:
                                                                             id,

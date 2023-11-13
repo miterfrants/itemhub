@@ -1,27 +1,27 @@
-import './pipeline-execute-log-dialog.scss';
-import { useGetPaginationPipelineExecuteLogsApi } from '@/hooks/apis/pipeline-execute-logs.hook';
+import { useGetPaginationLogsApi } from '@/hooks/apis/logs.hook';
+import './pipeline-log-dialog.scss';
 import { useGetPipelineItemTypes } from '@/hooks/apis/universal.hook';
 import { useAppSelector } from '@/hooks/redux.hook';
 import {
-    pipelineExecuteLogDialogActions,
-    selectPipelineExecuteLogDialog,
-} from '@/redux/reducers/pipeline-execute-log-dialog.reducer';
+    pipelineLogDialogActions,
+    selectPipelineLogDialog,
+} from '@/redux/reducers/pipeline-log-dialog.reducer';
 import { selectUniversal } from '@/redux/reducers/universal.reducer';
-import { PipelineExecuteLogType } from '@/types/pipeline-execute-log.type';
 import debounce from 'lodash.debounce';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { LogType } from '@/types/log.type';
 
-const PipelineExecuteLogDialog = () => {
-    const dialog = useAppSelector(selectPipelineExecuteLogDialog);
+const PipelineLogDialog = () => {
+    const dialog = useAppSelector(selectPipelineLogDialog);
     const dispatch = useDispatch();
     const { pipelineId, isOpen } = dialog;
     const [page, setPage] = useState(1);
-    const [logs, setLogs] = useState<PipelineExecuteLogType[]>([]);
+    const [logs, setLogs] = useState<LogType[]>([]);
     const [isEnd, setIsEnd] = useState(false);
     const { fetchApi: getPaginationLogs, data: paginationLogs } =
-        useGetPaginationPipelineExecuteLogsApi({
+        useGetPaginationLogsApi({
             pipelineId: pipelineId || 0,
             page: page,
             limit: 50,
@@ -48,7 +48,7 @@ const PipelineExecuteLogDialog = () => {
     }, [page, pipelineId]);
 
     useEffect(() => {
-        if (JSON.stringify(paginationLogs?.pipelineExecuteLogs) === '[]') {
+        if (JSON.stringify(paginationLogs?.logs) === '[]') {
             setIsEnd(true);
             return;
         }
@@ -59,14 +59,9 @@ const PipelineExecuteLogDialog = () => {
         }
         const filteredLogs = logs.filter(
             (log) =>
-                !paginationLogs?.pipelineExecuteLogs
-                    .map((item) => item.id)
-                    .includes(log.id)
+                !paginationLogs?.logs.map((item) => item.id).includes(log.id)
         );
-        setLogs([
-            ...filteredLogs,
-            ...(paginationLogs?.pipelineExecuteLogs || []),
-        ]);
+        setLogs([...filteredLogs, ...(paginationLogs?.logs || [])]);
         // eslint-disable-next-line
     }, [paginationLogs, isOpen]);
 
@@ -92,9 +87,6 @@ const PipelineExecuteLogDialog = () => {
                     }}
                 >
                     {logs.map((log) => {
-                        const itemType = pipelineItemTypes?.find(
-                            (item) => item.value === log?.item.itemType
-                        );
                         return (
                             <div key={log.id} className="row">
                                 <div className="col-5">
@@ -102,15 +94,14 @@ const PipelineExecuteLogDialog = () => {
                                         'yyyy-MM-DD hh:mm:ss'
                                     )}
                                 </div>
-                                <div className="col-3">{itemType?.label}</div>
-                                <div className="col-4">{log?.message}</div>
+                                <div className="col-7">{log?.message}</div>
                             </div>
                         );
                     })}
                 </div>
                 <div
                     onClick={() => {
-                        dispatch(pipelineExecuteLogDialogActions.close());
+                        dispatch(pipelineLogDialogActions.close());
                     }}
                     className="position-absolute top-0 btn-close end-0 me-3 mt-2"
                     role="button"
@@ -120,4 +111,4 @@ const PipelineExecuteLogDialog = () => {
     );
 };
 
-export default PipelineExecuteLogDialog;
+export default PipelineLogDialog;

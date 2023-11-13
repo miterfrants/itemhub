@@ -1,21 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@/redux/store';
 
-export type PipelineExecuteLogDialogState = {
+export type PipelineLogDialogState = {
     isOpen: boolean;
     pipelineId?: number;
 };
 
-export const pipelineExecuteLogDialogSlice = createSlice({
-    name: 'pipelineExecuteLogDialog',
+export const pipelineLogDialogSlice = createSlice({
+    name: 'pipelineLogDialog',
     initialState: {
         isOpen: false,
         pipelineId: undefined,
-    } as PipelineExecuteLogDialogState,
+    } as PipelineLogDialogState,
     reducers: {
         open: (
             state,
-            action: PayloadAction<Partial<PipelineExecuteLogDialogState>>
+            action: PayloadAction<Partial<PipelineLogDialogState>>
         ) => {
             const { pipelineId } = action.payload;
 
@@ -32,10 +32,9 @@ export const pipelineExecuteLogDialogSlice = createSlice({
     },
 });
 
-export const pipelineExecuteLogDialogActions =
-    pipelineExecuteLogDialogSlice.actions;
+export const pipelineLogDialogActions = pipelineLogDialogSlice.actions;
 
-export const selectPipelineExecuteLogDialog = (state: RootState) =>
-    state.pipelineExecuteLogDialog;
+export const selectPipelineLogDialog = (state: RootState) =>
+    state.pipelineLogDialog;
 
-export default pipelineExecuteLogDialogSlice.reducer;
+export default pipelineLogDialogSlice.reducer;

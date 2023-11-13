@@ -7,7 +7,30 @@ namespace Homo.IotApi
 {
     public class LogDataservice
     {
+        public static long? DeleteExpiredDataAndGetLatestItemId(IotDbContext dbContext, int page = 1, int limit = 50, long? latestItemId = null)
+        {
+            List<Log> data = dbContext.Log
+                .Where(x =>
+                    (latestItemId == null || x.Id < latestItemId)
+                    && (x.CreatedAt.AddSeconds(3 * 24 * 60 * 60) < DateTime.Now)
+                )
+                .OrderByDescending(x => x.Id)
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .ToList();
 
+            long? latestId = data.LastOrDefault()?.Id;
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            List<long> shouldBeDeletedIds = data.Select(x => x.Id).ToList();
+            dbContext.Log.Where(x => shouldBeDeletedIds.Contains(x.Id)).DeleteFromQuery();
+            dbContext.SaveChanges();
+            return latestId;
+        }
         public static Log Create(IotDbContext dbContext, DTOs.Log dto, LOG_TYPE logType = LOG_TYPE.COMMON)
         {
             Log record = new Log();
@@ -33,7 +56,7 @@ namespace Homo.IotApi
             )
             .OrderByDescending(x => x.Id)
             .Skip((page - 1) * limit)
-            .Take(page)
+            .Take(limit)
             .ToList();
         }
 

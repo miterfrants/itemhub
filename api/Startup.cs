@@ -174,7 +174,13 @@ namespace Homo.IotApi
             services.AddCronJob<ClearExpiredPipelineExecuteLogsCronJobService>(c =>
                 {
                     c.TimeZoneInfo = TimeZoneInfo.Local;
-                    c.CronExpression = @"* * * * *";
+                    c.CronExpression = @"0 0 * * *";
+                });
+
+            services.AddCronJob<ClearExpiredPipelineLogsCronJobService>(c =>
+                {
+                    c.TimeZoneInfo = TimeZoneInfo.Local;
+                    c.CronExpression = @"0 0 * * *";
                 });
 
             services.AddSwaggerGen(c =>
