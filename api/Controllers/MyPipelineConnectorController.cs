@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Homo.Api;
 using Homo.Core.Constants;
-using Homo.AuthApi;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq;
 
 namespace Homo.IotApi
 {

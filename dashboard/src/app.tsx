@@ -22,7 +22,7 @@ import RealtimeDeviceImageDialog from './components/realtime-device-image-dialog
 import moment from 'moment';
 import { useGetGroupNamesApi } from './hooks/apis/groups.hook';
 import ComputedFunctionDialog from './components/computed-function-dialog/computed-function-dialog';
-import PipelineExecuteLogDialog from './components/pipeline-execute-log-dialog/pipeline-execute-log-dialog';
+import PipelineLogDialog from './components/pipeline-log-dialog/pipeline-log-dialog';
 
 const isDev = import.meta.env.VITE_ENV === 'dev';
 
@@ -145,7 +145,7 @@ const App = () => {
             <RealtimeDeviceImageDialog />
             <OfflineNotificationDialog />
             <ComputedFunctionDialog />
-            <PipelineExecuteLogDialog />
+            <PipelineLogDialog />
             <Toaster />
         </div>
     ) : (

@@ -3,6 +3,7 @@ using System;
 using Homo.IotApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IotApi.Migrations
 {
     [DbContext(typeof(IotDbContext))]
-    partial class IotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231112120644_AddPiplelineTypeLog")]
+    partial class AddPiplelineTypeLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -492,7 +494,7 @@ namespace IotApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long?>("DeviceId")
+                    b.Property<long>("DeviceId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("LogType")
@@ -505,9 +507,6 @@ namespace IotApi.Migrations
                     b.Property<string>("Pin")
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
-
-                    b.Property<long?>("PipelineId")
-                        .HasColumnType("bigint");
 
                     b.Property<long?>("UserId")
                         .HasColumnType("bigint");

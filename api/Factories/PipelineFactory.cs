@@ -66,6 +66,10 @@ namespace Homo.IotApi
             {
                 return new CheckLastOnlinePipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
             }
+            else if (pipelineItemType == PIPELINE_ITEM_TYPE.LOG)
+            {
+                return new LogPipeline(id, pipelineId, ownerId, DBConnectionString, isHead, isEnd, isVIP, rawData);
+            }
             else
             {
                 return null;
