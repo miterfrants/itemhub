@@ -15,6 +15,7 @@ export const END_POINT = {
     PIPELINES: 'my/pipelines',
     PIPELINE: 'my/pipelines/:id',
     PIPELINE_EXECUTE_LOGS: 'my/pipeline-execute-logs',
+    LOGS: 'log',
     PIPELINE_LAST_EXECUTE_LOGS: 'my/pipeline-execute-logs/last',
     PIPELINE_RUN_OR_STOP: 'my/pipelines/:id/toggle',
     DEVICES: 'my/devices',

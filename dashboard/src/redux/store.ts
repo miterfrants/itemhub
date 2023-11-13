@@ -24,7 +24,7 @@ import groupDevicesReducer from './reducers/group-devices.reducer';
 import groupDevicePinsReducer from './reducers/group-device-pins.reducer';
 import computedFunctionsReducer from './reducers/computed-functions.reducer';
 import computedFunctionDialogReducer from './reducers/computed-function-dialog.reducer';
-import pipelineExecuteLogDialogReducer from './reducers/pipeline-execute-log-dialog.reducer';
+import pipelineLogDialogReducer from './reducers/pipeline-log-dialog.reducer';
 import deviceSummariesReducer from './reducers/device-summaries.reducer';
 import groupDeviceSummariesReducer from './reducers/group-device-summaries.reducer';
 
@@ -57,7 +57,7 @@ const store = configureStore({
         groupDevicePins: groupDevicePinsReducer,
         computedFunctions: computedFunctionsReducer,
         computedFunctionDialog: computedFunctionDialogReducer,
-        pipelineExecuteLogDialog: pipelineExecuteLogDialogReducer,
+        pipelineLogDialog: pipelineLogDialogReducer,
     },
     middleware: (getDefaultMiddlware) => {
         return getDefaultMiddlware({

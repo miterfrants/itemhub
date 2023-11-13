@@ -32,5 +32,21 @@ namespace Homo.IotApi
             return new { status = "OK" };
         }
 
+        [SwaggerOperation(
+            Tags = new[] { "裝置相關" },
+            Summary = "Pipeline - Log",
+            Description = ""
+        )]
+        [HttpGet]
+        public ActionResult<dynamic> GetPipelineLogs([FromQuery] long pipelineId, [FromQuery] int page, [FromQuery] int limit, Homo.AuthApi.DTOs.JwtExtraPayload extraPayload)
+        {
+            long ownerId = extraPayload.Id;
+            return new
+            {
+                logs = LogDataservice.GetList(_dbContext, ownerId, pipelineId, page, limit),
+                rowNum = LogDataservice.GetRowNum(_dbContext, ownerId, pipelineId)
+            };
+        }
+
     }
 }

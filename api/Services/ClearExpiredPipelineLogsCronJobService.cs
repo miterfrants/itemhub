@@ -7,24 +7,25 @@ using Homo.Core.Helpers;
 
 namespace Homo.IotApi
 {
-    public class ClearExpiredPipelineExecuteLogsCronJobService : CronJobService
+    public class ClearExpiredPipelineLogsCronJobService : CronJobService
     {
         private readonly string _dbc;
 
-        public ClearExpiredPipelineExecuteLogsCronJobService(IScheduleConfig<ClearExpiredPipelineExecuteLogsCronJobService> config, IServiceProvider serviceProvider, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, IOptions<AppSettings> appSettings)
-            : base(config.CronExpression, config.TimeZoneInfo, serviceProvider, appSettings, "ClearExpiredPipelineExecuteLogsCronJobService", env)
+        public ClearExpiredPipelineLogsCronJobService(IScheduleConfig<ClearExpiredPipelineLogsCronJobService> config, IServiceProvider serviceProvider, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env, IOptions<AppSettings> appSettings)
+            : base(config.CronExpression, config.TimeZoneInfo, serviceProvider, appSettings, "ClearExpiredPipelineLogsCronJobService", env)
         {
             _dbc = appSettings.Value.Secrets.DBConnectionString;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine("ClearExpiredPipelineExecuteLogsCronJobService starts.");
+            Console.WriteLine("ClearExpiredPipelineLogsCronJobService starts.");
             return base.StartAsync(cancellationToken);
         }
 
         public override async Task<dynamic> DoWork(CancellationToken cancellationToken)
         {
+            Console.WriteLine("ClearExpiredPipelineLogsCronJobService do work.");
             DbContextOptionsBuilder<IotDbContext> iotBuilder = new DbContextOptionsBuilder<IotDbContext>();
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             iotBuilder.UseMySql(_dbc, serverVersion);
@@ -49,7 +50,7 @@ namespace Homo.IotApi
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
             iotBuilder.UseMySql(_dbc, serverVersion);
             IotDbContext _iotDbContext = new IotDbContext(iotBuilder.Options);
-            long? currentLatestId = PipelineExecuteLogDataservice.DeleteExpiredDataAndGetLatestItemId(_iotDbContext, 1, 500, latestId);
+            long? currentLatestId = LogDataservice.DeleteExpiredDataAndGetLatestItemId(_iotDbContext, 1, 500, latestId);
             if (currentLatestId == null)
             {
                 Task task = new Task<dynamic>(() => new { });
