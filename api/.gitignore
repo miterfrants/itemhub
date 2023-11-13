@@ -6,3 +6,4 @@ node_modules
 secrets.json
 secrets.migration.json
 package-lock.json
+global.json
