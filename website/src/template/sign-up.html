@@ -12,37 +12,12 @@
                 </div>
             </div>
 
-            <label class="row mt-4 d-flex align-items-center">
-                <div class="col-12 mb-2">手機驗證</div>
-                <div class="col-12 col-xs-7 col-sm-7 col-md-12 col-xl-7">
-                    <input onkeyup="controller.validatePhone" onchange="controller.validatePhone" data-field="phone"
-                        class="form-control" type="text" placeholder="請輸入手機號碼" />
-                </div>
-                <div
-                    class="col-7 col-xs-5 col-sm-5 col-md-7 col-xl-5 align-items-cetner d-flex mt-3 mt-sm-0 mt-md-3 mt-lg-3 mt-xl-0">
-                    <button onclick="controller.sendCodeToPhone"
-                        class="btn btn-send-sms w-100 btn-primary rounded-pill px-4 text-nowrap py-25"
-                        disabled>發送驗證碼至手機</button>
-                </div>
-                <div class="col-12 invalid-message text-danger mt-2">{phoneInvalidMessage}</div>
-            </label>
-
-            <label class="row mt-4">
-                <div class="col-12 mb-2">驗證碼</div>
-                <div class="col-12">
-                    <input allow-empty data-field="code" onkeyup="controller.validateCodeAndGetValidatedPhoneToken"
-                        onchange="controller.validateCodeAndGetValidatedPhoneToken" class="form-control" type="text"
-                        placeholder="請輸入驗證碼" disabled />
-                </div>
-                <div class="col-12 invalid-message text-danger">{codeInvalidMessage}</div>
-            </label>
-
             <label class="row mt-4">
                 <div class="col-12 mb-2">密碼</div>
                 <div class="col-12">
                     <input data-field="password" onkeyup="controller.validatePassword"
                         onchange="controller.validatePassword" class="form-control" type="password"
-                        placeholder="請輸入 12 碼以上的英數" disabled />
+                        placeholder="請輸入 12 碼以上的英數" />
                 </div>
                 <div class="col-12 invalid-message text-danger">{passwordInvalidMessage}</div>
             </label>

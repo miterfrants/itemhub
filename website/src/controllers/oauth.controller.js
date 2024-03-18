@@ -73,10 +73,10 @@ export class OauthController extends RoutingController {
         }
 
         if (opener) {
-            opener.history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+            opener.history.pushState({}, '', `/auth/sign-up/?verifyToken=${resp.data.token}`);
             window.close();
         } else {
-            history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+            history.pushState({}, '', `/auth/sign-up/?verifyToken=${resp.data.token}`);
         }
     }
 }

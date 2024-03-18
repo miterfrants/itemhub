@@ -23,7 +23,7 @@ export class SignUpController extends RoutingController {
         this.meta = {
             title: '註冊 - ItemHub'
         };
-        const jwtPayload = window.jwt_decode(this.args.verifyPhoneToken);
+        const jwtPayload = window.jwt_decode(this.args.verifyToken);
         await super.render({
             phoneInvalidMessage: '',
             codeInvalidMessage: '',
@@ -45,7 +45,7 @@ export class SignUpController extends RoutingController {
         const elForm = elButton.closest('.form');
         const data = {
             ...elForm.collectFormData(),
-            verifyPhoneToken: this.args.verifyPhoneToken
+            verifyToken: this.args.verifyToken
         };
 
         elButton.innerHTML = '寄送中...';
@@ -111,7 +111,7 @@ export class SignUpController extends RoutingController {
         elCodeInput.setAttribute('disabled', 'disabled');
         const resp = await AuthDataService.VerifyPhone({
             ...data,
-            verifyPhoneToken: this.args.verifyPhoneToken
+            verifyToken: this.args.verifyToken
         });
 
         const elPassword = this.elHTML.querySelector('[data-field="password"]');
@@ -153,7 +153,7 @@ export class SignUpController extends RoutingController {
     }
 
     action () {
-        const jwtPayload = window.jwt_decode(this.args.verifyPhoneToken);
+        const jwtPayload = window.jwt_decode(this.args.verifyToken);
         const isEarlyBird = jwtPayload.extra.IsEarlyBird;
         if (isEarlyBird) {
             this.registerForEarlyBird();
@@ -166,7 +166,7 @@ export class SignUpController extends RoutingController {
         const elPassword = this.elHTML.querySelector('[data-field="password"]');
         elPassword.setAttribute('disabled', 'disabeld');
         const resp = await AuthDataService.SignUp({
-            token: this.signUpToken,
+            token: this.args.verifyToken,
             password: elPassword.value
         });
 

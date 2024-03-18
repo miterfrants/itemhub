@@ -117,7 +117,7 @@ export class VerifyEmailController extends RoutingController {
             elNextButton.removeAttribute('disabled', 'disabled');
             return;
         }
-        history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+        history.pushState({}, '', `/auth/sign-up/?verifyToken=${resp.data.token}`);
     }
 
     async popupFacebookAndGetCode () {
