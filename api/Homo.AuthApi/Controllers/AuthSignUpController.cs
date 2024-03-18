@@ -105,18 +105,15 @@ namespace Homo.AuthApi
                         });
             }
 
-            string pseudoPhone = CryptographicHelper.GetHiddenString(extraPayload.Phone, 2, 2);
-            string encryptPhone = CryptographicHelper.GetRSAEncryptResult(_PKCS1PublicKeyPath, extraPayload.Phone);
-            string hashPhone = CryptographicHelper.GenerateSaltedHash(extraPayload.Phone, _phoneHashSalt);
             if (sub != null)
             {
-                newUser = UserDataservice.SignUpWithSocialMedia(_dbContext, socialMediaProvider.GetValueOrDefault(), sub, extraPayload.Email, pseudoPhone, encryptPhone, hashPhone, null, extraPayload.Profile, extraPayload.FirstName, extraPayload.LastName, dto.Birthday);
+                newUser = UserDataservice.SignUpWithSocialMedia(_dbContext, socialMediaProvider.GetValueOrDefault(), sub, extraPayload.Email, null, null, null, null, extraPayload.Profile, extraPayload.FirstName, extraPayload.LastName, dto.Birthday);
             }
             else
             {
                 string salt = CryptographicHelper.GetSalt(64);
                 string hash = CryptographicHelper.GenerateSaltedHash(dto.Password, salt);
-                newUser = UserDataservice.SignUp(_dbContext, extraPayload.Email, dto.Password, pseudoPhone, encryptPhone, hashPhone, dto.FirstName, dto.LastName, salt, hash, dto.Birthday);
+                newUser = UserDataservice.SignUp(_dbContext, extraPayload.Email, dto.Password, null, null, null, dto.FirstName, dto.LastName, salt, hash, dto.Birthday);
             }
 
             var userPayload = new DTOs.JwtExtraPayload()
@@ -131,7 +128,6 @@ namespace Homo.AuthApi
                 GoogleSub = newUser.GoogleSub,
                 LineSub = newUser.LineSub,
                 Profile = newUser.Profile,
-                PseudonymousPhone = newUser.PseudonymousPhone,
                 PseudonymousAddress = newUser.PseudonymousAddress,
                 IsOverSubscriptionPlan = newUser.IsOverSubscriptionPlan
             };

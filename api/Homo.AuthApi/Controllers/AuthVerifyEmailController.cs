@@ -19,7 +19,7 @@ namespace Homo.AuthApi
     {
         private readonly Homo.Api.CommonLocalizer _commonLocalizer;
         private readonly DBContext _dbContext;
-        private readonly string _verifyPhoneJwtKey;
+        private readonly string _signUpJwtKey;
         private readonly string _envName;
         private readonly string _sendGridApiKey;
         private readonly string _systemEmail;
@@ -38,7 +38,7 @@ namespace Homo.AuthApi
             Secrets secrets = (Secrets)appSettings.Value.Secrets;
             Common common = (Common)appSettings.Value.Common;
             _commonLocalizer = commonLocalizer;
-            _verifyPhoneJwtKey = secrets.VerifyPhoneJwtKey;
+            _signUpJwtKey = secrets.SignUpJwtKey;
             _dbContext = dbContext;
             _envName = env.EnvironmentName;
             _sendGridApiKey = secrets.SendGridApiKey;
@@ -134,7 +134,7 @@ namespace Homo.AuthApi
             {
                 throw new CustomException(ERROR_CODE.USER_NOT_FOUND, HttpStatusCode.NotFound);
             }
-            string token = JWTHelper.GenerateToken(_verifyPhoneJwtKey, 60 * 24 * 7, new { Id = user.Id, Email = user.Email, IsEarlyBird = true }, null);
+            string token = JWTHelper.GenerateToken(_signUpJwtKey, 60 * 24 * 7, new { Id = user.Id, Email = user.Email, IsEarlyBird = true }, null);
 
             DateTime expirationTime = DateTime.Now.ToUniversalTime().AddMinutes(60 * 24 * 7);
             MailTemplate template = MailTemplateHelper.Get(MAIL_TEMPLATE.EARLY_BIRD_REGISTER, _staticPath);
@@ -142,7 +142,7 @@ namespace Homo.AuthApi
             {
                 websiteUrl = _websiteUrl,
                 adminEmail = _adminEmail,
-                link = $"{_websiteUrl}/auth/sign-up/?verifyPhoneToken={token}",
+                link = $"{_websiteUrl}/auth/sign-up/?token={token}",
                 hello = _commonLocalizer.Get("hello"),
                 limitDate = expirationTime,
                 mailContentEarlyBirdRegisterDescription = _commonLocalizer.Get("mailContentEarlyBirdRegisterDescription"),
@@ -186,7 +186,7 @@ namespace Homo.AuthApi
             record.IsUsed = true;
             _dbContext.SaveChanges();
 
-            return new { token = JWTHelper.GenerateToken(_verifyPhoneJwtKey, 5, new { Id = record.Id, Email = record.Email, IsEarlyBird = isEarlyBird }, null) };
+            return new { token = JWTHelper.GenerateToken(_signUpJwtKey, 5, new { Id = record.Id, Email = record.Email, IsEarlyBird = isEarlyBird }, null) };
         }
 
         [SwaggerOperation(
@@ -253,15 +253,15 @@ namespace Homo.AuthApi
             string token = "";
             if (dto.Provider == SocialMediaProvider.FACEBOOK)
             {
-                token = JWTHelper.GenerateToken(_verifyPhoneJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, FacebookSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
+                token = JWTHelper.GenerateToken(_signUpJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, FacebookSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
             }
             else if (dto.Provider == SocialMediaProvider.GOOGLE)
             {
-                token = JWTHelper.GenerateToken(_verifyPhoneJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, GoogleSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
+                token = JWTHelper.GenerateToken(_signUpJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, GoogleSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
             }
             else if (dto.Provider == SocialMediaProvider.LINE)
             {
-                token = JWTHelper.GenerateToken(_verifyPhoneJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, LineSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
+                token = JWTHelper.GenerateToken(_signUpJwtKey, 5, new DTOs.JwtExtraPayload { Email = userInfo.email, LineSub = userInfo.sub, FirstName = userInfo.name, LastName = userInfo.name, Profile = userInfo.picture }, null);
             }
             return new { token = token };
         }

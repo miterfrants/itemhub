@@ -56,10 +56,6 @@ namespace Homo.AuthApi
             {
                 throw new CustomException(ERROR_CODE.USER_BE_BLOCKED, HttpStatusCode.Forbidden);
             }
-            if (user.IsEarlyBird && user.PseudonymousPhone == null)
-            {
-                throw new CustomException(ERROR_CODE.LACK_PHONE, HttpStatusCode.Forbidden);
-            }
 
             UserDataservice.SetUserToForgotPasswordState(_dbContext, user.Id);
             string resetPasswordToken = JWTHelper.GenerateToken(_resetPasswordJwtKey, 10, new { Id = user.Id });

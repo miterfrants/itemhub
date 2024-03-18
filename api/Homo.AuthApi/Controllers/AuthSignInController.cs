@@ -84,11 +84,7 @@ namespace Homo.AuthApi
                         {"duplicatedUserProviders", AuthHelper.GetDuplicatedUserType(user)}
                     });
             }
-            if (user.HashPhone == null)
-            {
-                throw new CustomException(ERROR_CODE.LACK_PHONE, HttpStatusCode.Forbidden);
-            }
-
+            
             if (user.Hash != Homo.Core.Helpers.CryptographicHelper.GenerateSaltedHash(dto.Password, user.Salt))
             {
                 throw new CustomException(ERROR_CODE.SIGNIN_FAILED, HttpStatusCode.Forbidden);
