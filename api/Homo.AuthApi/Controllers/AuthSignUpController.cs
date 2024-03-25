@@ -21,7 +21,6 @@ namespace Homo.AuthApi
         private readonly string _jwtKey;
         private readonly string _dashboardJwtKey;
         private readonly string _signUpJwtKey;
-        private readonly string _verifyPhoneJwtKey;
         private readonly int _jwtExpirationMonth;
         private readonly string _envName;
         private readonly string _sendGridAPIKey;
@@ -45,7 +44,6 @@ namespace Homo.AuthApi
             _dashboardJwtKey = secrets.DashboardJwtKey;
             _jwtExpirationMonth = common.JwtExpirationMonth;
             _signUpJwtKey = secrets.SignUpJwtKey;
-            _verifyPhoneJwtKey = secrets.VerifyPhoneJwtKey;
             _dbContext = dbContext;
             _envName = env.EnvironmentName;
             _sendGridAPIKey = secrets.SendGridApiKey;

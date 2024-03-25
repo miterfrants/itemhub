@@ -14,7 +14,6 @@ export const API = {
     VERIFY_EMAIL: 'auth/verify-email',
     VERIFY_EMAIL_WITH_SOCIAL_MEDIA: 'auth/verify-email-with-social-media',
     SEND_SMS: 'auth/send-sms',
-    VERIFY_PHONE: 'auth/verify-phone',
     SIGN_UP: 'auth/sign-up',
     REFRESH_TOKEN: 'auth/refresh-token',
     REFRESH_DASHBOARD_TOKEN: 'auth/refresh-dashboard-token',

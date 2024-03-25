@@ -10,7 +10,6 @@ namespace Homo.AuthApi
     {
         public string JwtKey { get; set; }
         public string AnonymousJwtKey { get; set; }
-        public string VerifyPhoneJwtKey { get; set; }
         public string PhoneHashSalt { get; set; }
         public string SignUpJwtKey { get; set; }
         public string ResetPasswordJwtKey { get; set; }

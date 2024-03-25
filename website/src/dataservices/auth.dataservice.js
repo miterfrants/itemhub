@@ -32,13 +32,6 @@ export const AuthDataService = {
             body: JSON.stringify(data)
         });
     },
-    VerifyPhone: async (data) => {
-        const api = APP_CONFIG.API_ENDPOINT + API.VERIFY_PHONE;
-        return ApiHelper.sendRequest(api, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    },
     RefreshToken: async (data) => {
         const api = APP_CONFIG.API_ENDPOINT + API.REFRESH_TOKEN;
         return ApiHelper.sendRequest(api, {
