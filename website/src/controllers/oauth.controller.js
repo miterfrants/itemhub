@@ -16,7 +16,7 @@ export class OauthController extends RoutingController {
             provider: this.args.state.provider
         });
         if (this.args.state.type === OAUTH_TYPE.VERIFY_EMAIL_WITH_SOCIAL_MEDIA) {
-            await this.getVerifyPhoneToken();
+            await this.getVerifyToken();
         } else if (this.args.state.type === OAUTH_TYPE.SIGN_IN) {
             await this.signIn();
         }
@@ -53,7 +53,7 @@ export class OauthController extends RoutingController {
         }
     }
 
-    async getVerifyPhoneToken () {
+    async getVerifyToken () {
         const targetProvider = this.args.socialMediaTypes.find(item => item.label.toString().toLowerCase() === this.args.state.provider);
         const resp = await AuthDataService.VerifyEmailWithSocialMedia({
             code: this.args.code,
@@ -73,10 +73,10 @@ export class OauthController extends RoutingController {
         }
 
         if (opener) {
-            opener.history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+            opener.history.pushState({}, '', `/auth/sign-up/?verifyToken=${resp.data.token}`);
             window.close();
         } else {
-            history.pushState({}, '', `/auth/sign-up/?verifyPhoneToken=${resp.data.token}`);
+            history.pushState({}, '', `/auth/sign-up/?verifyToken=${resp.data.token}`);
         }
     }
 }

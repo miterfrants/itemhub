@@ -67,7 +67,7 @@ export const AuthRoutingRule = {
     }, {
         dependency: [gTag.dependency],
         prepareData: [gTag.prepareData],
-        path: 'sign-up/?verifyPhoneToken',
+        path: 'sign-up/?verifyToken',
         skipSitemap: true,
         controller: SignUpController,
         html: '/template/sign-up.html'

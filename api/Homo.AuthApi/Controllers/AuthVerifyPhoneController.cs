@@ -27,7 +27,6 @@ namespace Homo.AuthApi
         private readonly string _smsClientUrl;
         private readonly string _pkcs1PublicKeyPath;
         private readonly string _signUpJwtKey;
-        private readonly string _verifyPhoneJwtKey;
         private readonly string _phoneHashSalt;
         private readonly CommonLocalizer _commonLocalizer;
         private readonly string _testingPhone;
@@ -41,7 +40,6 @@ namespace Homo.AuthApi
             _smsPassword = secrets.SmsPassword;
             _smsClientUrl = common.SmsClientUrl;
             _signUpJwtKey = secrets.SignUpJwtKey;
-            _verifyPhoneJwtKey = secrets.VerifyPhoneJwtKey;
             _pkcs1PublicKeyPath = common.Pkcs1PublicKeyPath;
             _commonLocalizer = localizer;
             _phoneHashSalt = secrets.PhoneHashSalt;
@@ -97,33 +95,6 @@ namespace Homo.AuthApi
             string message = _commonLocalizer.Get("sms template", null, new Dictionary<string, string>() { { "code", code } });
             await SmsHelper.Send(SmsProvider.Every8D, _smsUsername, _smsPassword, _smsClientUrl, dto.Phone, message);
             return new { status = CUSTOM_RESPONSE.OK };
-        }
-
-        [SwaggerOperation(
-            Tags = new[] { "註冊相關" },
-            Summary = "驗證手機",
-            Description = ""
-        )]
-        [HttpPost]
-        [Route("verify-phone")]
-        public ActionResult<dynamic> verifyPhone([FromBody] DTOs.VerifyPhone dto)
-        {
-            var payload = JWTHelper.GetPayload(_verifyPhoneJwtKey, dto.VerifyPhoneToken);
-            if (payload == null)
-            {
-                throw new CustomException(ERROR_CODE.VERIFY_PHONE_TOKEN_EXPIRED, HttpStatusCode.BadRequest);
-            }
-
-            var extraPayload = JsonConvert.DeserializeObject<DTOs.JwtExtraPayload>(payload.FindFirstValue("extra"));
-            VerifyCode record = VerifyCodeDataservice.GetOneUnUsedByPhone(_dbContext, dto.Phone, dto.Code);
-            if (record == null)
-            {
-                throw new CustomException(ERROR_CODE.VERIFY_CODE_NOT_FOUND, System.Net.HttpStatusCode.NotFound);
-            }
-            record.IsUsed = true;
-            _dbContext.SaveChanges();
-            extraPayload.Phone = dto.Phone;
-            return new { token = JWTHelper.GenerateToken(_signUpJwtKey, 5, extraPayload) };
         }
     }
 }
